@@ -8,23 +8,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     GET: handleGET,
     DELETE: handleDELETE,
   });
-
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'DELETE':
-        await handleDELETE(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET,DELETE');
-        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    res.status(statusCode).json({ error: { message } });
-  }
 }
 
 // Get the sso traces filtered by the product
