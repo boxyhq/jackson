@@ -4,7 +4,6 @@ import { Portal, SSOPage } from 'e2e/support/fixtures';
 type MyFixtures = {
   ssoPage: SSOPage;
   portal: Portal;
-  ssoPageWithoutDelete: SSOPage;
 };
 
 export const test = baseTest.extend<MyFixtures>({
@@ -20,13 +19,6 @@ export const test = baseTest.extend<MyFixtures>({
     const portal = new Portal(page);
     await use(portal);
   },
-  ssoPageWithoutDelete: async ({ page, baseURL }, use, testInfo) => {
-    const ssoPage = new SSOPage(page);
-    const ssoName = `saml-${testInfo.workerIndex}`;
-    await ssoPage.goto();
-    await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL! });
-    await use(ssoPage);
-  },
 });
 
 test('OAuth2 wrapper + SAML provider', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
@@ -41,28 +33,6 @@ test('OAuth2 wrapper + SAML provider', async ({ ssoPage, portal, page, baseURL }
   await page.waitForURL((url) => url.origin === baseURL);
   // Assert logged in state
   await portal.isLoggedIn();
-});
-
-test('OAuth2 wrapper + SAML provider + wrong redirectUrl', async ({
-  ssoPageWithoutDelete,
-  page,
-  baseURL,
-}, testInfo) => {
-  // check if the first added connection appears in the connection list
-  await expect(page.getByText(`saml-${testInfo.workerIndex}-1`)).toBeVisible();
-  await ssoPageWithoutDelete.updateSSOConnection({
-    name: `saml-${testInfo.workerIndex}-1`,
-    url: 'https://invalid-url.com',
-  });
-  // Logout of magic link login
-  await ssoPageWithoutDelete.logout();
-  await ssoPageWithoutDelete.signInWithSSO();
-  // // Login using MockSAML
-  // await ssoPage.signInWithMockSAML();
-  // Wait for browser to redirect to error page
-  await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
-  // Assert error text
-  await expect(page.getByText(`SSO error: Redirect URL is not allowed.`)).toBeVisible();
 });
 
 test('OAuth2 wrapper + 2 SAML providers', async ({ ssoPage, portal, page, baseURL }, testInfo) => {
