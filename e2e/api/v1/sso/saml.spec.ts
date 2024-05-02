@@ -7,13 +7,9 @@ import {
   newConnection,
   expectedConnection,
 } from '../../helpers/sso';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 test.afterEach(async ({ request }) => {
   const { tenant, product } = newConnection;

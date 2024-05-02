@@ -1,14 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { options } from '../../helpers/api';
 
 const tenant = 'tenant-1';
 const product = 'product-1';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 // POST /api/v1/dsync/setuplinks
 test('create the setup link', async ({ request }) => {

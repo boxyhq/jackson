@@ -6,13 +6,9 @@ import {
   directoryPayload,
   getDirectory,
 } from '../../helpers/directories';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 const { tenant, product } = directoryPayload;
 
