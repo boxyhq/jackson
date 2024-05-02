@@ -6,6 +6,7 @@ import {
   getRawMetadata,
   newConnection,
   expectedConnection,
+  getConnectionByProduct,
 } from '../../helpers/sso';
 import { options } from '../../helpers/api';
 
@@ -204,5 +205,18 @@ test.describe('GET /api/v1/sso/exists', () => {
 
     expect(response.ok()).toBe(false);
     expect(response.status()).toBe(404);
+  });
+});
+
+test.describe('GET /api/v1/sso/product', () => {
+  const { product } = newConnection;
+
+  test('should be able to get SSO Connections by product', async ({ request }) => {
+    await createConnection(request, newConnection);
+
+    const response = await getConnectionByProduct(request, product);
+
+    expect(response).toMatchObject([expectedConnection]);
+    expect(response.length).toBe(1);
   });
 });

@@ -71,6 +71,20 @@ export const getConnection = async (
   return await response.json();
 };
 
+// Get connections by product
+export const getConnectionByProduct = async (request: APIRequestContext, product: string) => {
+  const response = await request.get('/api/v1/sso/product', {
+    params: {
+      product,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
 // Delete a connection
 export const deleteConnection = async (
   request: APIRequestContext,
