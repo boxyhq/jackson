@@ -211,6 +211,13 @@ test.describe('GET /api/v1/sso/exists', () => {
 test.describe('GET /api/v1/sso/product', () => {
   const { product } = newConnection;
 
+  test('should get empty array for SSO connection by product', async ({ request }) => {
+    const response = await getConnectionByProduct(request, product);
+
+    expect(response).toMatchObject([]);
+    expect(response.length).toBe(0);
+  });
+
   test('should be able to get SSO Connections by product', async ({ request }) => {
     await createConnection(request, newConnection);
 
