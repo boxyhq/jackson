@@ -132,18 +132,26 @@ class Sql implements DatabaseDriver {
 
   async indexNamespace() {
     try {
-      const res = await this.storeRepository.find({
-        where: {
-          namespace: IsNull(),
-        },
-        select: ['key'],
-      });
-      const searchTerm = ':';
+      const take = 1000;
+      while (true) {
+        const res = await this.storeRepository.find({
+          where: {
+            namespace: IsNull(),
+          },
+          select: ['key'],
+          take,
+        });
+        const searchTerm = ':';
 
-      for (const r of res) {
-        const key = r.key;
-        const lastIndex = r.key.lastIndexOf(searchTerm);
-        await this.storeRepository.update({ key }, { namespace: r.key.substring(0, lastIndex) });
+        if (res.length === 0) {
+          break;
+        }
+
+        for (const r of res) {
+          const key = r.key;
+          const lastIndex = r.key.lastIndexOf(searchTerm);
+          await this.storeRepository.update({ key }, { namespace: r.key.substring(0, lastIndex) });
+        }
       }
     } catch (err) {
       console.error('Error running indexNamespace:', err);
