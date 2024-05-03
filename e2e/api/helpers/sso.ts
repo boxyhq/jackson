@@ -100,3 +100,60 @@ export const deleteConnection = async (
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(204);
 };
+
+// get a sso trace by id
+export const getSSOTraceById = async (request: APIRequestContext, { id }: { id: string }) => {
+  const response = await request.get('/api/v1/sso-traces', {
+    params: {
+      id,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
+// get sso traces by product
+export const getSSOTracesByProduct = async (request: APIRequestContext, { product }: { product: string }) => {
+  const response = await request.get('/api/v1/sso-traces/product', {
+    params: {
+      product,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
+// Delete sso traces by product
+export const deleteSSOTraces = async (request: APIRequestContext, { product }: { product: string }) => {
+  const response = await request.delete('/api/v1/sso-traces/product', {
+    params: {
+      product,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(204);
+};
+
+// Count sso traces by product
+export const countSSOTracesByProduct = async (
+  request: APIRequestContext,
+  { product }: { product: string }
+) => {
+  const response = await request.get('/api/v1/sso-traces/product/count', {
+    params: {
+      product,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
