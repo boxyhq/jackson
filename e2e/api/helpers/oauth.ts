@@ -1,5 +1,4 @@
 import { type APIRequestContext, expect } from '@playwright/test';
-import e from 'cors';
 import { OAuthReq } from 'npm/src';
 
 // Make oauth autorize request
