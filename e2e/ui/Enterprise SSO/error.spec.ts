@@ -30,3 +30,35 @@ test('OAuth2 wrapper + SAML provider + wrong redirectUrl', async ({ ssoPage, pag
   // Assert error text
   await expect(page.getByText(`SSO error: Redirect URL is not allowed.`)).toBeVisible();
 });
+
+test.fixme(
+  'OAuth2 wrapper + SAML provider + inactive connection',
+  async ({ ssoPage, page, baseURL }, testInfo) => {
+    // check if the first added connection appears in the connection list
+    await expect(page.getByText(`saml-${testInfo.workerIndex}-1`)).toBeVisible();
+    await ssoPage.updateSSOConnection({
+      name: `saml-${testInfo.workerIndex}-1`,
+      url: baseURL!,
+      active: false,
+    });
+  }
+);
+
+test('OAuth2 wrapper + OIDC provider + wrong redirectUrl', async ({ ssoPage, page, baseURL }, testInfo) => {
+  await ssoPage.deleteAllSSOConnections();
+  const ssoName = `oidc-${testInfo.workerIndex}`;
+  await ssoPage.addSSOConnection({ name: ssoName, type: 'oidc', baseURL: baseURL! });
+  // check if the second added connection appears in the connection list
+  await expect(page.getByText(`${ssoName}-1`)).toBeVisible();
+  await ssoPage.updateSSOConnection({
+    name: `${ssoName}-1`,
+    url: 'https://invalid-url.com',
+  });
+  // Logout of magic link login
+  await ssoPage.logout();
+  await ssoPage.signInWithSSO();
+  // Wait for browser to redirect to error page
+  await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
+  // Assert error text
+  await expect(page.getByText(`SSO error: Redirect URL is not allowed.`)).toBeVisible();
+});

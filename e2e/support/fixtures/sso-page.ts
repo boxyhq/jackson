@@ -27,6 +27,7 @@ export class SSOPage {
   private readonly saveConnection: Locator;
   private readonly deleteButton: Locator;
   private readonly confirmButton: Locator;
+  private readonly toggleActiveConnection: Locator;
   private connections: string[];
 
   constructor(public readonly page: Page) {
@@ -45,6 +46,7 @@ export class SSOPage {
     this.oidcClientIdInput = this.page.getByLabel('Client ID');
     this.oidcClientSecretInput = this.page.getByLabel('Client Secret');
     this.saveConnection = this.page.getByRole('button', { name: /save/i });
+    this.toggleActiveConnection = this.page.locator('label').filter({ hasText: 'Active' }).locator('span');
     this.deleteButton = this.page.getByRole('button', { name: 'Delete' });
     this.confirmButton = this.page.getByRole('button', { name: 'Confirm' });
   }
@@ -106,10 +108,24 @@ export class SSOPage {
     await editButton.click();
   }
 
-  async updateSSOConnection({ name, url }: { name: string; url: string }) {
+  async toggleConnectionStatus(active: boolean) {
+    const isChecked = await this.toggleActiveConnection.isChecked();
+    if (isChecked && !active) {
+      await this.toggleActiveConnection.click();
+      await this.confirmButton.click();
+    } else if (!isChecked && active) {
+      await this.toggleActiveConnection.check();
+    }
+  }
+
+  async updateSSOConnection({ name, url, active }: { name: string; url: string; active?: boolean }) {
     await this.gotoEditView(name);
     await this.redirectURLSInput.fill(url);
     await this.saveConnection.click();
+    if (typeof active === 'boolean') {
+      await this.gotoEditView(name);
+      await this.toggleConnectionStatus(active);
+    }
   }
 
   async deleteSSOConnection(name: string) {
