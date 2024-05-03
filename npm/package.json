@@ -39,13 +39,13 @@
     "coverage-map": "map.js"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.567.0",
+    "@aws-sdk/client-dynamodb": "3.568.0",
     "@aws-sdk/credential-providers": "3.567.0",
-    "@aws-sdk/util-dynamodb": "3.565.0",
+    "@aws-sdk/util-dynamodb": "3.567.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.6",
     "@boxyhq/saml20": "1.5.0",
-    "@googleapis/admin": "17.0.0",
+    "@googleapis/admin": "17.1.0",
     "axios": "1.6.8",
     "encoding": "0.1.13",
     "jose": "5.2.4",
