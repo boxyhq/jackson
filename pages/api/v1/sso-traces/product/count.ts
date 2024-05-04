@@ -1,5 +1,4 @@
 import jackson from '@lib/jackson';
-import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -26,9 +25,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     product: string;
   };
 
-  const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
+  const count = await adminController.countByProduct(product);
 
-  const traces = await adminController.getTracesByProduct(product, pageOffset, pageLimit, pageToken);
-
-  res.json(traces);
+  res.json({ count });
 };
