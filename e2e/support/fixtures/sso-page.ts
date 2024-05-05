@@ -27,7 +27,8 @@ export class SSOPage {
   private readonly saveConnection: Locator;
   private readonly deleteButton: Locator;
   private readonly confirmButton: Locator;
-  private readonly toggleActiveConnection: Locator;
+  private readonly toggleConnectionStatusCheckbox: Locator;
+  private readonly toggleConnectionStatusLabel: Locator;
   private connections: string[];
 
   constructor(public readonly page: Page) {
@@ -46,7 +47,8 @@ export class SSOPage {
     this.oidcClientIdInput = this.page.getByLabel('Client ID');
     this.oidcClientSecretInput = this.page.getByLabel('Client Secret');
     this.saveConnection = this.page.getByRole('button', { name: /save/i });
-    this.toggleActiveConnection = this.page.locator('label').filter({ hasText: 'Active' }).locator('span');
+    this.toggleConnectionStatusCheckbox = this.page.getByRole('checkbox', { name: 'Active' });
+    this.toggleConnectionStatusLabel = this.page.locator('label').filter({ hasText: 'Active' });
     this.deleteButton = this.page.getByRole('button', { name: 'Delete' });
     this.confirmButton = this.page.getByRole('button', { name: 'Confirm' });
   }
@@ -108,23 +110,24 @@ export class SSOPage {
     await editButton.click();
   }
 
-  async toggleConnectionStatus(active: boolean) {
-    const isChecked = await this.toggleActiveConnection.isChecked();
-    if (isChecked && !active) {
-      await this.toggleActiveConnection.click();
+  async toggleConnectionStatus(newStatus: boolean) {
+    const isChecked = await this.toggleConnectionStatusCheckbox.isChecked();
+    if (isChecked && !newStatus) {
+      await this.toggleConnectionStatusLabel.click();
       await this.confirmButton.click();
-    } else if (!isChecked && active) {
-      await this.toggleActiveConnection.check();
+    } else if (!isChecked && newStatus) {
+      await this.toggleConnectionStatusLabel.click();
+      await this.confirmButton.click();
     }
   }
 
-  async updateSSOConnection({ name, url, active }: { name: string; url: string; active?: boolean }) {
+  async updateSSOConnection({ name, url, newStatus }: { name: string; url: string; newStatus?: boolean }) {
     await this.gotoEditView(name);
     await this.redirectURLSInput.fill(url);
     await this.saveConnection.click();
-    if (typeof active === 'boolean') {
+    if (typeof newStatus === 'boolean') {
       await this.gotoEditView(name);
-      await this.toggleConnectionStatus(active);
+      await this.toggleConnectionStatus(newStatus);
     }
   }
 
