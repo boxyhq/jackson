@@ -38,7 +38,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     // Get counts for product
     let sso_connections_count = 0;
     let dsync_connections_count = 0;
-    let saml_federation_count = 0;
+    let identity_federation_count = 0;
 
     for (const product of products) {
       if (product) {
@@ -60,7 +60,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
             name: IndexNames.Product,
             value: product,
           });
-          saml_federation_count += count || 0;
+          identity_federation_count += count || 0;
         }
       }
     }
@@ -69,7 +69,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       data: {
         sso_connections: sso_connections_count,
         dsync_connections: dsync_connections_count,
-        saml_federation: saml_federation_count,
+        identity_federation_apps: identity_federation_count,
       },
     });
   }
