@@ -38,12 +38,12 @@ const beforeAll = async (urlPath, request) => {
     },
   });
 
-  app = (await response.json()).data;
+  const localApp = (await response.json()).data;
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(201);
 
-  return app;
+  return localApp;
 };
 
 test.beforeAll(async ({ request }) => {
