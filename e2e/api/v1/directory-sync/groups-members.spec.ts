@@ -30,7 +30,7 @@ test.describe('GET /api/v1/dsync/groups/:id/members', () => {
     const [directory] = await getDirectory(request, { tenant, product });
 
     const groups = await getGroupsByDirectoryId(request, directory);
-    let response = await request.get(`/api/v1/dsync/groups/${groups[0].id}/members`, {
+    const response = await request.get(`/api/v1/dsync/groups/${groups[0].id}/members`, {
       params: {
         tenant,
         product,
