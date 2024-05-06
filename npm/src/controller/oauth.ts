@@ -751,9 +751,9 @@ export class OAuthController implements IOAuthController {
           isSAMLFederated,
           isOIDCFederated,
           isIdPFlow,
-          acsUrl: session.requested.acsUrl,
-          entityId: session.requested.entityId,
-          requestedOIDCFlow: !!session.requested.oidc,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
+          requestedOIDCFlow: !!session?.requested?.oidc,
           relayState: RelayState,
           issuer,
           profile,
@@ -769,7 +769,7 @@ export class OAuthController implements IOAuthController {
           error: 'access_denied',
           error_description: traceId ? `${traceId}: ${error_description}` : error_description,
           redirect_uri,
-          state: session.requested?.state,
+          state: session?.requested?.state,
         }),
       };
     }
