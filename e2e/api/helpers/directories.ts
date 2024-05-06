@@ -27,7 +27,7 @@ export const directoryExpected = {
 };
 
 export const updateDirectory = async (request: APIRequestContext, directory: Directory, data: any) => {
-  let response = await request.patch(`/api/v1/dsync/${directory.id}`, {
+  const response = await request.patch(`/api/v1/dsync/${directory.id}`, {
     data,
   });
 

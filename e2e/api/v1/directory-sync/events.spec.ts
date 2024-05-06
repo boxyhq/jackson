@@ -7,7 +7,7 @@ import {
   updateDirectory,
 } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
-import { addGroupMember, createGroup, getGroupsByDirectoryId } from '../../helpers/groups';
+import { addGroupMember, createGroup } from '../../helpers/groups';
 import { options } from '../../helpers/api';
 
 test.use(options);
