@@ -32,7 +32,7 @@
   "edit_directory": "Edit Directory",
   "saml_federation_new_success": "Identity Federation app created successfully.",
   "saml_federation_update_success": "Identity Federation app updated successfully.",
-  "saml_federation_delete_success": "Identity federation app deleted successfully",
+  "saml_federation_delete_success": "Identity Federation app deleted successfully",
   "saml_federation_app_info": "SAML Federation App Information",
   "saml_federation_app_info_details": "Choose from the following options to configure your SAML Federation on the service provider side",
   "download_metadata": "Download Metadata",

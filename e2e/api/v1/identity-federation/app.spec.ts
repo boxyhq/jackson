@@ -77,7 +77,7 @@ const testGETByTenantProduct = async (urlPath, request) => {
 
 const testGETByProduct = async (urlPath, request) => {
   const currApp = urlPath === oldUrlPath ? app : app1;
-  const response = await request.get(`/api/v1/${urlPath}?product=${currApp?.product}`);
+  const response = await request.get(`/api/v1/${urlPath}/product?product=${currApp?.product}`);
 
   const { data } = await response.json();
 
