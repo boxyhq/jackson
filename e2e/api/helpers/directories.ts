@@ -1,4 +1,5 @@
 import { expect, type APIRequestContext } from '@playwright/test';
+import { Directory } from 'npm/src';
 
 const directoryBase = {
   tenant: 'api-boxyhq',
@@ -23,6 +24,18 @@ export const directoryExpected = {
     endpoint: expect.any(String),
   },
   webhook: { endpoint: 'https://example.com', secret: 'secret' },
+};
+
+export const updateDirectory = async (request: APIRequestContext, directory: Directory, data: any) => {
+  let response = await request.patch(`/api/v1/dsync/${directory.id}`, {
+    data,
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  const { data: updatedDirectory } = await response.json();
+  return updatedDirectory;
 };
 
 export const createDirectory = async (request: APIRequestContext, payload: typeof directoryPayload) => {
