@@ -5,6 +5,7 @@ import {
   directoryExpected,
   directoryPayload,
   getDirectory,
+  getDirectoryByProduct,
 } from '../../helpers/directories';
 import { options } from '../../helpers/api';
 
@@ -21,6 +22,9 @@ test.beforeAll(async ({ request }) => {
 test.afterAll(async ({ request }) => {
   const [directory] = await getDirectory(request, { tenant, product });
 
+  if (!directory) {
+    return;
+  }
   await deleteDirectory(request, directory.id);
 });
 
@@ -151,5 +155,17 @@ test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
         },
       },
     });
+  });
+});
+
+test.describe('GET /api/v1/dsync/product', () => {
+  test('should be able to get a directory by product', async ({ request }) => {
+    let directories = await getDirectoryByProduct(request, { product });
+    expect(directories.length).toBe(1);
+
+    await deleteDirectory(request, directories[0].id);
+
+    directories = await getDirectoryByProduct(request, { product });
+    expect(directories.length).toBe(0);
   });
 });

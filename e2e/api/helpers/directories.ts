@@ -59,6 +59,21 @@ export const getDirectory = async (
   return data;
 };
 
+export const getDirectoryByProduct = async (request: APIRequestContext, { product }: { product: string }) => {
+  const response = await request.get('/api/v1/dsync/product', {
+    params: {
+      product,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  const { data } = await response.json();
+
+  return data;
+};
+
 export const deleteDirectory = async (request: APIRequestContext, directoryId: string) => {
   const response = await request.delete(`/api/v1/dsync/${directoryId}`);
 
