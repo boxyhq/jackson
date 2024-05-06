@@ -23,6 +23,7 @@ const config: PlaywrightTestConfig = {
     reuseExistingServer: !process.env.CI,
     env: {
       DEBUG: 'pw:webserver',
+      NEXTAUTH_ADMIN_CREDENTIALS: 'super@boxyhq.com:999login',
     },
   },
 
