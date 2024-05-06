@@ -36,7 +36,7 @@ test('OAuth2 wrapper + SAML provider + OIDC provider', async ({
   await expect(page.getByText(`oidc-${testInfo.workerIndex}-2`)).toBeVisible();
   // Logout of magic link login
   await ssoPage.logout();
-  // Login using MockLab
+  // Login using MockSAML
   await ssoPage.signInWithSSO();
   // Select IdP from selection screen
   await ssoPage.selectIdP(`saml-${testInfo.workerIndex}-1`);
