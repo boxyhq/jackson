@@ -2,13 +2,9 @@ import { test, expect } from '@playwright/test';
 import users from '../../../../npm/test/dsync/data/users';
 import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import { createUser } from '../../helpers/users';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-4' };
 
