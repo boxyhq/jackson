@@ -10,8 +10,8 @@ const directoryBase = {
 
 export const directoryPayload = {
   ...directoryBase,
-  webhook_url: 'https://example.com',
-  webhook_secret: 'secret',
+  webhook_url: '',
+  webhook_secret: '',
 };
 
 export const directoryExpected = {
@@ -23,7 +23,7 @@ export const directoryExpected = {
     secret: expect.any(String),
     endpoint: expect.any(String),
   },
-  webhook: { endpoint: 'https://example.com', secret: 'secret' },
+  webhook: { endpoint: '', secret: '' },
 };
 
 export const updateDirectory = async (request: APIRequestContext, directory: Directory, data: any) => {

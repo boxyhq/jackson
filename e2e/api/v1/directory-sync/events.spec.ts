@@ -19,6 +19,8 @@ const memberId = 'member1';
 test.beforeAll(async ({ request }) => {
   let directory = await createDirectory(request, {
     ...directoryPayload,
+    webhook_url: 'https://example.com',
+    webhook_secret: 'secret',
     tenant,
   });
 
