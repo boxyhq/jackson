@@ -6,14 +6,11 @@ import {
   getRawMetadata,
   newConnection,
   expectedConnection,
+  getConnectionByProduct,
 } from '../../helpers/sso';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 test.afterEach(async ({ request }) => {
   const { tenant, product } = newConnection;
@@ -208,5 +205,25 @@ test.describe('GET /api/v1/sso/exists', () => {
 
     expect(response.ok()).toBe(false);
     expect(response.status()).toBe(404);
+  });
+});
+
+test.describe('GET /api/v1/sso/product', () => {
+  const { product } = newConnection;
+
+  test('should get empty array for SSO connection by product', async ({ request }) => {
+    const response = await getConnectionByProduct(request, product);
+
+    expect(response).toMatchObject([]);
+    expect(response.length).toBe(0);
+  });
+
+  test('should be able to get SSO Connections by product', async ({ request }) => {
+    await createConnection(request, newConnection);
+
+    const response = await getConnectionByProduct(request, product);
+
+    expect(response).toMatchObject([expectedConnection]);
+    expect(response.length).toBe(1);
   });
 });

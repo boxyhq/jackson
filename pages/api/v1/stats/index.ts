@@ -13,13 +13,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const sso_connections_count = await connectionAPIController.getCount();
   const dsync_connections_count = await directorySyncController.directories.getCount();
-  const idfed_apps_count = samlFederatedController.app.getCount();
+  const identity_federation_count = await samlFederatedController.app.getCount();
 
   return res.json({
     data: {
       sso_connections: sso_connections_count,
       dsync_connections: dsync_connections_count,
-      idfed_apps: idfed_apps_count,
+      identity_federation_apps: identity_federation_count,
     },
   });
 };

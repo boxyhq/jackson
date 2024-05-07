@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext } from '@playwright/test';
-import type { Directory } from '@boxyhq/saml-jackson';
+import type { Directory, Group } from '@boxyhq/saml-jackson';
 
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
   const response = await request.post(`${directory.scim.path}/Groups`, {
@@ -11,6 +11,38 @@ export const createGroup = async (request: APIRequestContext, directory: Directo
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(201);
+
+  return await response.json();
+};
+
+export const addGroupMember = async (
+  request: APIRequestContext,
+  directory: Directory,
+  group: Group,
+  member: string
+) => {
+  const response = await request.patch(`${directory.scim.path}/Groups/${group.id}`, {
+    data: {
+      Operations: [
+        {
+          action: 'addGroupMember',
+          op: 'add',
+          path: 'members',
+          value: [
+            {
+              value: member,
+            },
+          ],
+        },
+      ],
+    },
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
 
   return await response.json();
 };
@@ -46,4 +78,18 @@ export const getGroupById = async (request: APIRequestContext, directory: Direct
   expect(response.status()).toBe(200);
 
   return await response.json();
+};
+
+export const getGroupsByDirectoryId = async (request: APIRequestContext, directory: Directory) => {
+  const response = await request.get(`${directory.scim.path}/Groups`, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  const data = await response.json();
+  return data.Resources;
 };

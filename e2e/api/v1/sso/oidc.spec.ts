@@ -1,11 +1,7 @@
 import { test } from '@playwright/test';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 test.describe('OIDC SSO Connection', () => {
   //

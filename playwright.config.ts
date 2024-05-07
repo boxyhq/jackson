@@ -22,7 +22,8 @@ const config: PlaywrightTestConfig = {
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
     env: {
-      NODE_ENV: 'test',
+      DEBUG: 'pw:webserver',
+      NEXTAUTH_ADMIN_CREDENTIALS: 'super@boxyhq.com:999login',
     },
   },
 
