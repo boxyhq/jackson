@@ -93,3 +93,22 @@ export const deleteDirectory = async (request: APIRequestContext, directoryId: s
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(200);
 };
+
+export const getDirectoryEvents = async (
+  request: APIRequestContext,
+  params: {
+    tenant?: string;
+    product?: string;
+    directoryId: string;
+  }
+) => {
+  const response = await request.get(`/api/v1/dsync/events`, {
+    params,
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  const { data } = await response.json();
+  return data;
+};

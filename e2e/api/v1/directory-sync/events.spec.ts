@@ -4,6 +4,7 @@ import {
   deleteDirectory,
   directoryPayload,
   getDirectory,
+  getDirectoryEvents,
   updateDirectory,
 } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
@@ -39,19 +40,10 @@ test.describe('GET /api/v1/dsync/events', () => {
   test('should be able to get list of events from a directory', async ({ request }) => {
     const [directory] = await getDirectory(request, { tenant, product });
 
-    const response = await request.get(`/api/v1/dsync/events`, {
-      params: {
-        tenant,
-        product,
-        directoryId: directory.id,
-      },
-    });
+    // Get events using tenant, product & directoryId
+    const data = await getDirectoryEvents(request, { tenant, product, directoryId: directory.id });
 
-    const { data: events } = await response.json();
-
-    expect(response.ok()).toBe(true);
-    expect(response.status()).toBe(200);
-    expect(events.length).toBe(2);
+    expect(data.length).toBe(2);
   });
 });
 
@@ -59,15 +51,12 @@ test.describe('GET /api/v1/dsync/events/:event', () => {
   test('should be able to delete all the events from directory', async ({ request }) => {
     const [directory] = await getDirectory(request, { tenant, product });
 
-    let response = await request.get(`/api/v1/dsync/events`, {
-      params: {
-        directoryId: directory.id,
-      },
+    // Get events using directoryId
+    const events = await getDirectoryEvents(request, {
+      directoryId: directory.id,
     });
 
-    const { data: events } = await response.json();
-
-    response = await request.get(`/api/v1/dsync/events/${events[0].id}`, {
+    const response = await request.get(`/api/v1/dsync/events/${events[0].id}`, {
       params: {
         tenant,
         product,
@@ -93,15 +82,11 @@ test.describe('DELETE /api/v1/dsync/events', () => {
       },
     });
 
-    response = await request.get(`/api/v1/dsync/events`, {
-      params: {
-        tenant,
-        product,
-        directoryId: directory.id,
-      },
+    const events = await getDirectoryEvents(request, {
+      tenant,
+      product,
+      directoryId: directory.id,
     });
-
-    const { data: events } = await response.json();
 
     expect(response.ok()).toBe(true);
     expect(response.status()).toBe(200);
