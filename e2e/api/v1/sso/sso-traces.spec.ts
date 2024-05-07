@@ -22,12 +22,12 @@ test.afterEach(async ({ request }) => {
 
   // Delete the connection & traces after each test
   await deleteConnection(request, { tenant, product });
-  await deleteSSOTraces(request, { product });
+  await deleteSSOTraces(request, product);
 });
 
 test.describe('GET /api/v1/sso-traces/product', () => {
   test('should be able to get empty list of traces', async ({ request }) => {
-    const list = await getSSOTracesByProduct(request, { product: newConnection.product });
+    const list = await getSSOTracesByProduct(request, newConnection.product);
 
     expect(list.data.length).toBe(0);
   });
@@ -50,7 +50,7 @@ test.describe('GET /api/v1/sso-traces/product/count', () => {
       true
     );
 
-    const res = await countSSOTracesByProduct(request, { product: newConnection.product });
+    const res = await countSSOTracesByProduct(request, newConnection.product);
 
     expect(res.count).toBeGreaterThan(0);
   });
@@ -73,10 +73,10 @@ test.describe('GET /api/v1/sso-traces', () => {
       true
     );
 
-    const list = await getSSOTracesByProduct(request, { product: newConnection.product });
+    const list = await getSSOTracesByProduct(request, newConnection.product);
     expect(list.data.length).toBe(1);
 
-    const trace = await getSSOTraceById(request, { id: list.data[0].traceId });
+    const trace = await getSSOTraceById(request, list.data[0].traceId);
     expect(trace.data).toMatchObject(list.data[0]);
   });
 });
@@ -98,12 +98,12 @@ test.describe('DELETE /api/v1/sso-traces/product', () => {
       true
     );
 
-    let res = await countSSOTracesByProduct(request, { product: newConnection.product });
+    let res = await countSSOTracesByProduct(request, newConnection.product);
     expect(res.count).toBeGreaterThan(0);
 
-    await deleteSSOTraces(request, { product: newConnection.product });
+    await deleteSSOTraces(request, newConnection.product);
 
-    res = await countSSOTracesByProduct(request, { product: newConnection.product });
+    res = await countSSOTracesByProduct(request, newConnection.product);
     expect(res.count).toBe(0);
   });
 });

@@ -102,7 +102,7 @@ export const deleteConnection = async (
 };
 
 // get a sso trace by id
-export const getSSOTraceById = async (request: APIRequestContext, { id }: { id: string }) => {
+export const getSSOTraceById = async (request: APIRequestContext, id: string) => {
   const response = await request.get('/api/v1/sso-traces', {
     params: {
       id,
@@ -116,7 +116,7 @@ export const getSSOTraceById = async (request: APIRequestContext, { id }: { id: 
 };
 
 // get sso traces by product
-export const getSSOTracesByProduct = async (request: APIRequestContext, { product }: { product: string }) => {
+export const getSSOTracesByProduct = async (request: APIRequestContext, product: string) => {
   const response = await request.get('/api/v1/sso-traces/product', {
     params: {
       product,
@@ -130,7 +130,7 @@ export const getSSOTracesByProduct = async (request: APIRequestContext, { produc
 };
 
 // Delete sso traces by product
-export const deleteSSOTraces = async (request: APIRequestContext, { product }: { product: string }) => {
+export const deleteSSOTraces = async (request: APIRequestContext, product: string) => {
   const response = await request.delete('/api/v1/sso-traces/product', {
     params: {
       product,
@@ -142,10 +142,7 @@ export const deleteSSOTraces = async (request: APIRequestContext, { product }: {
 };
 
 // Count sso traces by product
-export const countSSOTracesByProduct = async (
-  request: APIRequestContext,
-  { product }: { product: string }
-) => {
+export const countSSOTracesByProduct = async (request: APIRequestContext, product: string) => {
   const response = await request.get('/api/v1/sso-traces/product/count', {
     params: {
       product,
