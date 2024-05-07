@@ -5,7 +5,13 @@ import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import { generators } from 'openid-client';
 
-import type { JacksonOption, Storable, SAMLSSORecord, OIDCSSORecord, SAMLFederationApp } from '../typings';
+import type {
+  JacksonOption,
+  Storable,
+  SAMLSSORecord,
+  OIDCSSORecord,
+  IdentityFederationApp,
+} from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
@@ -167,7 +173,7 @@ export class SSOHandler {
   }: {
     connection: SAMLSSORecord;
     requestParams: Record<string, any>;
-    mappings: SAMLFederationApp['mappings'];
+    mappings: IdentityFederationApp['mappings'];
   }) {
     // We have a connection now, so we can create the SAML request
     const certificate = await getDefaultCertificate();
@@ -240,7 +246,7 @@ export class SSOHandler {
   }: {
     connection: OIDCSSORecord;
     requestParams: Record<string, any>;
-    mappings: SAMLFederationApp['mappings'];
+    mappings: IdentityFederationApp['mappings'];
   }) {
     if (!this.opts.oidcPath) {
       throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
@@ -347,7 +353,7 @@ export class SSOHandler {
     requested: any;
     oidcCodeVerifier?: string;
     oidcNonce?: string;
-    mappings: SAMLFederationApp['mappings'];
+    mappings: IdentityFederationApp['mappings'];
   }) => {
     const sessionId = crypto.randomBytes(16).toString('hex');
 

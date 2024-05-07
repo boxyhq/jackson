@@ -1,5 +1,6 @@
 import jackson from './jackson';
 import { IndexNames } from 'npm/src/controller/utils';
+import { jacksonOptions } from '@lib/env';
 
 type Module = 'sso' | 'dsync' | 'samlFederation';
 
@@ -8,7 +9,7 @@ export const validateDevelopmentModeLimits = async (
   type: Module,
   message: string = 'Maximum number of connections reached'
 ) => {
-  if (productId) {
+  if (productId && jacksonOptions.boxyhqHosted) {
     const { productController, connectionAPIController, directorySyncController, samlFederatedController } =
       await jackson();
 

@@ -203,7 +203,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     const params = new URLSearchParams(paramsToRelay);
     const destination =
       samlFedAppId && fedType !== 'oidc'
-        ? `/api/federated-saml/sso?${params}`
+        ? `/api/identity-federation/sso?${params}`
         : `/api/oauth/authorize?${params}`;
 
     return {

@@ -101,6 +101,10 @@ module.exports = {
         source: '/api/v1/saml-traces/:path*',
         destination: '/api/v1/sso-traces/:path*',
       },
+      {
+        source: '/api/v1/federated-saml/:path*',
+        destination: '/api/v1/identity-federation/:path*',
+      },
     ];
   },
   images: {

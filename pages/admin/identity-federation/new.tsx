@@ -1,18 +1,18 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import jackson from '@lib/jackson';
 
-export { default } from '@ee/identity-federation/pages/metadata';
+import jackson from '@lib/jackson';
+import { jacksonOptions } from '@lib/env';
+
+export { default } from '@ee/identity-federation/pages/new';
 
 export async function getServerSideProps({ locale }) {
-  const { samlFederatedController, checkLicense } = await jackson();
-
-  const metadata = await samlFederatedController.app.getMetadata();
+  const { checkLicense } = await jackson();
 
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
-      metadata,
       hasValidLicense: await checkLicense(),
+      samlAudience: jacksonOptions.samlAudience || 'https://saml.boxyhq.com',
     },
   };
 }

@@ -21,7 +21,7 @@ import type {
   SSOTracerInstance,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
-  SAMLFederationApp,
+  IdentityFederationApp,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -45,7 +45,7 @@ import { getDefaultCertificate } from '../saml/x509';
 import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
-import { App } from '../ee/federated-saml/app';
+import { App } from '../ee/identity-federation/app';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -96,7 +96,7 @@ export class OAuthController implements IOAuthController {
     let requestedOIDCFlow: boolean | undefined;
     let isOIDCFederated: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
-    let fedApp: SAMLFederationApp | undefined;
+    let fedApp: IdentityFederationApp | undefined;
 
     try {
       const tenant = 'tenant' in body ? body.tenant : undefined;
@@ -751,9 +751,9 @@ export class OAuthController implements IOAuthController {
           isSAMLFederated,
           isOIDCFederated,
           isIdPFlow,
-          acsUrl: session.requested.acsUrl,
-          entityId: session.requested.entityId,
-          requestedOIDCFlow: !!session.requested.oidc,
+          acsUrl: session?.requested?.acsUrl,
+          entityId: session?.requested?.entityId,
+          requestedOIDCFlow: !!session?.requested?.oidc,
           relayState: RelayState,
           issuer,
           profile,
@@ -769,7 +769,7 @@ export class OAuthController implements IOAuthController {
           error: 'access_denied',
           error_description: traceId ? `${traceId}: ${error_description}` : error_description,
           redirect_uri,
-          state: session.requested?.state,
+          state: session?.requested?.state,
         }),
       };
     }

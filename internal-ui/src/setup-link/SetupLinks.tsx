@@ -10,7 +10,7 @@ import { addQueryParamsToPath, copyToClipboard, fetcher } from '../utils';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate, useRouter } from '../hooks';
-import type { SAMLFederationApp, SetupLink, SetupLinkService } from '../types';
+import type { IdentityFederationApp, SetupLink, SetupLinkService } from '../types';
 import {
   Loading,
   Table,
@@ -24,7 +24,7 @@ import {
 } from '../shared';
 import { SetupLinkInfoModal } from './SetupLinkInfoModal';
 
-type ExcludeFields = keyof Pick<SAMLFederationApp, 'product'>;
+type ExcludeFields = keyof Pick<IdentityFederationApp, 'product'>;
 
 export const SetupLinks = ({
   urls,
