@@ -76,7 +76,7 @@ test.describe('DELETE /api/v1/dsync/events', () => {
   test('should be able to delete all the events from directory', async ({ request }) => {
     const [directory] = await getDirectory(request, { tenant, product });
 
-    let response = await request.delete(`/api/v1/dsync/events`, {
+    const response = await request.delete(`/api/v1/dsync/events`, {
       params: {
         directoryId: directory.id,
       },

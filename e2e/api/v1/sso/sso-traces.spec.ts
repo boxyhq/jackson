@@ -13,6 +13,10 @@ import { oauthAuthorize } from '../../helpers/oauth';
 
 test.use(options);
 
+test.beforeEach(async ({ request }) => {
+  await createConnection(request, newConnection);
+});
+
 test.afterEach(async ({ request }) => {
   const { tenant, product } = newConnection;
 
@@ -21,17 +25,16 @@ test.afterEach(async ({ request }) => {
   await deleteSSOTraces(request, { product });
 });
 
-test.describe('POST /api/v1/sso', () => {
+test.describe('GET /api/v1/sso-traces/product', () => {
   test('should be able to get empty list of traces', async ({ request }) => {
-    await createConnection(request, newConnection);
-
     const list = await getSSOTracesByProduct(request, { product: newConnection.product });
 
     expect(list.data.length).toBe(0);
   });
+});
 
+test.describe('GET /api/v1/sso-traces/product/count', () => {
   test('should be able to get non empty list of traces', async ({ request }) => {
-    await createConnection(request, newConnection);
     await oauthAuthorize(
       request,
       {
@@ -51,9 +54,10 @@ test.describe('POST /api/v1/sso', () => {
 
     expect(res.count).toBeGreaterThan(0);
   });
+});
 
+test.describe('GET /api/v1/sso-traces', () => {
   test('should be able to get sso trace by Id', async ({ request }) => {
-    await createConnection(request, newConnection);
     await oauthAuthorize(
       request,
       {
@@ -75,9 +79,10 @@ test.describe('POST /api/v1/sso', () => {
     const trace = await getSSOTraceById(request, { id: list.data[0].traceId });
     expect(trace.data).toMatchObject(list.data[0]);
   });
+});
 
+test.describe('DELETE /api/v1/sso-traces/product', () => {
   test('should be able to delete sso trace by product', async ({ request }) => {
-    await createConnection(request, newConnection);
     await oauthAuthorize(
       request,
       {
