@@ -1,24 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { parsePaginateApiParams } from '@lib/utils';
+import { defaultHandler } from '@lib/api';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'DELETE':
-        await handleDELETE(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET, DELETE');
-        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    DELETE: handleDELETE,
+  });
 }
 
 // Get webhook events

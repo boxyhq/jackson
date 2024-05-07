@@ -1,32 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import { defaultHandler } from '@lib/api';
 
 const service: SetupLinkService = 'sso';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'POST':
-        await handlePOST(req, res);
-        break;
-      case 'DELETE':
-        await handleDELETE(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET, POST, DELETE');
-        res.status(405).json({
-          error: { message: `Method ${req.method} Not Allowed` },
-        });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+    DELETE: handleDELETE,
+  });
 }
 
 // Get the setup link by ID or (tenant + product + service) combination
