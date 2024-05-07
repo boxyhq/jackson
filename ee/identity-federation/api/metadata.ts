@@ -3,19 +3,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import stream from 'stream';
 import { promisify } from 'util';
+import { defaultHandler } from '@lib/api';
 
 const pipeline = promisify(stream.pipeline);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    default:
-      res.setHeader('Allow', 'GET');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+  });
 }
 
 // Display the metadata for the SAML federation

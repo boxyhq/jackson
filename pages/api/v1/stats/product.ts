@@ -1,23 +1,12 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IndexNames } from 'npm/src/controller/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'POST':
-        return await handlePOST(req, res);
-      default:
-        res.setHeader('Allow', 'POST');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    POST: handlePOST,
+  });
 }
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
