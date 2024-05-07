@@ -1,12 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { SAMLFederationApp } from '@boxyhq/saml-jackson';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 const expectedApp = {
   name: 'Test App',
