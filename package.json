@@ -97,7 +97,7 @@
     "swr": "2.2.5"
   },
   "devDependencies": {
-    "@playwright/test": "1.43.1",
+    "@playwright/test": "1.44.0",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.7",
     "@types/node": "20.12.7",
