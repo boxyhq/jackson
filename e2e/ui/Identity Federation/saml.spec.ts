@@ -6,6 +6,9 @@ type MyFixtures = {
   portal: Portal;
 };
 
+const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
+const MOCKSAML_METADATA_URL = `${MOCKSAML_ORIGIN}/api/saml/metadata`;
+
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
@@ -60,7 +63,7 @@ test('Create SAML Federated app', async ({ ssoPage, portal, page }) => {
   await page.getByLabel('Product').fill('_jackson_admin_portal');
   await page.locator('input[name="item"]').fill('http://localhost:3366');
   await page.getByLabel('Default redirect URL').fill('http://localhost:3366/login/saml');
-  await page.getByPlaceholder('Paste the Metadata URL here').fill('https://mocksaml.com/api/saml/metadata');
+  await page.getByPlaceholder('Paste the Metadata URL here').fill(MOCKSAML_METADATA_URL);
   await page.getByRole('button', { name: 'Save' }).click();
   await page.getByTestId('create-connection').click();
   await page.getByLabel('OIDC').check();
