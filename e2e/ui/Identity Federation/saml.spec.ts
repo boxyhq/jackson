@@ -24,7 +24,7 @@ const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test.only('Create SAML Federated app', async ({ ssoPage, portal, page }) => {
+test('Create SAML Federated app', async ({ ssoPage, portal, page }) => {
   await page.goto('/admin/settings');
   await page.getByRole('link', { name: 'Apps' }).click();
   await page.waitForURL(/.*admin\/identity-federation$/);
