@@ -57,8 +57,7 @@ test('Create OIDC Federated app', async ({ ssoPage, portal, page }) => {
     .inputValue();
   await page.getByRole('link', { name: 'Back' }).click();
   await page.waitForURL(/.*admin\/identity-federation$/);
-  // TODO: investigate why below assertion fails
-  // await expect(page.getByRole('cell', { name: 'SF-1' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'OF-1' })).toBeVisible();
 
   // Add SAML connection for Admin portal
   await page.getByRole('link', { name: 'Single Sign-On' }).click();
