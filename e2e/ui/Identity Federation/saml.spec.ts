@@ -13,6 +13,10 @@ const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
     await use(ssoPage);
+    // Delete SSO Connections mapped to SAML federation
+    await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
+    await ssoPage.deleteSSOConnection('SF-SAML-1');
+    await ssoPage.deleteSSOConnection('SF-OIDC-1');
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
