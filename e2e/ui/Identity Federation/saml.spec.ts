@@ -112,3 +112,34 @@ test('SAML Federated app + 2 SAML providers', async ({ ssoPage, portal, baseURL 
   await ssoPage.signInWithMockSAML();
   await portal.isLoggedIn();
 });
+
+test('SAML Federated app + 2 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+  // Add SSO connection for tenants
+  await ssoPage.addSSOConnection({
+    name: 'SF-OIDC',
+    type: 'oidc',
+    baseURL: baseURL!,
+    tenant: 'acme.com',
+    product: '_jackson_admin_portal',
+  });
+  await ssoPage.addSSOConnection({
+    name: 'SF-OIDC',
+    type: 'oidc',
+    baseURL: baseURL!,
+    tenant: 'acme.com',
+    product: '_jackson_admin_portal',
+  });
+
+  // Login using MockLab-1
+  await ssoPage.logout();
+  await ssoPage.signInWithSSO();
+  await ssoPage.selectIdP('SF-OIDC-1');
+  await ssoPage.signInWithMockLab();
+  await portal.isLoggedIn();
+  // Login using MockLab-2
+  await ssoPage.logout();
+  await ssoPage.signInWithSSO();
+  await ssoPage.selectIdP('SF-OIDC-2');
+  await ssoPage.signInWithMockLab();
+  await portal.isLoggedIn();
+});
