@@ -52,7 +52,7 @@ const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test.only('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
