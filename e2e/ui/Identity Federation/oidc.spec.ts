@@ -31,7 +31,8 @@ const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test('Create OIDC Federated app', async ({ ssoPage, portal, page }) => {
+test('OIDC Federated app + 1 SAML & 1 OIDC connections', async ({ ssoPage, portal, page }) => {
+  // Create OIDC Federated connection
   await page.goto('/admin/settings');
   await page.getByRole('link', { name: 'Apps' }).click();
   await page.waitForURL(/.*admin\/identity-federation$/);
@@ -59,7 +60,7 @@ test('Create OIDC Federated app', async ({ ssoPage, portal, page }) => {
   await page.waitForURL(/.*admin\/identity-federation$/);
   // await expect(page.getByRole('cell', { name: 'OF-1' })).toBeVisible();
 
-  // Add SAML connection for Admin portal
+  // Add OIDC Connection via OIDC Fed for Admin portal
   await page.getByRole('link', { name: 'Single Sign-On' }).click();
   await page.getByTestId('create-connection').click();
   await page.getByLabel('OIDC').check();
