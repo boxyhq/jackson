@@ -45,14 +45,10 @@ export const IdentityFederationApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error, mutate } = useSWR<{
+  const { data, isLoading, error } = useSWR<{
     data: IdentityFederationApp[];
     pageToken?: string;
   }>(getAppsUrl, fetcher);
-
-  useEffect(() => {
-    mutate();
-  }, [mutate]);
 
   const nextPageToken = data?.pageToken;
 
