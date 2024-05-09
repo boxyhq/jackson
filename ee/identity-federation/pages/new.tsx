@@ -20,7 +20,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
       <NewFederatedSAMLApp
         urls={{ createApp: '/api/admin/identity-federation' }}
         onSuccess={(data) => {
-          successToast(t('saml_federation_new_success'));
+          successToast(t('identity_federation_new_success'));
           router.replace(`/admin/identity-federation/${data.id}/edit`);
         }}
         onError={(error) => {

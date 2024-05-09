@@ -26,10 +26,10 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
           deleteApp: `/api/admin/identity-federation/${id}`,
         }}
         onUpdate={() => {
-          successToast(t('saml_federation_update_success'));
+          successToast(t('identity_federation_update_success'));
         }}
         onDelete={() => {
-          successToast(t('saml_federation_delete_success'));
+          successToast(t('identity_federation_delete_success'));
           router.push('/admin/identity-federation');
         }}
         onError={(error) => {
