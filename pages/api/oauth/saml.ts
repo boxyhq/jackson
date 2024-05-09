@@ -28,16 +28,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (redirect_url) {
       res.redirect(302, redirect_url);
+      return;
     }
 
     if (app_select_form) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(app_select_form);
+      return;
     }
 
     if (response_form) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(response_form);
+      return;
     }
   } catch (error: any) {
     const { message, statusCode = 500 } = error;

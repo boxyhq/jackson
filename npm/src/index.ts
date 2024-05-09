@@ -41,7 +41,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
-  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // for backwards compatibility
 
   newOpts.idpEnabled = newOpts.idpEnabled === true;
   defaultDb(newOpts);
@@ -136,7 +135,7 @@ export const controllers = async (
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // write pre-loaded connections if present
-  const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
+  const preLoadedConnection = opts.preLoadedConnection;
   if (preLoadedConnection && preLoadedConnection.length > 0) {
     const connections = await loadConnection(preLoadedConnection);
 
