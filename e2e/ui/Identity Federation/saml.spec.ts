@@ -31,7 +31,7 @@ const test = baseTest.extend<MyFixtures>({
     await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
     await page.getByRole('link', { name: 'Back' }).click();
     await page.waitForURL(/.*admin\/identity-federation$/);
-    // await expect(page.getByRole('cell', { name: 'SF-1' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'SF-1' })).toBeVisible();
     // Add SAML connection via SAML Fed for Admin portal
     await page.getByRole('link', { name: 'Single Sign-On' }).click();
     await page.getByTestId('create-connection').click();
@@ -52,7 +52,7 @@ const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test.only('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',

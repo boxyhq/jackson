@@ -1,5 +1,3 @@
-import useSWR from 'swr';
-import { fetcher } from '../utils';
 import {
   Loading,
   Table,
@@ -17,7 +15,7 @@ import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { usePaginate } from '../hooks';
 import { useRouter } from '../hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type ExcludeFields = keyof Pick<IdentityFederationApp, 'product'>;
 
@@ -45,10 +43,33 @@ export const IdentityFederationApps = ({
     getAppsUrl += `&pageToken=${pageTokenMap[paginate.offset - pageLimit]}`;
   }
 
-  const { data, isLoading, error } = useSWR<{
-    data: IdentityFederationApp[];
-    pageToken?: string;
-  }>(getAppsUrl, fetcher);
+  const [data, setData] = useState<{ data: IdentityFederationApp[]; pageToken?: string }>({ data: [] });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<any>(null);
+  useEffect(() => {
+    let pageToken, resContent;
+    async function fetchAppList() {
+      setIsLoading(true);
+      const res = await fetch(getAppsUrl);
+      setIsLoading(false);
+      try {
+        resContent = await res.json();
+      } catch (e) {
+        resContent = await res.text();
+      }
+      if (res.ok) {
+        pageToken = res.headers.get('jackson-pagetoken');
+        if (pageToken !== null) {
+          setData({ ...resContent, pageToken });
+        } else {
+          setData(resContent);
+        }
+      } else {
+        setError(resContent.error);
+      }
+    }
+    fetchAppList();
+  }, [getAppsUrl]);
 
   const nextPageToken = data?.pageToken;
 
