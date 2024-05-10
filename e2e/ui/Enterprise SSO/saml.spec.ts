@@ -40,7 +40,7 @@ test('OAuth2 wrapper + 2 SAML providers', async ({ ssoPage, portal, page, baseUR
   // check if the first added connection appears in the connection list
   await expect(page.getByText(`${ssoName}-1`)).toBeVisible();
   // Add second SAML connection
-  await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL! });
+  await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL!, useRawMetadata: true });
   // check if the second added connection appears in the connection list
   await expect(page.getByText(`${ssoName}-2`)).toBeVisible();
   // Logout of magic link login
