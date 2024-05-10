@@ -48,6 +48,17 @@ test('OAuth2 wrapper + 2 SAML providers', async ({ ssoPage, portal, page, baseUR
   // Login using MockSAML
   await ssoPage.signInWithSSO();
   // Select IdP from selection screen
+  await ssoPage.selectIdP(`${ssoName}-1`);
+  await ssoPage.signInWithMockSAML();
+  // Wait for browser to redirect back to admin portal
+  await page.waitForURL((url) => url.origin === baseURL);
+  // Assert logged in state
+  await portal.isLoggedIn();
+  // Logout of magic link login
+  await ssoPage.logout();
+  // Login using MockSAML
+  await ssoPage.signInWithSSO();
+  // Select IdP from selection screen
   await ssoPage.selectIdP(`${ssoName}-2`);
   await ssoPage.signInWithMockSAML();
   // Wait for browser to redirect back to admin portal

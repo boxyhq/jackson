@@ -63,10 +63,14 @@ export class SSOPage {
   async addSSOConnection({
     name,
     type = 'saml',
+    tenant,
+    product,
     baseURL,
   }: {
     name: string;
     type: 'saml' | 'oidc';
+    tenant?: string;
+    product?: string;
     baseURL: string;
   }) {
     const connectionIndex = this.connections.length + 1;
@@ -80,9 +84,9 @@ export class SSOPage {
     // Fill the name for the connection
     await this.nameInput.fill(ssoName);
     // Fill the tenant for the connection
-    await this.tenantInput.fill(ADMIN_PORTAL_TENANT);
+    await this.tenantInput.fill(tenant || ADMIN_PORTAL_TENANT);
     // Fill the product for the connection
-    await this.productInput.fill(ADMIN_PORTAL_PRODUCT);
+    await this.productInput.fill(product || ADMIN_PORTAL_PRODUCT);
     // Fill the Allowed redirect URLs for the connection
 
     await this.redirectURLSInput.fill(baseURL!);

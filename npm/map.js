@@ -26,8 +26,8 @@ const map = {
     'src/directory-sync/request.ts',
   ],
   'test/dsync/events.test.ts': ['src/directory-sync/events.ts'],
-  'test/federated-saml/app.test.ts': ['src/ee/federated-saml/app.ts'],
-  'test/federated-saml/sso.test.ts': ['src/ee/federated-saml/sso.ts'],
+  'test/identity-federation/app.test.ts': ['src/ee/identity-federation/app.ts'],
+  'test/identity-federation/sso.test.ts': ['src/ee/identity-federation/sso.ts'],
   'test/event/index.test.ts': ['src/event/*'],
   'test/dsync/google_oauth.test.ts': [
     'src/directory-sync/non-scim/google/oauth.ts',

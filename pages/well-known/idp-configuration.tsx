@@ -1,7 +1,7 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
 
-export { default } from 'ee/federated-saml/pages/metadata';
+export { default } from '@ee/identity-federation/pages/metadata';
 
 export async function getServerSideProps({ locale }) {
   const { samlFederatedController, checkLicense } = await jackson();
