@@ -10,8 +10,12 @@ export const validateDevelopmentModeLimits = async (
   message: string = 'Maximum number of connections reached'
 ) => {
   if (productId && jacksonOptions.boxyhqHosted) {
-    const { productController, connectionAPIController, directorySyncController, samlFederatedController } =
-      await jackson();
+    const {
+      productController,
+      connectionAPIController,
+      directorySyncController,
+      identityFederationController,
+    } = await jackson();
 
     const getController = async (type: Module) => {
       switch (type) {
@@ -20,7 +24,7 @@ export const validateDevelopmentModeLimits = async (
         case 'dsync':
           return directorySyncController.directories;
         case 'samlFederation':
-          return samlFederatedController.app;
+          return identityFederationController.app;
         default:
           return {
             getCount: () => null,

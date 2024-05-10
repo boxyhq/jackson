@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { NewFederatedSAMLApp, LinkBack } from '@boxyhq/internal-ui';
+import { NewIdentityFederationApp, LinkBack } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
 
@@ -17,7 +17,7 @@ const NewApp = ({ hasValidLicense, samlAudience }: { hasValidLicense: boolean; s
   return (
     <div className='space-y-4'>
       <LinkBack href='/admin/identity-federation' />
-      <NewFederatedSAMLApp
+      <NewIdentityFederationApp
         urls={{ createApp: '/api/admin/identity-federation' }}
         onSuccess={(data) => {
           successToast(t('identity_federation_new_success'));

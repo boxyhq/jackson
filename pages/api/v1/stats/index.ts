@@ -9,11 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController, samlFederatedController } = await jackson();
+  const { connectionAPIController, directorySyncController, identityFederationController } = await jackson();
 
   const sso_connections_count = await connectionAPIController.getCount();
   const dsync_connections_count = await directorySyncController.directories.getCount();
-  const identity_federation_count = await samlFederatedController.app.getCount();
+  const identity_federation_count = await identityFederationController.app.getCount();
 
   return res.json({
     data: {

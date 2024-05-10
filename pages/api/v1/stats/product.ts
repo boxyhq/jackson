@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController, samlFederatedController } = await jackson();
+  const { connectionAPIController, directorySyncController, identityFederationController } = await jackson();
 
   // Products must be an array of strings
   const products = req.body.products as string[];
@@ -45,7 +45,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         if (!type || type === 'samlFederation') {
-          const count = await samlFederatedController.app.getCount({
+          const count = await identityFederationController.app.getCount({
             name: IndexNames.Product,
             value: product,
           });

@@ -177,7 +177,7 @@ const AppSelector = ({
 };
 
 export const getServerSideProps = async ({ query, locale, req }) => {
-  const { connectionAPIController, samlFederatedController, checkLicense, productController } =
+  const { connectionAPIController, identityFederationController, checkLicense, productController } =
     await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
@@ -215,7 +215,9 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   }
 
   // SAML federated app
-  const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
+  const samlFederationApp = samlFedAppId
+    ? await identityFederationController.app.get({ id: samlFedAppId })
+    : null;
 
   if (samlFedAppId && !samlFederationApp) {
     return {

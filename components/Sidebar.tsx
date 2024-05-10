@@ -55,7 +55,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         },
         {
           href: '/admin/sso-traces',
-          text: t('bui-tracer-title'),
+          text: t('bui-traces-title'),
           active: asPath.includes('/admin/sso-traces'),
         },
       ],
