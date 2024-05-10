@@ -20,7 +20,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await validateDevelopmentModeLimits(
     req.body.product,
-    'samlFederation',
+    'identityFederation',
     'Maximum number of federation apps reached'
   );
 

@@ -14,7 +14,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Products must be an array of strings
   const products = req.body.products as string[];
-  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'samlFederation') : undefined;
+  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'identityFederation') : undefined;
 
   // Validate products
   if (!products) {
@@ -44,7 +44,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
           dsync_connections_count += count || 0;
         }
 
-        if (!type || type === 'samlFederation') {
+        if (!type || type === 'identityFederation') {
           const count = await identityFederationController.app.getCount({
             name: IndexNames.Product,
             value: product,

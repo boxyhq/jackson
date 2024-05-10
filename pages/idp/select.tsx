@@ -214,12 +214,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  // SAML federated app
-  const samlFederationApp = samlFedAppId
+  const identityFederationApp = samlFedAppId
     ? await identityFederationController.app.get({ id: samlFedAppId })
     : null;
 
-  if (samlFedAppId && !samlFederationApp) {
+  if (samlFedAppId && !identityFederationApp) {
     return {
       notFound: true,
     };
@@ -228,9 +227,9 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   // Otherwise, show the list of IdPs
   let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
 
-  if (samlFederationApp) {
-    const tenants = samlFederationApp?.tenants || [samlFederationApp.tenant];
-    const { product } = samlFederationApp;
+  if (identityFederationApp) {
+    const tenants = identityFederationApp?.tenants || [identityFederationApp.tenant];
+    const { product } = identityFederationApp;
 
     connections = await connectionAPIController.getConnections({ tenant: tenants, product, sort: true });
   } else if (tenant && product) {
@@ -243,12 +242,12 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   let branding = boxyhqHosted && product ? await getProductBranding(product) : await getPortalBranding();
 
   // For SAML federated requests, use the branding from the SAML federated app
-  if (samlFederationApp && (await checkLicense())) {
+  if (identityFederationApp && (await checkLicense())) {
     branding = {
-      logoUrl: samlFederationApp?.logoUrl || branding.logoUrl,
-      primaryColor: samlFederationApp?.primaryColor || branding.primaryColor,
-      faviconUrl: samlFederationApp?.faviconUrl || branding.faviconUrl,
-      companyName: samlFederationApp?.name || branding.companyName,
+      logoUrl: identityFederationApp?.logoUrl || branding.logoUrl,
+      primaryColor: identityFederationApp?.primaryColor || branding.primaryColor,
+      faviconUrl: identityFederationApp?.faviconUrl || branding.faviconUrl,
+      companyName: identityFederationApp?.name || branding.companyName,
     };
   }
 

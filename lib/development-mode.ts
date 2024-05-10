@@ -2,7 +2,7 @@ import jackson from './jackson';
 import { IndexNames } from 'npm/src/controller/utils';
 import { jacksonOptions } from '@lib/env';
 
-type Module = 'sso' | 'dsync' | 'samlFederation';
+type Module = 'sso' | 'dsync' | 'identityFederation';
 
 export const validateDevelopmentModeLimits = async (
   productId: string,
@@ -23,7 +23,7 @@ export const validateDevelopmentModeLimits = async (
           return connectionAPIController;
         case 'dsync':
           return directorySyncController.directories;
-        case 'samlFederation':
+        case 'identityFederation':
           return identityFederationController.app;
         default:
           return {
