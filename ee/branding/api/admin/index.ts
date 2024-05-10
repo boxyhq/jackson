@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -14,6 +15,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { brandingController } = await jackson();
 
   const { logoUrl, faviconUrl, companyName, primaryColor } = req.body;
+
+  retraced.reportAdminPortalEvent({
+    action: 'portal.branding.update',
+    crud: 'u',
+    req,
+  });
 
   res.json({
     data: await brandingController.update({ logoUrl, faviconUrl, companyName, primaryColor }),

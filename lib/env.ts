@@ -23,6 +23,8 @@ const retraced = {
   hostUrl: process.env.RETRACED_HOST_URL,
   externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL,
   adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
+  apiKey: process.env.RETRACED_API_KEY,
+  projectId: process.env.RETRACED_PROJECT_ID,
 };
 
 // Terminus
@@ -129,3 +131,5 @@ export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+
+export const auditLogEnabledGroup = process.env.AUDIT_LOG_TEAMS ? process.env.AUDIT_LOG_TEAMS.split(',') : [];

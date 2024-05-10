@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
+import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { parsePaginateApiParams } from '@lib/utils';
@@ -18,6 +20,17 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const setupLink = await setupLinkController.create(req.body);
 
+  const { service } = req.body as { service: SetupLinkService };
+
+  retraced.reportAdminPortalEvent({
+    action: `${service}.setuplink.create`,
+    crud: 'c',
+    req,
+    target: {
+      id: setupLink.setupID,
+    },
+  });
+
   res.status(201).json({ data: setupLink });
 };
 
@@ -26,7 +39,17 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
+  const setupLink = await setupLinkController.get(id);
   await setupLinkController.remove({ id });
+
+  retraced.reportAdminPortalEvent({
+    action: `${setupLink.service}.setuplink.delete`,
+    crud: 'd',
+    req,
+    target: {
+      id,
+    },
+  });
 
   res.json({ data: {} });
 };

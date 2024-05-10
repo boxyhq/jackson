@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 
@@ -18,6 +19,17 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { directoryId } = req.query as { directoryId: string };
 
   const { data, error } = await directorySyncController.directories.update(directoryId, req.body);
+
+  if (data) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: directoryId,
+      },
+    });
+  }
 
   if (error) {
     throw new ApiError(error.message, error.code);
@@ -52,6 +64,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   if (error) {
     throw new ApiError(error.message, error.code);
   }
+
+  retraced.reportAdminPortalEvent({
+    action: 'dsync.connection.delete',
+    crud: 'd',
+    req,
+    target: {
+      id: directoryId,
+    },
+  });
 
   res.json({ data: null });
 };

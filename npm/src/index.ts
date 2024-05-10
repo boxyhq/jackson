@@ -19,6 +19,7 @@ import { BrandingController } from './ee/branding';
 import SSOTracer from './sso-tracer';
 import EventController from './event';
 import { ProductController } from './ee/product';
+import { SecurityLogsConfigController } from './ee/security-logs';
 import { OryController } from './ee/ory/ory';
 
 const tracerTTL = 7 * 24 * 60 * 60;
@@ -72,6 +73,7 @@ export const controllers = async (
   spConfig: SPSSOConfig;
   samlFederatedController: ISAMLFederationController;
   brandingController: IBrandingController;
+  securityLogsConfigController: ISecurityLogsConfigController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
   close: () => Promise<void>;
@@ -88,6 +90,7 @@ export const controllers = async (
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
+  const securityLogsConfigStore = db.store('security:logs:config');
   const productStore = db.store('product:config');
   const tracerStore = db.store('saml:tracer', tracerTTL);
 
@@ -113,6 +116,7 @@ export const controllers = async (
   // Enterprise Features
   const samlFederatedController = await initFederatedSAML({ db, opts, ssoTracer });
   const brandingController = new BrandingController({ store: settingsStore, opts });
+  const securityLogsConfig = new SecurityLogsConfigController({ store: securityLogsConfigStore, opts });
 
   const oauthController = new OAuthController({
     connectionStore,
@@ -184,6 +188,7 @@ export const controllers = async (
       return checkLicense(opts.boxyhqLicenseKey);
     },
     productController,
+    securityLogsConfigController: securityLogsConfig,
     close: async () => {
       await db.close();
     },
@@ -194,6 +199,8 @@ export default controllers;
 
 export * from './typings';
 export * from './ee/federated-saml/types';
+export * from './ee/security-logs/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
 export type IBrandingController = InstanceType<typeof BrandingController>;
+export type ISecurityLogsConfigController = InstanceType<typeof SecurityLogsConfigController>;

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { DirectoryType } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
+import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { parsePaginateApiParams } from '@lib/utils';
@@ -30,6 +31,16 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     google_domain,
   });
 
+  if (data) {
+    retraced.reportAdminPortalEvent({
+      action: 'dsync.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: data.id,
+      },
+    });
+  }
   if (error) {
     throw new ApiError(error.message, error.code);
   }

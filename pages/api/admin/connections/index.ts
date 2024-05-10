@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
 import { adminPortalSSODefaults } from '@lib/env';
+import retraced from '@ee/retraced';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { validateDevelopmentModeLimits } from '@lib/development-mode';
@@ -65,12 +66,33 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   // Create SAML connection
   if (isSAML) {
     const connection = await connectionAPIController.createSAMLConnection(req.body);
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: connection.clientID,
+        type: 'SAML Connection',
+      },
+    });
+
     res.status(201).json({ data: connection });
   }
-
   // Create OIDC connection
   else {
     const connection = await connectionAPIController.createOIDCConnection(oidcMetadataParse(req.body));
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.create',
+      crud: 'c',
+      req,
+      target: {
+        id: connection.clientID,
+        type: 'OIDC Connection',
+      },
+    });
+
     res.status(201).json({ data: connection });
   }
 };
@@ -88,12 +110,33 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   // Update SAML connection
   if (isSAML) {
     await connectionAPIController.updateSAMLConnection(req.body);
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: req.body.clientID,
+        type: 'SAML Connection',
+      },
+    });
+
     res.status(204).end();
   }
-
   // Update OIDC connection
   else {
     await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body));
+
+    retraced.reportAdminPortalEvent({
+      action: 'sso.connection.update',
+      crud: 'u',
+      req,
+      target: {
+        id: req.body.clientID,
+        type: 'OIDC Connection',
+      },
+    });
+
     res.status(204).end();
   }
 };
@@ -108,6 +151,15 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   };
 
   await connectionAPIController.deleteConnections({ clientID, clientSecret });
+
+  retraced.reportAdminPortalEvent({
+    action: 'sso.connection.delete',
+    crud: 'd',
+    req,
+    target: {
+      id: clientID,
+    },
+  });
 
   res.json({ data: null });
 };

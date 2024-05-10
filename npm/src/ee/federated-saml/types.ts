@@ -43,3 +43,10 @@ export type AppRequestParams =
       product: string;
       type?: string;
     };
+
+export type FederatedSAMLProfile = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  requested: Record<string, string>;
+};
