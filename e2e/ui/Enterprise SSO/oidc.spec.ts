@@ -48,6 +48,17 @@ test('OAuth2 wrapper + 2 OIDC providers', async ({ ssoPage, portal, page, baseUR
   // Login using MockLab
   await ssoPage.signInWithSSO();
   // Select IdP from selection screen
+  await ssoPage.selectIdP(`${ssoName}-1`);
+  await ssoPage.signInWithMockLab();
+  // Wait for browser to redirect back to admin portal
+  await page.waitForURL((url) => url.origin === baseURL);
+  // Assert logged in state
+  await portal.isLoggedIn();
+  // Logout of magic link login
+  await ssoPage.logout();
+  // Login using MockLab
+  await ssoPage.signInWithSSO();
+  // Select IdP from selection screen
   await ssoPage.selectIdP(`${ssoName}-2`);
   await ssoPage.signInWithMockLab();
   // Wait for browser to redirect back to admin portal
