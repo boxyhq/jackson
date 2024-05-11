@@ -5,16 +5,16 @@ import { jacksonOptions } from '../utils';
 import { tenant, product, serviceProvider, appId } from './constants';
 import { getDefaultCertificate } from '../../src/saml/x509';
 
-let samlFederatedController: IIdentityFederationController;
+let identityFederationController: IIdentityFederationController;
 
 tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
-  samlFederatedController = jackson.samlFederatedController;
+  identityFederationController = jackson.identityFederationController;
 });
 
 tap.test('Federated SAML App', async () => {
-  const app = await samlFederatedController.app.create({
+  const app = await identityFederationController.app.create({
     name: 'Test App',
     tenant,
     product,
@@ -32,21 +32,21 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to get the Identity Federation app by id', async (t) => {
-    const response = await samlFederatedController.app.get({ id: app.id });
+    const response = await identityFederationController.app.get({ id: app.id });
 
     t.ok(response);
     t.match(response.id, app.id);
   });
 
   tap.test('Should be able to get the Identity Federation app by entity id', async (t) => {
-    const response = await samlFederatedController.app.getByEntityId(serviceProvider.entityId);
+    const response = await identityFederationController.app.getByEntityId(serviceProvider.entityId);
 
     t.ok(response);
     t.match(response.entityId, serviceProvider.entityId);
   });
 
   tap.test('Get the app by tenant and product', async (t) => {
-    const response = await samlFederatedController.app.get({ tenant, product });
+    const response = await identityFederationController.app.get({ tenant, product });
 
     t.ok(response);
     t.match(response.id, app.id);
@@ -55,7 +55,7 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Get the apps by product', async (t) => {
-    const apps = await samlFederatedController.app.getByProduct({ product });
+    const apps = await identityFederationController.app.getByProduct({ product });
 
     t.ok(apps);
     t.ok(apps.data.length === 1);
@@ -64,7 +64,7 @@ tap.test('Federated SAML App', async () => {
 
   tap.test('Should be able to update the Identity Federation app', async (t) => {
     // Update by id
-    const response = await samlFederatedController.app.update({
+    const response = await identityFederationController.app.update({
       id: app.id,
       name: 'Updated App Name',
       acsUrl: 'https://twilio.com/saml/acsUrl/updated',
@@ -74,14 +74,14 @@ tap.test('Federated SAML App', async () => {
     t.match(response.name, 'Updated App Name');
     t.match(response.acsUrl, 'https://twilio.com/saml/acsUrl/updated');
 
-    const updatedApp = await samlFederatedController.app.get({ id: app.id });
+    const updatedApp = await identityFederationController.app.get({ id: app.id });
 
     t.ok(updatedApp);
     t.match(updatedApp.name, 'Updated App Name');
     t.match(updatedApp.acsUrl, 'https://twilio.com/saml/acsUrl/updated');
 
     // Update by tenant and product
-    const response2 = await samlFederatedController.app.update({
+    const response2 = await identityFederationController.app.update({
       tenant,
       product,
       name: 'Updated App Name 2',
@@ -94,7 +94,7 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to update the app branding', async (t) => {
-    const response = await samlFederatedController.app.update({
+    const response = await identityFederationController.app.update({
       id: app.id,
       logoUrl: 'https://company.com/logo.png',
       faviconUrl: 'https://company.com/favicon.ico',
@@ -106,7 +106,7 @@ tap.test('Federated SAML App', async () => {
     t.match(response.faviconUrl, 'https://company.com/favicon.ico');
     t.match(response.primaryColor, '#000000');
 
-    const updatedApp = await samlFederatedController.app.get({ id: app.id });
+    const updatedApp = await identityFederationController.app.get({ id: app.id });
 
     t.ok(updatedApp);
     t.match(updatedApp.logoUrl, 'https://company.com/logo.png');
@@ -115,7 +115,7 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to remove the app branding', async (t) => {
-    const response = await samlFederatedController.app.update({
+    const response = await identityFederationController.app.update({
       id: app.id,
       logoUrl: '',
       faviconUrl: '',
@@ -127,7 +127,7 @@ tap.test('Federated SAML App', async () => {
     t.match(response.faviconUrl, null);
     t.match(response.primaryColor, null);
 
-    const updatedApp = await samlFederatedController.app.get({ id: app.id });
+    const updatedApp = await identityFederationController.app.get({ id: app.id });
 
     t.ok(updatedApp);
     t.match(updatedApp.logoUrl, null);
@@ -136,14 +136,14 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Should be able to get all Identity Federation apps', async (t) => {
-    const response = await samlFederatedController.app.getAll({});
+    const response = await identityFederationController.app.getAll({});
 
     t.ok(response);
     t.ok(response.data.length === 1);
   });
 
   tap.test('Should be able to get the metadata', async (t) => {
-    const response = await samlFederatedController.app.getMetadata();
+    const response = await identityFederationController.app.getMetadata();
 
     const certs = await getDefaultCertificate();
 
@@ -154,15 +154,15 @@ tap.test('Federated SAML App', async () => {
   });
 
   tap.test('Delete the app by id', async (t) => {
-    await samlFederatedController.app.delete({ id: app.id });
+    await identityFederationController.app.delete({ id: app.id });
 
-    const allApps = await samlFederatedController.app.getAll({});
+    const allApps = await identityFederationController.app.getAll({});
 
     t.ok(allApps.data.length === 0);
   });
 
   tap.test('Delete the app by tenant and product', async (t) => {
-    await samlFederatedController.app.create({
+    await identityFederationController.app.create({
       name: 'Test App',
       tenant,
       product,
@@ -170,9 +170,9 @@ tap.test('Federated SAML App', async () => {
       acsUrl: serviceProvider.acsUrl,
     });
 
-    await samlFederatedController.app.delete({ tenant, product });
+    await identityFederationController.app.delete({ tenant, product });
 
-    const allApps = await samlFederatedController.app.getAll({});
+    const allApps = await identityFederationController.app.getAll({});
 
     t.ok(allApps.data.length === 0);
   });

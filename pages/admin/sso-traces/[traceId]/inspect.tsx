@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { SSOTracerInfo, LinkBack } from '@boxyhq/internal-ui';
+import { SSOTraceInfo, LinkBack } from '@boxyhq/internal-ui';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const SSOTraceInspector: NextPage = () => {
@@ -11,7 +11,7 @@ const SSOTraceInspector: NextPage = () => {
   return (
     <div className='space-y-4'>
       <LinkBack href='/admin/sso-traces' />
-      <SSOTracerInfo urls={{ getTracer: `/api/admin/sso-traces/${traceId}` }} />
+      <SSOTraceInfo urls={{ getTraces: `/api/admin/sso-traces/${traceId}` }} />
     </div>
   );
 };

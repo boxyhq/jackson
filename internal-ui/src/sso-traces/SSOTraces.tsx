@@ -8,11 +8,11 @@ import type { ApiError, ApiSuccess } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { Loading, Table, EmptyState, Error, Pagination, PageHeader, pageLimit } from '../shared';
 
-export const SSOTracers = ({
+export const SSOTraces = ({
   urls,
   onView,
 }: {
-  urls: { getTracers: string };
+  urls: { getTraces: string };
   onView: (user: Trace) => void;
 }) => {
   const { router } = useRouter();
@@ -29,7 +29,7 @@ export const SSOTracers = ({
     params['pageToken'] = pageTokenMap[paginate.offset - pageLimit];
   }
 
-  const getUrl = addQueryParamsToPath(urls.getTracers, params);
+  const getUrl = addQueryParamsToPath(urls.getTraces, params);
   const { data, isLoading, error } = useSWR<ApiSuccess<Trace[]>, ApiError>(getUrl, fetcher);
 
   const nextPageToken = data?.pageToken;
@@ -57,10 +57,10 @@ export const SSOTracers = ({
   const noMoreResults = traces.length === 0 && paginate.offset > 0;
 
   const cols = [
-    t('bui-tracer-id'),
-    t('bui-tracer-description'),
-    t('bui-tracer-assertion-type'),
-    t('bui-tracer-timestamp'),
+    t('bui-traces-id'),
+    t('bui-traces-description'),
+    t('bui-traces-assertion-type'),
+    t('bui-traces-timestamp'),
   ];
 
   const body = traces.map((trace) => {
@@ -82,9 +82,9 @@ export const SSOTracers = ({
         {
           wrap: true,
           text: trace.context?.samlResponse
-            ? t('bui-tracer-response')
+            ? t('bui-traces-response')
             : trace?.context.samlRequest
-              ? t('bui-tracer-request')
+              ? t('bui-traces-request')
               : '-',
         },
         {
@@ -97,9 +97,9 @@ export const SSOTracers = ({
 
   return (
     <div className='space-y-3'>
-      <PageHeader title={t('bui-tracer-title')} />
+      <PageHeader title={t('bui-traces-title')} />
       {noTraces ? (
-        <EmptyState title={t('bui-tracer-no-traces')} />
+        <EmptyState title={t('bui-traces-no-traces')} />
       ) : (
         <>
           <Table noMoreResults={noMoreResults} cols={cols} body={body} />

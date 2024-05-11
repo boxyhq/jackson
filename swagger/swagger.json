@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.23.5",
+    "version": "1.24.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1860,6 +1860,10 @@
             "isSAMLFederated": {
               "type": "boolean",
               "description": "Indicates if SAML is federated"
+            },
+            "isOIDCFederated": {
+              "type": "boolean",
+              "description": "Indicates if OIDC is federated"
             },
             "isIdPFlow": {
               "type": "boolean",

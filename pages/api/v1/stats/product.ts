@@ -10,11 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController, samlFederatedController } = await jackson();
+  const { connectionAPIController, directorySyncController, identityFederationController } = await jackson();
 
   // Products must be an array of strings
   const products = req.body.products as string[];
-  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'samlFederation') : undefined;
+  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'identityFederation') : undefined;
 
   // Validate products
   if (!products) {
@@ -44,8 +44,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
           dsync_connections_count += count || 0;
         }
 
-        if (!type || type === 'samlFederation') {
-          const count = await samlFederatedController.app.getCount({
+        if (!type || type === 'identityFederation') {
+          const count = await identityFederationController.app.getCount({
             name: IndexNames.Product,
             value: product,
           });

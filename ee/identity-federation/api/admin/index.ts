@@ -14,26 +14,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Create new Identity Federation app
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
   await validateDevelopmentModeLimits(
     req.body.product,
-    'samlFederation',
+    'identityFederation',
     'Maximum number of federation apps reached'
   );
 
-  const app = await samlFederatedController.app.create(req.body);
+  const app = await identityFederationController.app.create(req.body);
 
   res.status(201).json({ data: app });
 };
 
 // Get Identity Federation apps
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
   const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
-  const apps = await samlFederatedController.app.getAll({
+  const apps = await identityFederationController.app.getAll({
     pageOffset,
     pageLimit,
     pageToken,

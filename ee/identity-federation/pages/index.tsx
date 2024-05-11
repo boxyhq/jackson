@@ -1,6 +1,6 @@
 import router from 'next/router';
 import LicenseRequired from '@components/LicenseRequired';
-import { FederatedSAMLApps } from '@boxyhq/internal-ui';
+import { IdentityFederationApps } from '@boxyhq/internal-ui';
 
 const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   if (!hasValidLicense) {
@@ -8,7 +8,7 @@ const AppsList = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   }
 
   return (
-    <FederatedSAMLApps
+    <IdentityFederationApps
       urls={{ getApps: '/api/admin/identity-federation' }}
       onEdit={(app) => router.push(`/admin/identity-federation/${app.id}/edit`)}
       actions={{

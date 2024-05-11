@@ -1,5 +1,5 @@
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import SSOTracer from '.';
+import SSOTraces from '.';
 
 export interface Trace {
   traceId: string;
@@ -40,4 +40,4 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
   };
 }
 
-export type SSOTracerInstance = InstanceType<typeof SSOTracer>;
+export type SSOTracesInstance = InstanceType<typeof SSOTraces>;

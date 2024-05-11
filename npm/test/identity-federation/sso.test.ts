@@ -19,7 +19,7 @@ import type {
 } from '../../src';
 
 let oauthController: IOAuthController;
-let samlFederatedController: IIdentityFederationController;
+let identityFederationController: IIdentityFederationController;
 let connectionAPIController: IConnectionAPIController;
 
 let app: IdentityFederationApp;
@@ -29,11 +29,11 @@ tap.before(async () => {
   const jackson = await (await import('../../src/index')).default(jacksonOptions);
 
   oauthController = jackson.oauthController;
-  samlFederatedController = jackson.samlFederatedController;
+  identityFederationController = jackson.identityFederationController;
   connectionAPIController = jackson.connectionAPIController;
 
   // Create app
-  app = await samlFederatedController.app.create({
+  app = await identityFederationController.app.create({
     name: 'Test App',
     tenant,
     product,
@@ -57,7 +57,7 @@ tap.teardown(async () => {
 
 tap.test('Federated SAML flow', async (t) => {
   t.teardown(async () => {
-    await samlFederatedController.app.delete({ id: app.id });
+    await identityFederationController.app.delete({ id: app.id });
     await connectionAPIController.deleteConnections({ tenant, product });
   });
 
@@ -73,7 +73,7 @@ tap.test('Federated SAML flow', async (t) => {
     let jacksonRelayState: string | null = null;
 
     t.test('Should be able to accept SAML Request from SP and generate SAML Request for IdP', async (t) => {
-      const response = await samlFederatedController.sso.getAuthorizeUrl({
+      const response = await identityFederationController.sso.getAuthorizeUrl({
         request: samlRequestFromSP,
         relayState: relayStateFromSP,
         samlBinding: 'HTTP-Redirect',

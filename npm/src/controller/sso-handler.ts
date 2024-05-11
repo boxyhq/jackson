@@ -51,7 +51,7 @@ export class SSOHandler {
     product?: string;
     entityId?: string;
     idp_hint?: string;
-    samlFedAppId?: string;
+    idFedAppId?: string;
     fedType?: string;
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
@@ -73,7 +73,7 @@ export class SSOHandler {
       idp_hint,
       entityId,
       tenants,
-      samlFedAppId = '',
+      idFedAppId = '',
       fedType = '',
     } = params;
 
@@ -131,7 +131,7 @@ export class SSOHandler {
       if (['oauth', 'saml'].includes(authFlow)) {
         const qps = {
           authFlow: 'sp-initiated',
-          samlFedAppId,
+          idFedAppId,
           fedType,
           ...originalParams,
         };
