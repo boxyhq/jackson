@@ -182,13 +182,13 @@ export const getServerSideProps = async ({ query, locale, req }) => {
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
-  const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId, fedType } = query as {
+  const { authFlow, entityId, tenant, product, idp_hint, idFedAppId, fedType } = query as {
     authFlow: 'sp-initiated' | 'idp-initiated';
     tenant?: string;
     product?: string;
     idp_hint?: string;
     entityId?: string;
-    samlFedAppId?: string;
+    idFedAppId?: string;
     fedType?: string;
   };
 
@@ -202,7 +202,7 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   if (idp_hint) {
     const params = new URLSearchParams(paramsToRelay);
     const destination =
-      samlFedAppId && fedType !== 'oidc'
+      idFedAppId && fedType !== 'oidc'
         ? `/api/identity-federation/sso?${params}`
         : `/api/oauth/authorize?${params}`;
 
@@ -214,11 +214,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  const identityFederationApp = samlFedAppId
-    ? await identityFederationController.app.get({ id: samlFedAppId })
+  const identityFederationApp = idFedAppId
+    ? await identityFederationController.app.get({ id: idFedAppId })
     : null;
 
-  if (samlFedAppId && !identityFederationApp) {
+  if (idFedAppId && !identityFederationApp) {
     return {
       notFound: true,
     };

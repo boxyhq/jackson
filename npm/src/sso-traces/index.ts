@@ -47,6 +47,9 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
  *            isSAMLFederated:
  *              type: boolean
  *              description: Indicates if SAML is federated
+ *            isOIDCFederated:
+ *              type: boolean
+ *              description: Indicates if OIDC is federated
  *            isIdPFlow:
  *              type: boolean
  *              description: Indicates if request is from IdP

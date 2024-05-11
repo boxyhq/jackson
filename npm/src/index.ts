@@ -121,7 +121,7 @@ export const controllers = async (
     tokenStore,
     ssoTraces,
     opts,
-    samlFedApp: identityFederationController.app,
+    idFedApp: identityFederationController.app,
   });
 
   const logoutController = new LogoutController({

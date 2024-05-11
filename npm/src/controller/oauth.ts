@@ -57,16 +57,16 @@ export class OAuthController implements IOAuthController {
   private ssoTraces: ssoTraces;
   private opts: JacksonOption;
   private ssoHandler: SSOHandler;
-  private samlFedApp: App;
+  private idFedApp: App;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTraces, opts, samlFedApp }) {
+  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTraces, opts, idFedApp }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
     this.ssoTraces = ssoTraces;
     this.opts = opts;
-    this.samlFedApp = samlFedApp;
+    this.idFedApp = idFedApp;
 
     this.ssoHandler = new SSOHandler({
       connection: connectionStore,
@@ -178,7 +178,7 @@ export class OAuthController implements IOAuthController {
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
             isOIDCFederated = true;
-            fedApp = await this.samlFedApp.get({
+            fedApp = await this.idFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
 
@@ -189,7 +189,7 @@ export class OAuthController implements IOAuthController {
               authFlow: 'oauth',
               originalParams: { ...body },
               tenants: fedApp.tenants,
-              samlFedAppId: fedApp.id,
+              idFedAppId: fedApp.id,
               fedType: fedApp.type,
             });
 
