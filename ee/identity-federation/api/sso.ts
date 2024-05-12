@@ -65,9 +65,9 @@ async function handleSAMLRequest(req: NextApiRequest, res: NextApiResponse, bind
     throw new Error('SAMLRequest is required to proceed.');
   }
 
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
-  const response = await samlFederatedController.sso.getAuthorizeUrl({
+  const response = await identityFederationController.sso.getAuthorizeUrl({
     request: samlRequest,
     relayState,
     idp_hint: idpHint,

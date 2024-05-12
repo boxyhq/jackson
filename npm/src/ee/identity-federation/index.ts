@@ -1,17 +1,17 @@
 import { SSO } from './sso';
 import { App } from './app';
-import type { JacksonOption, SSOTracerInstance } from '../../typings';
+import type { JacksonOption, SSOTracesInstance } from '../../typings';
 import { SSOHandler } from '../../controller/sso-handler';
 
 // This is the main entry point for the Identity Federation module
 const IdentityFederation = async ({
   db,
   opts,
-  ssoTracer,
+  ssoTraces,
 }: {
   db;
   opts: JacksonOption;
-  ssoTracer: SSOTracerInstance;
+  ssoTraces: SSOTracesInstance;
 }) => {
   const appStore = db.store('samlfed:apps');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
@@ -24,7 +24,7 @@ const IdentityFederation = async ({
   });
 
   const app = new App({ store: appStore, opts });
-  const sso = new SSO({ app, ssoHandler, ssoTracer, opts });
+  const sso = new SSO({ app, ssoHandler, ssoTraces, opts });
 
   const response = {
     app,

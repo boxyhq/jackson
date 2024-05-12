@@ -13,12 +13,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Get Identity Federation app by id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
   const { id } = req.query as { id: string };
 
-  const app = await samlFederatedController.app.get({ id });
-  const metadata = await samlFederatedController.app.getMetadata();
+  const app = await identityFederationController.app.get({ id });
+  const metadata = await identityFederationController.app.getMetadata();
 
   res.json({
     data: {
@@ -30,20 +30,20 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Update Identity Federation app
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
-  const updatedApp = await samlFederatedController.app.update(req.body);
+  const updatedApp = await identityFederationController.app.update(req.body);
 
   res.json({ data: updatedApp });
 };
 
 // Delete the Identity Federation app
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
   const { id } = req.query as { id: string };
 
-  await samlFederatedController.app.delete({ id });
+  await identityFederationController.app.delete({ id });
 
   res.json({ data: null });
 };

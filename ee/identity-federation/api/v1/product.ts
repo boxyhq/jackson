@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // Get SAML federated apps filtered by the product
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { samlFederatedController } = await jackson();
+  const { identityFederationController } = await jackson();
 
   const { product } = req.query as {
     product: string;
@@ -20,7 +20,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { pageOffset, pageLimit, pageToken } = parsePaginateApiParams(req.query);
 
-  const apps = await samlFederatedController.app.getByProduct({
+  const apps = await identityFederationController.app.getByProduct({
     product,
     pageOffset,
     pageLimit,

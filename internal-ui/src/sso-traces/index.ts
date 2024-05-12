@@ -1,2 +1,2 @@
-export { SSOTracers } from './SSOTracers';
-export { SSOTracerInfo } from './SSOTracerInfo';
+export { SSOTraces } from './SSOTraces';
+export { SSOTraceInfo } from './SSOTraceInfo';

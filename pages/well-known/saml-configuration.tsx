@@ -46,7 +46,7 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
             <div className='form-control w-full'>
               <div className='flex flex-col'>
                 <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
-                  {t('bui-tracer-response')}
+                  {t('bui-traces-response')}
                 </label>
                 <p className='text-sm'>{config.response}</p>
               </div>

@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import LicenseRequired from '@components/LicenseRequired';
-import { EditFederatedSAMLApp, LinkBack } from '@boxyhq/internal-ui';
+import { EditIdentityFederationApp, LinkBack } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
 
@@ -19,7 +19,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   return (
     <div className='space-y-4'>
       <LinkBack href='/admin/identity-federation' />
-      <EditFederatedSAMLApp
+      <EditIdentityFederationApp
         urls={{
           getApp: `/api/admin/identity-federation/${id}`,
           updateApp: `/api/admin/identity-federation/${id}`,

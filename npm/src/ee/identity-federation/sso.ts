@@ -8,7 +8,7 @@ import type {
   OIDCSSORecord,
   IdentityFederationApp,
   SAMLSSORecord,
-  SSOTracerInstance,
+  SSOTracesInstance,
 } from '../../typings';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -20,23 +20,23 @@ const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection
 export class SSO {
   private app: App;
   private ssoHandler: SSOHandler;
-  private ssoTracer: SSOTracerInstance;
+  private ssoTraces: SSOTracesInstance;
   private opts: JacksonOption;
 
   constructor({
     app,
     ssoHandler,
-    ssoTracer,
+    ssoTraces,
     opts,
   }: {
     app: App;
     ssoHandler: SSOHandler;
-    ssoTracer: SSOTracerInstance;
+    ssoTraces: SSOTracesInstance;
     opts: JacksonOption;
   }) {
     this.app = app;
     this.ssoHandler = ssoHandler;
-    this.ssoTracer = ssoTracer;
+    this.ssoTraces = ssoTraces;
     this.opts = opts;
   }
 
@@ -86,7 +86,7 @@ export class SSO {
         product: app.product,
         idp_hint,
         authFlow: 'saml',
-        samlFedAppId: app.id,
+        idFedAppId: app.id,
         originalParams: {
           RelayState: relayState,
           SAMLRequest: request,
@@ -141,7 +141,7 @@ export class SSO {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
-      this.ssoTracer.saveTrace({
+      this.ssoTraces.saveTrace({
         error: error_description,
         context: {
           tenant: app?.tenant || '',

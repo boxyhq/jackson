@@ -47,15 +47,18 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
  *            isSAMLFederated:
  *              type: boolean
  *              description: Indicates if SAML is federated
+ *            isOIDCFederated:
+ *              type: boolean
+ *              description: Indicates if OIDC is federated
  *            isIdPFlow:
  *              type: boolean
  *              description: Indicates if request is from IdP
  */
-class SSOTracer {
-  tracerStore: Storable;
+class SSOTraces {
+  tracesStore: Storable;
 
-  constructor({ tracerStore }) {
-    this.tracerStore = tracerStore;
+  constructor({ tracesStore }) {
+    this.tracesStore = tracesStore;
     // Clean up stale traces at the start
     this.cleanUpStaleTraces();
     // Set timer to run every day
@@ -94,7 +97,7 @@ class SSOTracer {
         .filter(({ filterLogic }) => filterLogic(context))
         .map(({ name, value }) => ({ name, value }));
 
-      await this.tracerStore.put(traceId, traceValue, ...indices);
+      await this.tracesStore.put(traceId, traceValue, ...indices);
       return traceId;
     } catch (err: unknown) {
       console.error(`Failed to save trace`, err);
@@ -123,7 +126,7 @@ class SSOTracer {
    *           $ref: '#/definitions/SSOTrace'
    */
   public async getByTraceId(traceId: string) {
-    return (await this.tracerStore.get(traceId)) as Trace;
+    return (await this.tracesStore.get(traceId)) as Trace;
   }
 
   public async getAllTraces(
@@ -131,7 +134,7 @@ class SSOTracer {
     pageLimit?: number,
     pageToken?: string
   ): Promise<Records<Trace>> {
-    return await this.tracerStore.getAll(pageOffset || 0, pageLimit || 0, pageToken);
+    return await this.tracesStore.getAll(pageOffset || 0, pageLimit || 0, pageToken);
   }
 
   /** Cleans up stale traces older than 1 week */
@@ -153,7 +156,7 @@ class SSOTracer {
     }
 
     for (let i = 0; i < staleTraces.length; i++) {
-      await this.tracerStore.delete(staleTraces[i].traceId);
+      await this.tracesStore.delete(staleTraces[i].traceId);
     }
   }
 
@@ -194,7 +197,7 @@ class SSOTracer {
       throw new JacksonError('Please provide a `product`.', 400);
     }
 
-    const traces = await this.tracerStore.getByIndex(
+    const traces = await this.tracesStore.getByIndex(
       {
         name: IndexNames.Product,
         value: product,
@@ -221,16 +224,16 @@ class SSOTracer {
       pageToken = res.pageToken;
       // deleting traces in batches of 50
       // deleting in the loop right away as we get the traces
-      await this.tracerStore.deleteMany((res.data || []).map((t) => t.traceId));
+      await this.tracesStore.deleteMany((res.data || []).map((t) => t.traceId));
     } while (pageToken);
   }
 
   public async countByProduct(product: string) {
-    return await this.tracerStore.getCount({
+    return await this.tracesStore.getCount({
       name: IndexNames.Product,
       value: product,
     });
   }
 }
 
-export default SSOTracer;
+export default SSOTraces;

@@ -2,7 +2,7 @@ import jackson from './jackson';
 import { IndexNames } from 'npm/src/controller/utils';
 import { jacksonOptions } from '@lib/env';
 
-type Module = 'sso' | 'dsync' | 'samlFederation';
+type Module = 'sso' | 'dsync' | 'identityFederation';
 
 export const validateDevelopmentModeLimits = async (
   productId: string,
@@ -10,8 +10,12 @@ export const validateDevelopmentModeLimits = async (
   message: string = 'Maximum number of connections reached'
 ) => {
   if (productId && jacksonOptions.boxyhqHosted) {
-    const { productController, connectionAPIController, directorySyncController, samlFederatedController } =
-      await jackson();
+    const {
+      productController,
+      connectionAPIController,
+      directorySyncController,
+      identityFederationController,
+    } = await jackson();
 
     const getController = async (type: Module) => {
       switch (type) {
@@ -19,8 +23,8 @@ export const validateDevelopmentModeLimits = async (
           return connectionAPIController;
         case 'dsync':
           return directorySyncController.directories;
-        case 'samlFederation':
-          return samlFederatedController.app;
+        case 'identityFederation':
+          return identityFederationController.app;
         default:
           return {
             getCount: () => null,
