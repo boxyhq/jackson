@@ -111,7 +111,7 @@ jobs:
         ports:
           - '8000:8000'
       mocksaml:
-        image: boxyhq/mock-saml:1.2.0
+        image: boxyhq/mock-saml:1.3.9
         ports:
           - 4000:4000
         env:

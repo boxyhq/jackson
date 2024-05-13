@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.20.6",
+    "version": "1.24.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -1354,7 +1354,7 @@
         }
       }
     },
-    "/api/v1/federated-saml": {
+    "/api/v1/identity-federation": {
       "post": {
         "summary": "Create an Identity Federation app",
         "parameters": [
@@ -1459,7 +1459,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SAMLFederationApp"
+                "$ref": "#/definitions/IdentityFederationApp"
               }
             }
           }
@@ -1500,7 +1500,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/SAMLFederationApp"
+              "$ref": "#/definitions/IdentityFederationApp"
             }
           }
         }
@@ -1593,7 +1593,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/SAMLFederationApp"
+              "$ref": "#/definitions/IdentityFederationApp"
             }
           }
         }
@@ -1633,13 +1633,13 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/SAMLFederationApp"
+              "$ref": "#/definitions/IdentityFederationApp"
             }
           }
         }
       }
     },
-    "/api/v1/federated-saml/product": {
+    "/api/v1/identity-federation/product": {
       "get": {
         "summary": "Get Identity Federation apps by product",
         "parameters": [
@@ -1677,7 +1677,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/definitions/SAMLFederationApp"
+                        "$ref": "#/definitions/IdentityFederationApp"
                       }
                     },
                     "pageToken": {
@@ -1861,6 +1861,10 @@
               "type": "boolean",
               "description": "Indicates if SAML is federated"
             },
+            "isOIDCFederated": {
+              "type": "boolean",
+              "description": "Indicates if OIDC is federated"
+            },
             "isIdPFlow": {
               "type": "boolean",
               "description": "Indicates if request is from IdP"
@@ -2034,7 +2038,7 @@
         }
       }
     },
-    "SAMLFederationApp": {
+    "IdentityFederationApp": {
       "type": "object",
       "properties": {
         "id": {

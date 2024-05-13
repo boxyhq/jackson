@@ -13,15 +13,15 @@ import { SPSSOConfig } from './controller/sp-config';
 import { SetupLinkController } from './controller/setup-link';
 import { AnalyticsController } from './controller/analytics';
 import * as x509 from './saml/x509';
-import initFederatedSAML, { type ISAMLFederationController } from './ee/federated-saml';
+import initIdentityFederation, { type IIdentityFederationController } from './ee/identity-federation';
 import checkLicense from './ee/common/checkLicense';
 import { BrandingController } from './ee/branding';
-import SSOTracer from './sso-tracer';
+import SSOTraces from './sso-traces';
 import EventController from './event';
 import { ProductController } from './ee/product';
 import { OryController } from './ee/ory/ory';
 
-const tracerTTL = 7 * 24 * 60 * 60;
+const tracesTTL = 7 * 24 * 60 * 60;
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -41,7 +41,6 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.samlAudience = newOpts.samlAudience || 'https://saml.boxyhq.com';
   // path to folder containing static IdP connections that will be preloaded. This is useful for self-hosted deployments that only have to support a single tenant (or small number of known tenants).
   newOpts.preLoadedConnection = newOpts.preLoadedConnection || '';
-  newOpts.preLoadedConfig = newOpts.preLoadedConfig || ''; // for backwards compatibility
 
   newOpts.idpEnabled = newOpts.idpEnabled === true;
   defaultDb(newOpts);
@@ -71,7 +70,7 @@ export const controllers = async (
   directorySyncController: IDirectorySyncController;
   oidcDiscoveryController: OidcDiscoveryController;
   spConfig: SPSSOConfig;
-  samlFederatedController: ISAMLFederationController;
+  identityFederationController: IIdentityFederationController;
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
@@ -90,9 +89,9 @@ export const controllers = async (
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
   const productStore = db.store('product:config');
-  const tracerStore = db.store('saml:tracer', tracerTTL);
+  const tracesStore = db.store('saml:tracer', tracesTTL);
 
-  const ssoTracer = new SSOTracer({ tracerStore });
+  const ssoTraces = new SSOTraces({ tracesStore });
   const eventController = new EventController({ opts });
   const productController = new ProductController({ productStore, opts });
 
@@ -103,7 +102,7 @@ export const controllers = async (
     eventController,
     oryController,
   });
-  const adminController = new AdminController({ connectionStore, ssoTracer });
+  const adminController = new AdminController({ connectionStore, ssoTraces });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
   await healthCheckController.init();
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
@@ -112,7 +111,7 @@ export const controllers = async (
   await x509.init(certificateStore, opts);
 
   // Enterprise Features
-  const samlFederatedController = await initFederatedSAML({ db, opts, ssoTracer });
+  const identityFederationController = await initIdentityFederation({ db, opts, ssoTraces });
   const brandingController = new BrandingController({ store: settingsStore, opts });
 
   const oauthController = new OAuthController({
@@ -120,9 +119,9 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
-    ssoTracer,
+    ssoTraces,
     opts,
-    samlFedApp: samlFederatedController.app,
+    idFedApp: identityFederationController.app,
   });
 
   const logoutController = new LogoutController({
@@ -136,7 +135,7 @@ export const controllers = async (
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
 
   // write pre-loaded connections if present
-  const preLoadedConnection = opts.preLoadedConnection || opts.preLoadedConfig;
+  const preLoadedConnection = opts.preLoadedConnection;
   if (preLoadedConnection && preLoadedConnection.length > 0) {
     const connections = await loadConnection(preLoadedConnection);
 
@@ -179,7 +178,7 @@ export const controllers = async (
     setupLinkController,
     directorySyncController,
     oidcDiscoveryController,
-    samlFederatedController,
+    identityFederationController,
     brandingController,
     checkLicense: () => {
       return checkLicense(opts.boxyhqLicenseKey);
@@ -194,7 +193,7 @@ export const controllers = async (
 export default controllers;
 
 export * from './typings';
-export * from './ee/federated-saml/types';
+export * from './ee/identity-federation/types';
 export type SAMLJackson = Awaited<ReturnType<typeof controllers>>;
 export type ISetupLinkController = InstanceType<typeof SetupLinkController>;
 export type IBrandingController = InstanceType<typeof BrandingController>;

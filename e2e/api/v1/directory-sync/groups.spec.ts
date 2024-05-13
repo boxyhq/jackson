@@ -2,13 +2,9 @@ import { test, expect } from '@playwright/test';
 import { createDirectory, deleteDirectory, directoryPayload, getDirectory } from '../../helpers/directories';
 import groups from '@boxyhq/saml-jackson/test/dsync/data/groups';
 import { createGroup } from '../../helpers/groups';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-3' };
 
