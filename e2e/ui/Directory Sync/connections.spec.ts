@@ -1,5 +1,4 @@
-import { test as baseTest } from '@playwright/test';
-import { DSyncPage } from 'e2e/support/fixtures/dsync-page';
+import { options } from 'e2e/api/helpers/api';
 
 type MyFixtures = {
   dsyncPage: DSyncPage;
@@ -13,8 +12,7 @@ export const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test('Azure SCIM connection', async ({ dsyncPage }) => {
-  const { scimUrl, scimToken } = await dsyncPage.addDSyncConnection('azure-scim-v2');
+test.use(options);
   //   Send API requests to user/groups endpoint
   console.log(scimUrl, scimToken);
 });
