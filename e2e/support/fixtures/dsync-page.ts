@@ -9,7 +9,12 @@ enum DirectorySyncProviders {
   'google' = 'Google',
 }
 export class DSyncPage {
-  constructor(public readonly page: Page) {}
+  tenant: string;
+  product: string;
+  constructor(public readonly page: Page) {
+    this.tenant = 'acme.com';
+    this.product = 'demo';
+  }
 
   async gotoDSync() {
     await this.page.goto(`/admin/directory-sync`);
@@ -20,8 +25,8 @@ export class DSyncPage {
     await this.page.getByRole('link', { name: 'New Directory' }).click();
     await this.page.getByLabel('Directory name').fill('DS-1');
     await this.page.getByLabel('Directory provider').selectOption({ value: provider });
-    await this.page.getByLabel('Tenant').fill('acme.com');
-    await this.page.getByLabel('Product').fill('demo');
+    await this.page.getByLabel('Tenant').fill(this.tenant);
+    await this.page.getByLabel('Product').fill(this.product);
     await this.page.getByRole('button', { name: 'Create Directory' }).click();
     const scimUrl = await this.page.getByLabel('SCIM Endpoint').inputValue();
     const scimToken = await this.page.getByLabel('SCIM Token').inputValue();
@@ -35,5 +40,12 @@ export class DSyncPage {
     await editButton.click();
     await this.page.getByRole('button', { name: 'Delete' }).click();
     await this.page.getByRole('button', { name: 'Confirm' }).click();
+  }
+
+  async switchToUsersView() {
+    await this.gotoDSync();
+    await this.page.getByLabel('View').click();
+    await this.page.getByText('Users').click();
+    await this.page.waitForURL('**/admin/directory-sync/**/users');
   }
 }
