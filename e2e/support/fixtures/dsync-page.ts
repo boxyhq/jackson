@@ -47,5 +47,7 @@ export class DSyncPage {
     await this.page.getByLabel('View').click();
     await this.page.getByText('Users').click();
     await this.page.waitForURL('**/admin/directory-sync/**/users');
+    await this.page.getByText('Loading...').waitFor();
+    await this.page.getByRole('table').waitFor();
   }
 }
