@@ -1,31 +1,20 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IndexNames } from 'npm/src/controller/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'POST':
-        return await handlePOST(req, res);
-      default:
-        res.setHeader('Allow', 'POST');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    POST: handlePOST,
+  });
 }
 
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController, samlFederatedController } = await jackson();
+  const { connectionAPIController, directorySyncController, identityFederationController } = await jackson();
 
   // Products must be an array of strings
   const products = req.body.products as string[];
-  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'samlFederation') : undefined;
+  const type = req.body.type ? (req.body.type as 'sso' | 'dsync' | 'identityFederation') : undefined;
 
   // Validate products
   if (!products) {
@@ -38,7 +27,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     // Get counts for product
     let sso_connections_count = 0;
     let dsync_connections_count = 0;
-    let saml_federation_count = 0;
+    let identity_federation_count = 0;
 
     for (const product of products) {
       if (product) {
@@ -55,12 +44,12 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
           dsync_connections_count += count || 0;
         }
 
-        if (!type || type === 'samlFederation') {
-          const count = await samlFederatedController.app.getCount({
+        if (!type || type === 'identityFederation') {
+          const count = await identityFederationController.app.getCount({
             name: IndexNames.Product,
             value: product,
           });
-          saml_federation_count += count || 0;
+          identity_federation_count += count || 0;
         }
       }
     }
@@ -69,7 +58,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       data: {
         sso_connections: sso_connections_count,
         dsync_connections: dsync_connections_count,
-        saml_federation: saml_federation_count,
+        identity_federation_apps: identity_federation_count,
       },
     });
   }

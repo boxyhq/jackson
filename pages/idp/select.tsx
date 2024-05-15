@@ -177,18 +177,18 @@ const AppSelector = ({
 };
 
 export const getServerSideProps = async ({ query, locale, req }) => {
-  const { connectionAPIController, samlFederatedController, checkLicense, productController } =
+  const { connectionAPIController, identityFederationController, checkLicense, productController } =
     await jackson();
 
   const paramsToRelay = { ...query } as { [key: string]: string };
 
-  const { authFlow, entityId, tenant, product, idp_hint, samlFedAppId, fedType } = query as {
+  const { authFlow, entityId, tenant, product, idp_hint, idFedAppId, fedType } = query as {
     authFlow: 'sp-initiated' | 'idp-initiated';
     tenant?: string;
     product?: string;
     idp_hint?: string;
     entityId?: string;
-    samlFedAppId?: string;
+    idFedAppId?: string;
     fedType?: string;
   };
 
@@ -202,8 +202,8 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   if (idp_hint) {
     const params = new URLSearchParams(paramsToRelay);
     const destination =
-      samlFedAppId && fedType !== 'oidc'
-        ? `/api/federated-saml/sso?${params}`
+      idFedAppId && fedType !== 'oidc'
+        ? `/api/identity-federation/sso?${params}`
         : `/api/oauth/authorize?${params}`;
 
     return {
@@ -214,10 +214,11 @@ export const getServerSideProps = async ({ query, locale, req }) => {
     };
   }
 
-  // SAML federated app
-  const samlFederationApp = samlFedAppId ? await samlFederatedController.app.get({ id: samlFedAppId }) : null;
+  const identityFederationApp = idFedAppId
+    ? await identityFederationController.app.get({ id: idFedAppId })
+    : null;
 
-  if (samlFedAppId && !samlFederationApp) {
+  if (idFedAppId && !identityFederationApp) {
     return {
       notFound: true,
     };
@@ -226,9 +227,9 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   // Otherwise, show the list of IdPs
   let connections: (OIDCSSORecord | SAMLSSORecord)[] = [];
 
-  if (samlFederationApp) {
-    const tenants = samlFederationApp?.tenants || [samlFederationApp.tenant];
-    const { product } = samlFederationApp;
+  if (identityFederationApp) {
+    const tenants = identityFederationApp?.tenants || [identityFederationApp.tenant];
+    const { product } = identityFederationApp;
 
     connections = await connectionAPIController.getConnections({ tenant: tenants, product, sort: true });
   } else if (tenant && product) {
@@ -241,12 +242,12 @@ export const getServerSideProps = async ({ query, locale, req }) => {
   let branding = boxyhqHosted && product ? await getProductBranding(product) : await getPortalBranding();
 
   // For SAML federated requests, use the branding from the SAML federated app
-  if (samlFederationApp && (await checkLicense())) {
+  if (identityFederationApp && (await checkLicense())) {
     branding = {
-      logoUrl: samlFederationApp?.logoUrl || branding.logoUrl,
-      primaryColor: samlFederationApp?.primaryColor || branding.primaryColor,
-      faviconUrl: samlFederationApp?.faviconUrl || branding.faviconUrl,
-      companyName: samlFederationApp?.name || branding.companyName,
+      logoUrl: identityFederationApp?.logoUrl || branding.logoUrl,
+      primaryColor: identityFederationApp?.primaryColor || branding.primaryColor,
+      faviconUrl: identityFederationApp?.faviconUrl || branding.faviconUrl,
+      companyName: identityFederationApp?.name || branding.companyName,
     };
   }
 

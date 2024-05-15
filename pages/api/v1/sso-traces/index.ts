@@ -1,20 +1,11 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET');
-        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+  });
 }
 
 // Get the saml trace by id

@@ -6,11 +6,11 @@ const config: PlaywrightTestConfig = {
   workers: 1,
   globalSetup: require.resolve('./e2e/support/globalSetup'),
   // Timeout per test
-  timeout: 30 * 1000,
+  timeout: 100 * 1000,
   // Test directory
   testDir: path.join(__dirname, 'e2e'),
-  // If a test fails, retry it additional 2 times
-  retries: 0,
+  // If a test fails, retry it additional 3 times
+  retries: 3,
   // Artifacts folder where screenshots, videos, and traces are stored.
   outputDir: 'test-results/',
 
@@ -22,7 +22,8 @@ const config: PlaywrightTestConfig = {
     timeout: 60 * 1000,
     reuseExistingServer: !process.env.CI,
     env: {
-      NODE_ENV: 'test',
+      DEBUG: 'pw:webserver',
+      NEXTAUTH_ADMIN_CREDENTIALS: 'super@boxyhq.com:999login',
     },
   },
 

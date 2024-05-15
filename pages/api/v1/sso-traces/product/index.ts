@@ -1,24 +1,13 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { parsePaginateApiParams } from '@lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'DELETE':
-        await handleDelete(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET,DELETE');
-        res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-    res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    DELETE: handleDELETE,
+  });
 }
 
 // Get the sso traces filtered by the product
@@ -36,7 +25,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   res.json(traces);
 };
 
-const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { adminController } = await jackson();
 
   const { product } = req.query as {

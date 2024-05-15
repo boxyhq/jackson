@@ -4,13 +4,9 @@ import { createUser, getUser } from '../../helpers/users';
 import { createGroup, getGroupByDisplayName, getGroupById } from '../../helpers/groups';
 import groups from '../../../../npm/test/dsync/data/groups';
 import users from '../../../../npm/test/dsync/data/users';
+import { options } from '../../helpers/api';
 
-test.use({
-  extraHTTPHeaders: {
-    Authorization: `Api-Key secret`,
-    'Content-Type': 'application/json',
-  },
-});
+test.use(options);
 
 const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-1' };
 

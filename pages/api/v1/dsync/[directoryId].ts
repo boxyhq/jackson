@@ -1,20 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
+import { defaultHandler } from '@lib/api';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      return await handleGET(req, res);
-    case 'DELETE':
-      return await handleDELETE(req, res);
-    case 'PATCH':
-      return await handlePATCH(req, res);
-    default:
-      res.setHeader('Allow', 'GET, DELETE, PATCH');
-      res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    PATCH: handlePATCH,
+    DELETE: handleDELETE,
+  });
 }
 
 // Get directory by id

@@ -1,34 +1,25 @@
+import { defaultHandler } from '@lib/api';
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
-
-  try {
-    switch (method) {
-      case 'GET':
-        return await handleGET(req, res);
-      default:
-        res.setHeader('Allow', 'GET');
-        res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
-    }
-  } catch (error: any) {
-    const { message, statusCode = 500 } = error;
-
-    return res.status(statusCode).json({ error: { message } });
-  }
+  await defaultHandler(req, res, {
+    GET: handleGET,
+  });
 }
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { connectionAPIController, directorySyncController } = await jackson();
+  const { connectionAPIController, directorySyncController, identityFederationController } = await jackson();
 
   const sso_connections_count = await connectionAPIController.getCount();
   const dsync_connections_count = await directorySyncController.directories.getCount();
+  const identity_federation_count = await identityFederationController.app.getCount();
 
   return res.json({
     data: {
       sso_connections: sso_connections_count,
       dsync_connections: dsync_connections_count,
+      identity_federation_apps: identity_federation_count,
     },
   });
 };

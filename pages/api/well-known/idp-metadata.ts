@@ -1,1 +1,1 @@
-export { default } from 'ee/federated-saml/api/metadata';
+export { default } from '@ee/identity-federation/api/metadata';

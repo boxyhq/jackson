@@ -3,7 +3,7 @@ import {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
-  SSOTracerInstance,
+  SSOTracesInstance,
   Records,
   Trace,
 } from '../typings';
@@ -12,11 +12,11 @@ import { transformConnections } from './utils';
 
 export class AdminController implements IAdminController {
   private connectionStore: Storable;
-  private ssoTracer: SSOTracerInstance;
+  private ssoTraces: SSOTracesInstance;
 
-  constructor({ connectionStore, ssoTracer }) {
+  constructor({ connectionStore, ssoTraces }) {
     this.connectionStore = connectionStore;
-    this.ssoTracer = ssoTracer;
+    this.ssoTraces = ssoTraces;
   }
 
   public async getAllConnection(pageOffset?: number, pageLimit?: number, pageToken?: string) {
@@ -34,7 +34,7 @@ export class AdminController implements IAdminController {
   }
 
   public async getAllSSOTraces(pageOffset: number, pageLimit: number, pageToken?: string) {
-    const { data: traces, pageToken: nextPageToken } = (await this.ssoTracer.getAllTraces(
+    const { data: traces, pageToken: nextPageToken } = (await this.ssoTraces.getAllTraces(
       pageOffset,
       pageLimit,
       pageToken
@@ -48,7 +48,7 @@ export class AdminController implements IAdminController {
   }
 
   public async getSSOTraceById(traceId: string) {
-    const trace = await this.ssoTracer.getByTraceId(traceId);
+    const trace = await this.ssoTraces.getByTraceId(traceId);
 
     if (!trace) {
       throw new JacksonError(`Trace with id ${traceId} not found`, 404);
@@ -63,14 +63,14 @@ export class AdminController implements IAdminController {
     pageLimit: number,
     pageToken?: string
   ) {
-    return await this.ssoTracer.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
+    return await this.ssoTraces.getTracesByProduct({ product, pageOffset, pageLimit, pageToken });
   }
 
   public async deleteTracesByProduct(product: string) {
-    return await this.ssoTracer.deleteTracesByProduct(product);
+    return await this.ssoTraces.deleteTracesByProduct(product);
   }
 
   public async countByProduct(product: string) {
-    return await this.ssoTracer.countByProduct(product);
+    return await this.ssoTraces.countByProduct(product);
   }
 }
