@@ -18,7 +18,7 @@ export const test = baseTest.extend<MyFixtures>({
 
 test.use(options);
 
-test.only('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
+test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.addDSyncConnection('azure-scim-v2');
   //  Send API requests to user/groups endpoint
   const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
@@ -52,4 +52,6 @@ test.only('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   expect(await page.getByRole('cell', { name: 'givenName' })).toBeVisible();
   expect(await page.getByRole('cell', { name: 'familyName' })).toBeVisible();
   expect(await page.getByRole('cell', { name: 'jackson@example.com' })).toBeVisible();
+  await dsyncPage.switchToGroupsView();
+  expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
 });
