@@ -23,14 +23,22 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.addDSyncConnection('azure-scim-v2');
   //  Send API requests to user/groups endpoint
   const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
-  const user = await createUser(request, directory, azureUser);
+  const azureUser1 = azureUser(1);
+  const user1 = await createUser(request, directory, azureUser1);
   const group = await createGroup(request, directory, azureGroup);
-  await addGroupMember(request, directory, group, user.id);
+  await addGroupMember(request, directory, group, user1.id);
   await dsyncPage.switchToUsersView();
-  expect(await page.getByRole('cell', { name: 'givenName' })).toBeVisible();
-  expect(await page.getByRole('cell', { name: 'familyName' })).toBeVisible();
-  expect(await page.getByRole('cell', { name: 'jackson@example.com' })).toBeVisible();
+  expect(await page.getByRole('cell', { name: azureUser1.name.givenName, exact: true })).toBeVisible();
+  expect(await page.getByRole('cell', { name: azureUser1.name.familyName, exact: true })).toBeVisible();
+  expect(await page.getByRole('cell', { name: azureUser1.emails[0].value, exact: true })).toBeVisible();
   await dsyncPage.switchToGroupsView();
   expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
   await dsyncPage.enableWebHookEventLogging();
+  const azureUser2 = azureUser(2);
+  const user2 = await createUser(request, directory, azureUser2);
+  await addGroupMember(request, directory, group, user2.id);
+  await dsyncPage.switchToUsersView();
+  expect(await page.getByRole('cell', { name: azureUser2.name.givenName, exact: true })).toBeVisible();
+  expect(await page.getByRole('cell', { name: azureUser2.name.familyName, exact: true })).toBeVisible();
+  expect(await page.getByRole('cell', { name: azureUser2.emails[0].value, exact: true })).toBeVisible();
 });

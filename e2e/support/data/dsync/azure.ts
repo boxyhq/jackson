@@ -1,17 +1,17 @@
-export const azureUser = {
+export const azureUser = (id: number) => ({
   schemas: [
     'urn:ietf:params:scim:schemas:core:2.0:User',
     'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
   ],
-  externalId: 'jackson',
-  userName: 'jackson@boxyhq.onmicrosoft.com',
+  externalId: `jackson-${id}`,
+  userName: `jackson-${id}@boxyhq.onmicrosoft.com`,
   active: true,
-  displayName: 'Jackson',
-  emails: [{ primary: true, type: 'work', value: 'jackson@example.com' }],
+  displayName: `Jackson-${id}`,
+  emails: [{ primary: true, type: 'work', value: `jackson-${id}@example.com` }],
   meta: { resourceType: 'User' },
-  name: { formatted: 'givenName familyName', familyName: 'familyName', givenName: 'givenName' },
+  name: { formatted: `samuel-${id} jackson-${id}`, familyName: `jackson-${id}`, givenName: `samuel-${id}` },
   title: 'Manager',
-};
+});
 
 export const azureGroup = {
   schemas: [
