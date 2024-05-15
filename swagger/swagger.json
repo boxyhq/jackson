@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.24.0",
+    "version": "1.24.1",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -49,7 +49,7 @@
         "summary": "Create SSO connection",
         "operationId": "create-sso-connection",
         "tags": [
-          "Single Sign On"
+          "Single Sign-On"
         ],
         "produces": [
           "application/json"
@@ -124,7 +124,7 @@
         "summary": "Update SSO Connection",
         "operationId": "update-sso-connection",
         "tags": [
-          "Single Sign On"
+          "Single Sign-On"
         ],
         "consumes": [
           "application/json",
@@ -222,7 +222,7 @@
         ],
         "operationId": "get-connections",
         "tags": [
-          "Single Sign On"
+          "Single Sign-On"
         ],
         "responses": {
           "200": {
@@ -257,7 +257,7 @@
         "summary": "Delete SSO Connections",
         "operationId": "delete-sso-connection",
         "tags": [
-          "Single Sign On"
+          "Single Sign-On"
         ],
         "responses": {
           "200": {
@@ -291,7 +291,7 @@
         ],
         "operationId": "get-connections-by-product",
         "tags": [
-          "Single Sign On"
+          "Single Sign-On"
         ],
         "responses": {
           "200": {
