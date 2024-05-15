@@ -50,4 +50,12 @@ export class DSyncPage {
     await this.page.getByText('Loading...').waitFor();
     await this.page.getByRole('table').waitFor();
   }
+  async switchToGroupsView() {
+    await this.gotoDSync();
+    await this.page.getByLabel('View').click();
+    await this.page.getByText('Groups').click();
+    await this.page.waitForURL('**/admin/directory-sync/**/groups');
+    await this.page.getByText('Loading...').waitFor();
+    await this.page.getByRole('table').waitFor();
+  }
 }
