@@ -54,4 +54,5 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   expect(await page.getByRole('cell', { name: 'jackson@example.com' })).toBeVisible();
   await dsyncPage.switchToGroupsView();
   expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
+  await dsyncPage.enableWebHookEventLogging();
 });

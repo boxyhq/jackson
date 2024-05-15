@@ -58,4 +58,10 @@ export class DSyncPage {
     await this.page.getByText('Loading...').waitFor();
     await this.page.getByRole('table').waitFor();
   }
+  async enableWebHookEventLogging() {
+    await this.gotoDSync();
+    await this.page.getByLabel('Edit').click();
+    await this.page.getByLabel('Enable Webhook events logging').check();
+    await this.page.getByRole('button', { name: 'Save' }).click();
+  }
 }
