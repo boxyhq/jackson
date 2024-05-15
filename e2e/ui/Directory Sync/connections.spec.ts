@@ -28,7 +28,7 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
       'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
     ],
     externalId: 'jackson',
-    userName: 'jackson@aswinboxyhq.onmicrosoft.com',
+    userName: 'jackson@boxyhq.onmicrosoft.com',
     active: true,
     displayName: 'Jackson',
     emails: [{ primary: true, type: 'work', value: 'jackson@example.com' }],
