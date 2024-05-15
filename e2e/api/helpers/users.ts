@@ -1,17 +1,14 @@
 import { expect, type APIRequestContext } from '@playwright/test';
 import type { Directory } from '@boxyhq/saml-jackson';
 import users from '../../../npm/test/dsync/data/users';
+import { scimOpUrl } from './utils';
 
 type User = Partial<(typeof users)[0]>;
 
 export const createUser = async (request: APIRequestContext, directory: Directory, user: User) => {
-  let endpoint = `${directory.scim.endpoint}/Users`;
-  if (directory.type === 'azure-scim-v2') {
-    const [_main, aadOpts] = directory.scim.endpoint!.split('?');
-    endpoint = `${_main}Users/?${aadOpts}`;
-  }
+  const scimOpEndpoint = scimOpUrl(directory, 'Users');
 
-  const response = await request.post(endpoint, {
+  const response = await request.post(scimOpEndpoint, {
     data: user,
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,

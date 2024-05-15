@@ -1,8 +1,10 @@
 import { expect, type APIRequestContext } from '@playwright/test';
 import type { Directory, Group } from '@boxyhq/saml-jackson';
+import { scimOpUrl } from './utils';
 
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
-  const response = await request.post(`${directory.scim.path}/Groups`, {
+  const scimOpEndpoint = scimOpUrl(directory, 'Groups');
+  const response = await request.post(scimOpEndpoint, {
     data: group,
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,
@@ -21,7 +23,8 @@ export const addGroupMember = async (
   group: Group,
   member: string
 ) => {
-  const response = await request.patch(`${directory.scim.path}/Groups/${group.id}`, {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${group.id}`);
+  const response = await request.patch(scimOpEndpoint, {
     data: {
       Operations: [
         {
