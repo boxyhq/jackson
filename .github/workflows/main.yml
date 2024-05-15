@@ -266,7 +266,7 @@ jobs:
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
-      - name: Create NPM Pacakge SBOM Report [CycloneDx]
+      - name: Create NPM Package SBOM Report [CycloneDx]
         uses: anchore/sbom-action@v0
         with:
           format: cyclonedx
