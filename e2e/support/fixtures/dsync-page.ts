@@ -38,18 +38,22 @@ export class DSyncPage {
   }
 
   async switchToUsersView() {
-    await this.gotoDSync();
     await this.page.getByLabel('View').click();
     await this.page.getByText('Users').click();
     await this.page.waitForURL('**/admin/directory-sync/**/users');
     await this.page.getByText('Loading...').waitFor();
     await this.page.getByRole('table').waitFor();
   }
+  // group events navigation done after users viwe, hence we can skip View click
   async switchToGroupsView() {
-    await this.gotoDSync();
-    await this.page.getByLabel('View').click();
     await this.page.getByText('Groups').click();
     await this.page.waitForURL('**/admin/directory-sync/**/groups');
+    await this.page.getByText('Loading...').waitFor();
+    await this.page.getByRole('table').waitFor();
+  }
+  async switchToEventsView() {
+    await this.page.getByRole('listitem').and(this.page.getByText('Webhook Events')).click();
+    await this.page.waitForURL('**/admin/directory-sync/**/events');
     await this.page.getByText('Loading...').waitFor();
     await this.page.getByRole('table').waitFor();
   }

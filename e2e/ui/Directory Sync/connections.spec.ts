@@ -21,6 +21,7 @@ test.use(options);
 
 test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.addDSyncConnection('azure-scim-v2');
+  await dsyncPage.gotoDSync();
   //  Send API requests to user/groups endpoint
   const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
   const azureUser1 = azureUser(1);
@@ -45,7 +46,8 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   expect(await page.getByRole('cell', { name: azureUser2.name.givenName, exact: true })).toBeVisible();
   expect(await page.getByRole('cell', { name: azureUser2.name.familyName, exact: true })).toBeVisible();
   expect(await page.getByRole('cell', { name: azureUser2.emails[0].value, exact: true })).toBeVisible();
-  await page.getByText('Webhook Events').click();
+  // Assert webhook logs
+  await dsyncPage.switchToEventsView();
   const webhookRowRegex = new RegExp(`${directory.webhook.endpoint}.*View`);
   await page.getByRole('row', { name: webhookRowRegex }).getByRole('button').first().click();
   await page.waitForURL('**/admin/directory-sync/**/events/**');
