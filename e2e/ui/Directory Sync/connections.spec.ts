@@ -48,16 +48,9 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   expect(await page.getByRole('cell', { name: azureUser2.emails[0].value, exact: true })).toBeVisible();
   // Assert webhook logs
   await dsyncPage.switchToEventsView();
-  const webhookRowRegex = new RegExp(`${directory.webhook.endpoint}.*View`);
-  await page.getByRole('row', { name: webhookRowRegex }).getByRole('button').first().click();
-  await page.waitForURL('**/admin/directory-sync/**/events/**');
-  await page.getByText('Loading...').waitFor();
-  await page.locator('pre').waitFor();
+  await dsyncPage.inspectEventRow(0, directory.webhook.endpoint);
   expect(await page.getByText('"group.user_added"')).toBeVisible();
-  await page.getByRole('listitem').and(page.getByText('Webhook Events')).click();
-  await page.getByRole('row', { name: webhookRowRegex }).getByRole('button').nth(1).click();
-  await page.waitForURL('**/admin/directory-sync/**/events/**');
-  await page.getByText('Loading...').waitFor();
-  await page.locator('pre').waitFor();
+  await dsyncPage.switchToEventsView();
+  await dsyncPage.inspectEventRow(1, directory.webhook.endpoint);
   expect(await page.getByText('"user.created"')).toBeVisible();
 });
