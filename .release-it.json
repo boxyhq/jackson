@@ -1,5 +1,7 @@
 {
-  "hooks": {},
+  "hooks": {
+    "after:bump": "npm run swagger-jsdoc"
+  },
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
     "requireCleanWorkingDir": true,
