@@ -20,6 +20,8 @@ export class DSyncPage {
     await this.page.getByLabel('Directory provider').selectOption({ value: provider });
     await this.page.getByLabel('Tenant').fill(this.tenant);
     await this.page.getByLabel('Product').fill(this.product);
+    await this.page.getByLabel('Webhook URL').fill('https://example.com');
+    await this.page.getByLabel('Webhook secret').fill('secret');
     await this.page.getByRole('button', { name: 'Create Directory' }).click();
     const scimUrl = await this.page.getByLabel('SCIM Endpoint').inputValue();
     const scimToken = await this.page.getByLabel('SCIM Token').inputValue();
