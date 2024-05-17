@@ -96,3 +96,18 @@ export const getGroupsByDirectoryId = async (request: APIRequestContext, directo
   const data = await response.json();
   return data.Resources;
 };
+
+export const deleteGroup = async (request: APIRequestContext, directory: Directory, groupId: string) => {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${groupId}`);
+
+  const response = await request.delete(scimOpEndpoint, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
