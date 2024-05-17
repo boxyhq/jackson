@@ -22,7 +22,9 @@ export const createUser = async (request: APIRequestContext, directory: Director
 };
 
 export const getUser = async (request: APIRequestContext, directory: Directory, userName: string) => {
-  const response = await request.get(`${directory.scim.path}/Users`, {
+  const scimOpEndpoint = scimOpUrl(directory, 'Users');
+
+  const response = await request.get(scimOpEndpoint, {
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,
     },
@@ -38,7 +40,9 @@ export const getUser = async (request: APIRequestContext, directory: Directory, 
 };
 
 export const deleteUser = async (request: APIRequestContext, directory: Directory, userId: string) => {
-  const response = await request.delete(`${directory.scim.path}/Users/${userId}`, {
+  const scimOpEndpoint = scimOpUrl(directory, `Users/${userId}`);
+
+  const response = await request.delete(scimOpEndpoint, {
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,
     },
