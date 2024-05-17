@@ -53,4 +53,12 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.switchToEventsView();
   await dsyncPage.inspectEventRow(1, directory.webhook.endpoint);
   expect(await page.getByText('"user.created"')).toBeVisible();
+  // Delete webhook logs
+  await dsyncPage.switchToEventsView();
+  await page.getByRole('button', { name: 'Remove Events' }).click();
+  await page.getByTestId('confirm-delete').click();
+  await page.getByRole('table').waitFor({ state: 'detached' });
+  expect(
+    await page.getByRole('heading', { name: 'No webhook events found for this directory.' })
+  ).toBeVisible();
 });
