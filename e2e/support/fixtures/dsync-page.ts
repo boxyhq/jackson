@@ -37,25 +37,36 @@ export class DSyncPage {
     await this.page.getByRole('button', { name: 'Confirm' }).click();
   }
 
-  async switchToUsersView() {
+  async switchToDSyncInfoView() {
+    await this.gotoDSync();
     await this.page.getByLabel('View').click();
-    await this.page.getByText('Users').click();
-    await this.page.waitForURL('**/admin/directory-sync/**/users');
+    await this.page.waitForURL('/admin/directory-sync/**');
+  }
+
+  async switchToUsersView({ waitForData }: { waitForData?: boolean } = {}) {
+    await this.page.getByRole('listitem').and(this.page.getByText('Users')).click();
+    await this.page.waitForURL('/admin/directory-sync/**/users');
     // await this.page.getByText('Loading...').waitFor();
-    await this.page.getByRole('table').waitFor();
+    if (waitForData) {
+      await this.page.getByRole('table').waitFor();
+    }
   }
   // group events navigation done after users view, hence we can skip View click
-  async switchToGroupsView() {
-    await this.page.getByText('Groups').click();
-    await this.page.waitForURL('**/admin/directory-sync/**/groups');
+  async switchToGroupsView({ waitForData }: { waitForData?: boolean } = {}) {
+    await this.page.getByRole('listitem').and(this.page.getByText('Groups')).click();
+    await this.page.waitForURL('/admin/directory-sync/**/groups');
     // await this.page.getByText('Loading...').waitFor();
-    await this.page.getByRole('table').waitFor();
+    if (waitForData) {
+      await this.page.getByRole('table').waitFor();
+    }
   }
-  async switchToEventsView() {
+  async switchToEventsView({ waitForData }: { waitForData?: boolean } = {}) {
     await this.page.getByRole('listitem').and(this.page.getByText('Webhook Events')).click();
-    await this.page.waitForURL('**/admin/directory-sync/**/events');
+    await this.page.waitForURL('/admin/directory-sync/**/events');
     // await this.page.getByText('Loading...').waitFor();
-    await this.page.getByRole('table').waitFor();
+    if (waitForData) {
+      await this.page.getByRole('table').waitFor();
+    }
   }
   async inspectEventRow(id: number, webhookEndpoint: string) {
     const webhookRowRegex = new RegExp(`${webhookEndpoint}.*View`);
