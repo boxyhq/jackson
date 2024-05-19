@@ -44,25 +44,30 @@ export class DSyncPage {
   }
 
   async switchToUsersView({ waitForData }: { waitForData?: boolean } = {}) {
+    const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/users\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Users')).click();
-    await this.page.waitForURL('/admin/directory-sync/**/users');
-    // await this.page.getByText('Loading...').waitFor();
+    await this.page.waitForURL('/admin/directory-sync/*/users');
+    await responsePromise;
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
     }
   }
   // group events navigation done after users view, hence we can skip View click
   async switchToGroupsView({ waitForData }: { waitForData?: boolean } = {}) {
+    const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/groups\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Groups')).click();
     await this.page.waitForURL('/admin/directory-sync/**/groups');
+    await responsePromise;
     // await this.page.getByText('Loading...').waitFor();
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
     }
   }
   async switchToEventsView({ waitForData }: { waitForData?: boolean } = {}) {
+    // const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/events\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Webhook Events')).click();
     await this.page.waitForURL('/admin/directory-sync/**/events');
+    // await responsePromise;
     // await this.page.getByText('Loading...').waitFor();
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
