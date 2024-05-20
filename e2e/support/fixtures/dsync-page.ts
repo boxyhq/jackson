@@ -53,13 +53,22 @@ export class DSyncPage {
     }
   }
   // group events navigation done after users view, hence we can skip View click
-  async switchToGroupsView({ waitForData }: { waitForData?: boolean } = {}) {
-    const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/groups\?.*/);
+  async switchToGroupsView({
+    waitForData,
+    waitForResponse,
+    waitForLoading,
+  }: { waitForData?: boolean; waitForResponse?: boolean; waitForLoading?: boolean } = {}) {
+    let responsePromise;
+    if (waitForResponse) {
+      responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/groups\?.*/);
+    }
     await this.page.getByRole('listitem').and(this.page.getByText('Groups')).click();
+    waitForResponse && (await responsePromise);
     await this.page.waitForURL('/admin/directory-sync/**/groups');
-    // await this.page.getByText('Loading...').waitFor();
+    if (waitForLoading) {
+      await this.page.getByText('Loading...').waitFor();
+    }
     if (waitForData) {
-      await responsePromise;
       await this.page.getByRole('table').waitFor();
     }
   }

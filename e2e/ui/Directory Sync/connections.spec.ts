@@ -41,7 +41,7 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   expect(await page.getByRole('cell', { name: azureUser1.name.familyName, exact: true })).toBeVisible();
   expect(await page.getByRole('cell', { name: azureUser1.emails[0].value, exact: true })).toBeVisible();
   // Assert created group
-  await dsyncPage.switchToGroupsView({ waitForData: true });
+  await dsyncPage.switchToGroupsView({ waitForData: true, waitForResponse: true });
   expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
   // Enable webhook logs
   await dsyncPage.enableWebHookEventLogging();
@@ -75,10 +75,10 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.switchToUsersView();
   expect(await page.getByRole('heading', { name: 'No users found for this directory.' })).toBeVisible();
   await updateGroupName(request, directory, group.id, azureGroupUpdatedName);
-  await dsyncPage.switchToGroupsView({ waitForData: true });
+  await dsyncPage.switchToGroupsView({ waitForData: true, waitForResponse: true });
   expect(await page.getByRole('cell', { name: azureGroupUpdatedName })).toBeVisible();
   // Group deletion
   await deleteGroup(request, directory, group.id);
-  await dsyncPage.switchToGroupsView();
+  await dsyncPage.switchToGroupsView({ waitForResponse: true });
   expect(await page.getByRole('heading', { name: 'No groups found for this directory.' })).toBeVisible();
 });
