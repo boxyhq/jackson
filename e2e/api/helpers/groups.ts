@@ -111,3 +111,28 @@ export const deleteGroup = async (request: APIRequestContext, directory: Directo
 
   return await response.json();
 };
+
+export const updateGroupName = async (
+  request: APIRequestContext,
+  directory: Directory,
+  groupId: string,
+  newName: string
+) => {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${groupId}`);
+  const response = await request.patch(scimOpEndpoint, {
+    data: {
+      Operations: [
+        {
+          op: 'replace',
+          path: 'displayName',
+          value: newName,
+        },
+      ],
+    },
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+};
