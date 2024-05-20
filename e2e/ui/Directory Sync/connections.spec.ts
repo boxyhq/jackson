@@ -20,13 +20,13 @@ export const test = baseTest.extend<MyFixtures>({
   dsyncPage: async ({ page }, use) => {
     const dsyncPage = new DSyncPage(page);
     await use(dsyncPage);
-    // await dsyncPage.deleteConnection();
+    await dsyncPage.deleteConnection();
   },
 });
 
 test.use(options);
 
-test.only('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
+test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.addDSyncConnection('azure-scim-v2');
   //  Send API requests to user/groups endpoint
   const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
