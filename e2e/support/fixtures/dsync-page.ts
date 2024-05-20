@@ -44,40 +44,23 @@ export class DSyncPage {
   }
 
   async switchToUsersView({ waitForData }: { waitForData?: boolean } = {}) {
-    const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/users\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Users')).click();
-    await this.page.waitForURL('/admin/directory-sync/*/users');
-    await responsePromise;
+    await this.page.waitForURL(/\/admin\/directory-sync\/.*\/users$/);
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
     }
   }
   // group events navigation done after users view, hence we can skip View click
-  async switchToGroupsView({
-    waitForData,
-    waitForResponse,
-    waitForLoading,
-  }: { waitForData?: boolean; waitForResponse?: boolean; waitForLoading?: boolean } = {}) {
-    let responsePromise;
-    if (waitForResponse) {
-      responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/groups\?.*/);
-    }
+  async switchToGroupsView({ waitForData }: { waitForData?: boolean } = {}) {
     await this.page.getByRole('listitem').and(this.page.getByText('Groups')).click();
-    waitForResponse && (await responsePromise);
-    await this.page.waitForURL('/admin/directory-sync/**/groups');
-    if (waitForLoading) {
-      await this.page.getByText('Loading...').waitFor();
-    }
+    await this.page.waitForURL(/\/admin\/directory-sync\/.*\/groups$/);
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
     }
   }
   async switchToEventsView({ waitForData }: { waitForData?: boolean } = {}) {
-    // const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/events\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Webhook Events')).click();
-    await this.page.waitForURL('/admin/directory-sync/**/events');
-    // await responsePromise;
-    // await this.page.getByText('Loading...').waitFor();
+    await this.page.waitForURL(/\/admin\/directory-sync\/.*\/events$/);
     if (waitForData) {
       await this.page.getByRole('table').waitFor();
     }
@@ -85,8 +68,7 @@ export class DSyncPage {
   async inspectEventRow(id: number, webhookEndpoint: string) {
     const webhookRowRegex = new RegExp(`${webhookEndpoint}.*View`);
     await this.page.getByRole('row', { name: webhookRowRegex }).getByRole('button').nth(id).click();
-    await this.page.waitForURL('**/admin/directory-sync/**/events/**');
-    // await this.page.getByText('Loading...').waitFor();
+    await this.page.waitForURL(/\/admin\/directory-sync\/.*\/events\/.*/);
     await this.page.locator('pre').waitFor();
   }
   async enableWebHookEventLogging() {
