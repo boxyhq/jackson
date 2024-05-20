@@ -2,8 +2,15 @@ import { test as baseTest, expect } from '@playwright/test';
 import { DSyncPage } from 'e2e/support/fixtures';
 import { getDirectory } from 'e2e/api/helpers/directories';
 import { options } from 'e2e/api/helpers/api';
-import { addGroupMember, createGroup, createUser, deleteGroup, deleteUser } from 'e2e/api/helpers';
-import { azureGroup, azureUser } from 'e2e/support/data/dsync';
+import {
+  addGroupMember,
+  createGroup,
+  createUser,
+  deleteGroup,
+  deleteUser,
+  updateGroupName,
+} from 'e2e/api/helpers';
+import { azureGroup, azureGroupUpdatedName, azureUser } from 'e2e/support/data/dsync';
 
 type MyFixtures = {
   dsyncPage: DSyncPage;
@@ -13,13 +20,13 @@ export const test = baseTest.extend<MyFixtures>({
   dsyncPage: async ({ page }, use) => {
     const dsyncPage = new DSyncPage(page);
     await use(dsyncPage);
-    await dsyncPage.deleteConnection();
+    // await dsyncPage.deleteConnection();
   },
 });
 
 test.use(options);
 
-test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
+test.only('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.addDSyncConnection('azure-scim-v2');
   //  Send API requests to user/groups endpoint
   const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
@@ -67,6 +74,9 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await deleteUser(request, directory, user2.id);
   await dsyncPage.switchToUsersView();
   expect(await page.getByRole('heading', { name: 'No users found for this directory.' })).toBeVisible();
+  await updateGroupName(request, directory, group.id, azureGroupUpdatedName);
+  await dsyncPage.switchToGroupsView({ waitForData: true });
+  expect(await page.getByRole('cell', { name: azureGroupUpdatedName })).toBeVisible();
   // Group deletion
   await deleteGroup(request, directory, group.id);
   await dsyncPage.switchToGroupsView();

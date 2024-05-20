@@ -24,3 +24,5 @@ export const azureGroup = {
     resourceType: 'Group',
   },
 };
+
+export const azureGroupUpdatedName = 'BoxyHQ-updated';
