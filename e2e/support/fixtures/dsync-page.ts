@@ -71,10 +71,15 @@ export class DSyncPage {
     await this.page.waitForURL(/\/admin\/directory-sync\/.*\/events\/.*/);
     await this.page.locator('pre').waitFor();
   }
-  async enableWebHookEventLogging() {
+  async setWebHookEventsLogging({ enable }: { enable: boolean }) {
     await this.gotoDSync();
     await this.page.getByLabel('Edit').click();
-    await this.page.getByLabel('Enable Webhook events logging').check();
+    const checkBox = this.page.getByLabel('Enable Webhook events logging');
+    if (enable) {
+      await checkBox.check();
+    } else {
+      await checkBox.uncheck();
+    }
     await this.page.getByRole('button', { name: 'Save' }).click();
   }
 }

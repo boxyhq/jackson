@@ -21,6 +21,27 @@ export const createUser = async (request: APIRequestContext, directory: Director
   return await response.json();
 };
 
+export const updateUser = async (
+  request: APIRequestContext,
+  directory: Directory,
+  userId: string,
+  updatedUser: any
+) => {
+  const scimOpEndpoint = scimOpUrl(directory, `Users/${userId}`);
+
+  const response = await request.patch(scimOpEndpoint, {
+    data: updatedUser,
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
 export const getUser = async (request: APIRequestContext, directory: Directory, userName: string) => {
   const scimOpEndpoint = scimOpUrl(directory, 'Users');
 

@@ -9,8 +9,9 @@ import {
   deleteGroup,
   deleteUser,
   updateGroupName,
+  updateUser,
 } from 'e2e/api/helpers';
-import { azureGroup, azureGroupUpdatedName, azureUser } from 'e2e/support/data/dsync';
+import { azureGroup, azureGroupUpdatedName, azureUser, updatedAzureUser } from 'e2e/support/data/dsync';
 
 type MyFixtures = {
   dsyncPage: DSyncPage;
@@ -44,7 +45,7 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await dsyncPage.switchToGroupsView({ waitForData: true });
   await expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
   // Enable webhook logs
-  await dsyncPage.enableWebHookEventLogging();
+  await dsyncPage.setWebHookEventsLogging({ enable: true });
   const azureUser2 = azureUser(2);
   const user2 = await createUser(request, directory, azureUser2);
   await addGroupMember(request, directory, group, user2.id);
@@ -54,12 +55,29 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await expect(page.getByRole('cell', { name: azureUser2.name.givenName, exact: true })).toBeVisible();
   await expect(page.getByRole('cell', { name: azureUser2.name.familyName, exact: true })).toBeVisible();
   await expect(page.getByRole('cell', { name: azureUser2.emails[0].value, exact: true })).toBeVisible();
+  // Patch second user
+  const azureUser2Patch = updatedAzureUser(2);
+  await updateUser(request, directory, user2.id, azureUser2Patch);
+  await page.reload();
+  // Assert updated attributes for user
+  await expect(
+    page.getByRole('cell', { name: azureUser2Patch.Operations[0].value, exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: azureUser2Patch.Operations[1].value, exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: azureUser2Patch.Operations[2].value, exact: true })
+  ).toBeVisible();
   // Assert webhook logs
   await dsyncPage.switchToEventsView({ waitForData: true });
   await dsyncPage.inspectEventRow(0, directory.webhook.endpoint);
-  await expect(page.getByText('"group.user_added"')).toBeVisible();
+  await expect(page.getByText('"user.updated"')).toBeVisible();
   await dsyncPage.switchToEventsView({ waitForData: true });
   await dsyncPage.inspectEventRow(1, directory.webhook.endpoint);
+  await expect(page.getByText('"group.user_added"')).toBeVisible();
+  await dsyncPage.switchToEventsView({ waitForData: true });
+  await dsyncPage.inspectEventRow(2, directory.webhook.endpoint);
   await expect(page.getByText('"user.created"')).toBeVisible();
   // Delete webhook logs
   await dsyncPage.switchToEventsView();
@@ -69,9 +87,11 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await expect(
     await page.getByRole('heading', { name: 'No webhook events found for this directory.' })
   ).toBeVisible();
+  await dsyncPage.setWebHookEventsLogging({ enable: false });
   // User deletion
   await deleteUser(request, directory, user1.id);
   await deleteUser(request, directory, user2.id);
+  await dsyncPage.switchToDSyncInfoView();
   await dsyncPage.switchToUsersView();
   await expect(page.getByRole('heading', { name: 'No users found for this directory.' })).toBeVisible();
   await updateGroupName(request, directory, group.id, azureGroupUpdatedName);
@@ -81,4 +101,8 @@ test('Azure SCIM connection', async ({ dsyncPage, request, page }) => {
   await deleteGroup(request, directory, group.id);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'No groups found for this directory.' })).toBeVisible();
+  await dsyncPage.switchToEventsView();
+  await expect(
+    await page.getByRole('heading', { name: 'No webhook events found for this directory.' })
+  ).toBeVisible();
 });
