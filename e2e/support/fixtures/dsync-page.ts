@@ -57,9 +57,9 @@ export class DSyncPage {
     const responsePromise = this.page.waitForResponse(/\/api\/admin\/directory-sync\/.*\/groups\?.*/);
     await this.page.getByRole('listitem').and(this.page.getByText('Groups')).click();
     await this.page.waitForURL('/admin/directory-sync/**/groups');
-    await responsePromise;
     // await this.page.getByText('Loading...').waitFor();
     if (waitForData) {
+      await responsePromise;
       await this.page.getByRole('table').waitFor();
     }
   }
