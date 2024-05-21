@@ -277,23 +277,23 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
 
       - name: Next Js Project SBOM Report [SPDX]
@@ -317,21 +317,21 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
 
       - name: Create SBOM Report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -339,12 +339,12 @@ jobs:
           artifact-name: docker_sbom.spdx
           upload-artifact-retention: 1
       - name: Publish report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -352,7 +352,7 @@ jobs:
           artifact-name: docker_sbom.cyclonedx
           upload-artifact-retention: 1
       - name: Publish report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
