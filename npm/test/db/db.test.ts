@@ -108,6 +108,12 @@ const dynamoDbConfig = <DatabaseOption>{
   },
 };
 
+const sqliteConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'sqlite',
+  url: 'file:///var/tmp/test-sqlite-database.db',
+};
+
 const dbs = [
   {
     ...memDbConfig,
@@ -158,6 +164,10 @@ const dbs = [
     ...mssqlDbConfig,
     encryptionKey,
   },
+  {
+    ...sqliteConfig,
+    encryptionKey,
+  }
 ];
 
 if (process.env.PLANETSCALE_URL) {

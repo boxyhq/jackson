@@ -52,6 +52,20 @@ class Sql implements DatabaseDriver {
             options: mssqlOpts.options,
             ...baseOpts,
           });
+        } else if (sqlType === 'sqlite') {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            database: this.options.url,
+            driver: require("@libsql/sqlite3"),
+            ...baseOpts,
+            logging: true,
+          });
+        } else if (this.options.engine === 'turso') {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            database: this.options.url,
+            driver: require("@libsql/sqlite3"),
+            flags: 0x00000040, // this is required to make it work in TypeORM
+            ...baseOpts,
+          });
         } else {
           this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,
