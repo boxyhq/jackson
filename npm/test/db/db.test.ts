@@ -167,7 +167,7 @@ const dbs = [
   {
     ...sqliteConfig,
     encryptionKey,
-  }
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {

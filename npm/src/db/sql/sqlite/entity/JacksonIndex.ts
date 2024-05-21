@@ -5,26 +5,26 @@ import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToOne } from 'typeor
 @Index('_jackson_index_key_store', ['key', 'storeKey'])
 @Entity()
 export class JacksonIndex {
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Index('_jackson_index_key')
-    @Column({
-        type: 'varchar',
-        length: 250,
-    })
-    key!: string;
+  @Index('_jackson_index_key')
+  @Column({
+    type: 'varchar',
+    length: 250,
+  })
+  key!: string;
 
-    @Column({
-        type: 'varchar',
-        length: 250,
-    })
-    storeKey!: string;
+  @Column({
+    type: 'varchar',
+    length: 250,
+  })
+  storeKey!: string;
 
-    @ManyToOne(() => JacksonStore, undefined, {
-        //inverseSide: 'in',
-        eager: true,
-        onDelete: 'CASCADE',
-    })
-    store?: JacksonStore;
+  @ManyToOne(() => JacksonStore, undefined, {
+    //inverseSide: 'in',
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  store?: JacksonStore;
 }

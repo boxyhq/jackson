@@ -55,14 +55,14 @@ class Sql implements DatabaseDriver {
         } else if (sqlType === 'sqlite') {
           this.dataSource = new DataSource(<DataSourceOptions>{
             database: this.options.url,
-            driver: require("@libsql/sqlite3"),
+            driver: require('@libsql/sqlite3'),
             ...baseOpts,
             logging: true,
           });
         } else if (this.options.engine === 'turso') {
           this.dataSource = new DataSource(<DataSourceOptions>{
             database: this.options.url,
-            driver: require("@libsql/sqlite3"),
+            driver: require('@libsql/sqlite3'),
             flags: 0x00000040, // this is required to make it work in TypeORM
             ...baseOpts,
           });

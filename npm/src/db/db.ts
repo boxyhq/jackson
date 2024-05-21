@@ -159,12 +159,12 @@ const _new = async (options: DatabaseOption) => {
           );
         case 'sqlite':
           return new DB(
-              await sql.new(options, {
-                JacksonStore: JacksonStoreSQLITE,
-                JacksonIndex: JacksonIndexSQLITE,
-                JacksonTTL: JacksonTTLSQLITE,
-              }),
-              encryptionKey
+            await sql.new(options, {
+              JacksonStore: JacksonStoreSQLITE,
+              JacksonIndex: JacksonIndexSQLITE,
+              JacksonTTL: JacksonTTLSQLITE,
+            }),
+            encryptionKey
           );
         default:
           return new DB(
@@ -193,14 +193,14 @@ const _new = async (options: DatabaseOption) => {
       return new DB(await dynamodb.new(options), encryptionKey);
     case 'turso':
       return new DB(
-          await sql.new(options, {
-            JacksonStore: JacksonStoreSQLITE,
-            JacksonIndex: JacksonIndexSQLITE,
-            JacksonTTL: JacksonTTLSQLITE,
-          }),
-          encryptionKey
+        await sql.new(options, {
+          JacksonStore: JacksonStoreSQLITE,
+          JacksonIndex: JacksonIndexSQLITE,
+          JacksonTTL: JacksonTTLSQLITE,
+        }),
+        encryptionKey
       );
-      default:
+    default:
       throw new Error('unsupported db engine: ' + options.engine);
   }
 };
