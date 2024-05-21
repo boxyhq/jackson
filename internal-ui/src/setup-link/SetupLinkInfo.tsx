@@ -13,7 +13,7 @@ export const SetupLinkInfo = ({ setupLink, onClose }: { setupLink: SetupLink; on
       <Card className='border-primary'>
         <Card.Body>
           <div>
-            <InputWithCopyButton text={setupLink.url} label={t('bui-sl-share-info')} />
+            <InputWithCopyButton text={setupLink.url} label={t('bui-sl-share-info')} autofocus={true} />
           </div>
           <div>
             <Button size='sm' color='primary' onClick={onClose}>
