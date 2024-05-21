@@ -1,3 +1,4 @@
+// https://learn.microsoft.com/en-us/entra/identity/app-provisioning/use-scim-to-provision-users-and-groups#request
 export const azureUser = (id: number) => ({
   schemas: [
     'urn:ietf:params:scim:schemas:core:2.0:User',
@@ -11,6 +12,7 @@ export const azureUser = (id: number) => ({
   meta: { resourceType: 'User' },
   name: { formatted: `samuel-${id} jackson-${id}`, familyName: `jackson-${id}`, givenName: `samuel-${id}` },
   title: 'Manager',
+  roles: [],
 });
 
 export const updatedAzureUser = (id: number) => ({
@@ -45,5 +47,3 @@ export const azureGroup = {
     resourceType: 'Group',
   },
 };
-
-export const azureGroupUpdatedName = 'BoxyHQ-updated';

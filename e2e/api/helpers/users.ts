@@ -25,16 +25,23 @@ export const updateUser = async (
   request: APIRequestContext,
   directory: Directory,
   userId: string,
-  updatedUser: any
+  updatedUser: any,
+  isPatch: boolean
 ) => {
   const scimOpEndpoint = scimOpUrl(directory, `Users/${userId}`);
-
-  const response = await request.patch(scimOpEndpoint, {
-    data: updatedUser,
-    headers: {
-      Authorization: `Bearer ${directory.scim.secret}`,
-    },
-  });
+  const response = isPatch
+    ? await request.patch(scimOpEndpoint, {
+        data: updatedUser,
+        headers: {
+          Authorization: `Bearer ${directory.scim.secret}`,
+        },
+      })
+    : await request.put(scimOpEndpoint, {
+        data: updatedUser,
+        headers: {
+          Authorization: `Bearer ${directory.scim.secret}`,
+        },
+      });
 
   expect(response.ok()).toBe(true);
   expect(response.status()).toBe(200);

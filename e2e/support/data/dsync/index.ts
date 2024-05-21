@@ -1,4 +1,5 @@
 export * from './azure';
+export * from './okta';
 
 export enum DirectorySyncProviders {
   'azure-scim-v2' = 'Azure SCIM v2.0',
