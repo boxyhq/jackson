@@ -16,7 +16,7 @@ export const generateModel = (workspace, roles: string[]) => {
       currentField[2 + i] = objName; // mask
     }
 
-    javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+    javascriptGenerator.statementToCode(block, 'input');
 
     return '';
   };
@@ -84,7 +84,7 @@ javascriptGenerator['data_object_field_wrapper'] = function (block) {
   currentField = new Array(3);
   currentObject.set(objectName, currentField);
 
-  javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+  javascriptGenerator.statementToCode(block, 'input');
 
   return '';
 };
@@ -95,7 +95,7 @@ javascriptGenerator['data_object_field_type'] = function (block) {
   currentField[2] = 'Redact'; // mask
   currentField[3] = 'Redact'; // mask
 
-  javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+  javascriptGenerator.statementToCode(block, 'input');
 
   return '';
 };
@@ -104,7 +104,7 @@ javascriptGenerator['data_object_field_encryption'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[1] = objectName; // encryption
 
-  javascriptGenerator.statementToCode(block, 'input', javascriptGenerator.ORDER_NONE);
+  javascriptGenerator.statementToCode(block, 'input');
 
   return '';
 };
