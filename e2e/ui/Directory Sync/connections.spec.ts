@@ -134,7 +134,7 @@ for (const provider of providers) {
     await expect(page.getByRole('heading', { name: 'No groups found for this directory.' })).toBeVisible();
     await dsyncPage.switchToEventsView();
     await expect(
-      await page.getByRole('heading', { name: 'No webhook events found for this directory.' })
+      page.getByRole('heading', { name: 'No webhook events found for this directory.' })
     ).toBeVisible();
   });
 }
