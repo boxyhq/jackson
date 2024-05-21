@@ -138,7 +138,7 @@ class Sql implements DatabaseDriver {
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
     } else {
       console.warn(
-        'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
+        `Warning: ttl cleanup not enabled in ${sqlType} with engine ${this.options.engine}, set both "ttl" and "cleanupLimit" options to enable it!`
       );
     }
 

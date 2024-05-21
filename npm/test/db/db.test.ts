@@ -112,6 +112,8 @@ const sqliteConfig = <DatabaseOption>{
   engine: 'sql',
   type: 'sqlite',
   url: 'file:///var/tmp/test-sqlite-database.db',
+  ttl: 1,
+  cleanupLimit: 10,
 };
 
 const dbs = [
