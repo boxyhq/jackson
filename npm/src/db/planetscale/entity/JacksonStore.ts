@@ -46,7 +46,7 @@ export class JacksonStore {
   @Index('_jackson_store_namespace')
   @Column({
     type: 'varchar',
-    length: 64,
+    length: 256,
     nullable: true,
   })
   namespace?: string;
