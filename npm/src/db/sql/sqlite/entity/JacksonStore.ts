@@ -5,7 +5,7 @@ export class JacksonStore {
   @Column({
     primary: true,
     type: 'varchar',
-    length: 250,
+    length: 1500,
   })
   key!: string;
 
