@@ -7,6 +7,10 @@ const config: PlaywrightTestConfig = {
   globalSetup: require.resolve('./e2e/support/globalSetup'),
   // Timeout per test
   timeout: 100 * 1000,
+  // Assertion timeout
+  expect: {
+    timeout: 10 * 1000,
+  },
   // Test directory
   testDir: path.join(__dirname, 'e2e'),
   // If a test fails, retry it additional 3 times
