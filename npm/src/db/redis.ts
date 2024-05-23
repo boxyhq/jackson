@@ -14,9 +14,7 @@ class Redis implements DatabaseDriver {
     const opts = {};
 
     if (this.options && this.options.url) {
-      opts['socket'] = {
-        url: this.options.url,
-      };
+      opts['url'] = this.options.url;
     }
 
     this.client = redis.createClient(opts);
