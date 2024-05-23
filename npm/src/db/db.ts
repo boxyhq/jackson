@@ -1,5 +1,6 @@
 import {
   DatabaseDriver,
+  DatabaseDriverOption,
   DatabaseOption,
   Encrypted,
   EncryptionKey,
@@ -126,8 +127,12 @@ class DB implements DatabaseDriver {
   }
 }
 
-const _new = async (options: DatabaseOption) => {
+const _new = async (options: DatabaseOption | DatabaseDriverOption) => {
   const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
+
+  if ('driver' in options) {
+    return new DB(options.driver, encryptionKey)
+  }
 
   switch (options.engine) {
     case 'redis':
@@ -186,7 +191,7 @@ const _new = async (options: DatabaseOption) => {
 const g = global as any;
 
 export default {
-  new: async (options: DatabaseOption, noCache = false) => {
+  new: async (options: DatabaseOption | DatabaseDriverOption, noCache = false) => {
     if (g.__jacksonDb && !noCache) {
       return g.__jacksonDb;
     }
