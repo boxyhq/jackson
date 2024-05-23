@@ -20,8 +20,13 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "baseUrl": "../",
+    "paths": {
+      "@db-utils/*": ["./packages/db-utils/src/**/*"],
+      "@db-sqlite/*": ["./packages/db-sqlite/src/**/*"]
+    }
   },
-  "include": ["./src/**/*"],
+  "include": ["./npm/src/**/*", "./packages/db-utils/src/**/*", "./packages/db-sqlite/src/**/*"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true,

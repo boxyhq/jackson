@@ -1,7 +1,8 @@
-import { DatabaseOption, EncryptionKey, Storable, DatabaseDriver } from '../../src/typings';
+import {DatabaseOption, EncryptionKey, Storable, DatabaseDriver, DatabaseDriverOption} from '../../src/typings';
 import tap from 'tap';
 import DB from '../../src/db/db';
 import { randomBytes } from 'crypto';
+import {SqliteDB} from '../../../packages/db-sqlite/src/index'
 
 const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
 
@@ -126,6 +127,15 @@ const sqliteConfig = <DatabaseOption>{
   pageLimit: 2,
 };
 
+const sqliteDbConfig = <DatabaseDriverOption>{
+  driver: SqliteDB.new({
+    url: 'file:///var/tmp/test-sqlite-database.db',
+    ttl: 1,
+    cleanupLimit: 10,
+    manualMigration: true,
+  }),
+}
+
 const dbs = [
   {
     ...memDbConfig,
@@ -190,6 +200,9 @@ const dbs = [
     ...tursoConfig,
     encryptionKey,
   },
+    ...sqliteDbConfig,
+    encryptionKey
+  }
 ];
 
 if (process.env.PLANETSCALE_URL) {
@@ -220,7 +233,8 @@ tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
     const db = await DB.new(opts, true);
-    dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
+    const dbName = 'driver' in opts ? typeof opts.driver : opts.engine! + (opts.type ? opts.type : '')
+    dbObjs[dbName] = db;
 
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession + randomBytes(4).toString('hex')));
@@ -236,10 +250,11 @@ tap.test('dbs', async () => {
   for (const idx in connectionStores) {
     const connectionStore = connectionStores[idx];
     const ttlStore = ttlStores[idx];
-    const dbEngine = dbs[idx].engine!;
+    const db = dbs[idx];
+    const dbEngine = 'driver' in db ? typeof db.driver : db.engine!;
     let dbType = dbEngine;
-    if (dbs[idx].type) {
-      dbType += ': ' + dbs[idx].type;
+    if (!('driver' in db) && db.type) {
+      dbType += ': ' + db.type;
     }
 
     tap.test('put(): ' + dbType, async () => {
