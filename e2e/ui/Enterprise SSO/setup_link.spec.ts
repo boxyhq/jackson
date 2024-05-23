@@ -3,7 +3,8 @@ import { Portal } from 'e2e/support/fixtures';
 
 const TEST_SETUPLINK_REDIRECT_URL = 'http://localhost:3366';
 const TEST_SETUPLINK_DEFAULT_REDIRECT_URL = 'http://localhost:3366/login/saml';
-const TEST_SETUPLINK_MOCK_METADATA_URL = 'https://mocksaml.com/api/namespace/setuplink-test/saml/metadata';
+const TEST_SETUPLINK_MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
+const TEST_SETUPLINK_MOCK_METADATA_URL = `${TEST_SETUPLINK_MOCKSAML_ORIGIN}/api/saml/metadata`;
 const TEST_SETUPLINK_URL_LABEL_SELECTOR =
   'Share this link with your customers to allow them to set up the integrationClose';
 const TEST_SETUPLINK_ADMIN_URL = '/admin/sso-connection/setup-link';
@@ -66,16 +67,16 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
     // Go to admin/sso-connection/setup-link page and create setup link
     await page.goto(TEST_SETUPLINK_ADMIN_URL);
     await page.getByRole('button', { name: 'New Setup Link' }).click();
-    await page.locator('input[type="text"]').nth(0).fill('acme-test');
-    await page.locator('input[type="text"]').nth(1).fill('acme test');
-    await page.locator('input[type="text"]').nth(2).fill(tenant);
-    await page.locator('input[type="text"]').nth(3).fill(product);
-    await page.locator('textarea').nth(0).fill(TEST_SETUPLINK_REDIRECT_URL);
-    await page.locator('input[type="url"]').nth(0).fill(TEST_SETUPLINK_DEFAULT_REDIRECT_URL);
+    await page.getByPlaceholder('Acme SSO').fill('acme-test');
+    await page.getByLabel('Description (Optional)').fill('acme test');
+    await page.getByPlaceholder('acme', { exact: true }).fill(tenant);
+    await page.getByPlaceholder('MyApp').fill(product);
+    await page.getByPlaceholder('http://localhost:3366', { exact: true }).fill(TEST_SETUPLINK_REDIRECT_URL);
+    await page.getByPlaceholder('http://localhost:3366/login/').fill(TEST_SETUPLINK_DEFAULT_REDIRECT_URL);
+
     await page.getByRole('button', { name: 'Create Setup Link' }).click();
 
     // Extract generated setup link
-    await page.locator('input[type="text"]').first().click();
     const linkContent = await page
       .getByText(TEST_SETUPLINK_URL_LABEL_SELECTOR)
       .locator('input[type="text"]')
@@ -83,8 +84,6 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
       .inputValue();
 
     // Go back to new connections page
-    await page.getByRole('button', { name: 'Close' }).click();
-    await page.getByRole('link', { name: 'Back' }).click();
     await page.goto(TEST_SETUPLINK_ADMIN_URL);
 
     // Await for rows loaded
@@ -99,7 +98,6 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
     const page1 = await context.newPage();
     await page1.waitForLoadState();
     await page1.goto(linkContent);
-    await page1.bringToFront();
 
     // Create SSO connection using generic SAML 2.0 workflow
     await page1.getByRole('button', { name: 'Generic SAML 2.0' }).click();
@@ -110,13 +108,10 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
     await page1.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
     await page1.getByRole('button', { name: 'Save' }).click();
 
-    await page.bringToFront();
     await page1.close();
-    await page.reload();
 
     // Go to connections page
     await page.goto(TEST_SETUPLINK_ADMIN_CONNECTION);
-    await page.reload();
 
     // Check if new connection button is enabled
     const connButtonEnabled = page.getByTestId('create-connection').isEnabled();
@@ -124,7 +119,6 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
 
     await page.getByTestId('create-connection').click();
     await page.getByRole('link', { name: 'Back' }).click();
-    await page.reload();
 
     // wait for page to reload by checking if connection button is enabled
     await retryForCondition(connButtonEnabled);
@@ -143,7 +137,6 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
 
     // Go back to setup link admin url
     await page.goto(TEST_SETUPLINK_ADMIN_URL);
-    await page.reload();
     const newSetupLinkEnabled = page.getByRole('button', { name: 'New Setup Link' }).isEnabled();
     await retryForCondition(newSetupLinkEnabled);
 
