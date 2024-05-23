@@ -1,6 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'jackson_store' })
 export class JacksonStore {
   @Column({
     primary: true,
@@ -30,7 +30,7 @@ export class JacksonStore {
 
   @Column({
     type: 'datetime',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: () => "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))",
     nullable: false,
   })
   createdAt?: Date;
@@ -41,9 +41,10 @@ export class JacksonStore {
   })
   modifiedAt?: string;
 
+  @Index('_jackson_store_namespace')
   @Column({
     type: 'varchar',
-    length: 64,
+    length: 256,
     nullable: true,
   })
   namespace?: string;

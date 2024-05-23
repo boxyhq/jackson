@@ -114,6 +114,7 @@ const sqliteConfig = <DatabaseOption>{
   url: 'file:///var/tmp/test-sqlite-database.db',
   ttl: 1,
   cleanupLimit: 10,
+  pageLimit: 2,
 };
 
 const dbs = [
@@ -165,6 +166,9 @@ const dbs = [
   {
     ...mssqlDbConfig,
     encryptionKey,
+  },
+  {
+    ...sqliteConfig,
   },
   {
     ...sqliteConfig,
