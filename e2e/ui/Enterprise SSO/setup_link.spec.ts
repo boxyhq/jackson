@@ -1,4 +1,4 @@
-import { Locator, Page, expect, test as baseTest } from '@playwright/test';
+import { expect, test as baseTest } from '@playwright/test';
 import { Portal } from 'e2e/support/fixtures';
 
 const TEST_SETUPLINK_REDIRECT_URL = 'http://localhost:3366';
@@ -21,43 +21,6 @@ export const test = baseTest.extend<MyFixtures>({
     await use(portal);
   },
 });
-
-async function retryForCondition(condition: Promise<any>, retries = 10, retryInterval = 500) {
-  while (retries) {
-    if (await condition) {
-      break;
-    } else {
-      setTimeout(() => {
-        retries -= 1;
-      }, retryInterval);
-    }
-  }
-}
-
-async function getRowByTenantProduct(
-  page: Page,
-  tenant: string,
-  product: string,
-  tenantProductIndexes: Array<number>
-): Promise<Locator | string> {
-  const rows = await page.getByRole('row').all();
-  const setupLinks = await Promise.all(rows.map(async (el: Locator) => el));
-  let row: Locator | string = '';
-
-  for (const link of setupLinks) {
-    const el = await link.innerText();
-    const cellContents = el.split('\t');
-    if (
-      cellContents.length > 1 &&
-      cellContents[tenantProductIndexes[0]] === tenant &&
-      cellContents[tenantProductIndexes[1]] === product
-    ) {
-      row = link;
-    }
-  }
-
-  return row;
-}
 
 test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', () => {
   test('should be able to create setup link and sso connection using generic SAML 2.0', async ({ page }) => {
@@ -89,66 +52,60 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
     // Await for rows loaded
     await expect(page.getByRole('table')).toBeVisible();
 
-    // Get single row containing setuplink
-    let linkRow = await getRowByTenantProduct(page, tenant, product, [0, 1]);
-    expect(linkRow, 'Failed to create setup link').toBeTruthy();
+    // Check if setup link is created
+    await expect(page.getByText(tenant, { exact: true }), 'Failed to create setup link').toBeVisible();
+    await expect(page.getByText(product, { exact: true }), 'Failed to create setup link').toBeVisible();
 
     // Open new tab and go to setup link page
     const context = page.context();
-    const page1 = await context.newPage();
-    await page1.waitForLoadState();
-    await page1.goto(linkContent);
+    const setupLinkPage = await context.newPage();
+    await setupLinkPage.goto(linkContent);
 
     // Create SSO connection using generic SAML 2.0 workflow
-    await page1.getByRole('button', { name: 'Generic SAML 2.0' }).click();
-    await page1.getByRole('button', { name: 'Next Step' }).click();
-    await page1.getByRole('button', { name: 'Next Step' }).click();
-    await page1.getByPlaceholder('Paste the Metadata URL here').click();
-    await page1.getByPlaceholder('Paste the Metadata URL here').isVisible();
-    await page1.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
-    await page1.getByRole('button', { name: 'Save' }).click();
+    await setupLinkPage.getByRole('button', { name: 'Generic SAML 2.0' }).click();
+    await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+    await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+    await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').click();
+    await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').isVisible();
+    await setupLinkPage
+      .getByPlaceholder('Paste the Metadata URL here')
+      .fill(TEST_SETUPLINK_MOCK_METADATA_URL);
+    await setupLinkPage.getByRole('button', { name: 'Save' }).click();
 
-    await page1.close();
+    await setupLinkPage.waitForURL(/\/setup\/.+\/sso-connection$/);
+    await expect(setupLinkPage.getByRole('cell', { name: 'saml.example.com' })).toBeVisible();
+    await expect(page.getByRole('table')).toBeVisible();
+    await setupLinkPage.close();
 
     // Go to connections page
     await page.goto(TEST_SETUPLINK_ADMIN_CONNECTION);
-
-    // Check if new connection button is enabled
-    const connButtonEnabled = page.getByTestId('create-connection').isEnabled();
-    await retryForCondition(connButtonEnabled);
-
-    await page.getByTestId('create-connection').click();
-    await page.getByRole('link', { name: 'Back' }).click();
-
-    // wait for page to reload by checking if connection button is enabled
-    await retryForCondition(connButtonEnabled);
 
     // Await for rows loaded
     await expect(page.getByRole('table')).toBeVisible();
 
     // Check if new SSO connection is created
-    const createdConnRow = await getRowByTenantProduct(page, tenant, product, [2, 3]);
-    expect(createdConnRow, 'Failed to create new sso connection from setup-link').toBeTruthy();
+    await expect(
+      page.getByText(tenant, { exact: true }),
+      'Failed to create new sso connection from setup-link'
+    ).toBeVisible();
+    await expect(
+      page.getByText(product, { exact: true }),
+      'Failed to create new sso connection from setup-link'
+    ).toBeVisible();
 
     // Delete the SSO connection
-    await (createdConnRow as Locator).getByLabel('Edit').click();
+    await page.getByLabel('Edit').click();
     await page.getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('button', { name: 'Confirm' }).click();
 
     // Go back to setup link admin url
     await page.goto(TEST_SETUPLINK_ADMIN_URL);
-    const newSetupLinkEnabled = page.getByRole('button', { name: 'New Setup Link' }).isEnabled();
-    await retryForCondition(newSetupLinkEnabled);
 
     // Await for rows loaded
     await expect(page.getByRole('table')).toBeVisible();
 
-    linkRow = await getRowByTenantProduct(page, tenant, product, [0, 1]);
-
     // Delete the created setuplink
-    if (linkRow) {
-      await (createdConnRow as Locator).getByRole('button').nth(3).click();
-      await page.getByRole('button', { name: 'Delete' }).click();
-    }
+    await page.getByRole('button').nth(5).click();
+    await page.getByRole('button', { name: 'Delete' }).click();
   });
 });
