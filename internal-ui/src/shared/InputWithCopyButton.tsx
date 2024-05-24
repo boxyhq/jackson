@@ -19,7 +19,15 @@ export const CopyToClipboardButton = ({ text }: { text: string }) => {
   );
 };
 
-export const InputWithCopyButton = ({ text, label }: { text: string; label: string }) => {
+export const InputWithCopyButton = ({
+  text,
+  label,
+  autofocus = false,
+}: {
+  text: string;
+  label: string;
+  autofocus?: boolean;
+}) => {
   const id = label.replace(/ /g, '');
   return (
     <>
@@ -36,6 +44,7 @@ export const InputWithCopyButton = ({ text, label }: { text: string; label: stri
         key={text}
         readOnly
         className='input-bordered input w-full text-sm'
+        autoFocus={autofocus}
       />
     </>
   );
