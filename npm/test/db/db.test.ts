@@ -108,6 +108,15 @@ const dynamoDbConfig = <DatabaseOption>{
   },
 };
 
+const tursoConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'sqlite',
+  url: 'http://localhost:8080',
+  ttl: 1,
+  cleanupLimit: 10,
+  pageLimit: 2,
+};
+
 const sqliteConfig = <DatabaseOption>{
   engine: 'sql',
   type: 'sqlite',
@@ -174,6 +183,13 @@ const dbs = [
     ...sqliteConfig,
     encryptionKey,
   },
+  {
+    ...tursoConfig,
+  },
+  {
+    ...tursoConfig,
+    encryptionKey
+  }
 ];
 
 if (process.env.PLANETSCALE_URL) {
