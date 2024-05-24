@@ -58,14 +58,6 @@ class Sql implements DatabaseDriver {
             driver: require('@libsql/sqlite3'),
             ...baseOpts,
           });
-        } else if (this.options.engine === 'turso') {
-          // until full support is available: https://github.com/typeorm/typeorm/issues/10451#issuecomment-1905201669
-          this.dataSource = new DataSource(<DataSourceOptions>{
-            database: this.options.url,
-            driver: require('@libsql/sqlite3'),
-            flags: 0x00000040, // this is required to make it work in TypeORM
-            ...baseOpts,
-          });
         } else {
           this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,

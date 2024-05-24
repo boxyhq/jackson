@@ -191,15 +191,6 @@ const _new = async (options: DatabaseOption) => {
       return new DB(await mem.new(options), encryptionKey);
     case 'dynamodb':
       return new DB(await dynamodb.new(options), encryptionKey);
-    case 'turso':
-      return new DB(
-        await sql.new(options, {
-          JacksonStore: JacksonStoreSQLITE,
-          JacksonIndex: JacksonIndexSQLITE,
-          JacksonTTL: JacksonTTLSQLITE,
-        }),
-        encryptionKey
-      );
     default:
       throw new Error('unsupported db engine: ' + options.engine);
   }
