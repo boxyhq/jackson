@@ -455,6 +455,7 @@ tap.test('dbs', async () => {
       t.same(ret0.data, [record2], 'unable to get index "city" after delete');
 
       await connectionStore.delete(record2.id);
+      await connectionStore.delete(record3.id);
 
       const ret1 = await connectionStore.get(record1.id);
       const ret2 = await connectionStore.get(record2.id);
