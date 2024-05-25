@@ -5,6 +5,7 @@ const users = [
     name: {
       givenName: 'Jackson',
       familyName: 'M',
+      formatted: 'Jackson M',
     },
     emails: [
       {
@@ -13,11 +14,15 @@ const users = [
         type: 'work',
       },
     ],
+    meta: {
+      resourceType: 'User',
+    },
     displayName: 'Jackson M',
     locale: 'en-US',
     externalId: '00u5b1hpjh9tGaknX5d7',
     groups: [],
     active: true,
+    title: 'Manager',
   },
   {
     schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],

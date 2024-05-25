@@ -1,2 +1,3 @@
-export { Portal } from './portal';
-export { SSOPage } from './sso-page';
+export * from './portal';
+export * from './sso-page';
+export * from './dsync-page';

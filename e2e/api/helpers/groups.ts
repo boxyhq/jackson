@@ -1,8 +1,10 @@
 import { expect, type APIRequestContext } from '@playwright/test';
 import type { Directory, Group } from '@boxyhq/saml-jackson';
+import { scimOpUrl } from './utils';
 
 export const createGroup = async (request: APIRequestContext, directory: Directory, group: any) => {
-  const response = await request.post(`${directory.scim.path}/Groups`, {
+  const scimOpEndpoint = scimOpUrl(directory, 'Groups');
+  const response = await request.post(scimOpEndpoint, {
     data: group,
     headers: {
       Authorization: `Bearer ${directory.scim.secret}`,
@@ -21,7 +23,8 @@ export const addGroupMember = async (
   group: Group,
   member: string
 ) => {
-  const response = await request.patch(`${directory.scim.path}/Groups/${group.id}`, {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${group.id}`);
+  const response = await request.patch(scimOpEndpoint, {
     data: {
       Operations: [
         {
@@ -92,4 +95,44 @@ export const getGroupsByDirectoryId = async (request: APIRequestContext, directo
 
   const data = await response.json();
   return data.Resources;
+};
+
+export const deleteGroup = async (request: APIRequestContext, directory: Directory, groupId: string) => {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${groupId}`);
+
+  const response = await request.delete(scimOpEndpoint, {
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
+
+  return await response.json();
+};
+
+export const updateGroupName = async (
+  request: APIRequestContext,
+  directory: Directory,
+  groupId: string,
+  newName: string
+) => {
+  const scimOpEndpoint = scimOpUrl(directory, `Groups/${groupId}`);
+  const response = await request.patch(scimOpEndpoint, {
+    data: {
+      Operations: [
+        {
+          op: 'replace',
+          path: 'displayName',
+          value: newName,
+        },
+      ],
+    },
+    headers: {
+      Authorization: `Bearer ${directory.scim.secret}`,
+    },
+  });
+  expect(response.ok()).toBe(true);
+  expect(response.status()).toBe(200);
 };

@@ -19,19 +19,32 @@ export const CopyToClipboardButton = ({ text }: { text: string }) => {
   );
 };
 
-export const InputWithCopyButton = ({ text, label }: { text: string; label: string }) => {
+export const InputWithCopyButton = ({
+  text,
+  label,
+  autofocus = false,
+}: {
+  text: string;
+  label: string;
+  autofocus?: boolean;
+}) => {
+  const id = label.replace(/ /g, '');
   return (
     <>
       <div className='flex justify-between'>
-        <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>{label}</label>
+        <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300' htmlFor={id}>
+          {label}
+        </label>
         <CopyToClipboardButton text={text} />
       </div>
       <input
+        id={id}
         type='text'
         defaultValue={text}
         key={text}
         readOnly
         className='input-bordered input w-full text-sm'
+        autoFocus={autofocus}
       />
     </>
   );
