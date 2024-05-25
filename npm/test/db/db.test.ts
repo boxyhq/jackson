@@ -188,8 +188,8 @@ const dbs = [
   },
   {
     ...tursoConfig,
-    encryptionKey
-  }
+    encryptionKey,
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {

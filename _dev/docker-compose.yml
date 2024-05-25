@@ -55,8 +55,8 @@ services:
     image: ghcr.io/tursodatabase/libsql-server:latest
     platform: linux/amd64
     ports:
-      - "8080:8080"
-      - "5001:5001"
+      - '8080:8080'
+      - '5001:5001'
     # environment:
     #   - SQLD_NODE=primary
     command: '/bin/sqld --enable-http-console'
