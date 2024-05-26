@@ -1,4 +1,5 @@
 import { JacksonOption } from '../typings';
+import { DEFAULT_POSTGRES_SCHEMA } from './constants';
 
 export default function defaultDb(opts: JacksonOption) {
   opts.db = opts.db || {};
@@ -12,6 +13,8 @@ export default function defaultDb(opts: JacksonOption) {
   opts.db.dynamodb.readCapacityUnits = opts.db.dynamodb.readCapacityUnits || 5;
   opts.db.dynamodb.writeCapacityUnits = opts.db.dynamodb.writeCapacityUnits || 5;
   opts.db.manualMigration = opts.db.manualMigration || false;
+  opts.db.postgres = opts.db.postgres || {};
+  opts.db.postgres.schema = opts.db.postgres.schema || DEFAULT_POSTGRES_SCHEMA;
 
   return opts;
 }

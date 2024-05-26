@@ -50,6 +50,9 @@ const db: DatabaseOption = {
     writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
   manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
+  postgres: {
+    schema: process.env.POSTGRES_SCHEMA,
+  },
 };
 
 /** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */

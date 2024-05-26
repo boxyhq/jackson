@@ -419,6 +419,9 @@ export interface DatabaseOption {
     writeCapacityUnits?: number;
   };
   manualMigration?: boolean;
+  postgres?: {
+    schema?: string;
+  };
 }
 
 export interface JacksonOption {
