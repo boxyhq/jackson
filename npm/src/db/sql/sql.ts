@@ -52,6 +52,12 @@ class Sql implements DatabaseDriver {
             options: mssqlOpts.options,
             ...baseOpts,
           });
+        } else if (sqlType === 'sqlite') {
+          this.dataSource = new DataSource(<DataSourceOptions>{
+            database: this.options.url,
+            driver: require('@libsql/sqlite3'),
+            ...baseOpts,
+          });
         } else {
           this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,
@@ -123,7 +129,7 @@ class Sql implements DatabaseDriver {
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
     } else {
       console.warn(
-        'Warning: ttl cleanup not enabled, set both "ttl" and "cleanupLimit" options to enable it!'
+        `Warning: ttl cleanup not enabled in ${sqlType} with engine ${this.options.engine}, set both "ttl" and "cleanupLimit" options to enable it!`
       );
     }
 

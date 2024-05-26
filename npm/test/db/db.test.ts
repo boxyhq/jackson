@@ -108,6 +108,24 @@ const dynamoDbConfig = <DatabaseOption>{
   },
 };
 
+const tursoConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'sqlite',
+  url: 'http://localhost:8080',
+  ttl: 1,
+  cleanupLimit: 10,
+  pageLimit: 2,
+};
+
+const sqliteConfig = <DatabaseOption>{
+  engine: 'sql',
+  type: 'sqlite',
+  url: 'file:///var/tmp/test-sqlite-database.db',
+  ttl: 1,
+  cleanupLimit: 10,
+  pageLimit: 2,
+};
+
 const dbs = [
   {
     ...memDbConfig,
@@ -156,6 +174,20 @@ const dbs = [
   },
   {
     ...mssqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...sqliteConfig,
+  },
+  {
+    ...sqliteConfig,
+    encryptionKey,
+  },
+  {
+    ...tursoConfig,
+  },
+  {
+    ...tursoConfig,
     encryptionKey,
   },
 ];
@@ -423,6 +455,7 @@ tap.test('dbs', async () => {
       t.same(ret0.data, [record2], 'unable to get index "city" after delete');
 
       await connectionStore.delete(record2.id);
+      await connectionStore.delete(record3.id);
 
       const ret1 = await connectionStore.get(record1.id);
       const ret2 = await connectionStore.get(record2.id);

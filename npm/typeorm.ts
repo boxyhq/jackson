@@ -13,6 +13,7 @@ if (process.env.DB_ENGINE === 'planetscale') {
 } else {
   switch (type) {
     case 'mssql':
+    case 'sqlite':
       entitiesDir = `sql/${type}`;
       break;
     case 'mariadb':
@@ -45,7 +46,7 @@ const baseOpts = {
   logging: 'all',
   entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
   migrations:
-    type === 'mssql'
+    type === 'mssql' || type === 'sqlite'
       ? [`migration/${migrationsDir}/**/*.ts`]
       : [`migration/${migrationsDir}/**/*.ts`, `migration/sql/**/*.ts`],
 };
@@ -59,6 +60,12 @@ if (type === 'mssql') {
     username: mssqlOpts.username,
     password: mssqlOpts.password,
     options: mssqlOpts.options,
+    ...baseOpts,
+  });
+} else if (type === 'sqlite') {
+  AppDataSource = new DataSource(<DataSourceOptions>{
+    database: url,
+    driver: require('@libsql/sqlite3'),
     ...baseOpts,
   });
 } else {

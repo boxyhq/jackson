@@ -48,3 +48,4 @@ public/terminus/sprites.png
 **/.tap/**
 
 internal-ui/dist
+_dev/docker/libsql/iku.db
