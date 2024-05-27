@@ -43,8 +43,46 @@ test.describe('Admin Portal Enterprise SSO SetupLink using generic SAML 2.0', ()
 
     // Create SSO connection using generic SAML 2.0 workflow
     await setupLinkPage.getByRole('button', { name: 'Generic SAML 2.0' }).click();
+
+    // check mdx generated content using remart-gfm plugin for step1
+    await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Configuration SAML' })).toBeVisible();
+    let p1 = await setupLinkPage.getByText('Your Identity Provider (IdP)').textContent();
+    expect(
+      p1 ===
+        'Your Identity Provider (IdP) will ask for the following information while configuring the SAML application.'
+    ).toBeTruthy();
+
+    let p2 = await setupLinkPage.getByText('Please do not add a trailing').textContent();
+    expect(p2 === 'Please do not add a trailing slash at the end of the URLs.').toBeTruthy();
+
+    const p3 = await setupLinkPage.getByText('Create them exactly as shown').textContent();
+    expect(p3 === 'Create them exactly as shown below:').toBeTruthy();
+
     await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+    // check mdx generated content using remart-gfm plugin for step2
+    await expect(setupLinkPage.getByRole('heading', { name: 'Step 2: SAML Profile/Claims/' })).toBeVisible();
+    p1 = await setupLinkPage.getByText('We try and support 4').textContent();
+    expect(p1 === 'We try and support 4 attributes in the SAML claims:').toBeTruthy();
+
+    p2 = await setupLinkPage.getByText('This is how the common SAML').textContent();
+    expect(
+      p2 ===
+        'This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.'
+    ).toBeTruthy();
+
     await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+    // check mdx generated content using remart-gfm plugin for step3
+    await expect(
+      setupLinkPage.getByRole('heading', { name: 'Step 3: Create SAML Connection' })
+    ).toBeVisible();
+    p1 = await setupLinkPage.getByText('Enter the Identity Provider').textContent();
+    expect(
+      p1 ===
+        'Enter the Identity Provider Metadata below. You can either enter the metadata URL or paste the XML file content directly.'
+    ).toBeTruthy();
+
     await setupLinkPage
       .getByPlaceholder('Paste the Metadata URL here')
       .fill(TEST_SETUPLINK_MOCK_METADATA_URL);
