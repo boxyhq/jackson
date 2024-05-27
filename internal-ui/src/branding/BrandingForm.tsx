@@ -1,6 +1,6 @@
 import type { Branding, IdentityFederationApp } from '../types';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary, Error, Loading } from '../shared';
+import { ButtonPrimary, Card, Error, Loading } from '../shared';
 import { useFormik } from 'formik';
 import { useFetch } from '../hooks';
 
@@ -62,62 +62,64 @@ export const BrandingForm = ({
   }
 
   return (
-    <>
-      <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('settings_branding_title')}</h2>
-      <p className='py-3 text-base leading-6 text-gray-800'>{t('settings_branding_description')}</p>
-      <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-        <form onSubmit={formik.handleSubmit}>
-          <div className='flex flex-col space-y-2'>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
+    <form onSubmit={formik.handleSubmit}>
+      <Card>
+        <Card.Body>
+          <Card.Header>
+            <Card.Title>{t('bui-fs-branding-title')}</Card.Title>
+            <Card.Description>{t('bui-fs-branding-desc')}</Card.Description>
+          </Card.Header>
+          <div className='flex flex-col'>
+            <div className='form-control w-full'>
+              <label className='label' htmlFor='logoUrl'>
                 <span className='label-text'>{t('bui-shared-logo-url')}</span>
               </label>
               <input
                 type='url'
                 id='logoUrl'
-                className='input-bordered input'
+                className='input-bordered input text-sm'
                 onChange={formik.handleChange}
                 value={formik.values.logoUrl}
                 placeholder='https://company.com/logo.png'
               />
-              <label className='label'>
+              <div className='label'>
                 <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
-              </label>
+              </div>
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
+            <div className='form-control w-full'>
+              <label className='label' htmlFor='faviconUrl'>
                 <span className='label-text'>{t('bui-shared-favicon-url')}</span>
               </label>
               <input
                 type='url'
                 id='faviconUrl'
-                className='input-bordered input'
+                className='input-bordered input text-sm'
                 onChange={formik.handleChange}
                 value={formik.values.faviconUrl}
                 placeholder='https://company.com/favicon.ico'
               />
-              <label className='label'>
+              <div className='label'>
                 <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
-              </label>
+              </div>
             </div>
-            <div className='form-control w-full md:w-1/2'>
-              <label className='label'>
+            <div className='form-control w-full'>
+              <label className='label' htmlFor='companyName'>
                 <span className='label-text'>{t('branding_company_name_label')}</span>
               </label>
               <input
                 type='text'
                 id='companyName'
-                className='input-bordered input'
+                className='input-bordered input text-sm'
                 onChange={formik.handleChange}
                 value={formik.values.companyName}
                 placeholder={t('branding_company_name_label')}
               />
-              <label className='label'>
+              <div className='label'>
                 <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
-              </label>
+              </div>
             </div>
             <div className='form-control'>
-              <label className='label'>
+              <label className='label' htmlFor='primaryColor'>
                 <span className='label-text'>{t('bui-shared-primary-color')}</span>
               </label>
               <input
@@ -126,18 +128,18 @@ export const BrandingForm = ({
                 onChange={formik.handleChange}
                 value={formik.values.primaryColor}
               />
-              <label className='label'>
+              <div className='label'>
                 <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
-              </label>
-            </div>
-            <div className='mt-5'>
-              <ButtonPrimary loading={formik.isSubmitting} disabled={!formik.dirty || !formik.isValid}>
-                {t('bui-shared-save-changes')}
-              </ButtonPrimary>
+              </div>
             </div>
           </div>
-        </form>
-      </div>
-    </>
+        </Card.Body>
+        <Card.Footer>
+          <ButtonPrimary loading={formik.isSubmitting} disabled={!formik.dirty || !formik.isValid}>
+            {t('bui-shared-save-changes')}
+          </ButtonPrimary>
+        </Card.Footer>
+      </Card>
+    </form>
   );
 };
