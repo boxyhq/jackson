@@ -9,11 +9,15 @@ export const BrandingForm = ({
   urls,
   onUpdate,
   onError,
+  title,
+  description,
 }: {
   defaults: Partial<Branding>;
   urls: { getBranding: string; patch?: string; post?: string };
   onUpdate?: (data: IdentityFederationApp | Branding) => void;
   onError?: (error: Error) => void;
+  title?: string;
+  description?: string;
 }) => {
   const { t } = useTranslation('common');
 
@@ -66,8 +70,8 @@ export const BrandingForm = ({
       <Card>
         <Card.Body>
           <Card.Header>
-            <Card.Title>{t('bui-fs-branding-title')}</Card.Title>
-            <Card.Description>{t('bui-fs-branding-desc')}</Card.Description>
+            {title && <Card.Title>{title}</Card.Title>}
+            {description && <Card.Description>{description}</Card.Description>}
           </Card.Header>
           <div className='flex flex-col'>
             <div className='form-control w-full'>

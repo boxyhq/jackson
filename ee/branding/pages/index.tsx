@@ -20,6 +20,8 @@ const Branding = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
       onError={(response) => {
         errorToast(response.message);
       }}
+      title={t('settings_branding_title')}
+      description={t('settings_branding_description')}
     />
   );
 };
