@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+type RefetchFunction = () => void;
+
 async function parseResponseContent(response: Response) {
   const responseText = await response.text();
 
@@ -14,10 +16,14 @@ export function useFetch<T>({ url }: { url: string }): {
   data?: T;
   isLoading: boolean;
   error: any;
+  refetch: RefetchFunction;
 } {
   const [data, setData] = useState<T>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
+  const [refetchIndex, setRefetchIndex] = useState<number>(0);
+
+  const refetch = () => setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1);
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +44,7 @@ export function useFetch<T>({ url }: { url: string }): {
       }
     }
     fetchData();
-  }, [url]);
+  }, [url, refetchIndex]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, refetch };
 }
