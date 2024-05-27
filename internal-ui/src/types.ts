@@ -157,3 +157,11 @@ export type SetupLink = {
   url: string;
   service: SetupLinkService;
 };
+
+// Branding options
+export type Branding = {
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  primaryColor: string | null;
+  companyName: string | null;
+};
