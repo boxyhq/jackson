@@ -160,8 +160,8 @@ export type SetupLink = {
 
 // Branding options
 export type Branding = {
-  logoUrl: string | null;
-  faviconUrl: string | null;
-  primaryColor: string | null;
-  companyName: string | null;
+  logoUrl: string;
+  faviconUrl: string;
+  primaryColor: string;
+  companyName: string;
 };

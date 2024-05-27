@@ -1,66 +1,72 @@
-import { useState } from 'react';
 import type { Branding, IdentityFederationApp } from '../types';
 import { useTranslation } from 'next-i18next';
-import { ButtonPrimary } from '../shared';
+import { ButtonPrimary, Error, Loading } from '../shared';
+import { useFormik } from 'formik';
+import { useFetch } from '../hooks';
 
 export const BrandingForm = ({
+  defaults,
   urls,
   onUpdate,
   onError,
 }: {
-  urls: { getBranding: string; updateBranding: string };
+  defaults: Partial<Branding>;
+  urls: { getBranding: string; patch?: string; post?: string };
   onUpdate?: (data: IdentityFederationApp | Branding) => void;
   onError?: (error: Error) => void;
 }) => {
   const { t } = useTranslation('common');
 
-  const [loading, setLoading] = useState(false);
-  const [branding, setBranding] = useState<Branding>({
-    logoUrl: '',
-    faviconUrl: '',
-    companyName: '',
-    primaryColor: '',
+  const {
+    data,
+    isLoading: isLoadingBranding,
+    error,
+  } = useFetch<{ data: Branding }>({
+    url: urls.getBranding,
   });
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = event.target as HTMLInputElement;
+  const branding = data?.data;
 
-    setBranding({
-      ...branding,
-      [target.id]: target.value,
-    });
-  };
+  const formik = useFormik<Branding>({
+    initialValues: {
+      logoUrl: branding?.logoUrl || '',
+      faviconUrl: branding?.faviconUrl || '',
+      companyName: branding?.companyName || '',
+      primaryColor: branding?.primaryColor || defaults.primaryColor || '',
+    },
+    onSubmit: async (values) => {
+      const rawResponse = await fetch(urls.patch ?? urls.post!, {
+        method: urls.patch ? 'PATCH' : 'POST',
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const response = await rawResponse.json();
 
-  // Update Branding
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+      if (rawResponse.ok) {
+        onUpdate?.(response.data);
+      } else {
+        onError?.(response.error);
+      }
+    },
+    enableReinitialize: true,
+  });
 
-    setLoading(true);
+  if (isLoadingBranding) {
+    return <Loading />;
+  }
 
-    const rawResponse = await fetch(urls.updateBranding, {
-      method: 'POST',
-      body: JSON.stringify(branding),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  if (error) {
+    return <Error message={error.message} />;
+  }
 
-    setLoading(false);
-
-    const response = await rawResponse.json();
-
-    if (rawResponse.ok) {
-      onUpdate?.(response.data);
-    } else {
-      onError?.(response.error);
-    }
-  };
   return (
     <>
       <h2 className='mt-5 font-bold text-gray-700 md:text-xl'>{t('settings_branding_title')}</h2>
       <p className='py-3 text-base leading-6 text-gray-800'>{t('settings_branding_description')}</p>
       <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <div className='flex flex-col space-y-2'>
             <div className='form-control w-full md:w-1/2'>
               <label className='label'>
@@ -70,8 +76,8 @@ export const BrandingForm = ({
                 type='url'
                 id='logoUrl'
                 className='input-bordered input'
-                onChange={onChange}
-                value={branding.logoUrl || ''}
+                onChange={formik.handleChange}
+                value={formik.values.logoUrl}
                 placeholder='https://company.com/logo.png'
               />
               <label className='label'>
@@ -86,8 +92,8 @@ export const BrandingForm = ({
                 type='url'
                 id='faviconUrl'
                 className='input-bordered input'
-                onChange={onChange}
-                value={branding.faviconUrl || ''}
+                onChange={formik.handleChange}
+                value={formik.values.faviconUrl}
                 placeholder='https://company.com/favicon.ico'
               />
               <label className='label'>
@@ -102,8 +108,8 @@ export const BrandingForm = ({
                 type='text'
                 id='companyName'
                 className='input-bordered input'
-                onChange={onChange}
-                value={branding.companyName || ''}
+                onChange={formik.handleChange}
+                value={formik.values.companyName}
                 placeholder={t('branding_company_name_label')}
               />
               <label className='label'>
@@ -117,15 +123,17 @@ export const BrandingForm = ({
               <input
                 type='color'
                 id='primaryColor'
-                onChange={onChange}
-                value={branding.primaryColor || '#25c2a0'}
+                onChange={formik.handleChange}
+                value={formik.values.primaryColor}
               />
               <label className='label'>
                 <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
               </label>
             </div>
             <div className='mt-5'>
-              <ButtonPrimary loading={loading}>{t('bui-shared-save-changes')}</ButtonPrimary>
+              <ButtonPrimary loading={formik.isSubmitting} disabled={!formik.dirty || !formik.isValid}>
+                {t('bui-shared-save-changes')}
+              </ButtonPrimary>
             </div>
           </div>
         </form>
