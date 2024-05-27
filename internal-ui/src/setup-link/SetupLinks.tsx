@@ -1,4 +1,3 @@
-import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
@@ -6,10 +5,10 @@ import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
 import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
 
-import { addQueryParamsToPath, copyToClipboard, fetcher } from '../utils';
+import { addQueryParamsToPath, copyToClipboard } from '../utils';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
-import { usePaginate, useRouter } from '../hooks';
+import { usePaginate, useRouter, useFetch } from '../hooks';
 import type { IdentityFederationApp, SetupLink, SetupLinkService } from '../types';
 import {
   Loading,
@@ -65,10 +64,9 @@ export const SetupLinks = ({
   }
 
   const getLinksUrl = addQueryParamsToPath(urls.getLinks, params);
-  const { data, isLoading, error, mutate } = useSWR<{ data: SetupLink[]; pageToken?: string }>(
-    getLinksUrl,
-    fetcher
-  );
+  const { data, isLoading, error, refetch } = useFetch<{ data: SetupLink[]; pageToken?: string }>({
+    url: getLinksUrl,
+  });
 
   const nextPageToken = data?.pageToken;
 
@@ -201,7 +199,7 @@ export const SetupLinks = ({
       setDelModal(false);
       setSetupLink(null);
       onDelete(setupLink);
-      await mutate();
+      refetch();
     } else {
       onError(response.error);
     }
@@ -229,7 +227,7 @@ export const SetupLinks = ({
     if (rawResponse.ok) {
       onRegenerate(response.data);
       setShowRegenModal(false);
-      await mutate();
+      refetch();
       setSetupLink(response.data);
       setShowSetupLink(true);
     } else {
