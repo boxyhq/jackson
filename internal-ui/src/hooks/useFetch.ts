@@ -12,7 +12,7 @@ async function parseResponseContent(response: Response) {
   }
 }
 
-export function useFetch<T>({ url }: { url: string }): {
+export function useFetch<T>({ url }: { url?: string }): {
   data?: T;
   isLoading: boolean;
   error: any;
@@ -28,7 +28,7 @@ export function useFetch<T>({ url }: { url: string }): {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      const res = await fetch(url);
+      const res = await fetch(url!);
       setIsLoading(false);
       const resContent = await parseResponseContent(res);
 
@@ -43,7 +43,9 @@ export function useFetch<T>({ url }: { url: string }): {
         setError(resContent.error);
       }
     }
-    fetchData();
+    if (url) {
+      fetchData();
+    }
   }, [url, refetchIndex]);
 
   return { data, isLoading, error, refetch };
