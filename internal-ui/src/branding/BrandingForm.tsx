@@ -158,7 +158,10 @@ export const BrandingForm = ({
           </div>
         </Card.Body>
         <Card.Footer>
-          <ButtonPrimary loading={formik.isSubmitting} disabled={!formik.dirty || !formik.isValid}>
+          <ButtonPrimary
+            loading={formik.isSubmitting}
+            disabled={!formik.dirty || !formik.isValid}
+            type='submit'>
             {t('bui-shared-save-changes')}
           </ButtonPrimary>
         </Card.Footer>
