@@ -103,15 +103,6 @@ export const EditIdentityFederationApp = ({
           hideFields={{ companyName: true }}
           federatedAppId={app.id}
         />
-        {/* <EditBranding
-          app={app}
-          urls={{ patch: urls.updateApp }}
-          onError={onError}
-          onUpdate={(data) => {
-            mutate({ data });
-            onUpdate?.(data);
-          }}
-        /> */}
         <DeleteCard
           title={t('bui-fs-delete-app-title')}
           description={t('bui-fs-delete-app-desc')}
