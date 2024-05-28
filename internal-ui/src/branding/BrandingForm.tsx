@@ -14,7 +14,7 @@ export const BrandingForm = ({
   hideFields,
   federatedAppId,
 }: {
-  defaults: Partial<Branding>;
+  defaults?: Partial<Branding>;
   urls: { getBranding?: string; patch?: string; post?: string };
   onUpdate?: (data: IdentityFederationApp | Branding) => void;
   onError?: (error: Error) => void;
@@ -37,10 +37,10 @@ export const BrandingForm = ({
 
   const formik = useFormik<Branding>({
     initialValues: {
-      logoUrl: branding?.logoUrl || defaults.logoUrl || '',
-      faviconUrl: branding?.faviconUrl || defaults.faviconUrl || '',
-      companyName: branding?.companyName || defaults.companyName || '',
-      primaryColor: branding?.primaryColor || defaults.primaryColor || '',
+      logoUrl: branding?.logoUrl || defaults?.logoUrl || '',
+      faviconUrl: branding?.faviconUrl || defaults?.faviconUrl || '',
+      companyName: branding?.companyName || defaults?.companyName || '',
+      primaryColor: branding?.primaryColor || defaults?.primaryColor || '',
     },
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch ?? urls.post!, {
