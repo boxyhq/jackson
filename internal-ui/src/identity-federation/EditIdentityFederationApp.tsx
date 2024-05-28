@@ -1,6 +1,5 @@
 import useSWR from 'swr';
 import type { IdentityFederationApp } from '../types';
-// import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
 import { DeleteCard, Loading, ConfirmationModal } from '../shared';
