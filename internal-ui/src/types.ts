@@ -101,9 +101,9 @@ export type IdentityFederationApp = {
   product: string;
   acsUrl: string;
   entityId: string;
-  logoUrl: string | null;
-  faviconUrl: string | null;
-  primaryColor: string | null;
+  logoUrl?: string;
+  faviconUrl?: string;
+  primaryColor?: string;
   tenants?: string[]; // To support multiple tenants for a single app
   mappings: AttributeMapping[] | null;
 };

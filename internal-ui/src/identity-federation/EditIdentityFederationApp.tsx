@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import type { IdentityFederationApp } from '../types';
-import { EditBranding } from './EditBranding';
+// import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
 import { DeleteCard, Loading, ConfirmationModal } from '../shared';
@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect, useState } from 'react';
 import { defaultHeaders, fetcher } from '../utils';
 import { PageHeader } from '../shared';
+import { BrandingForm } from '../branding';
 
 export const EditIdentityFederationApp = ({
   urls,
@@ -85,7 +86,24 @@ export const EditIdentityFederationApp = ({
             }}
           />
         )}
-        <EditBranding
+        <BrandingForm
+          defaults={{
+            primaryColor: app.primaryColor || '#25c2a0',
+            logoUrl: app.logoUrl,
+            faviconUrl: app.faviconUrl,
+          }}
+          urls={{ patch: urls.updateApp }}
+          onUpdate={(data) => {
+            mutate({ data } as { data: IdentityFederationApp });
+            onUpdate?.(data as IdentityFederationApp);
+          }}
+          onError={onError}
+          title={t('bui-fs-branding-title')}
+          description={t('bui-fs-branding-desc')}
+          hideFields={{ companyName: true }}
+          federatedAppId={app.id}
+        />
+        {/* <EditBranding
           app={app}
           urls={{ patch: urls.updateApp }}
           onError={onError}
@@ -93,7 +111,7 @@ export const EditIdentityFederationApp = ({
             mutate({ data });
             onUpdate?.(data);
           }}
-        />
+        /> */}
         <DeleteCard
           title={t('bui-fs-delete-app-title')}
           description={t('bui-fs-delete-app-desc')}

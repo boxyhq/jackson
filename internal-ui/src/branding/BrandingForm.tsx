@@ -11,13 +11,17 @@ export const BrandingForm = ({
   onError,
   title,
   description,
+  hideFields,
+  federatedAppId,
 }: {
   defaults: Partial<Branding>;
-  urls: { getBranding: string; patch?: string; post?: string };
+  urls: { getBranding?: string; patch?: string; post?: string };
   onUpdate?: (data: IdentityFederationApp | Branding) => void;
   onError?: (error: Error) => void;
   title?: string;
   description?: string;
+  hideFields?: Partial<{ [key in keyof Branding]: boolean }>;
+  federatedAppId?: string;
 }) => {
   const { t } = useTranslation('common');
 
@@ -33,15 +37,15 @@ export const BrandingForm = ({
 
   const formik = useFormik<Branding>({
     initialValues: {
-      logoUrl: branding?.logoUrl || '',
-      faviconUrl: branding?.faviconUrl || '',
-      companyName: branding?.companyName || '',
+      logoUrl: branding?.logoUrl || defaults.logoUrl || '',
+      faviconUrl: branding?.faviconUrl || defaults.faviconUrl || '',
+      companyName: branding?.companyName || defaults.companyName || '',
       primaryColor: branding?.primaryColor || defaults.primaryColor || '',
     },
     onSubmit: async (values) => {
       const rawResponse = await fetch(urls.patch ?? urls.post!, {
         method: urls.patch ? 'PATCH' : 'POST',
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, id: federatedAppId }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,6 +60,13 @@ export const BrandingForm = ({
     },
     enableReinitialize: true,
   });
+
+  const isFieldEnabled = (field: keyof Branding) => {
+    if (hideFields?.[field] === true) {
+      return false;
+    }
+    return true;
+  };
 
   if (isLoadingBranding) {
     return <Loading />;
@@ -74,68 +85,76 @@ export const BrandingForm = ({
             {description && <Card.Description>{description}</Card.Description>}
           </Card.Header>
           <div className='flex flex-col'>
-            <div className='form-control w-full'>
-              <label className='label' htmlFor='logoUrl'>
-                <span className='label-text'>{t('bui-shared-logo-url')}</span>
-              </label>
-              <input
-                type='url'
-                id='logoUrl'
-                className='input-bordered input text-sm'
-                onChange={formik.handleChange}
-                value={formik.values.logoUrl}
-                placeholder='https://company.com/logo.png'
-              />
-              <div className='label'>
-                <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
+            {isFieldEnabled('logoUrl') && (
+              <div className='form-control w-full'>
+                <label className='label' htmlFor='logoUrl'>
+                  <span className='label-text'>{t('bui-shared-logo-url')}</span>
+                </label>
+                <input
+                  type='url'
+                  id='logoUrl'
+                  className='input-bordered input text-sm'
+                  onChange={formik.handleChange}
+                  value={formik.values.logoUrl}
+                  placeholder='https://company.com/logo.png'
+                />
+                <div className='label'>
+                  <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
+                </div>
               </div>
-            </div>
-            <div className='form-control w-full'>
-              <label className='label' htmlFor='faviconUrl'>
-                <span className='label-text'>{t('bui-shared-favicon-url')}</span>
-              </label>
-              <input
-                type='url'
-                id='faviconUrl'
-                className='input-bordered input text-sm'
-                onChange={formik.handleChange}
-                value={formik.values.faviconUrl}
-                placeholder='https://company.com/favicon.ico'
-              />
-              <div className='label'>
-                <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
+            )}
+            {isFieldEnabled('faviconUrl') && (
+              <div className='form-control w-full'>
+                <label className='label' htmlFor='faviconUrl'>
+                  <span className='label-text'>{t('bui-shared-favicon-url')}</span>
+                </label>
+                <input
+                  type='url'
+                  id='faviconUrl'
+                  className='input-bordered input text-sm'
+                  onChange={formik.handleChange}
+                  value={formik.values.faviconUrl}
+                  placeholder='https://company.com/favicon.ico'
+                />
+                <div className='label'>
+                  <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
+                </div>
               </div>
-            </div>
-            <div className='form-control w-full'>
-              <label className='label' htmlFor='companyName'>
-                <span className='label-text'>{t('branding_company_name_label')}</span>
-              </label>
-              <input
-                type='text'
-                id='companyName'
-                className='input-bordered input text-sm'
-                onChange={formik.handleChange}
-                value={formik.values.companyName}
-                placeholder={t('branding_company_name_label')}
-              />
-              <div className='label'>
-                <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
+            )}
+            {isFieldEnabled('companyName') && (
+              <div className='form-control w-full'>
+                <label className='label' htmlFor='companyName'>
+                  <span className='label-text'>{t('branding_company_name_label')}</span>
+                </label>
+                <input
+                  type='text'
+                  id='companyName'
+                  className='input-bordered input text-sm'
+                  onChange={formik.handleChange}
+                  value={formik.values.companyName}
+                  placeholder={t('branding_company_name_label')}
+                />
+                <div className='label'>
+                  <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
+                </div>
               </div>
-            </div>
-            <div className='form-control'>
-              <label className='label' htmlFor='primaryColor'>
-                <span className='label-text'>{t('bui-shared-primary-color')}</span>
-              </label>
-              <input
-                type='color'
-                id='primaryColor'
-                onChange={formik.handleChange}
-                value={formik.values.primaryColor}
-              />
-              <div className='label'>
-                <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
+            )}
+            {isFieldEnabled('primaryColor') && (
+              <div className='form-control'>
+                <label className='label' htmlFor='primaryColor'>
+                  <span className='label-text'>{t('bui-shared-primary-color')}</span>
+                </label>
+                <input
+                  type='color'
+                  id='primaryColor'
+                  onChange={formik.handleChange}
+                  value={formik.values.primaryColor}
+                />
+                <div className='label'>
+                  <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </Card.Body>
         <Card.Footer>
