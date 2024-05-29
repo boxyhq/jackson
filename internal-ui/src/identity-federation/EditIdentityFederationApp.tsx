@@ -87,7 +87,7 @@ export const EditIdentityFederationApp = ({
         )}
         <BrandingForm
           defaults={{
-            primaryColor: app.primaryColor || '#25c2a0',
+            primaryColor: app.primaryColor,
             logoUrl: app.logoUrl,
             faviconUrl: app.faviconUrl,
           }}
