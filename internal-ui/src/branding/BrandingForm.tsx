@@ -89,7 +89,7 @@ export const BrandingForm = ({
             {isFieldEnabled('logoUrl') && (
               <div className='form-control w-full'>
                 <label className='label' htmlFor='logoUrl'>
-                  <span className='label-text'>{t('bui-shared-logo-url')}</span>
+                  <span className='label-text'>{t('bui-branding-logo-url')}</span>
                 </label>
                 <input
                   type='url'
@@ -100,14 +100,14 @@ export const BrandingForm = ({
                   placeholder='https://company.com/logo.png'
                 />
                 <div className='label'>
-                  <span className='label-text-alt'>{t('bui-shared-logo-url-desc')}</span>
+                  <span className='label-text-alt'>{t('bui-branding-logo-url-desc')}</span>
                 </div>
               </div>
             )}
             {isFieldEnabled('faviconUrl') && (
               <div className='form-control w-full'>
                 <label className='label' htmlFor='faviconUrl'>
-                  <span className='label-text'>{t('bui-shared-favicon-url')}</span>
+                  <span className='label-text'>{t('bui-branding-favicon-url')}</span>
                 </label>
                 <input
                   type='url'
@@ -118,14 +118,14 @@ export const BrandingForm = ({
                   placeholder='https://company.com/favicon.ico'
                 />
                 <div className='label'>
-                  <span className='label-text-alt'>{t('bui-shared-favicon-url-desc')}</span>
+                  <span className='label-text-alt'>{t('bui-branding-favicon-url-desc')}</span>
                 </div>
               </div>
             )}
             {isFieldEnabled('companyName') && (
               <div className='form-control w-full'>
                 <label className='label' htmlFor='companyName'>
-                  <span className='label-text'>{t('branding_company_name_label')}</span>
+                  <span className='label-text'>{t('bui-branding-company-name')}</span>
                 </label>
                 <input
                   type='text'
@@ -136,14 +136,14 @@ export const BrandingForm = ({
                   placeholder={t('branding_company_name_label')}
                 />
                 <div className='label'>
-                  <span className='label-text-alt'>{t('branding_company_name_alt')}</span>
+                  <span className='label-text-alt'>{t('bui-branding-company-name-desc')}</span>
                 </div>
               </div>
             )}
             {isFieldEnabled('primaryColor') && (
               <div className='form-control'>
                 <label className='label' htmlFor='primaryColor'>
-                  <span className='label-text'>{t('bui-shared-primary-color')}</span>
+                  <span className='label-text'>{t('bui-branding-primary-color')}</span>
                 </label>
                 <input
                   type='color'
@@ -152,7 +152,7 @@ export const BrandingForm = ({
                   value={formik.values.primaryColor}
                 />
                 <div className='label'>
-                  <span className='label-text-alt'>{t('bui-shared-primary-color-desc')}</span>
+                  <span className='label-text-alt'>{t('bui-branding-primary-color-desc')}</span>
                 </div>
               </div>
             )}
