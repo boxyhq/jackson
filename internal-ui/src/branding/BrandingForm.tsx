@@ -93,6 +93,7 @@ export const BrandingForm = ({
                 </label>
                 <input
                   type='url'
+                  name='logoUrl'
                   id='logoUrl'
                   className='input-bordered input text-sm'
                   onChange={formik.handleChange}
@@ -111,6 +112,7 @@ export const BrandingForm = ({
                 </label>
                 <input
                   type='url'
+                  name='faviconUrl'
                   id='faviconUrl'
                   className='input-bordered input text-sm'
                   onChange={formik.handleChange}
@@ -129,11 +131,12 @@ export const BrandingForm = ({
                 </label>
                 <input
                   type='text'
+                  name='companyName'
                   id='companyName'
                   className='input-bordered input text-sm'
                   onChange={formik.handleChange}
                   value={formik.values.companyName}
-                  placeholder={t('branding_company_name_label')}
+                  placeholder='Acme, Inc.'
                 />
                 <div className='label'>
                   <span className='label-text-alt'>{t('bui-branding-company-name-desc')}</span>
@@ -147,6 +150,7 @@ export const BrandingForm = ({
                 </label>
                 <input
                   type='color'
+                  name='primaryColor'
                   id='primaryColor'
                   onChange={formik.handleChange}
                   value={formik.values.primaryColor}
