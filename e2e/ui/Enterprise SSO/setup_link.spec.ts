@@ -44,7 +44,7 @@ const setupLinkTestsData: {
     testRunner: testGenericSaml,
   },
   {
-    testDescription: 'AAdmin Portal Enterprise SSO SetupLink using PingOne SAML 2.0',
+    testDescription: 'Admin Portal Enterprise SSO SetupLink using PingOne SAML 2.0',
     testTitle: 'should be able to create setup link and sso connection using PingOne SAML 2.0',
     testRunner: testPingOneSaml,
   },
@@ -95,40 +95,38 @@ async function testGenericSaml(setupLinkPage: Page) {
 
   // check mdx generated content using remart-gfm plugin for step1
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Configuration SAML' })).toBeVisible();
-  let p1 = await setupLinkPage.getByText('Your Identity Provider (IdP)').textContent();
-  expect(
-    p1 ===
-      'Your Identity Provider (IdP) will ask for the following information while configuring the SAML application.'
-  ).toBeTruthy();
+  await expect(setupLinkPage.getByText('Your Identity Provider (IdP)')).toHaveText(
+    'Your Identity Provider (IdP) will ask for the following information while configuring the SAML application.'
+  );
 
-  let p2 = await setupLinkPage.getByText('Please do not add a trailing').textContent();
-  expect(p2 === 'Please do not add a trailing slash at the end of the URLs.').toBeTruthy();
+  await expect(setupLinkPage.getByText('Please do not add a trailing')).toHaveText(
+    'Please do not add a trailing slash at the end of the URLs.'
+  );
 
-  const p3 = await setupLinkPage.getByText('Create them exactly as shown').textContent();
-  expect(p3 === 'Create them exactly as shown below:').toBeTruthy();
+  await expect(setupLinkPage.getByText('Create them exactly as shown')).toHaveText(
+    'Create them exactly as shown below:'
+  );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
 
   // check mdx generated content using remart-gfm plugin for step2
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 2: SAML Profile/Claims/' })).toBeVisible();
-  p1 = await setupLinkPage.getByText('We try and support 4').textContent();
-  expect(p1 === 'We try and support 4 attributes in the SAML claims:').toBeTruthy();
+  await expect(setupLinkPage.getByText('We try and support 4')).toHaveText(
+    'We try and support 4 attributes in the SAML claims:'
+  );
 
-  p2 = await setupLinkPage.getByText('This is how the common SAML').textContent();
-  expect(
-    p2 ===
-      'This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.'
-  ).toBeTruthy();
+  await expect(setupLinkPage.getByText('This is how the common SAML')).toHaveText(
+    'This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.'
+  );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
 
   // check mdx generated content using remart-gfm plugin for step3
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 3: Create SAML Connection' })).toBeVisible();
-  p1 = await setupLinkPage.getByText('Enter the Identity Provider').textContent();
-  expect(
-    p1 ===
-      'Enter the Identity Provider Metadata below. You can either enter the metadata URL or paste the XML file content directly.'
-  ).toBeTruthy();
+
+  await expect(setupLinkPage.getByText('Enter the Identity Provider')).toHaveText(
+    'Enter the Identity Provider Metadata below. You can either enter the metadata URL or paste the XML file content directly.'
+  );
 
   await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
   await setupLinkPage.getByRole('button', { name: 'Save' }).click();
@@ -140,46 +138,50 @@ async function testPingOneSaml(setupLinkPage: Page) {
 
   // check mdx generated content using remart-gfm plugin for step1
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Create Application' })).toBeVisible();
-  let p1 = await setupLinkPage.getByText('From your PingOne account,').textContent();
-  expect(
-    p1 === 'From your PingOne account, click Connections > Applications from left navigation menu.'
-  ).toBeTruthy();
 
-  let p2 = await setupLinkPage.getByText('If your application is').textContent();
-  expect(
-    p2 === 'If your application is already created, choose it from the list and move to the next step.'
-  ).toBeTruthy();
+  await expect(setupLinkPage.getByText('From your PingOne account,')).toHaveText(
+    'From your PingOne account, click Connections > Applications from left navigation menu.'
+  );
 
-  let img = await setupLinkPage.getByRole('img', { name: 'img alt' }).getAttribute('src');
-  expect(img === 'https://cdn.boxyhq.com/docs/sso/providers/pingone/1.png').toBeTruthy();
+  await expect(setupLinkPage.getByText('If your application is')).toHaveText(
+    'If your application is already created, choose it from the list and move to the next step.'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' })).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/pingone/1.png'
+  );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
 
   // check mdx generated content using remart-gfm plugin for step2
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 2: Configure Application' })).toBeVisible();
-  img = await setupLinkPage.getByRole('img', { name: 'img alt' }).first().getAttribute('src');
-  expect(img === 'https://cdn.boxyhq.com/docs/sso/providers/pingone/2.png').toBeTruthy();
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/pingone/2.png'
+  );
 
-  p1 = await setupLinkPage.getByText('From the next screen, you').textContent();
-  expect(
-    p1 === 'From the next screen, you have to enter the following values in the SAML Configuration section:'
-  ).toBeTruthy();
+  await expect(setupLinkPage.getByText('From the next screen, you')).toHaveText(
+    'From the next screen, you have to enter the following values in the SAML Configuration section:'
+  );
 
-  p2 = await setupLinkPage.getByText('Click Save to save the').textContent();
-  expect(p2 === 'Click Save to save the configuration.').toBeTruthy();
+  await expect(setupLinkPage.getByText('Click Save to save the')).toHaveText(
+    'Click Save to save the configuration.'
+  );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
 
   // check mdx generated content using remart-gfm plugin for step3
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 3: Attribute Mapping' })).toBeVisible();
 
-  p1 = await setupLinkPage.getByText('Click the Attribute Mappings').textContent();
-  expect(
-    p1 === 'Click the Attribute Mappings tab from the top and you have to configure the following attributes:'
-  ).toBeTruthy();
+  await expect(setupLinkPage.getByText('Click the Attribute Mappings')).toHaveText(
+    'Click the Attribute Mappings tab from the top and you have to configure the following attributes:'
+  );
 
-  img = await setupLinkPage.getByRole('img', { name: 'img alt' }).first().getAttribute('src');
-  expect(img === 'https://cdn.boxyhq.com/docs/sso/providers/pingone/5.png').toBeTruthy();
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/pingone/5.png'
+  );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
 
