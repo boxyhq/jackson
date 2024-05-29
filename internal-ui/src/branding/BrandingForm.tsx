@@ -15,7 +15,7 @@ export const BrandingForm = ({
   federatedAppId,
 }: {
   defaults?: Partial<Branding>;
-  urls: { getBranding?: string; patch?: string; post?: string };
+  urls: { getBranding?: string; patch?: string; post?: string; jacksonUrl?: string };
   onUpdate?: (data: IdentityFederationApp | Branding) => void;
   onError?: (error: Error) => void;
   title?: string;
@@ -37,8 +37,8 @@ export const BrandingForm = ({
 
   const formik = useFormik<Branding>({
     initialValues: {
-      logoUrl: branding?.logoUrl || defaults?.logoUrl || '',
-      faviconUrl: branding?.faviconUrl || defaults?.faviconUrl || '',
+      logoUrl: branding?.logoUrl || `${urls.jacksonUrl ?? ''}${defaults?.logoUrl ?? ''}` || '',
+      faviconUrl: branding?.faviconUrl || `${urls.jacksonUrl ?? ''}${defaults?.faviconUrl ?? ''}` || '',
       companyName: branding?.companyName || defaults?.companyName || '',
       primaryColor: branding?.primaryColor || defaults?.primaryColor || '',
     },
