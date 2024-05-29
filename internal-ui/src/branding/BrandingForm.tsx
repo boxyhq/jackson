@@ -2,8 +2,7 @@ import type { Branding, IdentityFederationApp } from '../types';
 import { useTranslation } from 'next-i18next';
 import { ButtonPrimary, Card, Error, Loading } from '../shared';
 import { useFormik } from 'formik';
-import { useFetch } from '../hooks';
-import { parseResponseContent } from 'src/hooks/useFetch';
+import { useFetch, parseResponseContent } from '../hooks';
 
 export const BrandingForm = ({
   defaults,
