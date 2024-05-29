@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 type RefetchFunction = () => void;
 
-async function parseResponseContent(response: Response) {
+export async function parseResponseContent(response: Response) {
   const responseText = await response.text();
 
   try {

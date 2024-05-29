@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { ButtonPrimary, Card, Error, Loading } from '../shared';
 import { useFormik } from 'formik';
 import { useFetch } from '../hooks';
+import { parseResponseContent } from 'src/hooks/useFetch';
 
 export const BrandingForm = ({
   defaults,
@@ -50,7 +51,7 @@ export const BrandingForm = ({
           'Content-Type': 'application/json',
         },
       });
-      const response = await rawResponse.json();
+      const response = await parseResponseContent(rawResponse);
 
       if (rawResponse.ok) {
         onUpdate?.(response.data);
