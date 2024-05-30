@@ -214,7 +214,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Login to Docker Hub
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -227,35 +227,35 @@ jobs:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.ref == 'refs/heads/release' }}
+          # push: ${{ github.ref == 'refs/heads/release' }}
           tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: Login to GitHub Container Registry
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: |
           echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.repository_owner}} --password-stdin
 
       - name: Install Cosign
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: sigstore/cosign-installer@main
 
       - name: Check install!
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: cosign version
 
       - name: place the cosign private key in a file
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: 'echo "$COSIGN_KEY" > /tmp/cosign.key'
         shell: bash
         env:
           COSIGN_KEY: ${{secrets.COSIGN_KEY}}
 
       - name: Sign the image
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: cosign sign --key /tmp/cosign.key -y ${{ needs.ci.outputs.IMAGE_PATH }}@${{ steps.docker_build.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
@@ -450,7 +450,7 @@ jobs:
         run: npm run build
         working-directory: ./${{ matrix.package }}
       - name: Publish ${{ matrix.package }}
-        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        #if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
         run: |
           npm install -g json
           JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
