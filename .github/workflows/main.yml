@@ -9,7 +9,6 @@ on:
     branches:
       - main
       - release
-      # - sbom-fixes
     tags:
       - 'beta-v*'
   pull_request:
@@ -57,73 +56,73 @@ jobs:
         node-version: [20]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    #   services:
-    #     postgres:
-    #       image: postgres:13
-    #       ports:
-    #         - 5432:5432
-    #       env:
-    #         POSTGRES_PASSWORD: ''
-    #         POSTGRES_HOST_AUTH_METHOD: 'trust'
-    #       # Set health checks to wait until postgres has started
-    #       options: >-
-    #         --health-cmd pg_isready
-    #         --health-interval 10s
-    #         --health-timeout 5s
-    #         --health-retries 5
-    #     redis:
-    #       image: redis:6.2.5-alpine
-    #       ports:
-    #         - 6379:6379
-    #     mongo:
-    #       image: mongo:4.4.28
-    #       ports:
-    #         - 27017:27017
-    #     planetscale:
-    #       image: mysql:8.0.31
-    #       ports:
-    #         - 3308:3306
-    #       env:
-    #         MYSQL_DATABASE: mysql
-    #         MYSQL_ROOT_PASSWORD: mysql
-    #     mysql:
-    #       image: mysql:8.0.31
-    #       ports:
-    #         - 3307:3306
-    #       env:
-    #         MYSQL_DATABASE: mysql
-    #         MYSQL_ROOT_PASSWORD: mysql
-    #     maria:
-    #       image: mariadb:10.4.22
-    #       ports:
-    #         - 3306:3306
-    #       env:
-    #         MARIADB_DATABASE: mysql
-    #         MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-    #     mssql:
-    #       image: mcr.microsoft.com/azure-sql-edge:1.0.6
-    #       ports:
-    #         - 1433:1433
-    #       env:
-    #         ACCEPT_EULA: 'Y'
-    #         SA_PASSWORD: '123ABabc!'
-    #     dynamodb-local:
-    #       image: 'amazon/dynamodb-local:latest'
-    #       ports:
-    #         - '8000:8000'
-    #     turso:
-    #       image: ghcr.io/tursodatabase/libsql-server:latest
-    #       ports:
-    #         - '8080:8080'
-    #     mocksaml:
-    #       image: boxyhq/mock-saml:1.3.9
-    #       ports:
-    #         - 4000:4000
-    #       env:
-    #         APP_URL: http://localhost:4000
-    #         ENTITY_ID: https://saml.example.com/entityid
-    #         PUBLIC_KEY: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiVENDQWxXZ0F3SUJBZ0lVUWR0Q05FRnRGYWF6OUtNYkp6eUhCVm5vMWZFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1JURUxNQWtHQTFVRUJoTUNSMEl4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeElUQWZCZ05WQkFvTQpHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpEQWdGdzB5TkRBME1UUXhNVFUwTkRkYUdBOHpNREl6Ck1EZ3hOakV4TlRRME4xb3dSVEVMTUFrR0ExVUVCaE1DUjBJeEV6QVJCZ05WQkFnTUNsTnZiV1V0VTNSaGRHVXgKSVRBZkJnTlZCQW9NR0VsdWRHVnlibVYwSUZkcFpHZHBkSE1nVUhSNUlFeDBaRENDQVNJd0RRWUpLb1pJaHZjTgpBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXpaTFprL2VBUXExZ3BmdWR0cklXdC9MbzZaRjFveXp4T09PV2xmCndSR1ZoT1VjbkEwb2g1SmxXdUQ4TjdEQzMyY2p0OER3dXpRcGZWcWk0M1hOVnhNbG4yTm9NUlJJNVhjQlpYMkYKai9mdnphTG5nUkk1ZkQ3WGxHRGlQcktHOGVWR2YvUzAzYnVWS2d1VzFaSldUL0xlZzlqNWtXS3RxWTA0a3M1SwpET29IN0JOaGNYaXE2R2ZYek5FL0F0WFBKYWF1OU1SRG5ZclYvVFlINENBR2hSclNBc0pROU5zYXJFWjZKN21SClY2VE4xNU9KS2ZpSHhRUURNMWJvTkYzdVMwSkFuc3BtcElHTERlQ0xzdkNHTEwyeGFxVHJXVzVvMnlrWkxsYm4KSThuOG1WcHBQams2MElsVFUyWjJ5TW9ZL0VmRE9CcUIwSWdNa1U3dzlQSVdla01DQXdFQUFhTlRNRkV3SFFZRApWUjBPQkJZRUZCaUNTNEswejdlR2lWYXI2dlUrb2lzWEdkWlVNQjhHQTFVZEl3UVlNQmFBRkJpQ1M0SzB6N2VHCmlWYXI2dlUrb2lzWEdkWlVNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUIKQUNpMFZSN0lHdmdHbmdyL1lpZkxZZzZwWUlFc010cGFsMmYxekMzZGpkRElPTHlmVk12aTJzdUtUazM2MkNGeApXU2lxaVc4UXhPbDZlZTdrUVhTbnpJVlRMb2hwcm5WVFVmeUpXUlpJdThvbGpkREprSE9yekV3YktqZUhsbU1PClZxODZGbzBpN0NnTG1oTjh1dDVyNFdHdytYVElZc2lkZC9SaUFGMlFRMVR4QkJaN3hoZVJlU0o5M0tGd29FbkQKcU5hLzE2VUpsdWpXbmRTMEF2Q09weEFnWXJFL1czbzJqUWVnczZmMnhWemozbFc2WVpEaVg5YXBrUTVKZWlscwp3WFRuSHMvL3dlcCsvWndYbXcrYXQrNXRXRU9ycU15TERDbXpFc294MFBmQUhZdlQ4M0hTMWZtL2RiQUJHNlJwCkcxTU41OUMyYmRxUHd3K0hUVEplZFVvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=='
-    #         PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRRE0yUzJaUDNnRUt0WUsKWDduYmF5RnJmeTZPbVJkYU1zOFRqamxwWDhFUmxZVGxISndOS0llU1pWcmcvRGV3d3Q5bkk3ZkE4THMwS1gxYQpvdU4xelZjVEpaOWphREVVU09WM0FXVjloWS8zNzgyaTU0RVNPWHcrMTVSZzRqNnlodkhsUm4vMHROMjdsU29MCmx0V1NWay95M29QWStaRmlyYW1OT0pMT1NnenFCK3dUWVhGNHF1aG4xOHpSUHdMVnp5V21ydlRFUTUySzFmMDIKQitBZ0JvVWEwZ0xDVVBUYkdxeEdlaWU1a1Zla3pkZVRpU240aDhVRUF6Tlc2RFJkN2t0Q1FKN0tacVNCaXczZwppN0x3aGl5OXNXcWs2MWx1YU5zcEdTNVc1eVBKL0psYWFUNDVPdENKVTFObWRzaktHUHhId3pnYWdkQ0lESkZPCjhQVHlGbnBEQWdNQkFBRUNnZ0VBQ0NPbytDblpidkQweUR5OWVjWnI4WVdBS0JKVkp6UlZuZ1ZNcXE4dlVLK00KTkQ1S3hRc1ROL0huQm9GL0JQcjVQWFBoM1R5emM0TWlnL05zN2tWV2JHQldVUERXNG1OekdxTm5rUEU1b3pSWQpDMXovZCtYbzFlWmk4dWFLYnpXRmJ3SzZHdE1FN0dzazNJa0Z1MmJLam0vZzlVSVZVTUp0dGpyRk9vVWV0ajNBCkpFWU5TZFplWFA2Z0RXeitlR0F6V2RXRnlNZ1hHT0hCanVMekt1S3kwb2xQaUFHRTJIMlhicHlCSEk2K09taHUKemU4VEhYSUg0YW1TOTdaN0ZlWTdZaDZPV0xoeVByaVh3VGZjNk1NaktubUdWOWQ3RytVanIyS3NVNGtYMG1MRApQKzhsS1NqVnFvUjF2YUswWEJiV0Fnd0kwbVd4TjhQMFZqSzRjMzJUNFFLQmdRRG9wZUJ6cE1xVjFlY24ydkFzCnkvRW5JeXdMcUlBVUZuRXRsRnlnMkVOM2ZZMDRkUTBqOWNzM0ZqbXNQK3grYjA1U2pJK05vVVQzRUowNC96Uk8KMFcvcmc0cEVTUlNDOHRtelliUGkycktrc2xLSDhmUWd2YzZKV1FVUThsWWx2elh6OTZiTFlxeFNtK0EwZ1Z4QQpEc2JNQk5NZDEzdk5Wa1VjTURsMnNveTNMUUtCZ1FEaGFQWnF4QzRxSVB1TlhOZE5EbExRVGZIWGxFMzRRTXVaCnNiM3J1NVdwbkJOdWpCU0xHREV2a0pvckprcUZ1b3VYUnVOOGIrd3BObi9lc0c3TjZyM3o5bHltRkI1VE1Ba3kKTlBPR0dDNWdqOU0wVytGTmw4M2dIVkN6eVgxa3VyR2t1amVHM1F1b2RoYXZBaWpqUzdnNW5Nb1J3OEpwcitUdwp4NEtKMC92ZEx3S0JnUURBSjVHMXNweXBHVjJ0YTRZSVdnSTZvekJVQ0w2UTJPQnVGeVpTcTQwOStuTlQrRW44Ck01Mi9TQm9talQzV1NEVFd0Y1l6NHNuRmp2RnRERXkxOVFLTjhiMllIUXhXQkNPUHA5a2VQQ2hsSSt4SzRLc1YKQi9DNVBNK1VhYlNCeE9iWk5PbU0vMWo1ZWttNjFFWFBtdVRUeWdCZG00ZGoyQ2VJMnNQN3FBblZtUUtCZ1FDZgp0T0N5OE9ETWxLWG1tTnNyQzNUOWhkeE9KQlBDU3haMmhRck5WUkZMSlB4WG5RU0pNTkRZcEptMjdPQnNNNm5uCnV5QSs4SVhoQlc0Lzk3M3FRK0htVXExK05rN3VIZURHSStKUEpoN2w1OEY3SFlaYWxhNFdsbTZ4azVjMm9WaHcKSUVoclUzNkpFM0lxK1ZyREFNazhlS3hyUGNvblc2cllObU4xQ0M4eG5RS0JnUURiOGZTeDBQcHg1WisxL2tCMwpxVGc2RDJYY1YyZGVWNFdsOS9JQ2owRHFqaGpXekJjaThuTjUyb3ZoSmVXcFVxWnJ1eStVWTg2cVRuK09oNGVJClNkZFRBb0F2cU1sL2gzVzdCRUdad2NsclRJSWRqTHVmK0FuRGN5S0lKY21CUG9JZGsydzZ4dkNWczJqbmdEOTMKcjZ0R3VoNHlvM2pIRkRTR0Y3dDdCRk5RSEE9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg=='
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:6.2.5-alpine
+        ports:
+          - 6379:6379
+      mongo:
+        image: mongo:4.4.28
+        ports:
+          - 27017:27017
+      planetscale:
+        image: mysql:8.0.31
+        ports:
+          - 3308:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+      mysql:
+        image: mysql:8.0.31
+        ports:
+          - 3307:3306
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+      maria:
+        image: mariadb:10.4.22
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: mysql
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+      mssql:
+        image: mcr.microsoft.com/azure-sql-edge:1.0.6
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: '123ABabc!'
+      dynamodb-local:
+        image: 'amazon/dynamodb-local:latest'
+        ports:
+          - '8000:8000'
+      turso:
+        image: ghcr.io/tursodatabase/libsql-server:latest
+        ports:
+          - '8080:8080'
+      mocksaml:
+        image: boxyhq/mock-saml:1.3.9
+        ports:
+          - 4000:4000
+        env:
+          APP_URL: http://localhost:4000
+          ENTITY_ID: https://saml.example.com/entityid
+          PUBLIC_KEY: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiVENDQWxXZ0F3SUJBZ0lVUWR0Q05FRnRGYWF6OUtNYkp6eUhCVm5vMWZFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1JURUxNQWtHQTFVRUJoTUNSMEl4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeElUQWZCZ05WQkFvTQpHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpEQWdGdzB5TkRBME1UUXhNVFUwTkRkYUdBOHpNREl6Ck1EZ3hOakV4TlRRME4xb3dSVEVMTUFrR0ExVUVCaE1DUjBJeEV6QVJCZ05WQkFnTUNsTnZiV1V0VTNSaGRHVXgKSVRBZkJnTlZCQW9NR0VsdWRHVnlibVYwSUZkcFpHZHBkSE1nVUhSNUlFeDBaRENDQVNJd0RRWUpLb1pJaHZjTgpBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXpaTFprL2VBUXExZ3BmdWR0cklXdC9MbzZaRjFveXp4T09PV2xmCndSR1ZoT1VjbkEwb2g1SmxXdUQ4TjdEQzMyY2p0OER3dXpRcGZWcWk0M1hOVnhNbG4yTm9NUlJJNVhjQlpYMkYKai9mdnphTG5nUkk1ZkQ3WGxHRGlQcktHOGVWR2YvUzAzYnVWS2d1VzFaSldUL0xlZzlqNWtXS3RxWTA0a3M1SwpET29IN0JOaGNYaXE2R2ZYek5FL0F0WFBKYWF1OU1SRG5ZclYvVFlINENBR2hSclNBc0pROU5zYXJFWjZKN21SClY2VE4xNU9KS2ZpSHhRUURNMWJvTkYzdVMwSkFuc3BtcElHTERlQ0xzdkNHTEwyeGFxVHJXVzVvMnlrWkxsYm4KSThuOG1WcHBQams2MElsVFUyWjJ5TW9ZL0VmRE9CcUIwSWdNa1U3dzlQSVdla01DQXdFQUFhTlRNRkV3SFFZRApWUjBPQkJZRUZCaUNTNEswejdlR2lWYXI2dlUrb2lzWEdkWlVNQjhHQTFVZEl3UVlNQmFBRkJpQ1M0SzB6N2VHCmlWYXI2dlUrb2lzWEdkWlVNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUIKQUNpMFZSN0lHdmdHbmdyL1lpZkxZZzZwWUlFc010cGFsMmYxekMzZGpkRElPTHlmVk12aTJzdUtUazM2MkNGeApXU2lxaVc4UXhPbDZlZTdrUVhTbnpJVlRMb2hwcm5WVFVmeUpXUlpJdThvbGpkREprSE9yekV3YktqZUhsbU1PClZxODZGbzBpN0NnTG1oTjh1dDVyNFdHdytYVElZc2lkZC9SaUFGMlFRMVR4QkJaN3hoZVJlU0o5M0tGd29FbkQKcU5hLzE2VUpsdWpXbmRTMEF2Q09weEFnWXJFL1czbzJqUWVnczZmMnhWemozbFc2WVpEaVg5YXBrUTVKZWlscwp3WFRuSHMvL3dlcCsvWndYbXcrYXQrNXRXRU9ycU15TERDbXpFc294MFBmQUhZdlQ4M0hTMWZtL2RiQUJHNlJwCkcxTU41OUMyYmRxUHd3K0hUVEplZFVvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=='
+          PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRRE0yUzJaUDNnRUt0WUsKWDduYmF5RnJmeTZPbVJkYU1zOFRqamxwWDhFUmxZVGxISndOS0llU1pWcmcvRGV3d3Q5bkk3ZkE4THMwS1gxYQpvdU4xelZjVEpaOWphREVVU09WM0FXVjloWS8zNzgyaTU0RVNPWHcrMTVSZzRqNnlodkhsUm4vMHROMjdsU29MCmx0V1NWay95M29QWStaRmlyYW1OT0pMT1NnenFCK3dUWVhGNHF1aG4xOHpSUHdMVnp5V21ydlRFUTUySzFmMDIKQitBZ0JvVWEwZ0xDVVBUYkdxeEdlaWU1a1Zla3pkZVRpU240aDhVRUF6Tlc2RFJkN2t0Q1FKN0tacVNCaXczZwppN0x3aGl5OXNXcWs2MWx1YU5zcEdTNVc1eVBKL0psYWFUNDVPdENKVTFObWRzaktHUHhId3pnYWdkQ0lESkZPCjhQVHlGbnBEQWdNQkFBRUNnZ0VBQ0NPbytDblpidkQweUR5OWVjWnI4WVdBS0JKVkp6UlZuZ1ZNcXE4dlVLK00KTkQ1S3hRc1ROL0huQm9GL0JQcjVQWFBoM1R5emM0TWlnL05zN2tWV2JHQldVUERXNG1OekdxTm5rUEU1b3pSWQpDMXovZCtYbzFlWmk4dWFLYnpXRmJ3SzZHdE1FN0dzazNJa0Z1MmJLam0vZzlVSVZVTUp0dGpyRk9vVWV0ajNBCkpFWU5TZFplWFA2Z0RXeitlR0F6V2RXRnlNZ1hHT0hCanVMekt1S3kwb2xQaUFHRTJIMlhicHlCSEk2K09taHUKemU4VEhYSUg0YW1TOTdaN0ZlWTdZaDZPV0xoeVByaVh3VGZjNk1NaktubUdWOWQ3RytVanIyS3NVNGtYMG1MRApQKzhsS1NqVnFvUjF2YUswWEJiV0Fnd0kwbVd4TjhQMFZqSzRjMzJUNFFLQmdRRG9wZUJ6cE1xVjFlY24ydkFzCnkvRW5JeXdMcUlBVUZuRXRsRnlnMkVOM2ZZMDRkUTBqOWNzM0ZqbXNQK3grYjA1U2pJK05vVVQzRUowNC96Uk8KMFcvcmc0cEVTUlNDOHRtelliUGkycktrc2xLSDhmUWd2YzZKV1FVUThsWWx2elh6OTZiTFlxeFNtK0EwZ1Z4QQpEc2JNQk5NZDEzdk5Wa1VjTURsMnNveTNMUUtCZ1FEaGFQWnF4QzRxSVB1TlhOZE5EbExRVGZIWGxFMzRRTXVaCnNiM3J1NVdwbkJOdWpCU0xHREV2a0pvckprcUZ1b3VYUnVOOGIrd3BObi9lc0c3TjZyM3o5bHltRkI1VE1Ba3kKTlBPR0dDNWdqOU0wVytGTmw4M2dIVkN6eVgxa3VyR2t1amVHM1F1b2RoYXZBaWpqUzdnNW5Nb1J3OEpwcitUdwp4NEtKMC92ZEx3S0JnUURBSjVHMXNweXBHVjJ0YTRZSVdnSTZvekJVQ0w2UTJPQnVGeVpTcTQwOStuTlQrRW44Ck01Mi9TQm9talQzV1NEVFd0Y1l6NHNuRmp2RnRERXkxOVFLTjhiMllIUXhXQkNPUHA5a2VQQ2hsSSt4SzRLc1YKQi9DNVBNK1VhYlNCeE9iWk5PbU0vMWo1ZWttNjFFWFBtdVRUeWdCZG00ZGoyQ2VJMnNQN3FBblZtUUtCZ1FDZgp0T0N5OE9ETWxLWG1tTnNyQzNUOWhkeE9KQlBDU3haMmhRck5WUkZMSlB4WG5RU0pNTkRZcEptMjdPQnNNNm5uCnV5QSs4SVhoQlc0Lzk3M3FRK0htVXExK05rN3VIZURHSStKUEpoN2w1OEY3SFlaYWxhNFdsbTZ4azVjMm9WaHcKSUVoclUzNkpFM0lxK1ZyREFNazhlS3hyUGNvblc2cllObU4xQ0M4eG5RS0JnUURiOGZTeDBQcHg1WisxL2tCMwpxVGc2RDJYY1YyZGVWNFdsOS9JQ2owRHFqaGpXekJjaThuTjUyb3ZoSmVXcFVxWnJ1eStVWTg2cVRuK09oNGVJClNkZFRBb0F2cU1sL2gzVzdCRUdad2NsclRJSWRqTHVmK0FuRGN5S0lKY21CUG9JZGsydzZ4dkNWczJqbmdEOTMKcjZ0R3VoNHlvM2pIRkRTR0Y3dDdCRk5RSEE9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg=='
 
     steps:
       - uses: actions/checkout@v4
@@ -149,20 +148,20 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      #     - run: npm install
-      #     - run: npm run check-lint
-      #     - run: npm run check-types
-      #     - run: npm run check-format
-      #     - run: npm run check-locale
-      #     - run: npm run build
-      #     - run: npm run db:migration:run:planetscale
-      #       working-directory: ./npm
-      #     - run: npm run test
-      #       working-directory: ./npm
-      #     - name: Install playwright browser dependencies
-      #       run: npx playwright install chromium
-      #     - name: e2e tests
-      #       run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
+      - run: npm install
+      - run: npm run check-lint
+      - run: npm run check-types
+      - run: npm run check-format
+      - run: npm run check-locale
+      - run: npm run build
+      - run: npm run db:migration:run:planetscale
+        working-directory: ./npm
+      - run: npm run test
+        working-directory: ./npm
+      - name: Install playwright browser dependencies
+        run: npx playwright install chromium
+      - name: e2e tests
+        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
       - id: version
         name: Generate NPM_VERSION and PUBLISH_TAG
         run: |
@@ -207,29 +206,29 @@ jobs:
         id: slug
         run: echo "SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      # - name: Set up Docker Buildx
-      #   id: buildx
-      #   uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
 
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      # - name: Login to Docker Hub
-      #   if: github.ref == 'refs/heads/release'
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Login to Docker Hub
+        if: github.ref == 'refs/heads/release'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # - name: Build and push
-      #   id: docker_build
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./
-      #     file: ./Dockerfile
-      #     platforms: linux/amd64,linux/arm64
-      #     push: ${{ github.ref == 'refs/heads/release' }}
-      #     tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.ref == 'refs/heads/release' }}
+          tags: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ steps.slug.outputs.SHA7 }},${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.NPM_VERSION }}
 
       - name: Image digest
         if: github.ref == 'refs/heads/release'
@@ -271,12 +270,6 @@ jobs:
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
-      - name: Download artifact for SPDX Report
-        #if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v4
-        with:
-          name: npm_sbom.spdx
-
       - name: Create NPM Package SBOM Report [CycloneDx]
         uses: anchore/sbom-action@v0
         with:
@@ -287,9 +280,14 @@ jobs:
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
+      - name: Download artifact for SPDX Report
+        #if: github.ref == 'refs/heads/release'
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
         #if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
@@ -327,17 +325,17 @@ jobs:
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
         #if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
         #if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sbom.cyclonedx
 
       - name: Create SBOM Report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -345,12 +343,12 @@ jobs:
           artifact-name: docker_sbom.spdx
           upload-artifact-retention: 1
       - name: Publish report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -358,32 +356,32 @@ jobs:
           artifact-name: docker_sbom.cyclonedx
           upload-artifact-retention: 1
       - name: Publish report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report [Docker]
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        #if: github.ref == 'refs/heads/release'
+        uses: actions/download-artifact@v4
         with:
           name: docker_sbom.spdx
       - name: Download artifact for CycloneDx Report [Docker]
-        if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        #if: github.ref == 'refs/heads/release'
+        uses: actions/download-artifact@v4
         with:
           name: docker_sbom.cyclonedx
       - name: Create/Clear folder [Docker]
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
       - name: Move Report & cleanup
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: |
           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
 
       - name: ORAS Setup
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="v0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
@@ -392,7 +390,7 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
 
       - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
-        if: github.ref == 'refs/heads/release'
+        #if: github.ref == 'refs/heads/release'
         run: |
           result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
@@ -421,46 +419,46 @@ jobs:
           cd ..
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-  # publish:
-  #   needs: [ci, build]
-  #   runs-on: ubuntu-latest
+  publish:
+    needs: [ci, build]
+    runs-on: ubuntu-latest
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [20]
-  #       package: [npm, internal-ui]
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    strategy:
+      matrix:
+        node-version: [20]
+        package: [npm, internal-ui]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
-  #     - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         always-auth: true
-  #         node-version: ${{ matrix.node-version }}
-  #         registry-url: https://registry.npmjs.org
-  #         scope: '@boxyhq'
-  #         cache: 'npm'
-  #         check-latest: true
-  #     - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
-  #       working-directory: ./${{ matrix.package }}
-  #     - name: Build ${{ matrix.package }}
-  #       if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
-  #       run: npm run build
-  #       working-directory: ./${{ matrix.package }}
-  #     - name: Publish ${{ matrix.package }}
-  #       if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
-  #       run: |
-  #         npm install -g json
-  #         JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
-  #         json -I -f package.json -e "this.main=\"dist/index.js\""
-  #         json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-  #         json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          always-auth: true
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+          scope: '@boxyhq'
+          cache: 'npm'
+          check-latest: true
+      - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
+        working-directory: ./${{ matrix.package }}
+      - name: Build ${{ matrix.package }}
+        if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
+        run: npm run build
+        working-directory: ./${{ matrix.package }}
+      - name: Publish ${{ matrix.package }}
+        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+        run: |
+          npm install -g json
+          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
+          json -I -f package.json -e "this.main=\"dist/index.js\""
+          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-  #         npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
-  #       working-directory: ./${{ matrix.package }}
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
+        working-directory: ./${{ matrix.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
