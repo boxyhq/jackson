@@ -5,3 +5,4 @@ export * from './dsync';
 export * from './provider';
 export * from './sso-traces';
 export * from './setup-link';
+export * from './branding';

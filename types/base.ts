@@ -5,6 +5,4 @@ export interface ApiError extends Error {
   status: number;
 }
 
-export type ApiResponse<T = any> = ApiSuccess<T> | { error: ApiError };
-
 export type PaginateApiParams = { pageOffset: number; pageLimit: number } & { pageToken?: string };

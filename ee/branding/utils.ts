@@ -1,13 +1,6 @@
 import jackson from '@lib/jackson';
 import { boxyhqHosted } from '@lib/env';
-
-// BoxyHQ branding
-const boxyhqBranding = {
-  logoUrl: '/logo.png',
-  faviconUrl: '/favicon.ico',
-  companyName: 'BoxyHQ',
-  primaryColor: '#25c2a0',
-} as const;
+import { boxyhqBranding } from 'internal-ui/src';
 
 export const getPortalBranding = async () => {
   const { brandingController, checkLicense } = await jackson();

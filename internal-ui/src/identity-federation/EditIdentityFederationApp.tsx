@@ -1,6 +1,5 @@
 import useSWR from 'swr';
 import type { IdentityFederationApp } from '../types';
-import { EditBranding } from './EditBranding';
 import { Edit } from './Edit';
 import { EditAttributesMapping } from './EditAttributesMapping';
 import { DeleteCard, Loading, ConfirmationModal } from '../shared';
@@ -8,6 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect, useState } from 'react';
 import { defaultHeaders, fetcher } from '../utils';
 import { PageHeader } from '../shared';
+import { BrandingForm } from '../branding';
 
 export const EditIdentityFederationApp = ({
   urls,
@@ -85,14 +85,22 @@ export const EditIdentityFederationApp = ({
             }}
           />
         )}
-        <EditBranding
-          app={app}
-          urls={{ patch: urls.updateApp }}
-          onError={onError}
-          onUpdate={(data) => {
-            mutate({ data });
-            onUpdate?.(data);
+        <BrandingForm
+          defaults={{
+            primaryColor: app.primaryColor,
+            logoUrl: app.logoUrl,
+            faviconUrl: app.faviconUrl,
           }}
+          urls={{ patch: urls.updateApp }}
+          onUpdate={(data) => {
+            mutate({ data } as { data: IdentityFederationApp });
+            onUpdate?.(data as IdentityFederationApp);
+          }}
+          onError={onError}
+          title={t('bui-fs-branding-title')}
+          description={t('bui-fs-branding-desc')}
+          hideFields={{ companyName: true }}
+          federatedAppId={app.id}
         />
         <DeleteCard
           title={t('bui-fs-delete-app-title')}
