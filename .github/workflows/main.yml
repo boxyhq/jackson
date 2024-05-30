@@ -273,7 +273,7 @@ jobs:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Download artifact for SPDX Report
         #if: github.ref == 'refs/heads/release'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: npm_sbom.spdx
 
