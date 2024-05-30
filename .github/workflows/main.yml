@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - release
+      - sbom-fixes
     tags:
       - 'beta-v*'
   pull_request:
@@ -24,176 +25,176 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-    outputs:
-      NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
-      PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
-      IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
-      IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
-    env:
-      NEXTAUTH_SECRET: secret
-      NEXTAUTH_URL: http://localhost:5225
-      NEXTAUTH_ACL: '*@boxyhq.com'
-      DB_ENGINE: sql
-      DB_URL: postgres://postgres:postgres@localhost:5432/postgres
-      DB_TYPE: postgres
-      DEBUG: pw:webserver
-      SAML_AUDIENCE: https://saml.boxyhq.com
-      JACKSON_API_KEYS: secret
-      OPENID_JWS_ALG: RS256
-      OPENID_RSA_PUBLIC_KEY: 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQm9qQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FZOEFNSUlCaWdLQ0FZRUFtRzRtVXhmYll3OTAxRHNzZXVaSwpqMlFSVXIrL2FpWWxyVCs1NkxwK1pETDByVmhpVVdHSCtBK09jT24xZW9mS2tJTktvVTBVQmR1S2RTZ2ZuNkk0Ckg2cUNTdXhCaW50alloZTM5a1ZqMXFUL2o3UGtCWXFtQXhxVnZiY25lMERCczJBVnUyeStSS3ZBMC9RQUUwQk0KMlJrakFCcXFQTHFHOWtLSVBmTHJSVG82ZGNuNjduZm10bCtHNkVQVEtqRWZpRExvYWJ3bFF6VGJQVm5UcGVLbgo2V0NPMkpFVHpicng3T1k2S0J1QTllVDJlRS9CNGVPeVU1bUlqVEVhV1BqcmFZWWVPNnVyVEo5Qmsxa3pveWNrClZ2MG94K2VCZUh2NEpDSVhicGJxQnN3L0hhekVyWFJjQjR5TGVDd0lnRUllL2xhRkJiOE5odVdCQ3NmNXd4Z3EKNzZIc0xYN2FBSEwraGZEaDJmayt2aFlWQmc4dlBwQ0QrODJiLzBQMHhkRXR1elViMlo5eDdxNjR1alBBSTJsMwpSUWdqVzdvV0xDVHZRRVB0SUd3SVppRGdSM1FYRk5pYVpuQUFCalVwSElyVG1DYW85N3hPS1ZOS0FaUk9kWHpRCko0anM5SlZvZnFmTmViQ1hBWFVBOExwYlNtS3g4S3VRZkVQeXVUUTAzR3lCQWdNQkFBRT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
-      OPENID_RSA_PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUcvUUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQnVjd2dnYmpBZ0VBQW9JQmdRQ1liaVpURjl0akQzVFUKT3l4NjVrcVBaQkZTdjc5cUppV3RQN25vdW41a012U3RXR0pSWVlmNEQ0NXc2ZlY2aDhxUWcwcWhUUlFGMjRwMQpLQitmb2pnZnFvSks3RUdLZTJOaUY3ZjJSV1BXcFArUHMrUUZpcVlER3BXOXR5ZDdRTUd6WUJXN2JMNUVxOERUCjlBQVRRRXpaR1NNQUdxbzh1b2IyUW9nOTh1dEZPanAxeWZydWQrYTJYNGJvUTlNcU1SK0lNdWhwdkNWRE5OczkKV2RPbDRxZnBZSTdZa1JQTnV2SHM1am9vRzREMTVQWjRUOEhoNDdKVG1ZaU5NUnBZK090cGhoNDdxNnRNbjBHVApXVE9qSnlSVy9Takg1NEY0ZS9na0loZHVsdW9HekQ4ZHJNU3RkRndIakl0NExBaUFRaDcrVm9VRnZ3Mkc1WUVLCngvbkRHQ3J2b2V3dGZ0b0FjdjZGOE9IWitUNitGaFVHRHk4K2tJUDd6WnYvUS9URjBTMjdOUnZabjNIdXJyaTYKTThBamFYZEZDQ05idWhZc0pPOUFRKzBnYkFobUlPQkhkQmNVMkpwbWNBQUdOU2tjaXRPWUpxajN2RTRwVTBvQgpsRTUxZk5BbmlPejBsV2grcDgxNXNKY0JkUUR3dWx0S1lySHdxNUI4US9LNU5EVGNiSUVDQXdFQUFRS0NBWUFMCkNYL0VLTUF4a1MwUkVIdFJKMU5yQkZDR1RMek9FWGJOTDRYMU9tcThNOTNZWHVQWWwyNnVXU2NEMlViMWNUZHIKUlJ4dVowdTl2RmF2VXNGT2NHTXV0TXlVSXYwQWExeUgvZVpyd2p5L1RpbDBsTzZiOFowQmNNZDZxaFJGWmd3WQpna3EwakdSUENkNHZvclZ1TDJ2WkZPcytQdEFJajJ1R0VZMTJxZHdjQWtJNUpPL0MzR0x6M2VFaGVJYkY0WEp5CmJOZzhEcnZtZk1GcXRQSkFxdE9rY0FITDM5NWVtVXlhN2hVME1nQ2huV3QwelBhaGxmaUR1ZVJqcjlSajhKc1QKZllqcGQzelZZc0ZQMy85aWRjRW9NUk1DVEFnelZEVXBrbCt3ajhrOFVxTWUvdjdrVFlKTHBQMHQ5N2xsR3FaUwo4dEdpeXRidTRlems5NDNFZ2IwNDM3Q1VndVdQV3BsVzEzUDlSSUV4bkZjd2F4Uk15RWV1RFRxcHg1NWxTdE81CmZXOTdzSFFuM2dQbWVpaTVRODdUM0FzYkY5bHZ5d1g5bDlMdUJoc0RLdlRRVVRpV2cyRFV6bjlQRWRFb0xLWnYKd0xFU1VDZkFSd1NzZU5Kbm80TlRPUUc3ekFvdEsvRFhWWms4NFZ5dUlvMEpsS08wM202dEpORXl5Z1gwNUtrQwpnY0VBMExvSHVlRXAzOHRheWU0aEROWlFqVi9tc1RKek56SmhVOGZXNFlZaGMyOFdFVlF2N0lTNUw2N2draGhxCkoxUklEZTBtYUI5a1Q1Z09GR1VPdy9JYUdxWnB4WUphcUlZZ25GeFk4VmE4cHB6R0hFV25xeEdMNytESHg2U0oKb3FHUkd4UWRUU1QvY3lZZnVyR2RHaVVMd08xZjF5dUJVM01WdEU1S2VSRTlDSEVUV2FiOEhXQ0VhekFsNWVxOAo2aVNXdU9wQlFRa3NucStudTNIYXNPOGIxOU4zZ0x5Y2ZWb1ZzWnByd0RENzBCTXZkTFNDdVVrNW0rY1FINVdsCkN2dVpBb0hCQUxyMERmdTE1UjZuUTFIT3BTODFVSXNqTzJ0dm12OVpQMjVqbklPdUYxYnFob0xzTEdCbkhnUkwKM1VZNnRmT3E2a2ZZZlZwWWxINjZ4MHRvK3lvQ2Fodk11NXo0ZEV3M2hQb1F5Tk1IZkcyQklMOVVhV3VjZEFHWgpYOXY2WkI5U3o3NWd2M3BJQUZwdzhwUHlvZzhqbWdDM1dQaXBIek0wOTRCYmZJL0tramlYeWNrRGx5ZDAvZ2FQCmhPbXV1MnM4aVl6QUcwd1BpOFJ4VVRTS2tFZnlUNnF4ZGxwdUFNTEhkTGxKdnRKejMrNWEzZlJvUmdXb1Vld3kKcHlodXpHZkpLUUtCd0dqS3JTeFdibGFNV3hWOGQ1MWhUK25hbHhDcG1vekF2M3AzbjF0MG93QzRhZVRqVm5neApubVBoTWFCSG42d0ZOWFBBZDRMWkY5eWFJNTk3cVRFWk1KL21vcjNsbHl4NndvNmVFbzJBRlpDMHJ3WHN0cVE5ClYvdGo2QWxFZzFGaU9sN1U5MjBPd1MySG0zQjQwYjRaa1ZBWUhRRURONWUwOU5Xa1pPRnBsVEhTeTNzOFNlRloKM3NHTjE4a1oxQ1RkbjhwUTJkZ1VDaEhWY0ttOEhLYXVOVlZqTnVFc1VJamluSGVoWnEyRUtqaXFHUzVIbmtYMgpESFZJU2FFQjJXMnRLUUtCd0RnRkphT0ZUOUN0b2ppRFNYQXA4NmFkdWhKcGNQS1BGYmpJVklBSXpLbVl3UkcrCkgxWUwwQ3pOWnRMQ2lQOG8rZWJwY2paK1VKRGcreE1YdEJ0VWVlTTJxQWxUVWRYODFQWHh6WnVlcEtSVGl6S0oKNHNVQ0xxakVBcnR4L2twOGtBK21BZnBzVk43RTlZdHJxekFLSlAyTjh6VWZ5Ritad1loTzRiWmNweEFhTzdibQpRb2JxUWF4Sm1UUkV6WmhHblpqMWY3aDgrQTYzUGZRV2lVRmwxSVY3ZzlGNUlQVTh1emRDWjlHOE14L0RUcnNMCis5OTZIb0krYzJSa1B3L2ljUUtCd1FDNDF1VzlRQWVkRzdXWFNvMGcrYXNkSm9rNEQrZ21iZCtkQnU4R1R4MUIKWlBlVlRzZ0wwR1NMVXVrNlZHRXh2RkV0cWhoaHh2amdXdWpNaVBDd093cFBxQ1JaYmVnSDM4WG1pMWh5dXNIeQpwYzh1ekU0OHZ1ajgvYlJScDR4MFppQXJJZUZGOGNCaVV4Y292ZCtOYzd6d1dsTGhaakJkNS9mL3U2VllGS0Y0CktjSkRjb1JaWWM3Tm9DSXA4aFpBSlhXNjFWMXY3NWVxVDlYUldHaVNkNlB3Z3ZhQzUwNkFPeVgvOWNJNFltSVIKeHppM3RweW40bmJjUUdFZHpsMHFKVVU9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K'
-      PLANETSCALE_URL: mysql://root:mysql@localhost:3308/mysql
-      DYNAMODB_URL: 'http://localhost:8000'
-      BOXYHQ_NO_ANALYTICS: '1'
-      IDP_ENABLED: true
-      AWS_ACCESS_KEY_ID: secret
-      AWS_SECRET_ACCESS_KEY: secret
-      BOXYHQ_LICENSE_KEY: 'dummy-license'
-    strategy:
-      matrix:
-        node-version: [20]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  # ci:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     NPM_VERSION: ${{ steps.version.outputs.NPM_VERSION }}
+  #     PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
+  #     IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
+  #     IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
+  #   env:
+  #     NEXTAUTH_SECRET: secret
+  #     NEXTAUTH_URL: http://localhost:5225
+  #     NEXTAUTH_ACL: '*@boxyhq.com'
+  #     DB_ENGINE: sql
+  #     DB_URL: postgres://postgres:postgres@localhost:5432/postgres
+  #     DB_TYPE: postgres
+  #     DEBUG: pw:webserver
+  #     SAML_AUDIENCE: https://saml.boxyhq.com
+  #     JACKSON_API_KEYS: secret
+  #     OPENID_JWS_ALG: RS256
+  #     OPENID_RSA_PUBLIC_KEY: 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQm9qQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FZOEFNSUlCaWdLQ0FZRUFtRzRtVXhmYll3OTAxRHNzZXVaSwpqMlFSVXIrL2FpWWxyVCs1NkxwK1pETDByVmhpVVdHSCtBK09jT24xZW9mS2tJTktvVTBVQmR1S2RTZ2ZuNkk0Ckg2cUNTdXhCaW50alloZTM5a1ZqMXFUL2o3UGtCWXFtQXhxVnZiY25lMERCczJBVnUyeStSS3ZBMC9RQUUwQk0KMlJrakFCcXFQTHFHOWtLSVBmTHJSVG82ZGNuNjduZm10bCtHNkVQVEtqRWZpRExvYWJ3bFF6VGJQVm5UcGVLbgo2V0NPMkpFVHpicng3T1k2S0J1QTllVDJlRS9CNGVPeVU1bUlqVEVhV1BqcmFZWWVPNnVyVEo5Qmsxa3pveWNrClZ2MG94K2VCZUh2NEpDSVhicGJxQnN3L0hhekVyWFJjQjR5TGVDd0lnRUllL2xhRkJiOE5odVdCQ3NmNXd4Z3EKNzZIc0xYN2FBSEwraGZEaDJmayt2aFlWQmc4dlBwQ0QrODJiLzBQMHhkRXR1elViMlo5eDdxNjR1alBBSTJsMwpSUWdqVzdvV0xDVHZRRVB0SUd3SVppRGdSM1FYRk5pYVpuQUFCalVwSElyVG1DYW85N3hPS1ZOS0FaUk9kWHpRCko0anM5SlZvZnFmTmViQ1hBWFVBOExwYlNtS3g4S3VRZkVQeXVUUTAzR3lCQWdNQkFBRT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
+  #     OPENID_RSA_PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUcvUUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQnVjd2dnYmpBZ0VBQW9JQmdRQ1liaVpURjl0akQzVFUKT3l4NjVrcVBaQkZTdjc5cUppV3RQN25vdW41a012U3RXR0pSWVlmNEQ0NXc2ZlY2aDhxUWcwcWhUUlFGMjRwMQpLQitmb2pnZnFvSks3RUdLZTJOaUY3ZjJSV1BXcFArUHMrUUZpcVlER3BXOXR5ZDdRTUd6WUJXN2JMNUVxOERUCjlBQVRRRXpaR1NNQUdxbzh1b2IyUW9nOTh1dEZPanAxeWZydWQrYTJYNGJvUTlNcU1SK0lNdWhwdkNWRE5OczkKV2RPbDRxZnBZSTdZa1JQTnV2SHM1am9vRzREMTVQWjRUOEhoNDdKVG1ZaU5NUnBZK090cGhoNDdxNnRNbjBHVApXVE9qSnlSVy9Takg1NEY0ZS9na0loZHVsdW9HekQ4ZHJNU3RkRndIakl0NExBaUFRaDcrVm9VRnZ3Mkc1WUVLCngvbkRHQ3J2b2V3dGZ0b0FjdjZGOE9IWitUNitGaFVHRHk4K2tJUDd6WnYvUS9URjBTMjdOUnZabjNIdXJyaTYKTThBamFYZEZDQ05idWhZc0pPOUFRKzBnYkFobUlPQkhkQmNVMkpwbWNBQUdOU2tjaXRPWUpxajN2RTRwVTBvQgpsRTUxZk5BbmlPejBsV2grcDgxNXNKY0JkUUR3dWx0S1lySHdxNUI4US9LNU5EVGNiSUVDQXdFQUFRS0NBWUFMCkNYL0VLTUF4a1MwUkVIdFJKMU5yQkZDR1RMek9FWGJOTDRYMU9tcThNOTNZWHVQWWwyNnVXU2NEMlViMWNUZHIKUlJ4dVowdTl2RmF2VXNGT2NHTXV0TXlVSXYwQWExeUgvZVpyd2p5L1RpbDBsTzZiOFowQmNNZDZxaFJGWmd3WQpna3EwakdSUENkNHZvclZ1TDJ2WkZPcytQdEFJajJ1R0VZMTJxZHdjQWtJNUpPL0MzR0x6M2VFaGVJYkY0WEp5CmJOZzhEcnZtZk1GcXRQSkFxdE9rY0FITDM5NWVtVXlhN2hVME1nQ2huV3QwelBhaGxmaUR1ZVJqcjlSajhKc1QKZllqcGQzelZZc0ZQMy85aWRjRW9NUk1DVEFnelZEVXBrbCt3ajhrOFVxTWUvdjdrVFlKTHBQMHQ5N2xsR3FaUwo4dEdpeXRidTRlems5NDNFZ2IwNDM3Q1VndVdQV3BsVzEzUDlSSUV4bkZjd2F4Uk15RWV1RFRxcHg1NWxTdE81CmZXOTdzSFFuM2dQbWVpaTVRODdUM0FzYkY5bHZ5d1g5bDlMdUJoc0RLdlRRVVRpV2cyRFV6bjlQRWRFb0xLWnYKd0xFU1VDZkFSd1NzZU5Kbm80TlRPUUc3ekFvdEsvRFhWWms4NFZ5dUlvMEpsS08wM202dEpORXl5Z1gwNUtrQwpnY0VBMExvSHVlRXAzOHRheWU0aEROWlFqVi9tc1RKek56SmhVOGZXNFlZaGMyOFdFVlF2N0lTNUw2N2draGhxCkoxUklEZTBtYUI5a1Q1Z09GR1VPdy9JYUdxWnB4WUphcUlZZ25GeFk4VmE4cHB6R0hFV25xeEdMNytESHg2U0oKb3FHUkd4UWRUU1QvY3lZZnVyR2RHaVVMd08xZjF5dUJVM01WdEU1S2VSRTlDSEVUV2FiOEhXQ0VhekFsNWVxOAo2aVNXdU9wQlFRa3NucStudTNIYXNPOGIxOU4zZ0x5Y2ZWb1ZzWnByd0RENzBCTXZkTFNDdVVrNW0rY1FINVdsCkN2dVpBb0hCQUxyMERmdTE1UjZuUTFIT3BTODFVSXNqTzJ0dm12OVpQMjVqbklPdUYxYnFob0xzTEdCbkhnUkwKM1VZNnRmT3E2a2ZZZlZwWWxINjZ4MHRvK3lvQ2Fodk11NXo0ZEV3M2hQb1F5Tk1IZkcyQklMOVVhV3VjZEFHWgpYOXY2WkI5U3o3NWd2M3BJQUZwdzhwUHlvZzhqbWdDM1dQaXBIek0wOTRCYmZJL0tramlYeWNrRGx5ZDAvZ2FQCmhPbXV1MnM4aVl6QUcwd1BpOFJ4VVRTS2tFZnlUNnF4ZGxwdUFNTEhkTGxKdnRKejMrNWEzZlJvUmdXb1Vld3kKcHlodXpHZkpLUUtCd0dqS3JTeFdibGFNV3hWOGQ1MWhUK25hbHhDcG1vekF2M3AzbjF0MG93QzRhZVRqVm5neApubVBoTWFCSG42d0ZOWFBBZDRMWkY5eWFJNTk3cVRFWk1KL21vcjNsbHl4NndvNmVFbzJBRlpDMHJ3WHN0cVE5ClYvdGo2QWxFZzFGaU9sN1U5MjBPd1MySG0zQjQwYjRaa1ZBWUhRRURONWUwOU5Xa1pPRnBsVEhTeTNzOFNlRloKM3NHTjE4a1oxQ1RkbjhwUTJkZ1VDaEhWY0ttOEhLYXVOVlZqTnVFc1VJamluSGVoWnEyRUtqaXFHUzVIbmtYMgpESFZJU2FFQjJXMnRLUUtCd0RnRkphT0ZUOUN0b2ppRFNYQXA4NmFkdWhKcGNQS1BGYmpJVklBSXpLbVl3UkcrCkgxWUwwQ3pOWnRMQ2lQOG8rZWJwY2paK1VKRGcreE1YdEJ0VWVlTTJxQWxUVWRYODFQWHh6WnVlcEtSVGl6S0oKNHNVQ0xxakVBcnR4L2twOGtBK21BZnBzVk43RTlZdHJxekFLSlAyTjh6VWZ5Ritad1loTzRiWmNweEFhTzdibQpRb2JxUWF4Sm1UUkV6WmhHblpqMWY3aDgrQTYzUGZRV2lVRmwxSVY3ZzlGNUlQVTh1emRDWjlHOE14L0RUcnNMCis5OTZIb0krYzJSa1B3L2ljUUtCd1FDNDF1VzlRQWVkRzdXWFNvMGcrYXNkSm9rNEQrZ21iZCtkQnU4R1R4MUIKWlBlVlRzZ0wwR1NMVXVrNlZHRXh2RkV0cWhoaHh2amdXdWpNaVBDd093cFBxQ1JaYmVnSDM4WG1pMWh5dXNIeQpwYzh1ekU0OHZ1ajgvYlJScDR4MFppQXJJZUZGOGNCaVV4Y292ZCtOYzd6d1dsTGhaakJkNS9mL3U2VllGS0Y0CktjSkRjb1JaWWM3Tm9DSXA4aFpBSlhXNjFWMXY3NWVxVDlYUldHaVNkNlB3Z3ZhQzUwNkFPeVgvOWNJNFltSVIKeHppM3RweW40bmJjUUdFZHpsMHFKVVU9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K'
+  #     PLANETSCALE_URL: mysql://root:mysql@localhost:3308/mysql
+  #     DYNAMODB_URL: 'http://localhost:8000'
+  #     BOXYHQ_NO_ANALYTICS: '1'
+  #     IDP_ENABLED: true
+  #     AWS_ACCESS_KEY_ID: secret
+  #     AWS_SECRET_ACCESS_KEY: secret
+  #     BOXYHQ_LICENSE_KEY: 'dummy-license'
+  #   strategy:
+  #     matrix:
+  #       node-version: [20]
+  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: ''
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:6.2.5-alpine
-        ports:
-          - 6379:6379
-      mongo:
-        image: mongo:4.4.28
-        ports:
-          - 27017:27017
-      planetscale:
-        image: mysql:8.0.31
-        ports:
-          - 3308:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      mysql:
-        image: mysql:8.0.31
-        ports:
-          - 3307:3306
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: mysql
-      maria:
-        image: mariadb:10.4.22
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: mysql
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
-      mssql:
-        image: mcr.microsoft.com/azure-sql-edge:1.0.6
-        ports:
-          - 1433:1433
-        env:
-          ACCEPT_EULA: 'Y'
-          SA_PASSWORD: '123ABabc!'
-      dynamodb-local:
-        image: 'amazon/dynamodb-local:latest'
-        ports:
-          - '8000:8000'
-      turso:
-        image: ghcr.io/tursodatabase/libsql-server:latest
-        ports:
-          - '8080:8080'
-      mocksaml:
-        image: boxyhq/mock-saml:1.3.9
-        ports:
-          - 4000:4000
-        env:
-          APP_URL: http://localhost:4000
-          ENTITY_ID: https://saml.example.com/entityid
-          PUBLIC_KEY: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiVENDQWxXZ0F3SUJBZ0lVUWR0Q05FRnRGYWF6OUtNYkp6eUhCVm5vMWZFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1JURUxNQWtHQTFVRUJoTUNSMEl4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeElUQWZCZ05WQkFvTQpHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpEQWdGdzB5TkRBME1UUXhNVFUwTkRkYUdBOHpNREl6Ck1EZ3hOakV4TlRRME4xb3dSVEVMTUFrR0ExVUVCaE1DUjBJeEV6QVJCZ05WQkFnTUNsTnZiV1V0VTNSaGRHVXgKSVRBZkJnTlZCQW9NR0VsdWRHVnlibVYwSUZkcFpHZHBkSE1nVUhSNUlFeDBaRENDQVNJd0RRWUpLb1pJaHZjTgpBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXpaTFprL2VBUXExZ3BmdWR0cklXdC9MbzZaRjFveXp4T09PV2xmCndSR1ZoT1VjbkEwb2g1SmxXdUQ4TjdEQzMyY2p0OER3dXpRcGZWcWk0M1hOVnhNbG4yTm9NUlJJNVhjQlpYMkYKai9mdnphTG5nUkk1ZkQ3WGxHRGlQcktHOGVWR2YvUzAzYnVWS2d1VzFaSldUL0xlZzlqNWtXS3RxWTA0a3M1SwpET29IN0JOaGNYaXE2R2ZYek5FL0F0WFBKYWF1OU1SRG5ZclYvVFlINENBR2hSclNBc0pROU5zYXJFWjZKN21SClY2VE4xNU9KS2ZpSHhRUURNMWJvTkYzdVMwSkFuc3BtcElHTERlQ0xzdkNHTEwyeGFxVHJXVzVvMnlrWkxsYm4KSThuOG1WcHBQams2MElsVFUyWjJ5TW9ZL0VmRE9CcUIwSWdNa1U3dzlQSVdla01DQXdFQUFhTlRNRkV3SFFZRApWUjBPQkJZRUZCaUNTNEswejdlR2lWYXI2dlUrb2lzWEdkWlVNQjhHQTFVZEl3UVlNQmFBRkJpQ1M0SzB6N2VHCmlWYXI2dlUrb2lzWEdkWlVNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUIKQUNpMFZSN0lHdmdHbmdyL1lpZkxZZzZwWUlFc010cGFsMmYxekMzZGpkRElPTHlmVk12aTJzdUtUazM2MkNGeApXU2lxaVc4UXhPbDZlZTdrUVhTbnpJVlRMb2hwcm5WVFVmeUpXUlpJdThvbGpkREprSE9yekV3YktqZUhsbU1PClZxODZGbzBpN0NnTG1oTjh1dDVyNFdHdytYVElZc2lkZC9SaUFGMlFRMVR4QkJaN3hoZVJlU0o5M0tGd29FbkQKcU5hLzE2VUpsdWpXbmRTMEF2Q09weEFnWXJFL1czbzJqUWVnczZmMnhWemozbFc2WVpEaVg5YXBrUTVKZWlscwp3WFRuSHMvL3dlcCsvWndYbXcrYXQrNXRXRU9ycU15TERDbXpFc294MFBmQUhZdlQ4M0hTMWZtL2RiQUJHNlJwCkcxTU41OUMyYmRxUHd3K0hUVEplZFVvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=='
-          PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRRE0yUzJaUDNnRUt0WUsKWDduYmF5RnJmeTZPbVJkYU1zOFRqamxwWDhFUmxZVGxISndOS0llU1pWcmcvRGV3d3Q5bkk3ZkE4THMwS1gxYQpvdU4xelZjVEpaOWphREVVU09WM0FXVjloWS8zNzgyaTU0RVNPWHcrMTVSZzRqNnlodkhsUm4vMHROMjdsU29MCmx0V1NWay95M29QWStaRmlyYW1OT0pMT1NnenFCK3dUWVhGNHF1aG4xOHpSUHdMVnp5V21ydlRFUTUySzFmMDIKQitBZ0JvVWEwZ0xDVVBUYkdxeEdlaWU1a1Zla3pkZVRpU240aDhVRUF6Tlc2RFJkN2t0Q1FKN0tacVNCaXczZwppN0x3aGl5OXNXcWs2MWx1YU5zcEdTNVc1eVBKL0psYWFUNDVPdENKVTFObWRzaktHUHhId3pnYWdkQ0lESkZPCjhQVHlGbnBEQWdNQkFBRUNnZ0VBQ0NPbytDblpidkQweUR5OWVjWnI4WVdBS0JKVkp6UlZuZ1ZNcXE4dlVLK00KTkQ1S3hRc1ROL0huQm9GL0JQcjVQWFBoM1R5emM0TWlnL05zN2tWV2JHQldVUERXNG1OekdxTm5rUEU1b3pSWQpDMXovZCtYbzFlWmk4dWFLYnpXRmJ3SzZHdE1FN0dzazNJa0Z1MmJLam0vZzlVSVZVTUp0dGpyRk9vVWV0ajNBCkpFWU5TZFplWFA2Z0RXeitlR0F6V2RXRnlNZ1hHT0hCanVMekt1S3kwb2xQaUFHRTJIMlhicHlCSEk2K09taHUKemU4VEhYSUg0YW1TOTdaN0ZlWTdZaDZPV0xoeVByaVh3VGZjNk1NaktubUdWOWQ3RytVanIyS3NVNGtYMG1MRApQKzhsS1NqVnFvUjF2YUswWEJiV0Fnd0kwbVd4TjhQMFZqSzRjMzJUNFFLQmdRRG9wZUJ6cE1xVjFlY24ydkFzCnkvRW5JeXdMcUlBVUZuRXRsRnlnMkVOM2ZZMDRkUTBqOWNzM0ZqbXNQK3grYjA1U2pJK05vVVQzRUowNC96Uk8KMFcvcmc0cEVTUlNDOHRtelliUGkycktrc2xLSDhmUWd2YzZKV1FVUThsWWx2elh6OTZiTFlxeFNtK0EwZ1Z4QQpEc2JNQk5NZDEzdk5Wa1VjTURsMnNveTNMUUtCZ1FEaGFQWnF4QzRxSVB1TlhOZE5EbExRVGZIWGxFMzRRTXVaCnNiM3J1NVdwbkJOdWpCU0xHREV2a0pvckprcUZ1b3VYUnVOOGIrd3BObi9lc0c3TjZyM3o5bHltRkI1VE1Ba3kKTlBPR0dDNWdqOU0wVytGTmw4M2dIVkN6eVgxa3VyR2t1amVHM1F1b2RoYXZBaWpqUzdnNW5Nb1J3OEpwcitUdwp4NEtKMC92ZEx3S0JnUURBSjVHMXNweXBHVjJ0YTRZSVdnSTZvekJVQ0w2UTJPQnVGeVpTcTQwOStuTlQrRW44Ck01Mi9TQm9talQzV1NEVFd0Y1l6NHNuRmp2RnRERXkxOVFLTjhiMllIUXhXQkNPUHA5a2VQQ2hsSSt4SzRLc1YKQi9DNVBNK1VhYlNCeE9iWk5PbU0vMWo1ZWttNjFFWFBtdVRUeWdCZG00ZGoyQ2VJMnNQN3FBblZtUUtCZ1FDZgp0T0N5OE9ETWxLWG1tTnNyQzNUOWhkeE9KQlBDU3haMmhRck5WUkZMSlB4WG5RU0pNTkRZcEptMjdPQnNNNm5uCnV5QSs4SVhoQlc0Lzk3M3FRK0htVXExK05rN3VIZURHSStKUEpoN2w1OEY3SFlaYWxhNFdsbTZ4azVjMm9WaHcKSUVoclUzNkpFM0lxK1ZyREFNazhlS3hyUGNvblc2cllObU4xQ0M4eG5RS0JnUURiOGZTeDBQcHg1WisxL2tCMwpxVGc2RDJYY1YyZGVWNFdsOS9JQ2owRHFqaGpXekJjaThuTjUyb3ZoSmVXcFVxWnJ1eStVWTg2cVRuK09oNGVJClNkZFRBb0F2cU1sL2gzVzdCRUdad2NsclRJSWRqTHVmK0FuRGN5S0lKY21CUG9JZGsydzZ4dkNWczJqbmdEOTMKcjZ0R3VoNHlvM2pIRkRTR0Y3dDdCRk5RSEE9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg=='
+  #   services:
+  #     postgres:
+  #       image: postgres:13
+  #       ports:
+  #         - 5432:5432
+  #       env:
+  #         POSTGRES_PASSWORD: ''
+  #         POSTGRES_HOST_AUTH_METHOD: 'trust'
+  #       # Set health checks to wait until postgres has started
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     redis:
+  #       image: redis:6.2.5-alpine
+  #       ports:
+  #         - 6379:6379
+  #     mongo:
+  #       image: mongo:4.4.28
+  #       ports:
+  #         - 27017:27017
+  #     planetscale:
+  #       image: mysql:8.0.31
+  #       ports:
+  #         - 3308:3306
+  #       env:
+  #         MYSQL_DATABASE: mysql
+  #         MYSQL_ROOT_PASSWORD: mysql
+  #     mysql:
+  #       image: mysql:8.0.31
+  #       ports:
+  #         - 3307:3306
+  #       env:
+  #         MYSQL_DATABASE: mysql
+  #         MYSQL_ROOT_PASSWORD: mysql
+  #     maria:
+  #       image: mariadb:10.4.22
+  #       ports:
+  #         - 3306:3306
+  #       env:
+  #         MARIADB_DATABASE: mysql
+  #         MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+  #     mssql:
+  #       image: mcr.microsoft.com/azure-sql-edge:1.0.6
+  #       ports:
+  #         - 1433:1433
+  #       env:
+  #         ACCEPT_EULA: 'Y'
+  #         SA_PASSWORD: '123ABabc!'
+  #     dynamodb-local:
+  #       image: 'amazon/dynamodb-local:latest'
+  #       ports:
+  #         - '8000:8000'
+  #     turso:
+  #       image: ghcr.io/tursodatabase/libsql-server:latest
+  #       ports:
+  #         - '8080:8080'
+  #     mocksaml:
+  #       image: boxyhq/mock-saml:1.3.9
+  #       ports:
+  #         - 4000:4000
+  #       env:
+  #         APP_URL: http://localhost:4000
+  #         ENTITY_ID: https://saml.example.com/entityid
+  #         PUBLIC_KEY: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiVENDQWxXZ0F3SUJBZ0lVUWR0Q05FRnRGYWF6OUtNYkp6eUhCVm5vMWZFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1JURUxNQWtHQTFVRUJoTUNSMEl4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeElUQWZCZ05WQkFvTQpHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpEQWdGdzB5TkRBME1UUXhNVFUwTkRkYUdBOHpNREl6Ck1EZ3hOakV4TlRRME4xb3dSVEVMTUFrR0ExVUVCaE1DUjBJeEV6QVJCZ05WQkFnTUNsTnZiV1V0VTNSaGRHVXgKSVRBZkJnTlZCQW9NR0VsdWRHVnlibVYwSUZkcFpHZHBkSE1nVUhSNUlFeDBaRENDQVNJd0RRWUpLb1pJaHZjTgpBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXpaTFprL2VBUXExZ3BmdWR0cklXdC9MbzZaRjFveXp4T09PV2xmCndSR1ZoT1VjbkEwb2g1SmxXdUQ4TjdEQzMyY2p0OER3dXpRcGZWcWk0M1hOVnhNbG4yTm9NUlJJNVhjQlpYMkYKai9mdnphTG5nUkk1ZkQ3WGxHRGlQcktHOGVWR2YvUzAzYnVWS2d1VzFaSldUL0xlZzlqNWtXS3RxWTA0a3M1SwpET29IN0JOaGNYaXE2R2ZYek5FL0F0WFBKYWF1OU1SRG5ZclYvVFlINENBR2hSclNBc0pROU5zYXJFWjZKN21SClY2VE4xNU9KS2ZpSHhRUURNMWJvTkYzdVMwSkFuc3BtcElHTERlQ0xzdkNHTEwyeGFxVHJXVzVvMnlrWkxsYm4KSThuOG1WcHBQams2MElsVFUyWjJ5TW9ZL0VmRE9CcUIwSWdNa1U3dzlQSVdla01DQXdFQUFhTlRNRkV3SFFZRApWUjBPQkJZRUZCaUNTNEswejdlR2lWYXI2dlUrb2lzWEdkWlVNQjhHQTFVZEl3UVlNQmFBRkJpQ1M0SzB6N2VHCmlWYXI2dlUrb2lzWEdkWlVNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUIKQUNpMFZSN0lHdmdHbmdyL1lpZkxZZzZwWUlFc010cGFsMmYxekMzZGpkRElPTHlmVk12aTJzdUtUazM2MkNGeApXU2lxaVc4UXhPbDZlZTdrUVhTbnpJVlRMb2hwcm5WVFVmeUpXUlpJdThvbGpkREprSE9yekV3YktqZUhsbU1PClZxODZGbzBpN0NnTG1oTjh1dDVyNFdHdytYVElZc2lkZC9SaUFGMlFRMVR4QkJaN3hoZVJlU0o5M0tGd29FbkQKcU5hLzE2VUpsdWpXbmRTMEF2Q09weEFnWXJFL1czbzJqUWVnczZmMnhWemozbFc2WVpEaVg5YXBrUTVKZWlscwp3WFRuSHMvL3dlcCsvWndYbXcrYXQrNXRXRU9ycU15TERDbXpFc294MFBmQUhZdlQ4M0hTMWZtL2RiQUJHNlJwCkcxTU41OUMyYmRxUHd3K0hUVEplZFVvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=='
+  #         PRIVATE_KEY: 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRRE0yUzJaUDNnRUt0WUsKWDduYmF5RnJmeTZPbVJkYU1zOFRqamxwWDhFUmxZVGxISndOS0llU1pWcmcvRGV3d3Q5bkk3ZkE4THMwS1gxYQpvdU4xelZjVEpaOWphREVVU09WM0FXVjloWS8zNzgyaTU0RVNPWHcrMTVSZzRqNnlodkhsUm4vMHROMjdsU29MCmx0V1NWay95M29QWStaRmlyYW1OT0pMT1NnenFCK3dUWVhGNHF1aG4xOHpSUHdMVnp5V21ydlRFUTUySzFmMDIKQitBZ0JvVWEwZ0xDVVBUYkdxeEdlaWU1a1Zla3pkZVRpU240aDhVRUF6Tlc2RFJkN2t0Q1FKN0tacVNCaXczZwppN0x3aGl5OXNXcWs2MWx1YU5zcEdTNVc1eVBKL0psYWFUNDVPdENKVTFObWRzaktHUHhId3pnYWdkQ0lESkZPCjhQVHlGbnBEQWdNQkFBRUNnZ0VBQ0NPbytDblpidkQweUR5OWVjWnI4WVdBS0JKVkp6UlZuZ1ZNcXE4dlVLK00KTkQ1S3hRc1ROL0huQm9GL0JQcjVQWFBoM1R5emM0TWlnL05zN2tWV2JHQldVUERXNG1OekdxTm5rUEU1b3pSWQpDMXovZCtYbzFlWmk4dWFLYnpXRmJ3SzZHdE1FN0dzazNJa0Z1MmJLam0vZzlVSVZVTUp0dGpyRk9vVWV0ajNBCkpFWU5TZFplWFA2Z0RXeitlR0F6V2RXRnlNZ1hHT0hCanVMekt1S3kwb2xQaUFHRTJIMlhicHlCSEk2K09taHUKemU4VEhYSUg0YW1TOTdaN0ZlWTdZaDZPV0xoeVByaVh3VGZjNk1NaktubUdWOWQ3RytVanIyS3NVNGtYMG1MRApQKzhsS1NqVnFvUjF2YUswWEJiV0Fnd0kwbVd4TjhQMFZqSzRjMzJUNFFLQmdRRG9wZUJ6cE1xVjFlY24ydkFzCnkvRW5JeXdMcUlBVUZuRXRsRnlnMkVOM2ZZMDRkUTBqOWNzM0ZqbXNQK3grYjA1U2pJK05vVVQzRUowNC96Uk8KMFcvcmc0cEVTUlNDOHRtelliUGkycktrc2xLSDhmUWd2YzZKV1FVUThsWWx2elh6OTZiTFlxeFNtK0EwZ1Z4QQpEc2JNQk5NZDEzdk5Wa1VjTURsMnNveTNMUUtCZ1FEaGFQWnF4QzRxSVB1TlhOZE5EbExRVGZIWGxFMzRRTXVaCnNiM3J1NVdwbkJOdWpCU0xHREV2a0pvckprcUZ1b3VYUnVOOGIrd3BObi9lc0c3TjZyM3o5bHltRkI1VE1Ba3kKTlBPR0dDNWdqOU0wVytGTmw4M2dIVkN6eVgxa3VyR2t1amVHM1F1b2RoYXZBaWpqUzdnNW5Nb1J3OEpwcitUdwp4NEtKMC92ZEx3S0JnUURBSjVHMXNweXBHVjJ0YTRZSVdnSTZvekJVQ0w2UTJPQnVGeVpTcTQwOStuTlQrRW44Ck01Mi9TQm9talQzV1NEVFd0Y1l6NHNuRmp2RnRERXkxOVFLTjhiMllIUXhXQkNPUHA5a2VQQ2hsSSt4SzRLc1YKQi9DNVBNK1VhYlNCeE9iWk5PbU0vMWo1ZWttNjFFWFBtdVRUeWdCZG00ZGoyQ2VJMnNQN3FBblZtUUtCZ1FDZgp0T0N5OE9ETWxLWG1tTnNyQzNUOWhkeE9KQlBDU3haMmhRck5WUkZMSlB4WG5RU0pNTkRZcEptMjdPQnNNNm5uCnV5QSs4SVhoQlc0Lzk3M3FRK0htVXExK05rN3VIZURHSStKUEpoN2w1OEY3SFlaYWxhNFdsbTZ4azVjMm9WaHcKSUVoclUzNkpFM0lxK1ZyREFNazhlS3hyUGNvblc2cllObU4xQ0M4eG5RS0JnUURiOGZTeDBQcHg1WisxL2tCMwpxVGc2RDJYY1YyZGVWNFdsOS9JQ2owRHFqaGpXekJjaThuTjUyb3ZoSmVXcFVxWnJ1eStVWTg2cVRuK09oNGVJClNkZFRBb0F2cU1sL2gzVzdCRUdad2NsclRJSWRqTHVmK0FuRGN5S0lKY21CUG9JZGsydzZ4dkNWczJqbmdEOTMKcjZ0R3VoNHlvM2pIRkRTR0Y3dDdCRk5RSEE9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg=='
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-          check-latest: true
-      - run: node -v
-      - run: npm -v
-      - name: Setup Next.js cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm install
-      - run: npm run check-lint
-      - run: npm run check-types
-      - run: npm run check-format
-      - run: npm run check-locale
-      - run: npm run build
-      - run: npm run db:migration:run:planetscale
-        working-directory: ./npm
-      - run: npm run test
-        working-directory: ./npm
-      - name: Install playwright browser dependencies
-        run: npx playwright install chromium
-      - name: e2e tests
-        run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
-      - id: version
-        name: Generate NPM_VERSION and PUBLISH_TAG
-        run: |
-          npm install -g json
-          JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         always-auth: true
+  #         node-version: ${{ matrix.node-version }}
+  #         registry-url: https://registry.npmjs.org
+  #         scope: '@boxyhq'
+  #         cache: 'npm'
+  #         check-latest: true
+  #     - run: node -v
+  #     - run: npm -v
+  #     - name: Setup Next.js cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ${{ github.workspace }}/.next/cache
+  #         # Generate a new cache whenever packages or source files change.
+  #         key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+  #         # If source files changed but packages didn't, rebuild from a prior cache.
+  #         restore-keys: |
+  #           ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+  #     - run: npm install
+  #     - run: npm run check-lint
+  #     - run: npm run check-types
+  #     - run: npm run check-format
+  #     - run: npm run check-locale
+  #     - run: npm run build
+  #     - run: npm run db:migration:run:planetscale
+  #       working-directory: ./npm
+  #     - run: npm run test
+  #       working-directory: ./npm
+  #     - name: Install playwright browser dependencies
+  #       run: npx playwright install chromium
+  #     - name: e2e tests
+  #       run: npx ts-node --log-error e2e/support/pretest.ts && npx playwright test
+  #     - id: version
+  #       name: Generate NPM_VERSION and PUBLISH_TAG
+  #       run: |
+  #         npm install -g json
+  #         JACKSON_VERSION=$(echo $(cat ../package.json) | json version)
 
-          publishTag="latest"
-          imageSuffix=""
-          imagePath="${{ github.repository }}"
+  #         publishTag="latest"
+  #         imageSuffix=""
+  #         imagePath="${{ github.repository }}"
 
-          if [[ "$GITHUB_REF" == *\/release ]]
-          then
-            echo "Release branch"
-          else
-            echo "Dev branch"
-            publishTag="beta"
-            imageSuffix="-beta"
-            imagePath="${{ github.repository }}-beta"
-            JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
-          fi
+  #         if [[ "$GITHUB_REF" == *\/release ]]
+  #         then
+  #           echo "Release branch"
+  #         else
+  #           echo "Dev branch"
+  #           publishTag="beta"
+  #           imageSuffix="-beta"
+  #           imagePath="${{ github.repository }}-beta"
+  #           JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
+  #         fi
 
-          echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
-          echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
-          echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
-          echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
+  #         echo "NPM_VERSION=${JACKSON_VERSION}" >> $GITHUB_OUTPUT
+  #         echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
+  #         echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
+  #         echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
 
-        working-directory: ./npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #       working-directory: ./npm
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build:
-    needs: ci
+    # needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
@@ -281,23 +282,23 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.spdx
       - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: npm_sbom.cyclonedx
       - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         run: rm -rf ./npm/sbom*.* || true
       - name: Move SPDX Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.spdx "./npm/sbom.spdx"
       - name: Move CycloneDx Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         run: mv npm_sbom.cyclonedx "./npm/sbom.cyclonedx"
 
       - name: Next Js Project SBOM Report [SPDX]
@@ -321,21 +322,21 @@ jobs:
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Remove older SBOMs
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         run: rm -rf sbom*.* || true
       - name: Download artifact for SPDX Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.spdx
       - name: Download artifact for CycloneDx Report
-        if: github.ref == 'refs/heads/release-disabled'
+        #if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: sbom.cyclonedx
 
       - name: Create SBOM Report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -343,12 +344,12 @@ jobs:
           artifact-name: docker_sbom.spdx
           upload-artifact-retention: 1
       - name: Publish report [Docker][SPDX]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.spdx$"
       - name: Create SBOM Report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action@v0
         with:
           image: ${{ needs.ci.outputs.IMAGE_PATH }}:${{ needs.ci.outputs.PUBLISH_TAG }}
@@ -356,32 +357,32 @@ jobs:
           artifact-name: docker_sbom.cyclonedx
           upload-artifact-retention: 1
       - name: Publish report [Docker][CycloneDx]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: anchore/sbom-action/publish-sbom@v0
         with:
           sbom-artifact-match: ".*\\.cyclonedx$"
       - name: Download artifact for SPDX Report [Docker]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.spdx
       - name: Download artifact for CycloneDx Report [Docker]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         uses: actions/download-artifact@v3
         with:
           name: docker_sbom.cyclonedx
       - name: Create/Clear folder [Docker]
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         run: mkdir -p ./_docker/ && rm -rf ./_docker/*.* || true
 
       - name: Move Report & cleanup
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         run: |
           mv docker_sbom.spdx "./_docker/sbom.spdx" || true
           mv docker_sbom.cyclonedx "./_docker/sbom.cyclonedx" || true
 
       - name: ORAS Setup
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         run: |
           ORAS_VERSION="v0.8.1"
           ORAS_FILENAME="oras_0.8.1_linux_amd64.tar.gz"
@@ -390,7 +391,7 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
 
       - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
-        if: github.ref == 'refs/heads/release-disabled'
+        if: github.ref == 'refs/heads/release'
         run: |
           result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
