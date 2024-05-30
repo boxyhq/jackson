@@ -420,46 +420,46 @@ jobs:
           cd ..
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
-  publish:
-    needs: [ci, build]
-    runs-on: ubuntu-latest
+  # publish:
+  #   needs: [ci, build]
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20]
-        package: [npm, internal-ui]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  #   strategy:
+  #     matrix:
+  #       node-version: [20]
+  #       package: [npm, internal-ui]
+  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
-      - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: echo ${{ needs.ci.outputs.NPM_VERSION }}
+  #     - run: echo ${{ needs.ci.outputs.PUBLISH_TAG }}
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          always-auth: true
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org
-          scope: '@boxyhq'
-          cache: 'npm'
-          check-latest: true
-      - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
-        working-directory: ./${{ matrix.package }}
-      - name: Build ${{ matrix.package }}
-        if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
-        run: npm run build
-        working-directory: ./${{ matrix.package }}
-      - name: Publish ${{ matrix.package }}
-        if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
-        run: |
-          npm install -g json
-          JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
-          json -I -f package.json -e "this.main=\"dist/index.js\""
-          json -I -f package.json -e "this.types=\"dist/index.d.ts\""
-          json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         always-auth: true
+  #         node-version: ${{ matrix.node-version }}
+  #         registry-url: https://registry.npmjs.org
+  #         scope: '@boxyhq'
+  #         cache: 'npm'
+  #         check-latest: true
+  #     - run: ${{ matrix.package == 'internal-ui' && 'npm install' || matrix.package == 'npm' && 'npm install --legacy-peer-deps' }}
+  #       working-directory: ./${{ matrix.package }}
+  #     - name: Build ${{ matrix.package }}
+  #       if: github.ref != 'refs/heads/release' && !contains(github.ref, 'refs/tags/beta-v')
+  #       run: npm run build
+  #       working-directory: ./${{ matrix.package }}
+  #     - name: Publish ${{ matrix.package }}
+  #       if: github.ref == 'refs/heads/release' || contains(github.ref, 'refs/tags/beta-v')
+  #       run: |
+  #         npm install -g json
+  #         JACKSON_VERSION=${{ needs.ci.outputs.NPM_VERSION }}
+  #         json -I -f package.json -e "this.main=\"dist/index.js\""
+  #         json -I -f package.json -e "this.types=\"dist/index.d.ts\""
+  #         json -I -f package.json -e "this.version=\"${JACKSON_VERSION}\""
 
-          npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
-        working-directory: ./${{ matrix.package }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #         npm publish --tag ${{ needs.ci.outputs.PUBLISH_TAG }} --access public
+  #       working-directory: ./${{ matrix.package }}
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
