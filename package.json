@@ -70,7 +70,7 @@
     "@retracedhq/retraced": "0.7.12",
     "@tailwindcss/typography": "0.5.13",
     "axios": "1.7.2",
-    "blockly": "11.0.0",
+    "blockly": "11.1.0",
     "chroma-js": "2.4.2",
     "classnames": "2.5.1",
     "cors": "2.8.5",
