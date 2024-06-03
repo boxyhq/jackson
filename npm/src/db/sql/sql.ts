@@ -56,6 +56,11 @@ class Sql implements DatabaseDriver {
           this.dataSource = new DataSource(<DataSourceOptions>{
             database: this.options.url,
             driver: require('@libsql/sqlite3'),
+            ...(this.options.url?.startsWith('libsql')
+              ? {
+                  flags: 0x00000040, // this is required to make turso work in TypeORM
+                }
+              : {}),
             ...baseOpts,
           });
         } else {

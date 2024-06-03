@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.26.2",
+  "version": "1.26.3",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -70,7 +70,7 @@
     "@retracedhq/retraced": "0.7.12",
     "@tailwindcss/typography": "0.5.13",
     "axios": "1.7.2",
-    "blockly": "11.0.0",
+    "blockly": "11.1.0",
     "chroma-js": "2.4.2",
     "classnames": "2.5.1",
     "cors": "2.8.5",
@@ -113,7 +113,7 @@
     "jose": "5.3.0",
     "postcss": "8.4.38",
     "prettier": "3.2.5",
-    "prettier-plugin-tailwindcss": "0.5.14",
+    "prettier-plugin-tailwindcss": "0.6.0",
     "release-it": "17.3.0",
     "swagger-jsdoc": "6.2.8",
     "tailwindcss": "3.4.3",
