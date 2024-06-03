@@ -48,6 +48,16 @@ const setupLinkTestsData: {
     testTitle: 'should be able to create setup link and sso connection using PingOne SAML 2.0',
     testRunner: testPingOneSaml,
   },
+  {
+    testDescription: 'Admin Portal Enterprise SSO SetupLink using Okta SAML',
+    testTitle: 'should be able to create setup link and sso connection using Okta SAML',
+    testRunner: testOktaSaml,
+  },
+  {
+    testDescription: 'Admin Portal Enterprise SSO SetupLink using Azure SAML SSO',
+    testTitle: 'should be able to create setup link and sso connection Azure SAML SSO',
+    testRunner: testAzureSaml,
+  },
 ];
 
 setupLinkTestsData.forEach((testData) => {
@@ -187,6 +197,190 @@ async function testPingOneSaml(setupLinkPage: Page) {
 
   // check mdx generated content using remart-gfm plugin for step4
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 4: Create SAML Connection' })).toBeVisible();
+
+  await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
+  await setupLinkPage.getByRole('button', { name: 'Save' }).click();
+}
+
+async function testOktaSaml(setupLinkPage: Page) {
+  // Create SSO connection using Okta SAML  workflow
+  await setupLinkPage.getByRole('button', { name: 'Okta SAML SSO' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step1
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Create Application' })).toBeVisible();
+  await expect(setupLinkPage.getByText('From your Okta account, click')).toHaveText(
+    'From your Okta account, click Applications from the left navigation menu.'
+  );
+
+  await expect(setupLinkPage.getByText('If your application is')).toHaveText(
+    'If your application is already created, choose it from the list and move to the next step.'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/1.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(1)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/2.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(2)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/3.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step2
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 2: Configure Application' })).toBeVisible();
+
+  await expect(setupLinkPage.getByText('Enter the following values in')).toHaveText(
+    'Enter the following values in the SAML Settings section on the next screen:'
+  );
+
+  await expect(setupLinkPage.getByText('Select EmailAddress from the')).toHaveText(
+    'Select EmailAddress from the Name ID format dropdown.'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' })).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/4.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step3
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 3: Attribute Mapping' })).toBeVisible();
+
+  await expect(setupLinkPage.getByText('Under the Attribute')).toHaveText(
+    'Under the Attribute Statements section, you have to configure the following attributes:'
+  );
+
+  await expect(setupLinkPage.getByText('From your application, click')).toHaveText(
+    'From your application, click Sign On tab and go to the section SAML Signing Certificates'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/5.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(1)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/6.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(2)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/okta/7.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step4
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 4: Create SAML Connection' })).toBeVisible();
+  await expect(setupLinkPage.getByText('Enter the Identity Provider')).toHaveText(
+    'Enter the Identity Provider Metadata below. You can either enter the metadata URL or paste the XML file content directly.'
+  );
+
+  await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
+  await setupLinkPage.getByRole('button', { name: 'Save' }).click();
+}
+
+async function testAzureSaml(setupLinkPage: Page) {
+  // Create SSO connection using Okta SAML  workflow
+  await setupLinkPage.getByRole('button', { name: 'Azure SAML SSO' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step1
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Create Application' })).toBeVisible();
+  await expect(setupLinkPage.getByText('From your Azure Admin console')).toHaveText(
+    'From your Azure Admin console, click Enterprise applications from the left navigation menu.'
+  );
+
+  await expect(setupLinkPage.getByText('If your application is')).toHaveText(
+    'If your application is already created, choose it from the list and move to the next step.'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/1.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(1)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/2.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(2)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/3.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step2
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 2: Configure Application' })).toBeVisible();
+
+  await expect(setupLinkPage.getByText('Enter the following values in')).toHaveText(
+    'Enter the following values in the Basic SAML Configuration section on the next screen:'
+  );
+
+  await expect(setupLinkPage.getByText('Select Single Sign On from')).toHaveText(
+    'Select Single Sign On from the Manage section of your app and then SAML.'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/4.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(1)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/5.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(2)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/6.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step3
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 3: Attribute Mapping' })).toBeVisible();
+
+  await expect(setupLinkPage.getByText('Click Edit on the Attributes')).toHaveText(
+    'Click Edit on the Attributes & Claims section.'
+  );
+
+  await expect(setupLinkPage.getByText('You have to configure the')).toHaveText(
+    'You have to configure the following attributes under the Attributes & Claims section:'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).first()).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/7.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(1)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/8.png'
+  );
+
+  await expect(setupLinkPage.getByRole('img', { name: 'img alt' }).nth(2)).toHaveAttribute(
+    'src',
+    'https://cdn.boxyhq.com/docs/sso/providers/azure/9.png'
+  );
+
+  await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
+
+  // check mdx generated content using remart-gfm plugin for step4
+  await expect(setupLinkPage.getByRole('heading', { name: 'Step 4: Create SAML Connection' })).toBeVisible();
+  await expect(setupLinkPage.getByText('Enter the Identity Provider')).toHaveText(
+    'Enter the Identity Provider Metadata below. You can either enter the metadata URL or paste the XML file content directly.'
+  );
 
   await setupLinkPage.getByPlaceholder('Paste the Metadata URL here').fill(TEST_SETUPLINK_MOCK_METADATA_URL);
   await setupLinkPage.getByRole('button', { name: 'Save' }).click();
