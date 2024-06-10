@@ -77,6 +77,10 @@ export class OAuthController implements IOAuthController {
 
   public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
+      tenant,
+      product,
+      access_type,
+      resource,
       response_type = 'code',
       client_id,
       redirect_uri,
@@ -88,6 +92,7 @@ export class OAuthController implements IOAuthController {
       idp_hint,
       forceAuthn = 'false',
       login_hint,
+      ...oidcParams // Rest of the params will be assumed as OIDC params and will be forwarded to the IdP
     } = body;
 
     let requestedTenant;
@@ -99,11 +104,6 @@ export class OAuthController implements IOAuthController {
     let fedApp: IdentityFederationApp | undefined;
 
     try {
-      const tenant = 'tenant' in body ? body.tenant : undefined;
-      const product = 'product' in body ? body.product : undefined;
-      const access_type = 'access_type' in body ? body.access_type : undefined;
-      const resource = 'resource' in body ? body.resource : undefined;
-
       requestedTenant = tenant;
       requestedProduct = product;
 
@@ -418,6 +418,7 @@ export class OAuthController implements IOAuthController {
           state: relayState,
           nonce: oidcNonce,
           login_hint,
+          ...oidcParams,
         });
       } catch (err: unknown) {
         const error_description = (err as errors.OPError)?.error || getErrorMessage(err);
