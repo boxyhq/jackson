@@ -279,11 +279,24 @@ export interface OAuthReqBodyWithResource extends OAuthReqBody {
   resource: string;
 }
 
-export type OAuthReq =
+type FillKeys<T> = (
+  (T extends T ? keyof T : never) extends infer AllKeys
+    ? T extends T
+      ? { [K in keyof T]: T[K] } & {
+          [K in AllKeys extends keyof T ? never : AllKeys extends string ? AllKeys : never]?: undefined;
+        }
+      : never
+    : never
+) extends infer U
+  ? { [K in keyof U]: U[K] }
+  : never;
+
+export type OAuthReq = FillKeys<
   | OAuthReqBodyWithClientId
   | OAuthReqBodyWithTenantProduct
   | OAuthReqBodyWithAccessType
-  | OAuthReqBodyWithResource;
+  | OAuthReqBodyWithResource
+>;
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
