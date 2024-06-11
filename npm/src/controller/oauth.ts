@@ -412,7 +412,7 @@ export class OAuthController implements IOAuthController {
         const standardScopes = this.opts.openid?.requestProfileScope
           ? ['openid', 'email', 'profile']
           : ['openid', 'email'];
-        const authzParams = this.opts.openid?.forwardOIDCParams ? oidcParams : {};
+        const paramsToForward = this.opts.openid?.forwardOIDCParams ? oidcParams : {};
         ssoUrl = oidcClient.authorizationUrl({
           scope: [...requestedScopes, ...standardScopes]
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
@@ -422,7 +422,7 @@ export class OAuthController implements IOAuthController {
           state: relayState,
           nonce: oidcNonce,
           login_hint,
-          ...authzParams,
+          ...paramsToForward,
         });
       } catch (err: unknown) {
         const error_description = (err as errors.OPError)?.error || getErrorMessage(err);
