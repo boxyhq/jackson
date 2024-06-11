@@ -77,6 +77,41 @@ tap.test('[OIDCProvider]', async (t) => {
     }
   );
 
+  t.test(
+    '[authorize] Should not forward openid params if openid.forwardOIDCParams is set to false',
+    async (t) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      oauthController.opts.openid.forwardOIDCParams = false;
+      const response = (await oauthController.authorize(<OAuthReq>{
+        ...authz_request_oidc_provider,
+        scope: 'openid email profile',
+        prompt: 'none',
+      })) as {
+        redirect_url: string;
+      };
+      const params = new URLSearchParams(new URL(response.redirect_url!).search);
+      t.ok('redirect_url' in response, 'got the Idp authorize URL');
+      t.match(params.has('prompt'), false, 'prompt param should be absent');
+    }
+  );
+
+  t.test('[authorize] Should forward openid params if openid.forwardOIDCParams is set to true', async (t) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    oauthController.opts.openid.forwardOIDCParams = true;
+    const response = (await oauthController.authorize(<OAuthReq>{
+      ...authz_request_oidc_provider,
+      scope: 'openid email profile',
+      prompt: 'none',
+    })) as {
+      redirect_url: string;
+    };
+    const params = new URLSearchParams(new URL(response.redirect_url!).search);
+    t.ok('redirect_url' in response, 'got the Idp authorize URL');
+    t.match(params.has('prompt'), true, 'prompt param should be present');
+  });
+
   t.test('[authorize] Should return error if `oidcPath` is not set', async (t) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
