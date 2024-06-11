@@ -76,7 +76,7 @@
     "migrate-mongo": "11.0.0",
     "nock": "13.5.4",
     "sinon": "18.0.0",
-    "tap": "19.2.4",
+    "tap": "19.2.5",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"
