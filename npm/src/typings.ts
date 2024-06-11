@@ -261,42 +261,41 @@ export interface OAuthReqBody {
 
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
   client_id: string;
+  tenant?: undefined;
+  product?: undefined;
+  access_type?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
   client_id: 'dummy';
   tenant: string;
   product: string;
+  access_type?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
   client_id: 'dummy';
   access_type: string;
+  tenant?: undefined;
+  product?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithResource extends OAuthReqBody {
   client_id: 'dummy';
   resource: string;
+  tenant?: undefined;
+  product?: undefined;
+  access_type?: undefined;
 }
 
-type FillKeys<T> = (
-  (T extends T ? keyof T : never) extends infer AllKeys
-    ? T extends T
-      ? { [K in keyof T]: T[K] } & {
-          [K in AllKeys extends keyof T ? never : AllKeys extends string ? AllKeys : never]?: undefined;
-        }
-      : never
-    : never
-) extends infer U
-  ? { [K in keyof U]: U[K] }
-  : never;
-
-export type OAuthReq = FillKeys<
+export type OAuthReq =
   | OAuthReqBodyWithClientId
   | OAuthReqBodyWithTenantProduct
   | OAuthReqBodyWithAccessType
-  | OAuthReqBodyWithResource
->;
+  | OAuthReqBodyWithResource;
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
