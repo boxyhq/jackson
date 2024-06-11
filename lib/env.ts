@@ -72,6 +72,7 @@ const jacksonOptions: JacksonOption = {
       public: process.env.OPENID_RSA_PUBLIC_KEY || '',
     },
     requestProfileScope: process.env.OPENID_REQUEST_PROFILE_SCOPE === 'false' ? false : true,
+    forwardOIDCParams: process.env.OPENID_REQUEST_FORWARD_PARAMS === 'true' ? true : false,
   },
   certs: {
     publicKey: process.env.PUBLIC_KEY || '',
