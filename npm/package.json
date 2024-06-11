@@ -45,7 +45,7 @@
     "@aws-sdk/credential-providers": "3.592.0",
     "@aws-sdk/util-dynamodb": "3.592.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
-    "@boxyhq/metrics": "0.2.7",
+    "@boxyhq/metrics": "0.2.8",
     "@boxyhq/saml20": "1.5.1",
     "@googleapis/admin": "19.0.1",
     "@libsql/sqlite3": "0.3.1",
