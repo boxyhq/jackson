@@ -143,6 +143,9 @@ export class OAuthController implements IOAuthController {
         }
         if (!sp && resource) {
           sp = getEncodedTenantProduct(resource);
+          if (sp === null) {
+            oidcParams.resource = resource;
+          }
         }
         if (!sp && requestedScopes) {
           const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product

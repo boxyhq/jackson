@@ -257,6 +257,7 @@ export interface OAuthReqBody {
   idp_hint?: string;
   forceAuthn?: string;
   login_hint?: string;
+  [key: string]: unknown;
 }
 
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
