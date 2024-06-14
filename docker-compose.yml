@@ -1,0 +1,16 @@
+version: "3.6"
+services:
+  jackson:
+    build: .
+    ports:
+      - "5225:5225"
+    command: [ "node", "server.js" ]
+    environment:
+      DB_ENGINE: "sql"
+      DB_TYPE: "postgres"
+      DB_URL: "postgres://postgres:postgres@postgres:5432/postgres"
+      JACKSON_API_KEYS: "secret"
+      NEXTAUTH_URL: "http://localhost:5225"
+      EXTERNAL_URL: "http://localhost:5225"
+      NEXTAUTH_SECRET: "super-secret"
+      NEXTAUTH_ADMIN_CREDENTIALS: "admin@company.com:secretpassword"
