@@ -22,7 +22,7 @@
     "downlevelIteration": true,
     "baseUrl": "../",
   },
-  "include": ["./npm/src/**/*"],
+  "include": ["./npm/src/**/*", "./saml-jackson/src/**/*"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true,
