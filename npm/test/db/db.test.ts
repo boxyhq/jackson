@@ -200,6 +200,7 @@ const dbs = [
     ...tursoConfig,
     encryptionKey,
   },
+  {
     ...sqliteDbConfig,
     encryptionKey
   }
