@@ -20,9 +20,9 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
-    "baseUrl": "../",
+    "baseUrl": ".",
   },
-  "include": ["./npm/src/**/*", "./saml-jackson/src/**/*"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true,
