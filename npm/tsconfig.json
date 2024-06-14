@@ -21,12 +21,8 @@
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "baseUrl": "../",
-    "paths": {
-      "@db-utils/*": ["./packages/db-utils/src/**/*"],
-      "@db-sqlite/*": ["./packages/db-sqlite/src/**/*"]
-    }
   },
-  "include": ["./npm/src/**/*", "./packages/db-utils/src/**/*", "./packages/db-sqlite/src/**/*"],
+  "include": ["./npm/src/**/*"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true,
