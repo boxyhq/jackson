@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import { maskSetup } from '@components/terminus/blocks/customblocks';
-import locale from 'blockly/msg/en';
+import * as locale from 'blockly/msg/en';
 Blockly.setLocale(locale);
 
 import { generateModel } from '@components/terminus/blocks/generator';

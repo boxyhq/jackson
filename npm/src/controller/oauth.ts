@@ -77,6 +77,10 @@ export class OAuthController implements IOAuthController {
 
   public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
     const {
+      tenant,
+      product,
+      access_type,
+      resource,
       response_type = 'code',
       client_id,
       redirect_uri,
@@ -88,6 +92,7 @@ export class OAuthController implements IOAuthController {
       idp_hint,
       forceAuthn = 'false',
       login_hint,
+      ...oidcParams // Rest of the params will be assumed as OIDC params and will be forwarded to the IdP
     } = body;
 
     let requestedTenant;
@@ -99,11 +104,6 @@ export class OAuthController implements IOAuthController {
     let fedApp: IdentityFederationApp | undefined;
 
     try {
-      const tenant = 'tenant' in body ? body.tenant : undefined;
-      const product = 'product' in body ? body.product : undefined;
-      const access_type = 'access_type' in body ? body.access_type : undefined;
-      const resource = 'resource' in body ? body.resource : undefined;
-
       requestedTenant = tenant;
       requestedProduct = product;
 
@@ -143,6 +143,9 @@ export class OAuthController implements IOAuthController {
         }
         if (!sp && resource) {
           sp = getEncodedTenantProduct(resource);
+          if (sp === null) {
+            oidcParams.resource = resource;
+          }
         }
         if (!sp && requestedScopes) {
           const encodedParams = requestedScopes.find((scope) => scope.includes('=') && scope.includes('&')); // for now assume only one encoded param i.e. for tenant/product
@@ -409,6 +412,7 @@ export class OAuthController implements IOAuthController {
         const standardScopes = this.opts.openid?.requestProfileScope
           ? ['openid', 'email', 'profile']
           : ['openid', 'email'];
+        const paramsToForward = this.opts.openid?.forwardOIDCParams ? oidcParams : {};
         ssoUrl = oidcClient.authorizationUrl({
           scope: [...requestedScopes, ...standardScopes]
             .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
@@ -418,6 +422,7 @@ export class OAuthController implements IOAuthController {
           state: relayState,
           nonce: oidcNonce,
           login_hint,
+          ...paramsToForward,
         });
       } catch (err: unknown) {
         const error_description = (err as errors.OPError)?.error || getErrorMessage(err);

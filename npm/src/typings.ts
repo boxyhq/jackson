@@ -257,26 +257,39 @@ export interface OAuthReqBody {
   idp_hint?: string;
   forceAuthn?: string;
   login_hint?: string;
+  [key: string]: unknown;
 }
 
 export interface OAuthReqBodyWithClientId extends OAuthReqBody {
   client_id: string;
+  tenant?: undefined;
+  product?: undefined;
+  access_type?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithTenantProduct extends OAuthReqBody {
   client_id: 'dummy';
   tenant: string;
   product: string;
+  access_type?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithAccessType extends OAuthReqBody {
   client_id: 'dummy';
   access_type: string;
+  tenant?: undefined;
+  product?: undefined;
+  resource?: undefined;
 }
 
 export interface OAuthReqBodyWithResource extends OAuthReqBody {
   client_id: 'dummy';
   resource: string;
+  tenant?: undefined;
+  product?: undefined;
+  access_type?: undefined;
 }
 
 export type OAuthReq =
@@ -446,6 +459,7 @@ export interface JacksonOption {
       public: string;
     };
     requestProfileScope?: boolean; // defaults to true
+    forwardOIDCParams?: boolean; // defaults to false
   };
   certs?: {
     publicKey: string;
