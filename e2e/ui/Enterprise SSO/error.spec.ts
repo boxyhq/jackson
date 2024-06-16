@@ -108,3 +108,17 @@ test('OAuth2 wrapper + OIDC provider + inactive connection', async ({ ssoPage, p
     page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
   ).toBeVisible();
 });
+
+test('SSO Tracer inspect', async ({ page }) => {
+  await page.goto('/');
+  const responsePromise = page.waitForResponse('/api/admin/sso-traces?pageOffset=0&pageLimit=50');
+  await page.getByRole('link', { name: 'SSO Traces' }).click();
+  const response = await responsePromise;
+  const traces = (await response.json()).data;
+  for (const trace of traces) {
+    await page.getByRole('cell').getByRole('button', { name: trace.traceId }).click();
+    await expect(page.getByLabel('SP Protocol')).toContainText('OAuth 2.0');
+    await expect(page.locator('dl')).toContainText(trace.error);
+    await page.getByRole('link', { name: 'Back' }).click();
+  }
+});
