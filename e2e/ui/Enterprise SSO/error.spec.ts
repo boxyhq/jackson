@@ -1,5 +1,5 @@
-import { test as baseTest, expect } from '@playwright/test';
-import { Portal, SSOPage } from 'e2e/support/fixtures';
+import { test as baseTest, expect, request } from '@playwright/test';
+import { ADMIN_PORTAL_PRODUCT, Portal, SSOPage } from 'e2e/support/fixtures';
 
 type MyFixtures = {
   ssoPage: SSOPage;
@@ -19,6 +19,13 @@ export const test = baseTest.extend<MyFixtures>({
     await portal.isLoggedIn();
     await ssoPage.deleteAllSSOConnections();
   },
+});
+
+test.afterAll(async () => {
+  const apiContext = await request.newContext();
+  await apiContext.delete(`/api/v1/sso-traces/product?product=${ADMIN_PORTAL_PRODUCT}`, {
+    headers: { Authorization: 'Api-Key secret' },
+  });
 });
 
 test('OAuth2 wrapper + SAML provider + wrong redirectUrl', async ({ ssoPage, page, baseURL }, testInfo) => {
@@ -110,7 +117,6 @@ test('OAuth2 wrapper + OIDC provider + inactive connection', async ({ ssoPage, p
 });
 
 test('SSO Tracer inspect', async ({ page }) => {
-  await page.goto('/');
   const responsePromise = page.waitForResponse('/api/admin/sso-traces?pageOffset=0&pageLimit=50');
   await page.getByRole('link', { name: 'SSO Traces' }).click();
   const response = await responsePromise;
