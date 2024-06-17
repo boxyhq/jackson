@@ -20,7 +20,7 @@ const test = baseTest.extend<MyFixtures>({
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
     // Create OIDC Federated connection
-    await page.goto('/admin/settings');
+    await page.goto('/');
     await page.getByRole('link', { name: 'Apps' }).click();
     await page.waitForURL(/.*admin\/identity-federation$/);
     await page.getByRole('button', { name: 'New App' }).click();
@@ -61,7 +61,7 @@ const test = baseTest.extend<MyFixtures>({
     await expect(page.getByRole('cell', { name: 'SSO-via-OIDC-Fed' })).toBeVisible();
     await use(portal);
     // Delete Saml Fed connection
-    await page.goto('/admin/settings');
+    await page.goto('/');
     await page.getByRole('link', { name: 'Apps' }).click();
     await page.waitForURL(/.*admin\/identity-federation$/);
     await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
