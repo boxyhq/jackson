@@ -2,7 +2,7 @@ import type { Page, Locator } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;
-const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
+export const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
 
 const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
