@@ -15,7 +15,6 @@ const test = baseTest.extend<MyFixtures>({
     const ssoPage = new SSOPage(page);
     await use(ssoPage);
     // Delete SSO Connections mapped to SAML federation
-    await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
     await ssoPage.deleteAllSSOConnections();
   },
   samlFedPage: async ({ page }, use) => {
@@ -142,9 +141,10 @@ test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, 
   await page.getByRole('cell').getByRole('button', { name: trace.traceId }).click();
   await expect(page.getByLabel('SP Protocol')).toContainText('SAML Federation');
   await expect(page.locator('dl')).toContainText("Assertion Consumer Service URL doesn't match.");
+  await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
 });
 
-test.fixme('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedPage, page, baseURL }) => {
+test('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedPage, page, baseURL }) => {
   // Add SSO connection for tenants
   await page.getByRole('link', { name: 'Connections' }).first().click();
   await ssoPage.addSSOConnection({
@@ -154,14 +154,19 @@ test.fixme('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedP
     tenant: 'acme.com',
     product: '_jackson_admin_portal',
   });
+  // check if the SAML connection appears in the connection list
+  await expect(page.getByText('OF-SAML')).toBeVisible();
+  await ssoPage.updateSSOConnection({
+    name: 'OF-SAML',
+    url: 'https://invalid-url.com',
+  });
   // Login using MockSAML-1
   await ssoPage.logout();
   await ssoPage.signInWithSSO();
-  await ssoPage.signInWithMockSAML();
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(page.getByText("SSO error: Assertion Consumer Service URL doesn't match.")).toBeVisible();
+  await expect(page.getByText('SSO error: Redirect URL is not allowed.')).toBeVisible();
   await oidcFedPage.doCredentialsLogin();
   await oidcFedPage.isLoggedIn();
 
@@ -171,6 +176,8 @@ test.fixme('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedP
   const traces = (await response.json()).data;
   const trace = traces[0];
   await page.getByRole('cell').getByRole('button', { name: trace.traceId }).click();
-  await expect(page.getByLabel('SP Protocol')).toContainText('SAML Federation');
-  await expect(page.locator('dl')).toContainText("Assertion Consumer Service URL doesn't match.");
+  await expect(page.getByLabel('SP Protocol')).toContainText('OIDC Federation');
+  await expect(page.locator('dl')).toContainText('Redirect URL is not allowed.');
+
+  await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
 });
