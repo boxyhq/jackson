@@ -222,14 +222,14 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('IdP connection not found.', 403);
       }
 
-      if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
-        if (fedApp) {
-          if (!allowed.redirect(redirect_uri, fedApp.redirectUrl as string[])) {
-            throw new JacksonError('Redirect URL is not allowed.', 403);
-          }
-        } else {
+      if (fedApp) {
+        if (!allowed.redirect(redirect_uri, fedApp.redirectUrl as string[])) {
           throw new JacksonError('Redirect URL is not allowed.', 403);
         }
+      }
+
+      if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
+        throw new JacksonError('Redirect URL is not allowed.', 403);
       }
 
       if (!isConnectionActive(connection)) {
