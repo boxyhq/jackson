@@ -121,7 +121,11 @@
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"
   },
-  "overrides": {},
+  "overrides": {
+    "typeorm": {
+      "mssql": "11.0.0"
+    }
+  },
   "engines": {
     "node": ">=18.14.2",
     "npm": ">=10"
