@@ -142,7 +142,45 @@ test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, 
   await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
 });
 
-test('OIDC Federated app + SSO Provider with wrong Redirect url', async ({
+test('SAML Federated app + inactive SSO connection', async ({ ssoPage, samlFedPage, page, baseURL }) => {
+  await page.getByRole('link', { name: 'Apps' }).click();
+  await page.getByRole('cell', { name: 'Edit' }).locator('span').click();
+  await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
+  await page.getByPlaceholder('https://your-sp.com/saml/acs').fill('http://localhost:5225/api/oauth/saml');
+  await page.locator('form').filter({ hasText: 'NameTenantProductEntity ID /' }).getByRole('button').click();
+  // Add SSO connection for tenants
+  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.addSSOConnection({
+    name: 'SF-SAML',
+    type: 'saml',
+    baseURL: baseURL!,
+    tenant: FED_TENANT,
+    product: FED_PRODUCT,
+  });
+  // check if the SAML connection appears in the connection list
+  await expect(page.getByText('SF-SAML')).toBeVisible();
+  await ssoPage.updateSSOConnection({
+    name: 'SF-SAML',
+    url: baseURL!,
+    newStatus: false,
+  });
+  // Login using MockSAML-1
+  await ssoPage.logout();
+  await ssoPage.signInWithSSO();
+  // Wait for browser to redirect to error page
+  await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
+  // Assert error text
+  await expect(
+    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
+  ).toBeVisible();
+  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await samlFedPage.doCredentialsLogin();
+  await samlFedPage.isLoggedIn();
+
+  await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
+});
+
+test('OIDC Federated app + SSO Provider with wrong redirect url', async ({
   ssoPage,
   oidcFedPage,
   page,
