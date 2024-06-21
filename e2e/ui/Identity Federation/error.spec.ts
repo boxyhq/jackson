@@ -106,12 +106,14 @@ const test = baseTest.extend<MyFixtures>({
   },
 });
 
-test.afterEach(async () => {
+test.afterAll(async () => {
   const apiContext = await request.newContext();
   await apiContext.delete(`/api/v1/sso-traces/product?product=${ADMIN_PORTAL_PRODUCT}`, {
     headers: { Authorization: 'Api-Key secret' },
   });
 });
+
+const errorMessages: string[] = [];
 
 test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, baseURL }) => {
   // Add SSO connection for tenants
@@ -130,21 +132,19 @@ test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, 
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText("SSO error: Assertion Consumer Service URL doesn't match.")).toBeVisible();
+  errorMessages.push("Assertion Consumer Service URL doesn't match.");
   await samlFedPage.doCredentialsLogin();
   await samlFedPage.isLoggedIn();
 
-  const responsePromise = page.waitForResponse('/api/admin/sso-traces?pageOffset=0&pageLimit=50');
-  await page.getByRole('link', { name: 'SSO Traces' }).click();
-  const response = await responsePromise;
-  const traces = (await response.json()).data;
-  const trace = traces[0];
-  await page.getByRole('cell').getByRole('button', { name: trace.traceId }).click();
-  await expect(page.getByLabel('SP Protocol')).toContainText('SAML Federation');
-  await expect(page.locator('dl')).toContainText("Assertion Consumer Service URL doesn't match.");
   await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
 });
 
-test('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedPage, page, baseURL }) => {
+test('OIDC Federated app + SSO Provider with wrong Redirect url', async ({
+  ssoPage,
+  oidcFedPage,
+  page,
+  baseURL,
+}) => {
   // Add SSO connection for tenants
   await page.getByRole('link', { name: 'Connections' }).first().click();
   await ssoPage.addSSOConnection({
@@ -167,17 +167,56 @@ test('OIDC Federated app + Wrong Redirect url', async ({ ssoPage, oidcFedPage, p
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText('SSO error: Redirect URL is not allowed.')).toBeVisible();
+  errorMessages.push('Redirect URL is not allowed.');
   await oidcFedPage.doCredentialsLogin();
   await oidcFedPage.isLoggedIn();
 
+  await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
+});
+
+test('OIDC Federated app + inactive SSO connection', async ({ ssoPage, oidcFedPage, page, baseURL }) => {
+  // Add SSO connection for tenants
+  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.addSSOConnection({
+    name: 'OF-SAML',
+    type: 'saml',
+    baseURL: baseURL!,
+    tenant: 'acme.com',
+    product: '_jackson_admin_portal',
+  });
+  // check if the SAML connection appears in the connection list
+  await expect(page.getByText('OF-SAML')).toBeVisible();
+  await ssoPage.updateSSOConnection({
+    name: 'OF-SAML',
+    url: baseURL!,
+    newStatus: false,
+  });
+  // Login using MockSAML-1
+  await ssoPage.logout();
+  await ssoPage.signInWithSSO();
+  // Wait for browser to redirect to error page
+  await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
+  // Assert error text
+  await expect(
+    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
+  ).toBeVisible();
+  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await oidcFedPage.doCredentialsLogin();
+  await oidcFedPage.isLoggedIn();
+
+  await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
+});
+
+test('SSO Tracer inspect', async ({ page }) => {
+  await page.goto('/');
   const responsePromise = page.waitForResponse('/api/admin/sso-traces?pageOffset=0&pageLimit=50');
   await page.getByRole('link', { name: 'SSO Traces' }).click();
   const response = await responsePromise;
   const traces = (await response.json()).data;
-  const trace = traces[0];
-  await page.getByRole('cell').getByRole('button', { name: trace.traceId }).click();
-  await expect(page.getByLabel('SP Protocol')).toContainText('OIDC Federation');
-  await expect(page.locator('dl')).toContainText('Redirect URL is not allowed.');
-
-  await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
+  for (let i = 0; i < errorMessages.length; i++) {
+    await page.getByRole('cell').getByRole('button', { name: traces[i].traceId }).click();
+    await expect(page.getByLabel('SP Protocol')).toContainText(/OIDC Federation|SAML Federation/);
+    await expect(page.locator('dl')).toContainText(errorMessages[errorMessages.length - i - 1]);
+    await page.getByRole('link', { name: 'Back' }).click();
+  }
 });
