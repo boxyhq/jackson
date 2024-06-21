@@ -10,6 +10,9 @@ type MyFixtures = {
 let oidcClientId;
 let oidcClientSecret;
 
+const FED_TENANT = 'acme.com';
+const FED_PRODUCT = '_jackson_admin_portal';
+
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
@@ -26,8 +29,8 @@ const test = baseTest.extend<MyFixtures>({
     await page.getByRole('button', { name: 'New App' }).click();
     await page.waitForURL(/.*admin\/identity-federation\/new$/);
     await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('SF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill('acme.com');
-    await page.getByLabel('Product').fill('_jackson_admin_portal');
+    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill(FED_TENANT);
+    await page.getByLabel('Product').fill(FED_PRODUCT);
     await page.getByLabel('ACS URL').fill('https://invalid-url.com');
     await page.getByLabel('Entity ID / Audience URI / Audience Restriction').fill('https://saml.boxyhq.com');
     await page.getByRole('button', { name: 'Create App' }).click();
@@ -64,8 +67,8 @@ const test = baseTest.extend<MyFixtures>({
     // Toggle connection type to OIDC
     await page.getByLabel('OIDC').check();
     await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('OF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill('acme.com');
-    await page.getByLabel('Product').fill('_jackson_admin_portal');
+    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill(FED_TENANT);
+    await page.getByLabel('Product').fill(FED_PRODUCT);
     await page.locator('input[name="item"]').fill('https://invalid-url.com');
     await page.getByRole('button', { name: 'Create App' }).click();
     await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
@@ -122,8 +125,8 @@ test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, 
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: FED_TENANT,
+    product: FED_PRODUCT,
   });
   // Login using MockSAML-1
   await ssoPage.logout();
@@ -151,8 +154,8 @@ test('OIDC Federated app + SSO Provider with wrong Redirect url', async ({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: FED_TENANT,
+    product: FED_PRODUCT,
   });
   // check if the SAML connection appears in the connection list
   await expect(page.getByText('OF-SAML')).toBeVisible();
@@ -181,8 +184,8 @@ test('OIDC Federated app + inactive SSO connection', async ({ ssoPage, oidcFedPa
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: FED_TENANT,
+    product: FED_PRODUCT,
   });
   // check if the SAML connection appears in the connection list
   await expect(page.getByText('OF-SAML')).toBeVisible();
