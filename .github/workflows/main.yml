@@ -167,7 +167,7 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: test-results/
+          path: playwright-report/
           retention-days: 2
       - id: version
         name: Generate NPM_VERSION and PUBLISH_TAG
