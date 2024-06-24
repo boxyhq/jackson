@@ -1,16 +1,12 @@
 import { test as baseTest, expect } from '@playwright/test';
 import { Portal, SSOPage } from 'e2e/support/fixtures';
+import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
 type MyFixtures = {
   ssoPage: SSOPage;
   portal: Portal;
+  oidcFedPage: IdentityFederationPage;
 };
-
-let oidcClientId;
-let oidcClientSecret;
-
-const FED_TENANT = 'acme.com';
-const FED_PRODUCT = '_jackson_admin_portal';
 
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
@@ -22,34 +18,20 @@ const test = baseTest.extend<MyFixtures>({
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    await use(portal);
+  },
+  oidcFedPage: async ({ page, baseURL }, use) => {
+    const oidcFedPage = new IdentityFederationPage(page);
     // Create OIDC Federated connection
     await page.goto('/');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('button', { name: 'New App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/new$/);
-    // Toggle connection type to OIDC
-    await page.getByLabel('OIDC').check();
-    await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('OF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill(FED_TENANT);
-    await page.getByLabel('Product').fill(FED_PRODUCT);
-    await page.locator('input[name="item"]').fill('http://localhost:5225');
-    await page.getByRole('button', { name: 'Create App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
-    oidcClientId = await page
-      .locator('label')
-      .filter({ hasText: 'Client ID' })
-      .getByRole('textbox')
-      .inputValue();
-    oidcClientSecret = await page
-      .locator('label')
-      .filter({ hasText: 'Client Secret' })
-      .getByRole('textbox')
-      .inputValue();
+    const { oidcClientId, oidcClientSecret } = await oidcFedPage.createApp({
+      type: 'oidc',
+      baseURL: baseURL!,
+      params: { name: 'OF-1' },
+    });
     await page.getByRole('link', { name: 'Back' }).click();
     await page.waitForURL(/.*admin\/identity-federation$/);
     await expect(page.getByRole('cell', { name: 'OF-1' })).toBeVisible();
-
     // Add OIDC Connection via OIDC Fed for Admin portal
     await page.getByRole('link', { name: 'Single Sign-On' }).click();
     await page.getByTestId('create-connection').click();
@@ -59,35 +41,31 @@ const test = baseTest.extend<MyFixtures>({
     await page.getByLabel('Client Secret').fill(oidcClientSecret);
     await page
       .getByLabel('Well-known URL of OpenID Provider')
-      .fill('http://localhost:5225/.well-known/openid-configuration');
+      .fill(`${baseURL}/.well-known/openid-configuration`);
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('cell', { name: 'SSO-via-OIDC-Fed' })).toBeVisible();
-    await use(portal);
-    // Delete Saml Fed connection
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
-    await page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
-    await page.getByTestId('confirm-delete').click();
+
+    await use(oidcFedPage);
+    // Cleanup OIDC Fed app
+    await oidcFedPage.deleteApp();
   },
 });
 
-test('OIDC Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test('OIDC Federated app + 1 SAML & 1 OIDC providers', async ({ baseURL, oidcFedPage, portal, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   // Login using MockSAML
   await ssoPage.logout();
@@ -103,21 +81,21 @@ test('OIDC Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal,
   await portal.isLoggedIn();
 });
 
-test('OIDC Federated app + 2 SAML providers', async ({ ssoPage, portal, baseURL }) => {
+test('OIDC Federated app + 2 SAML providers', async ({ baseURL, oidcFedPage, ssoPage, portal }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
 
   // Login using MockSAML-1
@@ -134,21 +112,21 @@ test('OIDC Federated app + 2 SAML providers', async ({ ssoPage, portal, baseURL 
   await portal.isLoggedIn();
 });
 
-test('OIDC Federated app + 2 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test('OIDC Federated app + 2 OIDC providers', async ({ baseURL, oidcFedPage, ssoPage, portal }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
 
   // Login using MockLab-1
@@ -165,14 +143,14 @@ test('OIDC Federated app + 2 OIDC providers', async ({ ssoPage, portal, baseURL 
   await portal.isLoggedIn();
 });
 
-test('OIDC Federated app + 1 SAML provider', async ({ ssoPage, page, portal, baseURL }) => {
+test('OIDC Federated app + 1 SAML provider', async ({ baseURL, oidcFedPage, ssoPage, page, portal }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   // Login using MockSAML-1
   await ssoPage.logout();
@@ -183,14 +161,14 @@ test('OIDC Federated app + 1 SAML provider', async ({ ssoPage, page, portal, bas
   await portal.isLoggedIn();
 });
 
-test('OIDC Federated app + 1 OIDC provider', async ({ ssoPage, page, portal, baseURL }) => {
+test('OIDC Federated app + 1 OIDC provider', async ({ baseURL, oidcFedPage, ssoPage, page, portal }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   // Login using MockLab-1
   await ssoPage.logout();
