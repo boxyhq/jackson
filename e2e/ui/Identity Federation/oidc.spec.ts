@@ -29,9 +29,6 @@ const test = baseTest.extend<MyFixtures>({
       baseURL: baseURL!,
       params: { name: 'OF-1' },
     });
-    await page.getByRole('link', { name: 'Back' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await expect(page.getByRole('cell', { name: 'OF-1' })).toBeVisible();
     // Add OIDC Connection via OIDC Fed for Admin portal
     await page.getByRole('link', { name: 'Single Sign-On' }).click();
     await page.getByTestId('create-connection').click();

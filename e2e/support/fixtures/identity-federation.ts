@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export class IdentityFederationPage {
   public readonly TENANT = 'acme.com';
@@ -23,8 +23,10 @@ export class IdentityFederationPage {
     await this.page.waitForURL(/.*admin\/identity-federation$/);
     await this.page.getByRole('button', { name: 'New App' }).click();
     await this.page.waitForURL(/.*admin\/identity-federation\/new$/);
-    // Toggle connection type to OIDC
-    await this.page.getByLabel('OIDC').check();
+    if (type === 'oidc') {
+      // Toggle connection type to OIDC
+      await this.page.getByLabel('OIDC').check();
+    }
     // Common config
     await this.page.getByPlaceholder('Your app').and(this.page.getByLabel('Name')).fill(name);
     await this.page.getByPlaceholder('example.com').and(this.page.getByLabel('Tenant')).fill(this.TENANT);
@@ -43,18 +45,25 @@ export class IdentityFederationPage {
     await this.page.getByRole('button', { name: 'Create App' }).click();
     await this.page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
 
+    let oidcClientId, oidcClientSecret;
     if (type === 'oidc') {
-      const oidcClientId = await this.page
+      oidcClientId = await this.page
         .locator('label')
         .filter({ hasText: 'Client ID' })
         .getByRole('textbox')
         .inputValue();
-      const oidcClientSecret = await this.page
+      oidcClientSecret = await this.page
         .locator('label')
         .filter({ hasText: 'Client Secret' })
         .getByRole('textbox')
         .inputValue();
+    }
 
+    await this.page.getByRole('link', { name: 'Back' }).click();
+    await this.page.waitForURL(/.*admin\/identity-federation$/);
+    await expect(this.page.getByRole('cell', { name })).toBeVisible();
+
+    if (type === 'oidc') {
       return { oidcClientId, oidcClientSecret };
     }
   }
