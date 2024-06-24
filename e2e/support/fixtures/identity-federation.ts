@@ -1,0 +1,69 @@
+import type { Page } from '@playwright/test';
+
+export class IdentityFederationPage {
+  public readonly TENANT = 'acme.com';
+  public readonly PRODUCT = '_jackson_admin_portal';
+  readonly ENTITY_ID = 'https://saml.boxyhq.com';
+  constructor(public readonly page: Page) {}
+
+  async goto() {
+    await this.page.getByRole('link', { name: 'Apps' }).click();
+  }
+
+  async createApp({
+    type = 'saml',
+    baseURL,
+    params: { name, acsUrl, entityID, redirectUrl } = { name: '' },
+  }: {
+    type: 'oidc' | 'saml';
+    baseURL: string;
+    params: { name: string; acsUrl?: string; entityID?: string; redirectUrl?: string };
+  }): Promise<any | { oidcClientId: string; oidcClientSecret: string }> {
+    await this.goto();
+    await this.page.waitForURL(/.*admin\/identity-federation$/);
+    await this.page.getByRole('button', { name: 'New App' }).click();
+    await this.page.waitForURL(/.*admin\/identity-federation\/new$/);
+    // Toggle connection type to OIDC
+    await this.page.getByLabel('OIDC').check();
+    // Common config
+    await this.page.getByPlaceholder('Your app').and(this.page.getByLabel('Name')).fill(name);
+    await this.page.getByPlaceholder('example.com').and(this.page.getByLabel('Tenant')).fill(this.TENANT);
+    await this.page.getByLabel('Product').fill(this.PRODUCT);
+
+    if (type === 'saml') {
+      await this.page.getByLabel('ACS URL').fill(acsUrl ?? `${baseURL}/api/oauth/saml`);
+      await this.page
+        .getByLabel('Entity ID / Audience URI / Audience Restriction')
+        .fill(entityID ?? this.ENTITY_ID);
+      await this.page.getByRole('button', { name: 'Create App' }).click();
+    } else {
+      await this.page.locator('input[name="item"]').fill(redirectUrl ?? baseURL);
+    }
+
+    await this.page.getByRole('button', { name: 'Create App' }).click();
+    await this.page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
+
+    if (type === 'oidc') {
+      const oidcClientId = await this.page
+        .locator('label')
+        .filter({ hasText: 'Client ID' })
+        .getByRole('textbox')
+        .inputValue();
+      const oidcClientSecret = await this.page
+        .locator('label')
+        .filter({ hasText: 'Client Secret' })
+        .getByRole('textbox')
+        .inputValue();
+
+      return { oidcClientId, oidcClientSecret };
+    }
+  }
+
+  async deleteApp() {
+    await this.goto();
+    await this.page.waitForURL(/.*admin\/identity-federation$/);
+    await this.page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
+    await this.page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
+    await this.page.getByTestId('confirm-delete').click();
+  }
+}
