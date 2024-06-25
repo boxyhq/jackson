@@ -1,43 +1,34 @@
 import { test as baseTest, expect, request } from '@playwright/test';
 import { ADMIN_PORTAL_PRODUCT, Portal, SSOPage } from 'e2e/support/fixtures';
+import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
 type MyFixtures = {
   ssoPage: SSOPage;
-  samlFedPage: Portal;
-  oidcFedPage: Portal;
+  portal: Portal;
+  samlFedPage: IdentityFederationPage;
+  oidcFedPage: IdentityFederationPage;
 };
-
-let oidcClientId;
-let oidcClientSecret;
-
-const FED_TENANT = 'acme.com';
-const FED_PRODUCT = '_jackson_admin_portal';
 
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
     await use(ssoPage);
-    // Delete SSO Connections mapped to SAML federation
+    // Delete SSO Connections mapped to Id federation
     await ssoPage.deleteAllSSOConnections();
   },
-  samlFedPage: async ({ page }, use) => {
+  portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    await use(portal);
+  },
+  samlFedPage: async ({ baseURL, page }, use) => {
+    const samlFedPage = new IdentityFederationPage(page);
     // Create SAML Federated connection
     await page.goto('/');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('button', { name: 'New App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/new$/);
-    await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('SF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill(FED_TENANT);
-    await page.getByLabel('Product').fill(FED_PRODUCT);
-    await page.getByLabel('ACS URL').fill('https://invalid-url.com');
-    await page.getByLabel('Entity ID / Audience URI / Audience Restriction').fill('https://saml.boxyhq.com');
-    await page.getByRole('button', { name: 'Create App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
-    await page.getByRole('link', { name: 'Back' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await expect(page.getByRole('cell', { name: 'SF-1' })).toBeVisible();
+    await samlFedPage.createApp({
+      baseURL: baseURL!,
+      params: { name: 'SF-1' },
+    });
+
     // Add SAML connection via SAML Fed for Admin portal
     await page.getByRole('link', { name: 'Single Sign-On' }).click();
     await page.getByTestId('create-connection').click();
@@ -47,44 +38,19 @@ const test = baseTest.extend<MyFixtures>({
       .fill('http://localhost:5225/.well-known/idp-metadata');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('cell', { name: 'SSO-via-SAML-Fed' })).toBeVisible();
-    await use(portal);
+    await use(samlFedPage);
     // Delete Saml Fed connection
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
-    await page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
-    await page.getByTestId('confirm-delete').click();
+    await samlFedPage.deleteApp();
   },
-  oidcFedPage: async ({ page }, use) => {
-    const portal = new Portal(page);
+  oidcFedPage: async ({ baseURL, page }, use) => {
+    const oidcFedPage = new IdentityFederationPage(page);
     // Create OIDC Federated connection
-    await page.goto('/admin/settings');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('button', { name: 'New App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/new$/);
-    // Toggle connection type to OIDC
-    await page.getByLabel('OIDC').check();
-    await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('OF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill(FED_TENANT);
-    await page.getByLabel('Product').fill(FED_PRODUCT);
-    await page.locator('input[name="item"]').fill('https://invalid-url.com');
-    await page.getByRole('button', { name: 'Create App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
-    oidcClientId = await page
-      .locator('label')
-      .filter({ hasText: 'Client ID' })
-      .getByRole('textbox')
-      .inputValue();
-    oidcClientSecret = await page
-      .locator('label')
-      .filter({ hasText: 'Client Secret' })
-      .getByRole('textbox')
-      .inputValue();
-    await page.getByRole('link', { name: 'Back' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await expect(page.getByRole('cell', { name: 'OF-1' })).toBeVisible();
+    await page.goto('/');
+    const { oidcClientId, oidcClientSecret } = await oidcFedPage.createApp({
+      type: 'oidc',
+      baseURL: baseURL!,
+      params: { name: 'OF-1', redirectUrl: 'https://invalid-url.com' },
+    });
 
     // Add OIDC Connection via OIDC Fed for Admin portal
     await page.getByRole('link', { name: 'Single Sign-On' }).click();
@@ -98,14 +64,9 @@ const test = baseTest.extend<MyFixtures>({
       .fill('http://localhost:5225/.well-known/openid-configuration');
     await page.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('cell', { name: 'SSO-via-OIDC-Fed' })).toBeVisible();
-    await use(portal);
-    // Delete Saml Fed connection
-    await page.goto('/admin/settings');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
-    await page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
-    await page.getByTestId('confirm-delete').click();
+    await use(oidcFedPage);
+    // Delete OIDC Fed connection
+    await oidcFedPage.deleteApp();
   },
 });
 
@@ -118,15 +79,16 @@ test.afterAll(async () => {
 
 const errorMessages: string[] = [];
 
-test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, baseURL }) => {
-  // Add SSO connection for tenants
+test('SAML Federated app + Wrong ACS url', async ({ baseURL, page, portal, samlFedPage, ssoPage }) => {
+  await samlFedPage.updateApp({ acsUrl: 'https://invalid-url.com' });
+  // Add SSO connection for tenant
   await page.getByRole('link', { name: 'Connections' }).first().click();
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   // Login using MockSAML-1
   await ssoPage.logout();
@@ -136,26 +98,27 @@ test('SAML Federated app + Wrong ACS url', async ({ ssoPage, samlFedPage, page, 
   // Assert error text
   await expect(page.getByText("SSO error: Assertion Consumer Service URL doesn't match.")).toBeVisible();
   errorMessages.push("Assertion Consumer Service URL doesn't match.");
-  await samlFedPage.doCredentialsLogin();
-  await samlFedPage.isLoggedIn();
+  await portal.doCredentialsLogin();
+  await portal.isLoggedIn();
 
   await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
 });
 
-test('SAML Federated app + inactive SSO connection', async ({ ssoPage, samlFedPage, page, baseURL }) => {
-  await page.getByRole('link', { name: 'Apps' }).click();
-  await page.getByRole('cell', { name: 'Edit' }).locator('span').click();
-  await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
-  await page.getByPlaceholder('https://your-sp.com/saml/acs').fill('http://localhost:5225/api/oauth/saml');
-  await page.locator('form').filter({ hasText: 'NameTenantProductEntity ID /' }).getByRole('button').click();
+test('SAML Federated app + inactive SSO connection', async ({
+  baseURL,
+  page,
+  portal,
+  samlFedPage,
+  ssoPage,
+}) => {
   // Add SSO connection for tenants
   await page.getByRole('link', { name: 'Connections' }).first().click();
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   // check if the SAML connection appears in the connection list
   await expect(page.getByText('SF-SAML')).toBeVisible();
@@ -174,17 +137,18 @@ test('SAML Federated app + inactive SSO connection', async ({ ssoPage, samlFedPa
     page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
   ).toBeVisible();
   errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
-  await samlFedPage.doCredentialsLogin();
-  await samlFedPage.isLoggedIn();
+  await portal.doCredentialsLogin();
+  await portal.isLoggedIn();
 
   await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
 });
 
 test('OIDC Federated app + SSO Provider with wrong redirect url', async ({
+  baseURL,
+  page,
+  portal,
   ssoPage,
   oidcFedPage,
-  page,
-  baseURL,
 }) => {
   // Add SSO connection for tenants
   await page.getByRole('link', { name: 'Connections' }).first().click();
@@ -192,8 +156,8 @@ test('OIDC Federated app + SSO Provider with wrong redirect url', async ({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   // check if the SAML connection appears in the connection list
   await expect(page.getByText('OF-SAML')).toBeVisible();
@@ -209,21 +173,27 @@ test('OIDC Federated app + SSO Provider with wrong redirect url', async ({
   // Assert error text
   await expect(page.getByText('SSO error: Redirect URL is not allowed.')).toBeVisible();
   errorMessages.push('Redirect URL is not allowed.');
-  await oidcFedPage.doCredentialsLogin();
-  await oidcFedPage.isLoggedIn();
+  await portal.doCredentialsLogin();
+  await portal.isLoggedIn();
 
   await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
 });
 
-test('OIDC Federated app + inactive SSO connection', async ({ ssoPage, oidcFedPage, page, baseURL }) => {
+test('OIDC Federated app + inactive SSO connection', async ({
+  baseURL,
+  page,
+  portal,
+  ssoPage,
+  oidcFedPage,
+}) => {
   // Add SSO connection for tenants
   await page.getByRole('link', { name: 'Connections' }).first().click();
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: FED_TENANT,
-    product: FED_PRODUCT,
+    tenant: oidcFedPage.TENANT,
+    product: oidcFedPage.PRODUCT,
   });
   // check if the SAML connection appears in the connection list
   await expect(page.getByText('OF-SAML')).toBeVisible();
@@ -242,8 +212,8 @@ test('OIDC Federated app + inactive SSO connection', async ({ ssoPage, oidcFedPa
     page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
   ).toBeVisible();
   errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
-  await oidcFedPage.doCredentialsLogin();
-  await oidcFedPage.isLoggedIn();
+  await portal.doCredentialsLogin();
+  await portal.isLoggedIn();
 
   await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
 });
