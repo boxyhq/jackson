@@ -1,10 +1,15 @@
-import { expect, type Page } from '@playwright/test';
+import { Locator, expect, type Page } from '@playwright/test';
 
 export class IdentityFederationPage {
   public readonly TENANT = 'acme.com';
   public readonly PRODUCT = '_jackson_admin_portal';
+  private readonly editButton: Locator;
+  private readonly acsUrlInput: Locator;
   readonly ENTITY_ID = 'https://saml.boxyhq.com';
-  constructor(public readonly page: Page) {}
+  constructor(public readonly page: Page) {
+    this.editButton = this.page.getByRole('cell', { name: 'Edit' }).getByRole('button');
+    this.acsUrlInput = this.page.getByLabel('ACS URL');
+  }
 
   async goto() {
     await this.page.getByRole('link', { name: 'Apps' }).click();
@@ -33,7 +38,7 @@ export class IdentityFederationPage {
     await this.page.getByLabel('Product').fill(this.PRODUCT);
 
     if (type === 'saml') {
-      await this.page.getByLabel('ACS URL').fill(acsUrl ?? `${baseURL}/api/oauth/saml`);
+      await this.acsUrlInput.fill(acsUrl ?? `${baseURL}/api/oauth/saml`);
       await this.page
         .getByLabel('Entity ID / Audience URI / Audience Restriction')
         .fill(entityID ?? this.ENTITY_ID);
@@ -69,10 +74,9 @@ export class IdentityFederationPage {
 
   async updateApp({ acsUrl }: { acsUrl?: string }) {
     await this.goto();
-    await this.page.getByRole('cell', { name: 'Edit' }).locator('span').click();
-    await this.page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
+    await this.editButton.click();
     if (acsUrl) {
-      await this.page.getByLabel('ACS URL').fill(acsUrl);
+      await this.acsUrlInput.fill(acsUrl);
     }
     await this.page
       .locator('form')
@@ -84,7 +88,7 @@ export class IdentityFederationPage {
   async deleteApp() {
     await this.goto();
     await this.page.waitForURL(/.*admin\/identity-federation$/);
-    await this.page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
+    await this.editButton.click();
     await this.page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
     await this.page.getByTestId('confirm-delete').click();
   }
