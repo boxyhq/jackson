@@ -1,4 +1,4 @@
-import { test as baseTest, expect } from '@playwright/test';
+import { test as baseTest } from '@playwright/test';
 import { Portal, SSOPage } from 'e2e/support/fixtures';
 import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
@@ -20,20 +20,17 @@ const test = baseTest.extend<MyFixtures>({
     const portal = new Portal(page);
     await use(portal);
   },
-  samlFedPage: async ({ baseURL, page }, use) => {
+  samlFedPage: async ({ baseURL, page, portal }, use) => {
     const samlFedPage = new IdentityFederationPage(page);
     // Create SAML Federated connection
     await page.goto('/');
     await samlFedPage.createApp({ baseURL: baseURL!, params: { name: 'SF-1' } });
     // Add SAML connection via SAML Fed for Admin portal
-    await page.getByRole('link', { name: 'Single Sign-On' }).click();
-    await page.getByTestId('create-connection').click();
-    await page.getByLabel('Connection name (Optional)').fill('SSO-via-SAML-Fed');
-    await page
-      .getByPlaceholder('Paste the Metadata URL here')
-      .fill('http://localhost:5225/.well-known/idp-metadata');
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('cell', { name: 'SSO-via-SAML-Fed' })).toBeVisible();
+    await portal.addSSOConnection({
+      name: 'SSO-via-SAML-Fed',
+      metadataUrl: `${baseURL}/.well-known/idp-metadata`,
+    });
+
     await use(samlFedPage);
     // Delete Saml Fed connection
     await samlFedPage.deleteApp();

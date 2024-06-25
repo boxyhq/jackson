@@ -1,4 +1,4 @@
-import { test as baseTest, expect } from '@playwright/test';
+import { test as baseTest } from '@playwright/test';
 import { Portal, SSOPage } from 'e2e/support/fixtures';
 import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
@@ -20,7 +20,7 @@ const test = baseTest.extend<MyFixtures>({
     const portal = new Portal(page);
     await use(portal);
   },
-  oidcFedPage: async ({ page, baseURL }, use) => {
+  oidcFedPage: async ({ baseURL, page, portal }, use) => {
     const oidcFedPage = new IdentityFederationPage(page);
     // Create OIDC Federated connection
     await page.goto('/');
@@ -30,17 +30,13 @@ const test = baseTest.extend<MyFixtures>({
       params: { name: 'OF-1' },
     });
     // Add OIDC Connection via OIDC Fed for Admin portal
-    await page.getByRole('link', { name: 'Single Sign-On' }).click();
-    await page.getByTestId('create-connection').click();
-    await page.getByLabel('OIDC').check();
-    await page.getByLabel('Connection name (Optional)').fill('SSO-via-OIDC-Fed');
-    await page.getByLabel('Client ID').fill(oidcClientId);
-    await page.getByLabel('Client Secret').fill(oidcClientSecret);
-    await page
-      .getByLabel('Well-known URL of OpenID Provider')
-      .fill(`${baseURL}/.well-known/openid-configuration`);
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('cell', { name: 'SSO-via-OIDC-Fed' })).toBeVisible();
+    await portal.addSSOConnection({
+      name: 'SSO-via-OIDC-Fed',
+      type: 'oidc',
+      oidcClientId,
+      oidcClientSecret,
+      oidcDiscoveryUrl: `${baseURL}/.well-known/openid-configuration`,
+    });
 
     await use(oidcFedPage);
     // Cleanup OIDC Fed app
