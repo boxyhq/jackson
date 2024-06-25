@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import { type Page, type Locator } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;

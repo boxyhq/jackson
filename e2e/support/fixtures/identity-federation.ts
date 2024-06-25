@@ -15,7 +15,7 @@ export class IdentityFederationPage {
     baseURL,
     params: { name, acsUrl, entityID, redirectUrl } = { name: '' },
   }: {
-    type: 'oidc' | 'saml';
+    type?: 'oidc' | 'saml';
     baseURL: string;
     params: { name: string; acsUrl?: string; entityID?: string; redirectUrl?: string };
   }): Promise<any | { oidcClientId: string; oidcClientSecret: string }> {
@@ -37,7 +37,6 @@ export class IdentityFederationPage {
       await this.page
         .getByLabel('Entity ID / Audience URI / Audience Restriction')
         .fill(entityID ?? this.ENTITY_ID);
-      await this.page.getByRole('button', { name: 'Create App' }).click();
     } else {
       await this.page.locator('input[name="item"]').fill(redirectUrl ?? baseURL);
     }
