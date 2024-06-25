@@ -67,6 +67,20 @@ export class IdentityFederationPage {
     }
   }
 
+  async updateApp({ acsUrl }: { acsUrl?: string }) {
+    await this.goto();
+    await this.page.getByRole('cell', { name: 'Edit' }).locator('span').click();
+    await this.page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
+    if (acsUrl) {
+      await this.page.getByLabel('ACS URL').fill(acsUrl);
+    }
+    await this.page
+      .locator('form')
+      .filter({ hasText: 'NameTenantProductEntity ID /' })
+      .getByRole('button')
+      .click();
+  }
+
   async deleteApp() {
     await this.goto();
     await this.page.waitForURL(/.*admin\/identity-federation$/);
