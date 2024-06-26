@@ -20,6 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "baseUrl": ".",
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules"],

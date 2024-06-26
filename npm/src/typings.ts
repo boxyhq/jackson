@@ -434,6 +434,13 @@ export interface DatabaseOption {
   manualMigration?: boolean;
 }
 
+export interface DatabaseDriverOption {
+  driver: DatabaseDriver
+  encryptionKey?: string;
+  ttl?: number;
+  pageLimit?: number;
+}
+
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
@@ -441,7 +448,7 @@ export interface JacksonOption {
   samlAudience?: string;
   preLoadedConnection?: string;
   idpEnabled?: boolean;
-  db: DatabaseOption;
+  db: DatabaseOption | DatabaseDriverOption;
   clientSecretVerifier?: string;
   idpDiscoveryPath?: string;
   scimPath?: string;

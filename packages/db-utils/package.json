@@ -1,0 +1,37 @@
+{
+  "name": "@boxyhq/db-utils",
+  "private": false,
+  "version": "1.0.0",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui --coverage",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "ripemd160": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.3",
+    "@types/ripemd160": "^2.0.3",
+    "tap": "18.8.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.6.4"
+  },
+  "peerDependencies": {
+    "@boxyhq/saml-jackson": "^1.25.0"
+  },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  }
+}
