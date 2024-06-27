@@ -51,7 +51,7 @@
     "@libsql/sqlite3": "0.3.1",
     "axios": "1.7.2",
     "encoding": "0.1.13",
-    "jose": "5.4.1",
+    "jose": "5.5.0",
     "lodash": "4.17.21",
     "mixpanel": "0.18.0",
     "mongodb": "6.7.0",
