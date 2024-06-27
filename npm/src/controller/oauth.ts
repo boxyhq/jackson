@@ -204,6 +204,8 @@ export class OAuthController implements IOAuthController {
 
             if ('connection' in response) {
               connection = response.connection;
+              requestedTenant = fedApp.tenant;
+              requestedProduct = fedApp.product;
             }
           } else {
             // If it's not a federated connection, we look for the connection using the client_id

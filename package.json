@@ -75,7 +75,7 @@
     "classnames": "2.5.1",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
-    "daisyui": "4.12.8",
+    "daisyui": "4.12.10",
     "formik": "2.4.6",
     "i18next": "23.11.5",
     "medium-zoom": "1.1.0",
@@ -99,7 +99,7 @@
   "devDependencies": {
     "@playwright/test": "1.45.0",
     "@types/cors": "2.8.17",
-    "@types/micromatch": "4.0.7",
+    "@types/micromatch": "4.0.8",
     "@types/node": "20.12.12",
     "@types/react": "18.3.2",
     "@typescript-eslint/eslint-plugin": "7.10.0",
