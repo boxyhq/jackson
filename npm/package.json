@@ -54,7 +54,7 @@
     "jose": "5.5.0",
     "lodash": "4.17.21",
     "mixpanel": "0.18.0",
-    "mongodb": "6.7.0",
+    "mongodb": "6.8.0",
     "mssql": "11.0.0",
     "mysql2": "3.10.1",
     "node-forge": "1.3.1",
