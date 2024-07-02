@@ -1,9 +1,11 @@
-import { test as baseTest, expect } from '@playwright/test';
+import { test as baseTest } from '@playwright/test';
 import { Portal, SSOPage } from 'e2e/support/fixtures';
+import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
 type MyFixtures = {
   ssoPage: SSOPage;
   portal: Portal;
+  samlFedPage: IdentityFederationPage;
 };
 
 const test = baseTest.extend<MyFixtures>({
@@ -16,57 +18,40 @@ const test = baseTest.extend<MyFixtures>({
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
-    // Create SAML Federated connection
-    await page.goto('/admin/settings');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('button', { name: 'New App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/new$/);
-    await page.getByPlaceholder('Your app').and(page.getByLabel('Name')).fill('SF-1');
-    await page.getByPlaceholder('example.com').and(page.getByLabel('Tenant')).fill('acme.com');
-    await page.getByLabel('Product').fill('_jackson_admin_portal');
-    await page.getByLabel('ACS URL').fill('http://localhost:5225/api/oauth/saml');
-    await page.getByLabel('Entity ID / Audience URI / Audience Restriction').fill('https://saml.boxyhq.com');
-    await page.getByRole('button', { name: 'Create App' }).click();
-    await page.waitForURL(/.*admin\/identity-federation\/.*\/edit$/);
-    await page.getByRole('link', { name: 'Back' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await expect(page.getByRole('cell', { name: 'SF-1' })).toBeVisible();
-    // Add SAML connection via SAML Fed for Admin portal
-    await page.getByRole('link', { name: 'Single Sign-On' }).click();
-    await page.getByTestId('create-connection').click();
-    await page.getByLabel('Connection name (Optional)').fill('SSO-via-SAML-Fed');
-    await page
-      .getByPlaceholder('Paste the Metadata URL here')
-      .fill('http://localhost:5225/.well-known/idp-metadata');
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByRole('cell', { name: 'SSO-via-SAML-Fed' })).toBeVisible();
     await use(portal);
+  },
+  samlFedPage: async ({ baseURL, page, portal }, use) => {
+    const samlFedPage = new IdentityFederationPage(page);
+    // Create SAML Federated connection
+    await page.goto('/');
+    await samlFedPage.createApp({ baseURL: baseURL!, params: { name: 'SF-1' } });
+    // Add SAML connection via SAML Fed for Admin portal
+    await portal.addSSOConnection({
+      name: 'SSO-via-SAML-Fed',
+      metadataUrl: `${baseURL}/.well-known/idp-metadata`,
+    });
+
+    await use(samlFedPage);
     // Delete Saml Fed connection
-    await page.goto('/admin/settings');
-    await page.getByRole('link', { name: 'Apps' }).click();
-    await page.waitForURL(/.*admin\/identity-federation$/);
-    await page.getByRole('cell', { name: 'Edit' }).getByRole('button').click();
-    await page.getByLabel('Card').getByRole('button', { name: 'Delete' }).click();
-    await page.getByTestId('confirm-delete').click();
+    await samlFedPage.deleteApp();
   },
 });
 
-test('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ baseURL, portal, samlFedPage, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'SF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   // Login using MockSAML
   await ssoPage.logout();
@@ -82,21 +67,21 @@ test('SAML Federated app + 1 SAML & 1 OIDC providers', async ({ ssoPage, portal,
   await portal.isLoggedIn();
 });
 
-test('SAML Federated app + 2 SAML providers', async ({ ssoPage, portal, baseURL }) => {
+test('SAML Federated app + 2 SAML providers', async ({ baseURL, portal, samlFedPage, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
 
   // Login using MockSAML-1
@@ -113,21 +98,21 @@ test('SAML Federated app + 2 SAML providers', async ({ ssoPage, portal, baseURL 
   await portal.isLoggedIn();
 });
 
-test('SAML Federated app + 2 OIDC providers', async ({ ssoPage, portal, baseURL }) => {
+test('SAML Federated app + 2 OIDC providers', async ({ baseURL, portal, samlFedPage, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   await ssoPage.addSSOConnection({
     name: 'SF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
 
   // Login using MockLab-1
@@ -144,14 +129,14 @@ test('SAML Federated app + 2 OIDC providers', async ({ ssoPage, portal, baseURL 
   await portal.isLoggedIn();
 });
 
-test('SAML Federated app + 1 SAML provider', async ({ ssoPage, page, portal, baseURL }) => {
+test('SAML Federated app + 1 SAML provider', async ({ baseURL, page, portal, samlFedPage, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   // Login using MockSAML-1
   await ssoPage.logout();
@@ -162,14 +147,14 @@ test('SAML Federated app + 1 SAML provider', async ({ ssoPage, page, portal, bas
   await portal.isLoggedIn();
 });
 
-test('SAML Federated app + 1 OIDC provider', async ({ ssoPage, page, portal, baseURL }) => {
+test('SAML Federated app + 1 OIDC provider', async ({ baseURL, page, portal, samlFedPage, ssoPage }) => {
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'SF-OIDC',
     type: 'oidc',
     baseURL: baseURL!,
-    tenant: 'acme.com',
-    product: '_jackson_admin_portal',
+    tenant: samlFedPage.TENANT,
+    product: samlFedPage.PRODUCT,
   });
   // Login using MockLab-1
   await ssoPage.logout();
