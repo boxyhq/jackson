@@ -116,7 +116,7 @@ for (const provider of providers) {
     await page.getByTestId('confirm-delete').click();
     await page.getByRole('table').waitFor({ state: 'detached' });
     await expect(
-      await page.getByRole('heading', { name: 'No webhook events found for this directory.' })
+      page.getByRole('heading', { name: 'No webhook events found for this directory.' })
     ).toBeVisible();
     await dsyncPage.setWebHookEventsLogging({ enable: false });
     // User deletion

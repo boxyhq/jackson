@@ -49,3 +49,9 @@ public/terminus/sprites.png
 
 internal-ui/dist
 _dev/docker/libsql/iku.db
+
+# tests
+/report
+/test-results/
+/playwright-report/
+/playwright/.cache/

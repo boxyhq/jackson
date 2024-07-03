@@ -1,8 +1,8 @@
-import type { Page, Locator } from '@playwright/test';
+import { type Page, type Locator, expect } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
 const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;
-const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
+export const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
 
 const MOCKSAML_ORIGIN = process.env.MOCKSAML_ORIGIN || 'https://mocksaml.com';
 const MOCKSAML_SIGNIN_BUTTON_NAME = 'Sign In';
@@ -140,6 +140,9 @@ export class SSOPage {
     // click the delete and confirm deletion
     await this.deleteButton.click();
     await this.confirmButton.click();
+    await expect(this.page.getByText('SSO Connection deleted successfully')).toBeVisible();
+    // Adding this here as sometimes the toast intercepts pointer events, hence closing it manually
+    await this.page.getByRole('alert').getByRole('button', { name: 'X' }).click();
   }
 
   async deleteAllSSOConnections() {
