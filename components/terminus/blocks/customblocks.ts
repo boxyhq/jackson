@@ -65,7 +65,7 @@ Blockly.Blocks['data_object_wrapper'] = {
       inputsInline: false,
       colour: 150,
       tooltip: 'data object wrapper',
-      helpUrl: 'https://github.com/boxyhq/terminus-ui/help/data_object_wrapper',
+      helpUrl: '',
     });
     // this.setStyle('loop_blocks');
   },
@@ -108,7 +108,7 @@ Blockly.Blocks['data_object_field_wrapper'] = {
       args0: [
         {
           type: 'field_input',
-          name: 'field_name',
+          name: 'object_name',
           text: '<name>',
         },
         {
@@ -122,7 +122,7 @@ Blockly.Blocks['data_object_field_wrapper'] = {
       nextStatement: null,
       colour: 230,
       tooltip: '',
-      helpUrl: 'https://github.com/boxyhq/terminus-ui/help/data_object_field_wrapper',
+      helpUrl: '',
     });
     // this.setStyle('loop_blocks');
   },
@@ -180,35 +180,35 @@ Blockly.Blocks['data_object_field_encryption'] = {
   },
 };
 
-Blockly.Blocks['data_object_field_mask'] = {
-  init: function () {
-    this.jsonInit({
-      type: 'data_object_field_mask',
-      message0: 'mask (admin:%1) (member:%2) %3',
-      args0: [
-        {
-          type: 'field_dropdown',
-          name: 'object_type_admin',
-          options: getMasks(),
-        },
-        {
-          type: 'field_dropdown',
-          name: 'object_type_member',
-          options: getMasks(),
-        },
-        {
-          type: 'input_value',
-          name: 'object_type',
-          check: 'String',
-        },
-      ],
-      output: null,
-      colour: 230,
-      tooltip: '',
-      helpUrl: '',
-    });
-  },
-};
+// Blockly.Blocks['data_object_field_mask'] = {
+//   init: function () {
+//     this.jsonInit({
+//       type: 'data_object_field_mask',
+//       message0: 'mask (admin:%1) (member:%2) %3',
+//       args0: [
+//         {
+//           type: 'field_dropdown',
+//           name: 'object_type_admin',
+//           options: getMasks(),
+//         },
+//         {
+//           type: 'field_dropdown',
+//           name: 'object_type_member',
+//           options: getMasks(),
+//         },
+//         {
+//           type: 'input_value',
+//           name: 'input',
+//           check: 'String',
+//         },
+//       ],
+//       output: null,
+//       colour: 230,
+//       tooltip: '',
+//       helpUrl: '',
+//     });
+//   },
+// };
 
 export const maskSetup = (roles: string[]) => {
   let maskMessage = 'mask (';
@@ -233,7 +233,7 @@ export const maskSetup = (roles: string[]) => {
           ...args,
           {
             type: 'input_value',
-            name: 'object_type',
+            name: 'input',
             check: 'String',
           },
         ],

@@ -10,7 +10,7 @@ const IGNORE_FIELDS = [CONST_OBJ_GLB_ENCR];
 export const generateModel = (workspace, roles: string[]) => {
   ObjectMap.clear();
 
-  javascriptGenerator['data_object_field_mask'] = function (block) {
+  javascriptGenerator.forBlock['data_object_field_mask'] = function (block) {
     for (let i = 0; i < roles.length; i++) {
       const objName = block.getFieldValue(`object_type_${roles[i]}`);
       currentField[2 + i] = objName; // mask
@@ -57,8 +57,8 @@ const generateStructure = (roles: string[]) => {
   return model;
 };
 
-javascriptGenerator['data_object_wrapper'] = function (block) {
-  const objectName = block.getField('object_name').getText();
+javascriptGenerator.forBlock['data_object_wrapper'] = function (block) {
+  const objectName = block.getField('object_name')!.getText();
   currentObject = new Map();
   ObjectMap.set(objectName, currentObject);
 
@@ -67,8 +67,8 @@ javascriptGenerator['data_object_wrapper'] = function (block) {
   return '';
 };
 
-javascriptGenerator['data_object_wrapper_with_encryption'] = function (block) {
-  const objectName = block.getField('object_name').getText();
+javascriptGenerator.forBlock['data_object_wrapper_with_encryption'] = function (block) {
+  const objectName = block.getField('object_name')!.getText();
   // global encryption
   currentObject = new Map();
   currentObject.set(CONST_OBJ_GLB_ENCR, block.getFieldValue('encryption'));
@@ -79,8 +79,8 @@ javascriptGenerator['data_object_wrapper_with_encryption'] = function (block) {
   return '';
 };
 
-javascriptGenerator['data_object_field_wrapper'] = function (block) {
-  const objectName = block.getField('field_name').getText();
+javascriptGenerator.forBlock['data_object_field_wrapper'] = function (block) {
+  const objectName = block.getField('object_name')!.getText();
   currentField = new Array(3);
   currentObject.set(objectName, currentField);
 
@@ -89,7 +89,7 @@ javascriptGenerator['data_object_field_wrapper'] = function (block) {
   return '';
 };
 
-javascriptGenerator['data_object_field_type'] = function (block) {
+javascriptGenerator.forBlock['data_object_field_type'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[0] = objectName; // type
   currentField[2] = 'Redact'; // mask
@@ -100,7 +100,7 @@ javascriptGenerator['data_object_field_type'] = function (block) {
   return '';
 };
 
-javascriptGenerator['data_object_field_encryption'] = function (block) {
+javascriptGenerator.forBlock['data_object_field_encryption'] = function (block) {
   const objectName = block.getFieldValue('object_type');
   currentField[1] = objectName; // encryption
 
