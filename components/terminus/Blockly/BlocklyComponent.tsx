@@ -22,7 +22,7 @@ function BlocklyComponent(props) {
   const productField = createRef();
 
   const getEndpoint = () => {
-    const product = ((productField.current as any) || {}).value || 'productDemo';
+    const product = (productField.current as any).value || 'productDemo';
 
     return `/api/admin/terminus/models/${product}`;
   };
@@ -115,7 +115,7 @@ function BlocklyComponent(props) {
             ref={productField as any}
             type='text'
             className='input-bordered input h-10 w-full'
-            id='productDemo'
+            id='product'
             defaultValue='productDemo'
           />
         </div>
