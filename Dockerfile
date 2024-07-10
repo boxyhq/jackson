@@ -12,7 +12,7 @@ COPY package.json package-lock.json  ./
 COPY npm npm
 COPY internal-ui internal-ui
 COPY migrate.sh prebuild.ts ./
-RUN npm ci
+RUN npm i
 RUN npm rebuild --arch=x64 --platform=linux --libc=musl sharp
 
 
