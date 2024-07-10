@@ -22,7 +22,7 @@ function BlocklyComponent(props) {
   const productField = createRef();
 
   const getEndpoint = () => {
-    const product = (productField.current as any).value || 'productDemo';
+    const product = ((productField.current as any) || {}).value || 'productDemo';
 
     return `/api/admin/terminus/models/${product}`;
   };
@@ -74,28 +74,36 @@ function BlocklyComponent(props) {
     if (primaryWorkspace.current) {
       return;
     }
-    getRolesAndSetupMasks();
-    const { initialXml, ...rest } = props;
-    primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
-      toolbox: toolbox.current,
-      readOnly: false,
-      trashcan: true,
-      media: '/terminus/',
-      renderer: 'thrasos', // geras zelos thrasos minimalist
-      move: {
-        scrollbars: true,
-        drag: true,
-        wheel: true,
-      },
-      sounds: false,
-      ...rest,
-    }) as any;
 
-    if (initialXml) {
-      Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(initialXml), primaryWorkspace.current as any);
-    }
+    (async function () {
+      await getRolesAndSetupMasks();
+      if (primaryWorkspace.current) {
+        return;
+      }
 
-    retrieveModel();
+      const { initialXml, ...rest } = props;
+      primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
+        toolbox: toolbox.current,
+        readOnly: false,
+        trashcan: true,
+        media: '/terminus/',
+        renderer: 'thrasos', // geras zelos thrasos minimalist
+        move: {
+          scrollbars: true,
+          drag: true,
+          wheel: true,
+        },
+        sounds: false,
+        ...rest,
+      }) as any;
+
+      if (initialXml) {
+        Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(initialXml), primaryWorkspace.current as any);
+      }
+
+      await retrieveModel();
+    })();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWorkspace, toolbox, blocklyDiv, roles, props]);
 
