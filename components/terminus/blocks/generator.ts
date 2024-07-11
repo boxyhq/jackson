@@ -14,7 +14,7 @@ export const generateModel = (workspace, roles: string[]) => {
     currentField['mask'] = new Map();
     for (let i = 0; i < roles.length; i++) {
       const objName = block.getFieldValue(`object_type_${roles[i]}`);
-      currentField['mask'][roles[i]] = objName; // mask
+      currentField['mask'][roles[i]] = objName ? objName : 'Redact'; // mask
     }
 
     javascriptGenerator.statementToCode(block, 'input');
