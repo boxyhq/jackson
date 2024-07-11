@@ -11,9 +11,10 @@ export const generateModel = (workspace, roles: string[]) => {
   ObjectMap.clear();
 
   javascriptGenerator.forBlock['data_object_field_mask'] = function (block) {
+    currentField['mask'] = new Map();
     for (let i = 0; i < roles.length; i++) {
       const objName = block.getFieldValue(`object_type_${roles[i]}`);
-      currentField[2 + i] = objName; // mask
+      currentField['mask'][roles[i]] = objName; // mask
     }
 
     javascriptGenerator.statementToCode(block, 'input');
@@ -42,10 +43,10 @@ const generateStructure = (roles: string[]) => {
       }
 
       model.attributes[field] = {
-        type: values[0],
-        encryption: values[1],
+        type: values['type'],
+        encryption: values['encryption'],
         masking: {
-          roles: rolesMap,
+          roles: values['mask'],
         },
       };
       if (IGNORE_FIELDS.includes(field)) {
@@ -81,7 +82,7 @@ javascriptGenerator.forBlock['data_object_wrapper_with_encryption'] = function (
 
 javascriptGenerator.forBlock['data_object_field_wrapper'] = function (block) {
   const objectName = block.getField('object_name')!.getText();
-  currentField = new Array(3);
+  currentField = new Map();
   currentObject.set(objectName, currentField);
 
   javascriptGenerator.statementToCode(block, 'input');
@@ -91,9 +92,7 @@ javascriptGenerator.forBlock['data_object_field_wrapper'] = function (block) {
 
 javascriptGenerator.forBlock['data_object_field_type'] = function (block) {
   const objectName = block.getFieldValue('object_type');
-  currentField[0] = objectName; // type
-  currentField[2] = 'Redact'; // mask
-  currentField[3] = 'Redact'; // mask
+  currentField['type'] = objectName;
 
   javascriptGenerator.statementToCode(block, 'input');
 
@@ -102,7 +101,7 @@ javascriptGenerator.forBlock['data_object_field_type'] = function (block) {
 
 javascriptGenerator.forBlock['data_object_field_encryption'] = function (block) {
   const objectName = block.getFieldValue('object_type');
-  currentField[1] = objectName; // encryption
+  currentField['encryption'] = objectName; // encryption
 
   javascriptGenerator.statementToCode(block, 'input');
 
