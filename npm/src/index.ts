@@ -165,7 +165,7 @@ export const controllers = async (
   }
 
   if ('driver' in opts.db) {
-    console.info(`Using external database driver`)
+    console.info(`Using external database driver`);
   } else {
     const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
     console.info(`Using engine: ${opts.db.engine}.${type}`);

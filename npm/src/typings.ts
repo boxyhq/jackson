@@ -435,7 +435,7 @@ export interface DatabaseOption {
 }
 
 export interface DatabaseDriverOption {
-  driver: DatabaseDriver
+  driver: DatabaseDriver;
   encryptionKey?: string;
   ttl?: number;
   pageLimit?: number;

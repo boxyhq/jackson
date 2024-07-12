@@ -4,7 +4,7 @@ export default function defaultDb(opts: JacksonOption) {
   opts.db = opts.db || {};
   opts.db.ttl = (opts.db.ttl || 300) * 1; // TTL for the code, session and token stores (in seconds)
   if ('driver' in opts.db) {
-    return
+    return opts;
   }
 
   opts.db.engine = opts.db.engine || 'sql';

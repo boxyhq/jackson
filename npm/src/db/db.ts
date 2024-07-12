@@ -135,7 +135,7 @@ const _new = async (options: DatabaseOption | DatabaseDriverOption) => {
   const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
 
   if ('driver' in options) {
-    return new DB(options.driver, encryptionKey)
+    return new DB(options.driver, encryptionKey);
   }
 
   switch (options.engine) {
