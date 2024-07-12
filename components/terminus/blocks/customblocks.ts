@@ -15,8 +15,8 @@ function getEncryption() {
 
 function getMasks() {
   return [
-    ['Clear', 'Clear'],
     ['Redact', 'Redact'],
+    ['Clear', 'Clear'],
     ['Generic', 'Generic'],
     ['Password', 'Password'],
     ['Name', 'Name'],
