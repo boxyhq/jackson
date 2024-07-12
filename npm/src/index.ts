@@ -164,9 +164,12 @@ export const controllers = async (
     await analyticsController.init();
   }
 
-  const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
-
-  console.info(`Using engine: ${opts.db.engine}.${type}`);
+  if ('driver' in opts.db) {
+    console.info(`Using external database driver`);
+  } else {
+    const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
+    console.info(`Using engine: ${opts.db.engine}.${type}`);
+  }
 
   return {
     spConfig,

@@ -55,3 +55,4 @@ _dev/docker/libsql/iku.db
 /test-results/
 /playwright-report/
 /playwright/.cache/
+.idea
