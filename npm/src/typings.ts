@@ -438,7 +438,9 @@ export interface DatabaseDriverOption {
   driver: DatabaseDriver;
   encryptionKey?: string;
   ttl?: number;
+  cleanupLimit?: number;
   pageLimit?: number;
+  manualMigration?: boolean;
 }
 
 export interface JacksonOption {
