@@ -116,7 +116,7 @@
     "prettier-plugin-tailwindcss": "0.6.5",
     "release-it": "17.6.0",
     "swagger-jsdoc": "6.2.8",
-    "tailwindcss": "3.4.4",
+    "tailwindcss": "3.4.6",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"
