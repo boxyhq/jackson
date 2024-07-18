@@ -5,7 +5,6 @@ export type LLMConversation = {
   title: string;
   provider: string;
   model: string;
-  LLMChat: LLMChat[];
 };
 
 export type LLMChat = {
