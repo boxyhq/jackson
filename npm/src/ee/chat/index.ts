@@ -61,10 +61,14 @@ export class ChatController {
 
     const conversationID = crypto.randomBytes(20).toString('hex');
 
-    await this.conversationStore.put(conversationID, conversation, {
-      name: IndexNames.TeamUser,
-      value: dbutils.keyFromParts(conversation.teamId, conversation.userId),
-    });
+    const _index = conversation.teamId
+      ? {
+          name: IndexNames.TeamUser,
+          value: dbutils.keyFromParts(conversation.teamId, conversation.userId),
+        }
+      : { name: IndexNames.User, value: conversation.userId };
+
+    await this.conversationStore.put(conversationID, conversation, _index);
 
     return { id: conversationID, ...conversation };
   }

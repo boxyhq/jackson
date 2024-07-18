@@ -1,6 +1,6 @@
 export type LLMConversation = {
   id: string;
-  teamId: string;
+  teamId?: string;
   userId: string;
   title: string;
   provider: string;

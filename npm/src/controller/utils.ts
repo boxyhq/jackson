@@ -25,6 +25,7 @@ export enum IndexNames {
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
   Product = 'product',
+  User = 'user',
   TeamUser = 'teamUser',
 
   // For Setup link
