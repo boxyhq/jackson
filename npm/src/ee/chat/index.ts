@@ -63,7 +63,10 @@ export class ChatController {
 
     const conversationID = crypto.randomBytes(20).toString('hex');
 
-    const newConversation = await this.conversationStore.put(conversationID, conversation);
+    const newConversation = await this.conversationStore.put(conversationID, conversation, {
+      name: IndexNames.TeamUser,
+      value: dbutils.keyFromParts(conversation.teamId, conversation.userId),
+    });
 
     return newConversation;
   }
