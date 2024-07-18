@@ -56,28 +56,26 @@ export class ChatController {
     return conversation;
   }
 
-  public async createConversation(
-    conversation: Exclude<LLMConversation, 'id' | 'LLMChat'>
-  ): Promise<LLMConversation> {
+  public async createConversation(conversation: Omit<LLMConversation, 'id'>): Promise<LLMConversation> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const conversationID = crypto.randomBytes(20).toString('hex');
 
-    const newConversation = await this.conversationStore.put(conversationID, conversation, {
+    await this.conversationStore.put(conversationID, conversation, {
       name: IndexNames.TeamUser,
       value: dbutils.keyFromParts(conversation.teamId, conversation.userId),
     });
 
-    return newConversation;
+    return { id: conversationID, ...conversation };
   }
 
-  public async createChat(chat: LLMChat): Promise<LLMChat> {
+  public async createChat(chat: LLMChat): Promise<LLMChat & { id: string }> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const chatID = crypto.randomBytes(20).toString('hex');
 
-    const newChat = await this.chatStore.put(chatID, chat);
+    await this.chatStore.put(chatID, chat);
 
-    return newChat;
+    return { id: chatID, ...chat };
   }
 }
