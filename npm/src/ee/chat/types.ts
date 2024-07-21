@@ -8,12 +8,14 @@ export type LLMConversation = {
 };
 
 export type LLMChat = {
+  id: string;
   conversationId: string;
   content: string;
   role: string;
 };
 
 export type LLMConfig = {
+  id: string;
   provider: string;
   models: string[];
   terminusToken: string;

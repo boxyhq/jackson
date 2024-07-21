@@ -26,24 +26,20 @@ export class ChatController {
     this.opts = opts;
   }
 
-  public async getConversations(): Promise<Records<LLMConversation>> {
+  public async getConversationsByTeamAndUser({
+    teamId,
+    userId,
+  }: {
+    teamId?: string;
+    userId: string;
+  }): Promise<Records<LLMConversation>> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const conversations = (await this.conversationStore.getAll()) as Records<LLMConversation>;
+    const _index = teamId
+      ? { name: IndexNames.TeamUser, value: dbutils.keyFromParts(teamId, userId) }
+      : { name: IndexNames.User, value: userId };
 
-    return conversations;
-  }
-
-  public async getConversationsByTeamAndUser(
-    teamId: string,
-    userId: string
-  ): Promise<Records<LLMConversation>> {
-    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
-
-    const conversations = (await this.conversationStore.getByIndex({
-      name: IndexNames.TeamUser,
-      value: dbutils.keyFromParts(teamId, userId),
-    })) as Records<LLMConversation>;
+    const conversations = (await this.conversationStore.getByIndex(_index)) as Records<LLMConversation>;
 
     return conversations;
   }
@@ -73,7 +69,7 @@ export class ChatController {
     return { id: conversationID, ...conversation };
   }
 
-  public async createChat(chat: LLMChat): Promise<LLMChat & { id: string }> {
+  public async createChat(chat: Omit<LLMChat, 'id'>): Promise<LLMChat> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const chatID = crypto.randomBytes(20).toString('hex');
