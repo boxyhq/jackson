@@ -5,6 +5,7 @@ import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { LLMChat, LLMConfig, LLMConfigCreatePayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
+import { apiError } from '../../controller/error';
 
 export class ChatController {
   private chatStore: Storable;
@@ -120,6 +121,27 @@ export class ChatController {
     });
 
     return config;
+  }
+
+  public async deleteLLMConfig({
+    configId,
+    token,
+    tenant,
+  }: {
+    configId: string;
+    token: string;
+    tenant: string;
+  }): Promise<void> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+    const config = await this.llmConfigStore.get(configId);
+    if (!config) {
+      throw apiError({ message: 'Config not found', statusCode: 404 });
+    }
+    await this.llmConfigStore.delete(configId);
+    await axios.delete(
+      `${this.opts.terminus?.host}/v1/vault/${tenant}/${this.opts.llm?.terminusProduct}/data/llm-config?token=${token}`,
+      { headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.write}` } }
+    );
   }
 
   public async getConversationsByTenantAndUser({
