@@ -29,6 +29,13 @@ const retraced = {
 const terminus = {
   hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
+  apiKey:
+    process.env.TERMINUS_READ_API_KEY && process.env.TERMINUS_WRITE_API_KEY
+      ? {
+          read: process.env.TERMINUS_READ_API_KEY,
+          write: process.env.TERMINUS_WRITE_API_KEY,
+        }
+      : undefined,
 };
 
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
@@ -130,6 +137,7 @@ const llmOptions = {
     baseUrl: process.env.LLM_FILE_UPLOAD_BASE_URL,
     token: process.env.LLM_FILE_UPLOAD_TOKEN,
   },
+  terminusProduct: process.env.LLM_TERMINUS_PRODUCT,
 };
 
 export { adminPortalSSODefaults };

@@ -476,6 +476,7 @@ export interface JacksonOption {
   terminus?: {
     host?: string;
     adminToken?: string;
+    apiKey?: { read: string; write: string };
   };
   webhook?: Webhook;
   dsync?: {
@@ -501,6 +502,14 @@ export interface JacksonOption {
   ory?: {
     projectId: string | undefined;
     sdkToken: string | undefined;
+  };
+
+  llm?: {
+    fileUpload?: {
+      baseUrl: string;
+      token: string;
+    };
+    terminusProduct?: string;
   };
 }
 
