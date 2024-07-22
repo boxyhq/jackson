@@ -124,9 +124,17 @@ const adminPortalSSODefaults = {
   redirectUrl: [externalUrl],
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
+// LLM Chat
+const llmOptions = {
+  fileUpload: {
+    baseUrl: process.env.LLM_FILE_UPLOAD_BASE_URL,
+    token: process.env.LLM_FILE_UPLOAD_TOKEN,
+  },
+};
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+export { llmOptions };
