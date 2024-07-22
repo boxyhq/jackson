@@ -73,7 +73,9 @@ export class ChatController {
   }
 
   private async storeLLMConfig(config: Omit<LLMConfig, 'id'>) {
-    return await this.llmConfigStore.put(crypto.randomBytes(20).toString('hex'), config);
+    const id = crypto.randomBytes(20).toString('hex');
+    await this.llmConfigStore.put(id, config);
+    return { id, ...config };
   }
 
   private async saveLLMConfigInVault({
@@ -116,8 +118,6 @@ export class ChatController {
       terminusToken: vaultResult || '',
       tenant: llmConfig.tenant,
     });
-
-    // recordMetric('llm.config.created');
 
     return config;
   }
