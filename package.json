@@ -100,7 +100,8 @@
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.0",
     "sharp": "0.33.4",
-    "swr": "2.2.5"
+    "swr": "2.2.5",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@playwright/test": "1.45.2",
