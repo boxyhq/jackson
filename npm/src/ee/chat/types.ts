@@ -1,6 +1,10 @@
+import { LLMProvider } from './utils';
+
+export const PII_POLICY_OPTIONS = ['none', 'detect_mask', 'detect_report', 'detect_block'] as const;
+
 export type LLMConversation = {
   id: string;
-  teamId?: string;
+  tenant: string;
   userId: string;
   title: string;
   provider: string;
@@ -14,10 +18,19 @@ export type LLMChat = {
   role: string;
 };
 
+export type LLMConfigCreatePayload = {
+  provider: LLMProvider;
+  tenant: string;
+  models?: string[];
+  apiKey: string;
+  baseURL: string;
+  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
+};
+
 export type LLMConfig = {
   id: string;
   provider: string;
+  tenant: string;
   models: string[];
   terminusToken: string;
-  teamId: string;
 };

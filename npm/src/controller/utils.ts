@@ -26,7 +26,8 @@ export enum IndexNames {
   SSOClientID = 'SSOClientID',
   Product = 'product',
   User = 'user',
-  TeamUser = 'teamUser',
+  Tenant = 'tenant',
+  TenantUser = 'tenantUser',
 
   // For Setup link
   Service = 'service',
