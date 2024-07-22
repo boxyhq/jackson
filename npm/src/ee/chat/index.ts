@@ -72,6 +72,10 @@ export class ChatController {
     return configs;
   }
 
+  private async storeLLMConfig(config: Omit<LLMConfig, 'id'>) {
+    return await this.llmConfigStore.put(crypto.randomBytes(20).toString('hex'), config);
+  }
+
   private async saveLLMConfigInVault({
     tenant,
     apiKey,
@@ -79,8 +83,8 @@ export class ChatController {
     piiPolicy,
   }: {
     tenant: string;
-    apiKey: string;
-    baseURL: string;
+    apiKey?: string;
+    baseURL?: string;
     piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
   }): Promise<string | undefined> {
     const res = await axios.post(
@@ -96,10 +100,6 @@ export class ChatController {
     if (res.data?.token) {
       return res.data.token;
     }
-  }
-
-  private async storeLLMConfig(config: Omit<LLMConfig, 'id'>) {
-    return await this.llmConfigStore.put(crypto.randomBytes(20).toString('hex'), config);
   }
 
   public async createLLMConfig(llmConfig: Omit<LLMConfigCreatePayload, 'id'>): Promise<LLMConfig> {

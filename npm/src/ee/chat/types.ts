@@ -22,8 +22,8 @@ export type LLMConfigCreatePayload = {
   provider: LLMProvider;
   tenant: string;
   models?: string[];
-  apiKey: string;
-  baseURL: string;
+  apiKey?: string;
+  baseURL?: string;
   piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };
 
