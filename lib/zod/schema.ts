@@ -17,6 +17,7 @@ export const deleteLLMConfigSchema = z.object({
 });
 
 export const createLLMConfigSchema = z.object({
+  tenant: z.string(),
   provider: llmProvider,
   apiKey: llmApiKey,
   models: llmModels,
