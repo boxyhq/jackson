@@ -1,1 +1,1 @@
-export { default } from '@ee/chat/api/config';
+export { default } from '@ee/chat/api/[tenant]/config';
