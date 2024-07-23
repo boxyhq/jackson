@@ -28,11 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
-  const { configId } = validateWithSchema(deleteLLMConfigSchema, req.query);
+  const { configId, tenant } = validateWithSchema(deleteLLMConfigSchema, req.query);
 
   await chatController.deleteLLMConfig({
     configId,
-    tenant: req.query.tenant as string,
+    tenant: tenant,
   });
 
   res.status(204).end();

@@ -39,7 +39,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
-  const { provider, apiKey, models, baseURL, piiPolicy } = validateWithSchema(
+  const { provider, apiKey, models, baseURL, piiPolicy, tenant } = validateWithSchema(
     createLLMConfigSchema,
     req.body
   );
@@ -54,7 +54,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     apiKey,
     baseURL,
     piiPolicy,
-    tenant: req.query.tenant as string,
+    tenant,
   });
 
   res.status(201).json({ data: { config } });
