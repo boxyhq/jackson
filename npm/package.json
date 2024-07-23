@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.616.0",
-    "@aws-sdk/credential-providers": "3.616.0",
+    "@aws-sdk/credential-providers": "3.617.0",
     "@aws-sdk/util-dynamodb": "3.616.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.8",
@@ -79,7 +79,7 @@
     "tap": "21.0.0",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4"
   },
   "engines": {
     "node": ">=16",
