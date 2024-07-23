@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-
 import jackson from '@lib/jackson';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -9,7 +8,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         await handleGET(req, res);
         break;
       default:
-        res.setHeader('Allow', 'POST');
+        res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${req.method} Not Allowed` } });
     }
   } catch (error: any) {
@@ -18,13 +17,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-// Get Conversations
+// Get Conversation by Id
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
-  await chatController.get(req.body);
+  const chat = await chatController.getChatByConversationId(req.query.conversationId as string);
 
-  res.end();
+  res.json({ data: { chat } });
 };
 
 export default handler;
