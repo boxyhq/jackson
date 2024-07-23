@@ -242,4 +242,23 @@ export class ChatController {
 
     return { id: chatID, ...chat };
   }
+
+  public async getChatByConversationId(conversationId: string): Promise<LLMChat[]> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    const conversation = await this.getConversationById(conversationId);
+
+    if (!conversation) {
+      throw new JacksonError('Conversation not found', 404);
+    }
+
+    const chat = (
+      await this.chatStore.getByIndex({
+        name: IndexNames.LLMConversation,
+        value: conversationId,
+      })
+    ).data as LLMChat[];
+
+    return chat;
+  }
 }
