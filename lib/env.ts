@@ -138,6 +138,7 @@ const llmOptions = {
     token: process.env.LLM_FILE_UPLOAD_TOKEN,
   },
   terminusProduct: process.env.LLM_TERMINUS_PRODUCT,
+  adminPortalTenant: process.env.LLM_TERMINUS_ADMIN_PORTAL_TENANT,
 };
 
 export { adminPortalSSODefaults };
