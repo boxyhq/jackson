@@ -25,8 +25,8 @@ export enum IndexNames {
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
   Product = 'product',
-  User = 'user',
   Tenant = 'tenant',
+  TenantProvider = 'tenantProvider',
   TenantUser = 'tenantUser',
   LLMConversation = 'llmConversation',
 

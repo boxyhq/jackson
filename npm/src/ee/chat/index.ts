@@ -73,9 +73,27 @@ export class ChatController {
     return configs;
   }
 
+  public async getLLMConfigsByTenantAndProvider(tenant: string, provider: string): Promise<LLMConfig[]> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    return (
+      await this.llmConfigStore.getByIndex({
+        name: IndexNames.TenantProvider,
+        value: dbutils.keyFromParts(tenant, provider),
+      })
+    ).data;
+  }
+
   private async storeLLMConfig(config: Omit<LLMConfig, 'id'>) {
     const id = crypto.randomBytes(20).toString('hex');
-    await this.llmConfigStore.put(id, config);
+    await this.llmConfigStore.put(
+      id,
+      config,
+      // secondary index on tenant
+      { name: IndexNames.Tenant, value: config.tenant },
+      // secondary index on tenant + provider
+      { name: IndexNames.TenantProvider, value: dbutils.keyFromParts(config.tenant, config.provider) }
+    );
     return { id, ...config };
   }
 
@@ -194,14 +212,12 @@ export class ChatController {
     tenant,
     userId,
   }: {
-    tenant?: string;
+    tenant: string;
     userId: string;
   }): Promise<Records<LLMConversation>> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const _index = tenant
-      ? { name: IndexNames.TenantUser, value: dbutils.keyFromParts(tenant, userId) }
-      : { name: IndexNames.User, value: userId };
+    const _index = { name: IndexNames.TenantUser, value: dbutils.keyFromParts(tenant, userId) };
 
     const conversations = (await this.conversationStore.getByIndex(_index)) as Records<LLMConversation>;
 
@@ -221,12 +237,10 @@ export class ChatController {
 
     const conversationID = crypto.randomBytes(20).toString('hex');
 
-    const _index = conversation.tenant
-      ? {
-          name: IndexNames.TenantUser,
-          value: dbutils.keyFromParts(conversation.tenant, conversation.userId),
-        }
-      : { name: IndexNames.User, value: conversation.userId };
+    const _index = {
+      name: IndexNames.TenantUser,
+      value: dbutils.keyFromParts(conversation.tenant, conversation.userId),
+    };
 
     await this.conversationStore.put(conversationID, conversation, _index);
 
