@@ -4,7 +4,7 @@ import type { Storable, JacksonOption, Records } from '../../typings';
 import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import { LLMChat, LLMConfig, LLMConfigCreatePayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
+import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
 import { JacksonError } from '../../controller/error';
 
 export class ChatController {
@@ -34,7 +34,7 @@ export class ChatController {
     return (await this.llmConfigStore.getByIndex({ name: IndexNames.Tenant, value: tenant })).data;
   }
 
-  private async getLLMConfigsFromVault(
+  private async getLLMConfigFromVault(
     tenant: string,
     token: string
   ): Promise<
@@ -60,7 +60,7 @@ export class ChatController {
 
     const configs = await this.getLLMConfigsByTenant(tenant);
     for (let i = 0; i < configs.length; i++) {
-      const data = await this.getLLMConfigsFromVault(tenant, configs[i].terminusToken);
+      const data = await this.getLLMConfigFromVault(tenant, configs[i].terminusToken);
       if (data) {
         configs[i] = {
           ...configs[i],
@@ -105,7 +105,7 @@ export class ChatController {
     }
   }
 
-  public async createLLMConfig(llmConfig: Omit<LLMConfigCreatePayload, 'id'>): Promise<LLMConfig> {
+  public async createLLMConfig(llmConfig: LLMConfigPayload): Promise<LLMConfig> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     if (!llmConfig.apiKey && llmConfig.provider !== 'ollama') {
@@ -121,6 +121,60 @@ export class ChatController {
     });
 
     return config;
+  }
+
+  private async updateLLMConfigInVault({
+    tenant,
+    token,
+    apiKey,
+    baseURL,
+    piiPolicy,
+  }: {
+    tenant: string;
+    token: string;
+    apiKey?: string;
+    baseURL?: string;
+    piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
+  }) {
+    await axios.put(
+      `${this.opts.terminus?.host}/v1/vault/${tenant}/${this.opts.llm?.terminusProduct}/data/llm-config?token=${token}`,
+      {
+        apiKey: apiKey || '',
+        baseURL: baseURL || '',
+        piiPolicy,
+      },
+      {
+        headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.write}` },
+      }
+    );
+  }
+
+  public async updateLLMConfig(configId: string, llmConfig: LLMConfigPayload): Promise<void> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    const config = await this.llmConfigStore.get(configId);
+    if (!config) {
+      throw new JacksonError('Config not found', 404);
+    }
+
+    const configFromVault = await this.getLLMConfigFromVault(config.tenant, config.terminusToken);
+    if (!configFromVault) {
+      throw new JacksonError('Config not found in Vault', 404);
+    }
+
+    await this.updateLLMConfigInVault({
+      token: config.terminusToken,
+      tenant: config.tenant,
+      apiKey: llmConfig.apiKey,
+      baseURL: llmConfig.baseURL,
+      piiPolicy: llmConfig.piiPolicy,
+    });
+
+    await this.llmConfigStore.put(configId, {
+      ...config,
+      provider: llmConfig.provider,
+      models: llmConfig.models || [],
+    });
   }
 
   public async deleteLLMConfig({ configId, tenant }: { configId: string; tenant: string }): Promise<void> {

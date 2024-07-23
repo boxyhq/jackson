@@ -3,6 +3,7 @@ import { llmApiKey, llmBaseUrl, llmConfigId, llmModels, llmPIIPolicy, llmProvide
 
 export const updateLLMConfigSchema = z.object({
   configId: llmConfigId,
+  tenant: z.string(),
   provider: llmProvider,
   apiKey: llmApiKey,
   models: llmModels,
@@ -12,6 +13,7 @@ export const updateLLMConfigSchema = z.object({
 
 export const deleteLLMConfigSchema = z.object({
   configId: llmConfigId,
+  tenant: z.string(),
 });
 
 export const createLLMConfigSchema = z.object({

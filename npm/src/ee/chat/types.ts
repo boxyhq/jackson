@@ -18,7 +18,7 @@ export type LLMChat = {
   role: string;
 };
 
-export type LLMConfigCreatePayload = {
+export type LLMConfigPayload = {
   provider: LLMProvider;
   tenant: string;
   models?: string[];
