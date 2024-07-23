@@ -238,7 +238,7 @@ export class ChatController {
 
     const chatID = crypto.randomBytes(20).toString('hex');
 
-    await this.chatStore.put(chatID, chat);
+    await this.chatStore.put(chatID, chat, { name: IndexNames.LLMConversation, value: chat.conversationId });
 
     return { id: chatID, ...chat };
   }

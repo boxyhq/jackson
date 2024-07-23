@@ -28,6 +28,7 @@ export enum IndexNames {
   User = 'user',
   Tenant = 'tenant',
   TenantUser = 'tenantUser',
+  LLMConversation = 'llmConversation',
 
   // For Setup link
   Service = 'service',
