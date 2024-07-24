@@ -1,0 +1,175 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+import jackson from '@lib/jackson';
+import { generateChatResponse, getLLMModels } from '@lib/llm';
+import { llmOptions } from '@lib/env';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
+
+/**
+ * If no conversationId is provided it will be treated as new conversation and will be created.
+ * Post api will send the conversationId and message to the LLM provider and return the response.
+ * If the conversationId is provided it will be treated as existing conversation and will be used to send the message.
+ * Post api will send the conversationId and message to the LLM provider and return the response.
+ */
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  switch (req.method) {
+    case 'POST':
+      return await handlePost(req, res);
+    default:
+      res.status(405).json({ error: { message: 'Method not allowed' } });
+      return;
+  }
+}
+
+async function handlePost(req: NextApiRequest, res: NextApiResponse) {
+  const { chatController } = await jackson();
+  const { tenant } = req.query;
+  const { messages, model, provider } = req.body;
+
+  let userId;
+  const isAdminPortalTenant = tenant === llmOptions.adminPortalTenant;
+  if (isAdminPortalTenant) {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) {
+      res.status(401).json({ error: { message: 'Unauthorized' } });
+      return;
+    }
+    userId = session.user.id;
+  } else {
+    userId = req.body.userId;
+  }
+  let { conversationId } = req.body;
+
+  if (!model || !provider) {
+    res.status(400).json({ error: { message: 'Model and provider are required' } });
+    return;
+  }
+
+  try {
+    const llmConfigs = await chatController.getLLMConfigsByTenantAndProvider(tenant as string, provider);
+
+    if (llmConfigs.length === 0) {
+      res.status(400).json({
+        error: {
+          message: conversationId
+            ? 'The provider and model related to this conversation are no longer available.'
+            : 'LLM Config not found. Please create one before using LLM.',
+        },
+      });
+      return;
+    }
+
+    const allowedModels = getLLMModels(provider, llmConfigs);
+
+    if (allowedModels.length > 0 && allowedModels.find((m) => m.id === model.id) === undefined) {
+      res.status(400).json({
+        error: {
+          message: conversationId
+            ? 'The provider and model related to this conversation are no longer available.'
+            : 'Model not allowed',
+        },
+      });
+      return;
+    }
+
+    const config = llmConfigs.find((c) => c.models.includes(model.id)) || llmConfigs[0];
+
+    const configFromVault = await chatController.getLLMConfigFromVault(
+      tenant as string,
+      config.terminusToken
+    );
+
+    if (!conversationId) {
+      const conversation = await chatController.createConversation({
+        tenant: tenant as string,
+        userId,
+        title: messages[0].content.trim().slice(0, 50),
+        provider,
+        model: model?.id || '',
+      });
+      conversationId = conversation.id;
+    } else {
+      const conversation = await chatController.getConversationById(conversationId);
+      if (!conversation) {
+        res.status(404).json({ error: { message: 'Conversation not found' } });
+        return;
+      }
+    }
+
+    await chatController.createChat({
+      conversationId,
+      role: 'user',
+      content: messages[messages.length - 1].content,
+    });
+
+    const responseMessage = await generateChatResponse(
+      messages.map((m) => {
+        return {
+          content: m.content,
+          role: m.role,
+        };
+      }),
+      provider,
+      model,
+      {
+        ...config,
+        ...configFromVault,
+      },
+      true
+    );
+
+    if (!responseMessage) {
+      res.status(400).json({ error: 'Unable get response from LLM. Please try again.' });
+    }
+
+    if (typeof responseMessage === 'string') {
+      await chatController.createChat({ conversationId, role: 'assistant', content: responseMessage });
+
+      res.status(200).json({ message: responseMessage, conversationId });
+    } else {
+      res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
+      let message = '';
+      for await (const chunk of responseMessage) {
+        if (chunk.choices[0]?.delta?.content) {
+          // skip first empty line
+          if (!message && chunk.choices[0]?.delta?.content === '\n') {
+            continue;
+          }
+          message += chunk.choices[0]?.delta?.content;
+          if (!chunk) {
+            continue;
+          }
+          await res.write(JSON.stringify(chunk) + '\n');
+        }
+      }
+      await res.write(JSON.stringify({ conversationId }) + '\n');
+      res.end();
+
+      await chatController.createChat({ conversationId, role: 'assistant', content: message });
+    }
+  } catch (error: any) {
+    console.error('Error in chat api', error);
+    const { status, message } = decodeError(provider, error);
+    res.status(status).json({ error: { message } });
+  }
+}
+
+const decodeError = (provider: string, error: any) => {
+  switch (provider) {
+    case 'openai':
+      return {
+        status: error.status || 400,
+        message: error?.code || error?.message,
+      };
+    case 'mistral':
+      return {
+        status: (error?.message || '').indexOf('401') !== -1 ? 401 : 400,
+        message: (error?.message || '').indexOf('Unauthorized') !== -1 ? 'Unauthorized' : error?.message,
+      };
+  }
+  return { status: 500, message: error?.message };
+};

@@ -34,17 +34,14 @@ export class ChatController {
     return (await this.llmConfigStore.getByIndex({ name: IndexNames.Tenant, value: tenant })).data;
   }
 
-  private async getLLMConfigFromVault(
+  public async getLLMConfigFromVault(
     tenant: string,
     token: string
-  ): Promise<
-    | {
-        apiKey: string;
-        baseURL: string;
-        piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
-      }
-    | undefined
-  > {
+  ): Promise<{
+    apiKey: string;
+    baseURL: string;
+    piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
+  }> {
     const res = await axios.get(
       `${this.opts.terminus?.host}/v1/vault/${tenant}/${this.opts.llm?.terminusProduct}/data?token=${token}`,
       { headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.read}` } }
@@ -52,6 +49,8 @@ export class ChatController {
 
     if (res.data[token]) {
       return JSON.parse(res.data[token]?.data);
+    } else {
+      throw new JacksonError('Config not found in Vault', 404);
     }
   }
 
