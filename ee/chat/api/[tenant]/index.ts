@@ -4,6 +4,8 @@ import { generateChatResponse, getLLMModels } from '@lib/llm';
 import { llmOptions } from '@lib/env';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
+import { defaultHandler } from '@lib/api';
+import { ApiError } from '@lib/error';
 
 /**
  * If no conversationId is provided it will be treated as new conversation and will be created.
@@ -12,17 +14,13 @@ import { getServerSession } from 'next-auth';
  * Post api will send the conversationId and message to the LLM provider and return the response.
  */
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  switch (req.method) {
-    case 'POST':
-      return await handlePost(req, res);
-    default:
-      res.status(405).json({ error: { message: 'Method not allowed' } });
-      return;
-  }
-}
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await defaultHandler(req, res, {
+    POST: handlePOST,
+  });
+};
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse) {
+async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   const { chatController } = await jackson();
   const { tenant } = req.query;
   const { messages, model, provider } = req.body;
@@ -154,7 +152,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
   } catch (error: any) {
     console.error('Error in chat api', error);
     const { status, message } = decodeError(provider, error);
-    res.status(status).json({ error: { message } });
+    throw new ApiError(message, status);
   }
 }
 
@@ -173,3 +171,5 @@ const decodeError = (provider: string, error: any) => {
   }
   return { status: 500, message: error?.message };
 };
+
+export default handler;

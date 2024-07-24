@@ -2,29 +2,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { createLLMConfigSchema, validateWithSchema } from '@lib/zod';
 import { LLMProvider } from '@lib/llm';
+import { defaultHandler } from '@lib/api';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    switch (req.method) {
-      case 'GET':
-        await handleGET(req, res);
-        break;
-      case 'POST':
-        await handlePOST(req, res);
-        break;
-      default:
-        res.setHeader('Allow', 'GET, POST');
-        res.status(405).json({
-          error: { message: `Method ${req.method} Not Allowed` },
-        });
-    }
-  } catch (error: any) {
-    const message = error.message || 'Something went wrong';
-    const status = error.status || 500;
-
-    res.status(status).json({ error: { message } });
-  }
-}
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await defaultHandler(req, res, {
+    GET: handleGET,
+    POST: handlePOST,
+  });
+};
 
 // Get Chat Configs
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -59,3 +44,5 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   res.status(201).json({ data: { config } });
 };
+
+export default handler;
