@@ -165,3 +165,29 @@ export type Branding = {
   primaryColor: string;
   companyName: string;
 };
+
+// Chat types
+export type LLMProvider =
+  | 'openai'
+  | 'anthropic'
+  | 'mistral'
+  | 'groq'
+  | 'perplexity'
+  | 'google-generative-ai'
+  | 'ollama';
+
+type LLMChat = {
+  conversationId: string;
+  content: string;
+  role: string;
+};
+
+export type Conversation = {
+  id: string;
+  teamId: string;
+  userId: string;
+  title: string;
+  provider: string;
+  model: string;
+  LLMChat: LLMChat[];
+};
