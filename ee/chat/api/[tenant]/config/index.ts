@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { createLLMConfigSchema, validateWithSchema } from '@lib/zod';
-import { LLMProvider } from '@lib/llm';
+import { LLMProvider } from '@boxyhq/saml-jackson';
 import { defaultHandler } from '@lib/api';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
