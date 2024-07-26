@@ -269,7 +269,7 @@ export class ChatController {
     return { id: chatID, createdAt, ...chat };
   }
 
-  public async getChatByConversationId(conversationId: string): Promise<LLMChat[]> {
+  public async getChatThreadByConversationId(conversationId: string): Promise<LLMChat[]> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const conversation = await this.getConversationById(conversationId);

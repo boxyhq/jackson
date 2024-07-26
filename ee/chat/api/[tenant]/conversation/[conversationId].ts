@@ -8,11 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-// Get Conversation by Id
+// Get Chat Thread by Conversation ID
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
-  const chat = await chatController.getChatByConversationId(req.query.conversationId as string);
+  const chat = await chatController.getChatThreadByConversationId(req.query.conversationId as string);
 
   res.json({ data: { chat } });
 };
