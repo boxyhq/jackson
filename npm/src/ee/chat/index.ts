@@ -253,14 +253,20 @@ export class ChatController {
     return { id: conversationID, ...conversation };
   }
 
-  public async createChat(chat: Omit<LLMChat, 'id'>): Promise<LLMChat> {
+  public async createChat(chat: Omit<LLMChat, 'id' | 'createdAt'>): Promise<LLMChat> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const chatID = crypto.randomBytes(20).toString('hex');
 
-    await this.chatStore.put(chatID, chat, { name: IndexNames.LLMConversation, value: chat.conversationId });
+    const createdAt = Date.now();
 
-    return { id: chatID, ...chat };
+    await this.chatStore.put(
+      chatID,
+      { ...chat, createdAt },
+      { name: IndexNames.LLMConversation, value: chat.conversationId }
+    );
+
+    return { id: chatID, createdAt, ...chat };
   }
 
   public async getChatByConversationId(conversationId: string): Promise<LLMChat[]> {

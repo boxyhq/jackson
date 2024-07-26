@@ -33,6 +33,7 @@ export type LLMConversation = {
 
 export type LLMChat = {
   id: string;
+  createdAt: number;
   conversationId: string;
   content: string;
   role: string;
