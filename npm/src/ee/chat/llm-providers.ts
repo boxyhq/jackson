@@ -1,11 +1,4 @@
-export type LLMProvider =
-  | 'openai'
-  | 'anthropic'
-  | 'mistral'
-  | 'groq'
-  | 'perplexity'
-  | 'google-generative-ai'
-  | 'ollama';
+import { LLMProvider } from './types';
 
 export type LLMModel = {
   id: string;

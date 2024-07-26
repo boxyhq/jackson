@@ -1,4 +1,11 @@
-import { LLMProvider } from './utils';
+export type LLMProvider =
+  | 'openai'
+  | 'anthropic'
+  | 'mistral'
+  | 'groq'
+  | 'perplexity'
+  | 'google-generative-ai'
+  | 'ollama';
 
 export const PII_POLICY_OPTIONS = ['none', 'detect_mask', 'detect_report', 'detect_block'] as const;
 
@@ -33,4 +40,15 @@ export type LLMConfig = {
   tenant: string;
   models: string[];
   terminusToken: string;
+};
+
+export type LLMConfigMergedFromVault = {
+  id: string;
+  provider: string;
+  tenant: string;
+  models: string[];
+  terminusToken: string;
+  apiKey?: string;
+  baseURL?: string;
+  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };

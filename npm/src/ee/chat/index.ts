@@ -1,11 +1,12 @@
 import crypto from 'crypto';
 import axios from 'axios';
-import type { Storable, JacksonOption, Records } from '../../typings';
+import type { Storable, JacksonOption, Records, LLMConfigMergedFromVault } from '../../typings';
 import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
 import { JacksonError } from '../../controller/error';
+import { LLM_PROVIDERS } from './llm-providers';
 
 export class ChatController {
   private chatStore: Storable;
@@ -54,7 +55,7 @@ export class ChatController {
     }
   }
 
-  public async getLLMConfigs(tenant: string): Promise<LLMConfig[]> {
+  public async getLLMConfigs(tenant: string): Promise<LLMConfigMergedFromVault[]> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const configs = await this.getLLMConfigsByTenant(tenant);
@@ -69,7 +70,7 @@ export class ChatController {
         } as any;
       }
     }
-    return configs;
+    return configs as LLMConfigMergedFromVault[];
   }
 
   public async getLLMConfigsByTenantAndProvider(tenant: string, provider: string): Promise<LLMConfig[]> {
@@ -273,5 +274,11 @@ export class ChatController {
     ).data as LLMChat[];
 
     return chat;
+  }
+
+  public async getLLMProviders() {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    return LLM_PROVIDERS;
   }
 }
