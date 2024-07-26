@@ -7,6 +7,19 @@ export type LLMProvider =
   | 'google-generative-ai'
   | 'ollama';
 
+export type LLMModel = {
+  id: string;
+  name: string;
+  max_tokens?: number;
+};
+
+export type LLMProvidersType = {
+  [key in LLMProvider]: {
+    name: string;
+    models: LLMModel[];
+  };
+};
+
 export const PII_POLICY_OPTIONS = ['none', 'detect_mask', 'detect_report', 'detect_block'] as const;
 
 export type LLMConversation = {

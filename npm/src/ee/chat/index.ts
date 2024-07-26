@@ -1,6 +1,12 @@
 import crypto from 'crypto';
 import axios from 'axios';
-import type { Storable, JacksonOption, Records, LLMConfigMergedFromVault } from '../../typings';
+import type {
+  Storable,
+  JacksonOption,
+  Records,
+  LLMConfigMergedFromVault,
+  LLMProvidersType,
+} from '../../typings';
 import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -276,7 +282,7 @@ export class ChatController {
     return chat;
   }
 
-  public async getLLMProviders() {
+  public async getLLMProviders(): Promise<LLMProvidersType> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     return LLM_PROVIDERS;

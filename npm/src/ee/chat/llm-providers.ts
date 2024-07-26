@@ -1,17 +1,6 @@
-import { LLMProvider } from './types';
+import { LLMProvidersType } from './types';
 
-export type LLMModel = {
-  id: string;
-  name: string;
-  max_tokens?: number;
-};
-
-export const LLM_PROVIDERS: {
-  [key in LLMProvider]: {
-    name: string;
-    models: LLMModel[];
-  };
-} = {
+export const LLM_PROVIDERS: LLMProvidersType = {
   openai: {
     name: 'OpenAI',
     models: [
