@@ -85,7 +85,7 @@
     "next-i18next": "15.3.0",
     "next-mdx-remote": "5.0.0",
     "nodemailer": "6.9.14",
-    "raw-body": "2.5.2",
+    "raw-body": "3.0.0",
     "react": "18.3.1",
     "react-daisyui": "5.0.0",
     "react-dom": "18.3.1",
@@ -116,7 +116,7 @@
     "prettier-plugin-tailwindcss": "0.6.5",
     "release-it": "17.6.0",
     "swagger-jsdoc": "6.2.8",
-    "tailwindcss": "3.4.6",
+    "tailwindcss": "3.4.7",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"
