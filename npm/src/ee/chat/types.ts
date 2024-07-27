@@ -20,6 +20,8 @@ export type LLMProvidersType = {
   };
 };
 
+export type LLMProvidersOptionsType = { id: LLMProvider; name: string }[];
+
 export const PII_POLICY_OPTIONS = ['none', 'detect_mask', 'detect_report', 'detect_block'] as const;
 
 export type LLMConversation = {
@@ -50,7 +52,7 @@ export type LLMConfigPayload = {
 
 export type LLMConfig = {
   id: string;
-  provider: string;
+  provider: LLMProvider;
   tenant: string;
   models: string[];
   terminusToken: string;
@@ -58,7 +60,7 @@ export type LLMConfig = {
 
 export type LLMConfigMergedFromVault = {
   id: string;
-  provider: string;
+  provider: LLMProvider;
   tenant: string;
   models: string[];
   terminusToken: string;
