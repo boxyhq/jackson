@@ -8,11 +8,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-// Get Providers list
+// Get Providers list for dropdown
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
-  const providers = await chatController.getLLMProviders();
+  const { tenant, filterByTenant: filterByTenantParam } = req.query;
+  const filterByTenant = filterByTenantParam !== 'false';
+
+  const providers = await chatController.getLLMProviders(tenant as string, filterByTenant);
 
   res.json({ data: providers });
 };

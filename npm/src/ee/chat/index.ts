@@ -5,7 +5,8 @@ import type {
   JacksonOption,
   Records,
   LLMConfigMergedFromVault,
-  LLMProvidersType,
+  LLMProvidersOptionsType,
+  LLMProvider,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
@@ -288,9 +289,24 @@ export class ChatController {
     return chat;
   }
 
-  public async getLLMProviders(): Promise<LLMProvidersType> {
+  public async getLLMProviders(tenant: string, filterByTenant?: boolean): Promise<LLMProvidersOptionsType> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    return LLM_PROVIDERS;
+    if (filterByTenant) {
+      const configs = await this.getLLMConfigsByTenant(tenant);
+      return Array.from(new Set(configs.map((config) => config.provider)))
+        .sort()
+        .map((provider) => ({
+          id: provider,
+          name: LLM_PROVIDERS[provider].name,
+        }));
+    }
+
+    return Object.keys(LLM_PROVIDERS)
+      .sort()
+      .map((key) => ({
+        id: key as LLMProvider,
+        name: LLM_PROVIDERS[key].name,
+      }));
   }
 }
