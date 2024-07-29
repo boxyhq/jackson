@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
-import { generateChatResponse, getLLMModels } from '@lib/llm';
+import { generateChatResponse } from '@lib/llm';
 import { llmOptions } from '@lib/env';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
+import { LLMProvider } from 'npm/src';
 
 /**
  * If no conversationId is provided it will be treated as new conversation and will be created.
@@ -39,8 +40,13 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   }
   let { conversationId } = req.body;
 
-  if (!model || !provider) {
-    res.status(400).json({ error: { message: 'Model and provider are required' } });
+  if (!provider) {
+    res.status(400).json({ error: { message: 'Provider is required' } });
+    return;
+  }
+
+  if (!model) {
+    res.status(400).json({ error: { message: 'Model is required' } });
     return;
   }
 
@@ -57,8 +63,8 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       });
       return;
     }
-
-    const allowedModels = getLLMModels(provider, llmConfigs);
+    const allowedModels = await chatController.getLLMModels(tenant as string, provider as LLMProvider);
+    // const allowedModels = getLLMModels(provider, llmConfigs);
 
     if (allowedModels.length > 0 && allowedModels.find((m) => m.id === model.id) === undefined) {
       res.status(400).json({
