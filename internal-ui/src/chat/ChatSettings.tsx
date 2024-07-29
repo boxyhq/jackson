@@ -1,0 +1,384 @@
+import { useTranslation } from 'next-i18next';
+import { useContext, useEffect, useState } from 'react';
+import { Button, Input } from 'react-daisyui';
+import { Table, Card, ConfirmationModal, InputWithLabel, Loading } from '../shared';
+import { LLMConfig, LLMModel, LLMProvidersOptionsType, PII_POLICY, PII_POLICY_OPTIONS } from './types';
+import { ChatContext } from '../provider';
+import { useFetch } from '../hooks';
+import { ApiSuccess } from '../types';
+import { defaultHeaders } from '../utils';
+
+export default function ChatSettings() {
+  const { t } = useTranslation('common');
+  const [selectedProvider, setSelectedProvider] = useState('');
+  const [selectedModel, setSelectedModel] = useState<string[]>([]);
+  const [apiKey, setApiKey] = useState('');
+  const [baseURL, setBaseURL] = useState('');
+  const [piiPolicy, setPIIPolicy] = useState<(typeof PII_POLICY_OPTIONS)[number]>('none');
+  const [loading, setLoading] = useState(false);
+  const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
+  const [selectedConfig, setSelectedConfig] = useState<any>(null);
+
+  const [view, switchView] = useState<'list' | 'create' | 'edit'>('list');
+
+  const { urls, onError, onSuccess } = useContext(ChatContext);
+
+  const {
+    data: llmConfigsData,
+    isLoading: isLoadingConfigs,
+    refetch: reloadConfigs,
+    error: errorLoadingConfigs,
+  } = useFetch<ApiSuccess<LLMConfig[]>>({
+    url: urls?.llmConfig,
+  });
+  const llmConfigs = llmConfigsData?.data || [];
+
+  const {
+    data: providersData,
+    isLoading: isLoadingProviders,
+    error: errorLoadingProviders,
+  } = useFetch<ApiSuccess<LLMProvidersOptionsType>>({
+    url: `${urls?.llmProviders}?filterByTenant=false`,
+  });
+
+  const providers = providersData?.data || [];
+
+  const {
+    data: modelsData,
+    isLoading: isLoadingModels,
+    error: errorLoadingModels,
+  } = useFetch<ApiSuccess<LLMModel[]>>({
+    url: selectedProvider
+      ? `${urls?.llmProviders}/${selectedProvider}/models?filterByTenant=false`
+      : undefined,
+  });
+  const models = modelsData?.data || [];
+
+  useEffect(() => {
+    if (errorLoadingConfigs || errorLoadingProviders || errorLoadingModels) {
+      onError?.(
+        errorLoadingConfigs?.message || errorLoadingProviders?.message || errorLoadingModels?.message
+      );
+    }
+  }, [errorLoadingConfigs, errorLoadingProviders, errorLoadingModels]);
+
+  const createLLMConfig = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    const response = await fetch(`${urls?.llmConfig}`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify({
+        provider: selectedProvider,
+        models: selectedModel,
+        apiKey,
+        baseURL,
+        piiPolicy,
+      }),
+    });
+    setLoading(false);
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      onError?.(result.error.message);
+      return;
+    }
+
+    onSuccess?.(t('chat-config-created'));
+    reloadConfigs();
+    resetForm();
+  };
+
+  const deleteConfig = async (config: any) => {
+    if (!config) {
+      return;
+    }
+
+    const response = await fetch(`${urls?.llmConfig}/${config.id}`, {
+      method: 'DELETE',
+      headers: defaultHeaders,
+    });
+
+    if (!response.ok) {
+      const json = await response.json();
+      setConfirmationDialogVisible(false);
+      onError?.(json.error.message);
+      return;
+    }
+
+    setSelectedConfig(null);
+    reloadConfigs();
+    setConfirmationDialogVisible(false);
+    onSuccess?.(t('chat-config-deleted'));
+  };
+
+  const updateLLMConfig = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    const response = await fetch(`${urls?.llmConfig}/${selectedConfig?.id}`, {
+      method: 'PUT',
+      headers: defaultHeaders,
+      body: JSON.stringify({
+        provider: selectedProvider,
+        models: selectedModel,
+        apiKey: apiKey === selectedConfig.apiKey ? undefined : apiKey,
+        baseURL,
+        piiPolicy,
+      }),
+    });
+
+    setLoading(false);
+    if (!response.ok) {
+      const json = await response.json();
+      onError?.(json.error.message);
+      return;
+    }
+
+    onSuccess?.(t('chat-config-updated'));
+    reloadConfigs();
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setSelectedProvider('');
+    setSelectedModel([]);
+    setApiKey('');
+    setBaseURL('');
+    setPIIPolicy('none');
+    switchView('list');
+  };
+
+  return (
+    <>
+      <Card className='h-full'>
+        <Card.Body>
+          <Card.Header>
+            <Card.Title>
+              <span className='text-2xl font-normal'>{t('settings')}</span>
+            </Card.Title>
+          </Card.Header>
+
+          <h4 className='text-base'>{t('llm-providers')}</h4>
+          {view === 'list' && (
+            <Button
+              type='button'
+              className='self-start'
+              color='primary'
+              size='md'
+              onClick={() => switchView('create')}>
+              {t('add')}
+            </Button>
+          )}
+          {isLoadingConfigs && <Loading />}
+          {view === 'list' && llmConfigs.length > 0 && (
+            <Table
+              cols={['Provider', 'Models', 'Created', 'Actions']}
+              body={llmConfigs.map((config) => {
+                const providerName = providers.find((p) => p.id === config.provider)?.name;
+                return {
+                  id: config.id,
+                  cells: [
+                    { text: providerName },
+                    {
+                      wrap: true,
+                      text:
+                        config.models
+                          .map((a: string) => {
+                            const modelName = models.find((m) => m.id === a)?.name;
+                            return (
+                              modelName ||
+                              // ollama is a special case where the model is open ended
+                              config.models
+                            );
+                          })
+                          .join(', ') || '*',
+                    },
+                    {
+                      wrap: true,
+                      text: new Date(config.createdAt).toDateString(),
+                      minWidth: 160,
+                    },
+                    {
+                      buttons: [
+                        {
+                          text: t('edit'),
+                          onClick: () => {
+                            setSelectedConfig(config);
+                            // setIsEdit(true);
+                            switchView('edit');
+                            setSelectedProvider(config.provider);
+                            setSelectedModel(config.models);
+                            setApiKey(config.apiKey || '');
+                            setBaseURL(config.baseURL || '');
+                            setPIIPolicy(config.piiPolicy);
+                          },
+                        },
+                        {
+                          color: 'error',
+                          text: t('remove'),
+                          onClick: () => {
+                            setSelectedConfig(config);
+                            setConfirmationDialogVisible(true);
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                };
+              })}></Table>
+          )}
+          {(view === 'edit' || view === 'create') && (
+            <form className='w-full' onSubmit={view === 'edit' ? updateLLMConfig : createLLMConfig}>
+              <div className='flex flex-col gap-2'>
+                <div>
+                  <div className='label'>
+                    <span className='label-text '>{t('provider')}</span>
+                  </div>
+                  <label className='form-control'>
+                    {!isLoadingProviders ? (
+                      <select
+                        className='select-bordered select rounded'
+                        name='role'
+                        onChange={(e) => {
+                          setSelectedProvider(e.target.value);
+                          setSelectedModel([]);
+                        }}
+                        value={selectedProvider}
+                        required>
+                        {[
+                          {
+                            id: '',
+                            name: 'Provider',
+                          },
+                          ...providers,
+                        ].map((role) => (
+                          <option value={role.id} key={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Loading />
+                    )}
+                  </label>
+                </div>
+                <div>
+                  <div className='label'>
+                    <span className='label-text '>{t('model')}</span>
+                  </div>
+                  <label className='form-control'>
+                    {selectedProvider !== '' && models.length > 0 && !isLoadingModels ? (
+                      <select
+                        className='select-bordered select rounded'
+                        name='role'
+                        onChange={(e) => {
+                          const selectedOptions = Array.from(e.target.selectedOptions).map(
+                            (option) => option.value
+                          );
+                          setSelectedModel(selectedOptions);
+                        }}
+                        value={selectedModel}
+                        multiple>
+                        {[
+                          {
+                            id: '',
+                            name: 'Model',
+                          },
+                          ...models,
+                        ].map((role) => (
+                          <option value={role.id} key={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Input
+                        name='model'
+                        onChange={(e) => {
+                          setSelectedModel([e.target.value]);
+                        }}
+                        value={selectedModel}
+                        placeholder={t('model')}
+                      />
+                    )}
+                  </label>
+                </div>
+                <div>
+                  <InputWithLabel
+                    label={t('api-key')}
+                    name='apiKey'
+                    placeholder={t('api-key')}
+                    type='password'
+                    value={apiKey}
+                    // onFocus={() => setApiKey('')}
+                    onChange={(e) => setApiKey(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <InputWithLabel
+                    label={t('base-url')}
+                    name='baseURL'
+                    placeholder={t('base-url')}
+                    type='text'
+                    value={baseURL}
+                    onChange={(e) => setBaseURL(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <div className='label'>
+                    <span className='label-text '>{t('pii_policy')}</span>
+                  </div>
+                  <label className='form-control'>
+                    <select
+                      className='select-bordered select rounded'
+                      name='role'
+                      onChange={(e: any) => {
+                        setPIIPolicy(e.target.value);
+                      }}
+                      value={piiPolicy}
+                      required>
+                      {Object.keys(PII_POLICY).map((value) => (
+                        <option value={value} key={value}>
+                          {PII_POLICY[value]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                {(view === 'edit' || view === 'create') && (
+                  <div className='self-end'>
+                    <Button
+                      type='reset'
+                      className='mr-2'
+                      color='secondary'
+                      size='md'
+                      onClick={() => resetForm()}>
+                      {t('cancel')}
+                    </Button>
+                    <Button type='submit' color='primary' size='md' disabled={loading}>
+                      {t('save-changes')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </form>
+          )}
+        </Card.Body>
+        {/* <Card.Footer> */}
+        <div className='flex justify-end gap-2'></div>
+        {/* </Card.Footer> */}
+      </Card>
+      <ConfirmationModal
+        visible={confirmationDialogVisible}
+        onCancel={() => setConfirmationDialogVisible(false)}
+        onConfirm={() => deleteConfig(selectedConfig)}
+        title={t('chat-config-deletion-title')}
+        description={t('chat-config-deletion-description')}></ConfirmationModal>
+    </>
+  );
+}

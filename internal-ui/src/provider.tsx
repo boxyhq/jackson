@@ -13,10 +13,12 @@ export const ChatContext = createContext<{
         chat: string;
         conversation: string;
         llmConfig: string;
+        llmProviders: string;
         fileUpload: string;
       }
     | undefined;
   onError?: (error: Error | string) => void;
+  onSuccess?: (success: string) => void;
 }>({
   urls: undefined,
 });
