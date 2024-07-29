@@ -1,13 +1,9 @@
 import { ChatContextProvider, ChatUI } from '@boxyhq/internal-ui';
 import { llmOptions } from '@lib/env';
-import type { GetServerSidePropsContext, NextPage } from 'next';
+import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-type Props = {
-  llmTenant: string;
-};
-
-const ChatPage: NextPage<Props> = ({ llmTenant }) => {
+const ChatPage: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ llmTenant }) => {
   return (
     <ChatContextProvider
       value={{
@@ -24,7 +20,7 @@ const ChatPage: NextPage<Props> = ({ llmTenant }) => {
   );
 };
 
-export async function getStaticProps({ locale }: GetServerSidePropsContext) {
+export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
