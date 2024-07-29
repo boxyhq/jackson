@@ -475,7 +475,7 @@ export interface JacksonOption {
   };
   noAnalytics?: boolean;
   terminus?: {
-    host?: string;
+    hostUrl?: string;
     adminToken?: string;
     apiKey?: { read: string; write: string };
   };
