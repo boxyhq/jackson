@@ -206,7 +206,7 @@ export default function ChatSettings() {
                     {
                       buttons: [
                         {
-                          text: t('edit'),
+                          text: t('bui-shared-edit'),
                           onClick: () => {
                             setSelectedConfig(config);
                             // setIsEdit(true);
@@ -220,7 +220,7 @@ export default function ChatSettings() {
                         },
                         {
                           color: 'error',
-                          text: t('remove'),
+                          text: t('bui-chat-remove'),
                           onClick: () => {
                             setSelectedConfig(config);
                             setConfirmationDialogVisible(true);
@@ -310,9 +310,9 @@ export default function ChatSettings() {
                 </div>
                 <div>
                   <InputWithLabel
-                    label={t('api-key')}
+                    label={t('bui-chat-api-key')}
                     name='apiKey'
-                    placeholder={t('api-key')}
+                    placeholder={t('bui-chat-api-key')}
                     type='password'
                     value={apiKey}
                     // onFocus={() => setApiKey('')}
@@ -361,7 +361,7 @@ export default function ChatSettings() {
                       {t('cancel')}
                     </Button>
                     <Button type='submit' color='primary' size='md' disabled={loading}>
-                      {t('save-changes')}
+                      {t('bui-shared-save-changes')}
                     </Button>
                   </div>
                 )}

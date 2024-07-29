@@ -304,5 +304,9 @@
   "bui-sl-link-expired": "This link has expired",
   "bui-sl-link-expire-on": "This link will expire on {{expiresAt}}.",
   "bui-sl-share-link-info": "Share this link with your customer to setup their service",
-  "bui-sl-webhook-url": "Webhook URL"
+  "bui-sl-webhook-url": "Webhook URL",
+  "bui-chat-api-key": "API Key",
+  "bui-chat-remove": "Remove",
+  "bui-chat-open-sidebar": "Open sidebar",
+  "bui-chat-close-sidebar": "Close sidebar"
 }

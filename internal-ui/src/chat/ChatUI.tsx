@@ -61,7 +61,7 @@ export function ChatUI() {
               type='button'
               className='-ml-0.5 -mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white'
               onClick={toggleChatDrawerVisibility}>
-              <span className='sr-only'>{t('open-sidebar')}</span>
+              <span className='sr-only'>{t('bui-chat-open-sidebar')}</span>
               <Bars4Icon className='h-6 w-6 text-white' />
             </button>
             <h1 className='flex-1 text-center text-base font-normal'>

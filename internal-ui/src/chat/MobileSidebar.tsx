@@ -24,7 +24,7 @@ const MobileSidebar = (props: any) => {
                   className='ml-1 flex h-10 w-10 items-center justify-center focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
                   tabIndex={0}
                   onClick={toggleChatDrawerVisibility}>
-                  <span className='sr-only'>{t('close-sidebar')}</span>
+                  <span className='sr-only'>{t('bui-chat-close-sidebar')}</span>
                   <XMarkIcon className='h-6 w-6 text-white' />
                 </button>
               </div>
