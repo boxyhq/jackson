@@ -297,6 +297,7 @@ export class ChatController {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     if (filterByTenant) {
+      // Will be used for dropdown while chatting with LLM
       const configs = await this.getLLMConfigsByTenant(tenant);
       return Array.from(new Set(configs.map((config) => config.provider)))
         .sort()
@@ -306,11 +307,44 @@ export class ChatController {
         }));
     }
 
+    // Will be used for dropdown while creating a new config
     return Object.keys(LLM_PROVIDERS)
       .sort()
       .map((key) => ({
         id: key as LLMProvider,
         name: LLM_PROVIDERS[key].name,
       }));
+  }
+
+  public async getLLMModels(
+    tenant: string,
+    provider: LLMProvider,
+    filterByTenant?: boolean // fetch models by saved configs
+  ): Promise<LLMModel[]> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
+    if (filterByTenant) {
+      // Will be used for dropdown while chatting with LLM
+      const configs = await this.getLLMConfigsByTenantAndProvider(tenant, provider);
+      if (configs.length === 0) {
+        throw new JacksonError('Config not found', 404);
+      }
+      const modelsFromConfigs = Array.from(new Set(configs.map((c: LLMConfig) => c.models).flat())).filter(
+        (m) => Boolean(m)
+      );
+
+      if (modelsFromConfigs.length === 0) {
+        throw new JacksonError('No models found', 404);
+      }
+
+      const models = modelsFromConfigs
+        .map((model: string) => LLM_PROVIDERS[provider].models.find((m) => m.id === model)!)
+        .filter((m) => m !== undefined);
+
+      return models;
+    }
+
+    // Will be used for dropdown while creating a new config
+    return LLM_PROVIDERS[provider].models;
   }
 }
