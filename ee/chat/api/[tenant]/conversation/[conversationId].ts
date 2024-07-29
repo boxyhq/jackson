@@ -14,7 +14,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const chat = await chatController.getChatThreadByConversationId(req.query.conversationId as string);
 
-  res.json({ data: { chat } });
+  res.json({ data: chat });
 };
 
 export default handler;
