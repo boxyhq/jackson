@@ -29,8 +29,10 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
+  const providers = await chatController.getLLMProviders(req.query.tenant as string, false);
+
   const { configId, tenant, apiKey, models, baseURL, piiPolicy, provider } = validateWithSchema(
-    updateLLMConfigSchema,
+    updateLLMConfigSchema(providers),
     {
       ...req.body,
       ...req.query,

@@ -24,9 +24,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { chatController } = await jackson();
 
+  const providers = await chatController.getLLMProviders(req.query.tenant as string, false);
+
   const { provider, apiKey, models, baseURL, piiPolicy, tenant } = validateWithSchema(
-    createLLMConfigSchema,
-    req.body
+    createLLMConfigSchema(providers),
+    { ...req.body, ...req.query }
   );
 
   if (!apiKey && provider !== 'ollama') {

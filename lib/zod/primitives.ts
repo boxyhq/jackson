@@ -1,5 +1,5 @@
+import { PII_POLICY_OPTIONS } from '@boxyhq/saml-jackson';
 import { z } from 'zod';
-import { LLM_PROVIDERS, PII_POLICY_OPTIONS } from '@lib/llm';
 
 const maxLengthPolicies = {
   llmBaseUrl: 2048,
@@ -7,9 +7,6 @@ const maxLengthPolicies = {
   llmApiKey: 128,
   llmConfigId: 64,
 };
-
-const LLM_PROVIDERS_KEYS = Object.keys(LLM_PROVIDERS) as Array<string>;
-const maxLengthProvider = Math.max(...LLM_PROVIDERS_KEYS.map((provider) => provider.length));
 
 export const llmPIIPolicy = z.enum(PII_POLICY_OPTIONS);
 
@@ -49,16 +46,20 @@ export const llmApiKey = z
   .max(maxLengthPolicies.llmApiKey, `API key should be at most ${maxLengthPolicies.llmApiKey} characters`)
   .optional();
 
-export const llmProvider = z
-  .string({
-    required_error: 'Provider is required',
-    invalid_type_error: 'Provider must be a string',
-  })
-  .min(1, `Provider is required`)
-  .max(maxLengthProvider, 'Invalid provider length')
-  .refine((provider) => {
-    return LLM_PROVIDERS_KEYS.includes(provider);
-  }, 'Invalid provider');
+export const llmProvider = (providers) => {
+  const LLM_PROVIDERS_KEYS = providers.map((provider) => provider.id);
+  const maxLengthProvider = Math.max(...LLM_PROVIDERS_KEYS.map((provider) => provider.length));
+  return z
+    .string({
+      required_error: 'Provider is required',
+      invalid_type_error: 'Provider must be a string',
+    })
+    .min(1, `Provider is required`)
+    .max(maxLengthProvider, 'Invalid provider length')
+    .refine((provider) => {
+      return LLM_PROVIDERS_KEYS.includes(provider);
+    }, 'Invalid provider');
+};
 
 export const llmConfigId = z
   .string({
