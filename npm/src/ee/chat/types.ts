@@ -31,6 +31,7 @@ export type LLMConversation = {
   title: string;
   provider: string;
   model: string;
+  createdAt: number;
 };
 
 export type LLMChat = {
@@ -52,6 +53,7 @@ export type LLMConfigPayload = {
 
 export type LLMConfig = {
   id: string;
+  createdAt: number;
   provider: LLMProvider;
   tenant: string;
   models: string[];
@@ -60,6 +62,7 @@ export type LLMConfig = {
 
 export type LLMConfigMergedFromVault = {
   id: string;
+  createdAt: number;
   provider: LLMProvider;
   tenant: string;
   models: string[];

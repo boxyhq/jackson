@@ -3,10 +3,10 @@ import axios from 'axios';
 import type {
   Storable,
   JacksonOption,
-  Records,
   LLMConfigMergedFromVault,
   LLMProvidersOptionsType,
   LLMProvider,
+  LLMModel,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
 import { IndexNames } from '../../controller/utils';
@@ -91,17 +91,18 @@ export class ChatController {
     ).data;
   }
 
-  private async storeLLMConfig(config: Omit<LLMConfig, 'id'>) {
+  private async storeLLMConfig(config: Omit<LLMConfig, 'id' | 'createdAt'>) {
     const id = crypto.randomBytes(20).toString('hex');
+    const createdAt = Date.now();
     await this.llmConfigStore.put(
       id,
-      config,
+      { ...config, createdAt },
       // secondary index on tenant
       { name: IndexNames.Tenant, value: config.tenant },
       // secondary index on tenant + provider
       { name: IndexNames.TenantProvider, value: dbutils.keyFromParts(config.tenant, config.provider) }
     );
-    return { id, ...config };
+    return { id, createdAt, ...config };
   }
 
   private async saveLLMConfigInVault({
@@ -221,12 +222,12 @@ export class ChatController {
   }: {
     tenant: string;
     userId: string;
-  }): Promise<Records<LLMConversation>> {
+  }): Promise<LLMConversation[]> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const _index = { name: IndexNames.TenantUser, value: dbutils.keyFromParts(tenant, userId) };
 
-    const conversations = (await this.conversationStore.getByIndex(_index)) as Records<LLMConversation>;
+    const conversations = (await this.conversationStore.getByIndex(_index)).data as LLMConversation[];
 
     return conversations;
   }
@@ -239,19 +240,22 @@ export class ChatController {
     return conversation;
   }
 
-  public async createConversation(conversation: Omit<LLMConversation, 'id'>): Promise<LLMConversation> {
+  public async createConversation(
+    conversation: Omit<LLMConversation, 'id' | 'createdAt'>
+  ): Promise<LLMConversation> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const conversationID = crypto.randomBytes(20).toString('hex');
+    const createdAt = Date.now();
 
     const _index = {
       name: IndexNames.TenantUser,
       value: dbutils.keyFromParts(conversation.tenant, conversation.userId),
     };
 
-    await this.conversationStore.put(conversationID, conversation, _index);
+    await this.conversationStore.put(conversationID, { ...conversation, createdAt }, _index);
 
-    return { id: conversationID, ...conversation };
+    return { id: conversationID, createdAt, ...conversation };
   }
 
   public async createChat(chat: Omit<LLMChat, 'id' | 'createdAt'>): Promise<LLMChat> {
