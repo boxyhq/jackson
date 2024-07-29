@@ -11,6 +11,7 @@ import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
+import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -137,6 +138,12 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           active: asPath.includes('/admin/settings/branding'),
         },
       ],
+    },
+    {
+      href: '/admin/chat',
+      text: t('chat'),
+      icon: ChatBubbleOvalLeftIcon,
+      active: asPath.includes('/admin/chat'),
     },
   ];
 
