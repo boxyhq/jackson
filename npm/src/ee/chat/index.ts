@@ -288,10 +288,16 @@ export class ChatController {
     }
 
     const chat = (
-      await this.chatStore.getByIndex({
-        name: IndexNames.LLMConversation,
-        value: conversationId,
-      })
+      await this.chatStore.getByIndex(
+        {
+          name: IndexNames.LLMConversation,
+          value: conversationId,
+        },
+        undefined,
+        undefined,
+        undefined,
+        'ASC'
+      )
     ).data as LLMChat[];
 
     return chat;
