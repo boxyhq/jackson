@@ -253,7 +253,11 @@ export class ChatController {
       value: dbutils.keyFromParts(conversation.tenant, conversation.userId),
     };
 
-    await this.conversationStore.put(conversationID, { ...conversation, createdAt }, _index);
+    await this.conversationStore.put(
+      conversationID,
+      { ...conversation, id: conversationID, createdAt },
+      _index
+    );
 
     return { id: conversationID, createdAt, ...conversation };
   }
