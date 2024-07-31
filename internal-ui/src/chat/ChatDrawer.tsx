@@ -6,8 +6,8 @@ type ChatDrawerProps = {
   isChatDrawerVisible: boolean;
   toggleChatDrawerVisibility: () => void;
   setShowSettings: (value: boolean) => void;
-  conversations: LLMConversation[];
-  conversationId: string;
+  conversations?: LLMConversation[];
+  conversationId?: string;
   setConversationId: (value: string) => void;
 };
 

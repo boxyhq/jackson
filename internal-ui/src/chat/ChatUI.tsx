@@ -11,7 +11,7 @@ import { ChatContext } from '../provider';
 import { LLMConversation } from './types';
 
 interface ConversationContextType {
-  selectedConversation: LLMConversation;
+  selectedConversation?: LLMConversation;
   isLoadingConversations: boolean;
 }
 
@@ -20,27 +20,38 @@ export const ConversationContext = createContext<ConversationContextType | null>
 export function ChatUI() {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const { chatId } = router.query;
+  const conversationId = router.query.conversationId?.[0] as string;
+  const setConversationId = (newConversationId: string) => {
+    const basePath = router.pathname.split('/[[...conversationId]]')[0];
+
+    if (newConversationId === '') {
+      router.push(basePath);
+    } else {
+      router.push(`${basePath}/${newConversationId}`);
+    }
+  };
   const { urls } = useContext(ChatContext);
 
-  const { data: conversationsData, isLoading: isLoadingConversations } = useFetch<
-    ApiSuccess<LLMConversation[]>
-  >({ url: urls?.conversation });
-  const conversations = conversationsData?.data || [];
+  const {
+    data: conversationsData,
+    isLoading: isLoadingConversations,
+    refetch: reloadConversations,
+  } = useFetch<ApiSuccess<LLMConversation[]>>({ url: urls?.conversation });
+  const conversations = conversationsData?.data;
+
+  useEffect(() => {
+    if (conversationId) {
+      reloadConversations();
+    }
+  }, [conversationId, reloadConversations]);
 
   const [isChatDrawerVisible, setIsChatDrawerVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [conversationId, setConversationId] = useState<string>('');
+  // const [conversationId, setConversationId] = useState<string>('');
 
   const toggleChatDrawerVisibility = () => {
     setIsChatDrawerVisible(!isChatDrawerVisible);
   };
-
-  useEffect(() => {
-    if (chatId && conversationId !== chatId) {
-      setConversationId(chatId as string);
-    }
-  }, [chatId, conversationId]);
 
   const selectedConversation = conversations?.filter((c) => c.id === conversationId)[0];
 

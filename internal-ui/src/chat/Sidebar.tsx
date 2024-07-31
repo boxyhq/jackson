@@ -5,8 +5,8 @@ import { LLMConversation } from './types';
 type SidebarProps = {
   setShowSettings: (value: boolean) => void;
   toggleChatDrawerVisibility?: () => void;
-  conversations: LLMConversation[];
-  conversationId: string;
+  conversations?: LLMConversation[];
+  conversationId?: string;
   setConversationId: (value: string) => void;
 };
 
@@ -24,7 +24,6 @@ const Sidebar = ({
         <div
           className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm mb-1 flex-shrink-0 border border-white/20'
           onClick={() => {
-            // router.push(`/teams/${router.query.slug}/chat`);
             setConversationId('');
             setShowSettings(false);
             toggleChatDrawerVisibility && toggleChatDrawerVisibility();
@@ -39,18 +38,17 @@ const Sidebar = ({
               conversation={{ id: '', title: 'Untitled' }}
               conversationId={conversationId}
               onClick={() => {
-                // router.push(`/teams/${router.query.slug}/chat`);
                 toggleChatDrawerVisibility && toggleChatDrawerVisibility();
                 setShowSettings(false);
               }}
             />
           )}
-          {conversations.map((c) => (
+          {conversations?.map((c) => (
             <ConversationTile
               key={c.id}
               conversation={c}
               onClick={() => {
-                // router.push(`/teams/${router.query.slug}/chat/${c.id}`);
+                setConversationId(c.id);
                 toggleChatDrawerVisibility && toggleChatDrawerVisibility();
                 setShowSettings(false);
               }}
@@ -87,7 +85,7 @@ function ConversationTile({
 }: {
   conversation: { id: string; title: string };
   onClick?: (id: string) => void;
-  conversationId: string;
+  conversationId?: string;
 }) {
   const { title } = conversation;
   return (

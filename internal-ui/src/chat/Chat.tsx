@@ -26,7 +26,6 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   // Get the provider/model plus loading state from the context
   const { provider, model, onError, urls } = useContext(ChatContext);
   const selectedConversation = useContext(ConversationContext)?.selectedConversation;
-  const showProviderSelection = !(provider && model);
   const [selectedProvider, setSelectedProvider] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
 
@@ -38,6 +37,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
     data: conversationThreadData,
     isLoading: isLoadingConversationThread,
     error: errorLoadingThread,
+    refetch: reloadConversationThread,
   } = useFetch<ApiSuccess<LLMChat[]>>({
     url: conversationId ? `${urls?.conversation}/${conversationId}` : undefined,
   });
@@ -58,7 +58,15 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
     url: urls?.llmProviders,
   });
 
-  const providers = providersData?.data || [];
+  const providers = providersData?.data;
+
+  const showCreateLLMConfigMessage = Array.isArray(providers) && providers?.length === 0;
+  const showProviderSelection =
+    !showCreateLLMConfigMessage &&
+    !provider &&
+    Array.isArray(providers) &&
+    providers?.length > 0 &&
+    (selectedProvider === '' || selectedModel === '');
 
   const {
     data: modelsData,
@@ -67,7 +75,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   } = useFetch<ApiSuccess<LLMModel[]>>({
     url: selectedProvider ? `${urls?.llmProviders}/${selectedProvider}/models` : undefined,
   });
-  const models = modelsData?.data || [];
+  const models = modelsData?.data;
 
   useEffect(() => {
     if (errorLoadingProviders || errorLoadingModels) {
@@ -76,9 +84,12 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   }, [errorLoadingProviders, errorLoadingModels]);
 
   useEffect(() => {
+    setSelectedProvider(selectedConversation?.provider || '');
+    setSelectedModel(selectedConversation?.model || '');
+  }, [selectedConversation]);
+
+  useEffect(() => {
     if (selectedConversation) {
-      setSelectedProvider(selectedConversation.provider);
-      setSelectedModel(selectedConversation.model);
       if (
         providers?.findIndex((p) => p.id === selectedConversation.provider) === -1 ||
         models?.findIndex((m) => m.id === selectedConversation.model) === -1
@@ -125,13 +136,13 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
       setRequestInProgress(true);
       e.preventDefault();
       // const model = getProviderModel();
-      const _model = models.find((m) => m.id === (model || selectedModel));
+      const _model = models?.find((m) => m.id === (model || selectedModel));
 
       if (!provider && !selectedProvider) {
         setErrorMessage('Please select a Provider');
         return;
       }
-      if (!model && !selectedModel) {
+      if (!_model) {
         setErrorMessage('Please select a Model');
         return;
       }
@@ -175,8 +186,6 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
         const decoder = new TextDecoder('utf-8');
         let receivedData = '';
         if (reader) {
-          // setIsLoading(false);
-          // const conversationThreadCopy = [...(conversationThread || [])];
           let done = false;
           let value;
           do {
@@ -201,24 +210,23 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
             });
             for (const data of jsonData) {
               if (data.conversationId) {
-                setConversationId(data.conversationId);
+                // last chunk
+                conversationId !== data.conversationId && setConversationId(data.conversationId);
+                setTrailingThread([]);
+                reloadConversationThread();
               } else if (data.choices) {
+                // new chunks get appended
                 if (data.choices[0]?.delta?.content) {
                   receivedData += data.choices[0]?.delta?.content || '';
+                  setTrailingThread([
+                    { content: message, role: 'user' },
+                    { content: receivedData, role: 'assistant' },
+                  ]);
                 }
               } else if (data?.error?.message) {
                 setErrorMessage(data?.error?.message);
               }
             }
-            setTrailingThread([
-              { content: message, role: 'user' },
-              { content: receivedData, role: 'assistant' },
-            ]);
-            // setConversationThread([
-            //   ...conversationThreadCopy,
-            //   { content: message, role: 'user' },
-            //   { content: receivedData, role: 'assistant' },
-            // ]);
           } while (!done);
         }
       } else {
@@ -265,8 +273,8 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
     }
   };
 
-  const providerName = providers.find((p) => p.id === (provider || selectedProvider))?.name;
-  const modelName = models.find((m) => m.id === (model || selectedModel))?.name;
+  const providerName = providers?.find((p) => p.id === (provider || selectedProvider))?.name;
+  const modelName = models?.find((m) => m.id === (model || selectedModel))?.name;
 
   return (
     <div className='relative h-full w-full flex flex-col overflow-hidden items-stretch flex-1'>
@@ -274,10 +282,12 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
         <div className='h-full dark:bg-gray-800'>
           <div>
             <div className='flex flex-col items-center text-sm bg-gray-800'>
-              <div className='flex w-full items-center justify-center gap-1 border-b border-black/10 bg-gray-50 p-3 text-gray-500 dark:border-gray-900/50 dark:bg-gray-700 dark:text-gray-300'>
-                {t('provider')}: {providerName} {t('model')}: {modelName || ''}
-                {isArchived && <span className='font-bold'>({t('archived')})</span>}
-              </div>
+              {selectedProvider && selectedModel && (
+                <div className='flex w-full items-center justify-center gap-1 border-b border-black/10 bg-gray-50 p-3 text-gray-500 dark:border-gray-900/50 dark:bg-gray-700 dark:text-gray-300'>
+                  {t('provider')}: {providerName} {t('model')}: {modelName || ''}
+                  {isArchived && <span className='font-bold'>({t('archived')})</span>}
+                </div>
+              )}
               <div className='w-full overflow-y-scroll max-h-[80vh]'>
                 {[...(conversationThread ?? []), ...trailingThread]?.map((message, index) => (
                   <Message key={index} message={message} />
@@ -352,7 +362,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                 </div>
               </div>
             )}
-            {!isLoadingProviders && !isLoadingModels && !providers && !models && (
+            {showCreateLLMConfigMessage && (
               <div className='py-10 relative w-full flex flex-col h-full'>
                 <div className='flex items-center justify-center gap-2'>{t('no-chat-configs-found')}</div>
                 <div className='flex items-center justify-center gap-2'>
