@@ -59,5 +59,6 @@ export type LLMChat = {
   role: string;
   content: string;
   id: string;
+  conversationId: string;
   createdAt: string;
 };
