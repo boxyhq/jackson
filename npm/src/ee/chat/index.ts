@@ -271,7 +271,7 @@ export class ChatController {
 
     await this.chatStore.put(
       chatID,
-      { ...chat, createdAt },
+      { ...chat, id: chatID, createdAt },
       { name: IndexNames.LLMConversation, value: chat.conversationId }
     );
 
