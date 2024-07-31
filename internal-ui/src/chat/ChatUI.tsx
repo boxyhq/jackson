@@ -47,7 +47,6 @@ export function ChatUI() {
 
   const [isChatDrawerVisible, setIsChatDrawerVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  // const [conversationId, setConversationId] = useState<string>('');
 
   const toggleChatDrawerVisibility = () => {
     setIsChatDrawerVisible(!isChatDrawerVisible);

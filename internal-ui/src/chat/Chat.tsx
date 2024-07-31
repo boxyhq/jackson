@@ -163,9 +163,6 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
       // Clear the message & remove empty chat
       setMessage('');
 
-      // if (!model) {
-      //   throw new Error('Please select a model.');
-      // }
       if (!urls?.chat) {
         throw new Error('Missing API path for LLM chat');
       }
