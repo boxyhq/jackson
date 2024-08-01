@@ -138,6 +138,12 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       res.flushHeaders();
       let message = '';
       for await (const chunk of responseMessage) {
+        if (!chunk || !chunk.choices) {
+          continue;
+        }
+        if (chunk.choices.length === 0) {
+          continue;
+        }
         if (chunk.choices[0]?.delta?.content) {
           // skip first empty line
           if (!message && chunk.choices[0]?.delta?.content === '\n') {
