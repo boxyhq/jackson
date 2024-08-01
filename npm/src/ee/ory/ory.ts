@@ -53,14 +53,14 @@ export class OryController {
     const op = index === '-' ? 'add' : 'replace';
 
     await axios.patch(
-      `${basePath}/normalized/projects/${config.projectId}/revision/${project.data.revision_id}`,
+      `${basePath}/projects/${config.projectId}`,
       [
-        { op: 'replace', path: '/kratos_selfservice_methods_oidc_enabled', value: true },
+        { op: 'replace', path: '/services/identity/config/selfservice/methods/oidc/enabled', value: true },
         {
           op,
-          path: `/kratos_selfservice_methods_oidc_config_providers/${index}`,
+          path: `/services/identity/config/selfservice/methods/oidc/config/providers/${index}`,
           value: {
-            provider_id: providerId,
+            id: providerId,
             provider: 'generic',
             label: 'SSO',
             client_id: `tenant=${tenant}&product=${product}`,
