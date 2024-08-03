@@ -1,47 +1,98 @@
+import { defaultHandler } from '@lib/api';
 import { llmOptions } from '@lib/env';
-import axios from 'axios';
+import type { IncomingMessage } from 'http';
+import { NextApiRequest, NextApiResponse } from 'next';
+import type { Readable } from 'node:stream';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
+// Function to force consume the response body to avoid memory leaks
+export const forceConsume = async (response) => {
+  try {
+    await response.text();
+  } catch (error) {
+    // Do nothing
+  }
 };
 
-export default async function handler(req, res) {
+// Get raw body as buffer
+async function getRawBody(readable: Readable): Promise<Buffer> {
+  const chunks: any[] = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
+// Parse multipart form data to extract file content
+async function parseMultipartFormData(req: IncomingMessage, boundary: string) {
+  const buffer = await getRawBody(req);
+  const parts = buffer.toString().split(`--${boundary}`);
+
+  let fileName = '';
+  let fileBuffer: Buffer | null = null;
+
+  parts.forEach((part) => {
+    if (part.includes('Content-Disposition: form-data; name="file"; filename=')) {
+      fileName = part.split('filename=')[1].split('"')[1];
+      const start = buffer.indexOf('\r\n\r\n') + 4;
+      const end = buffer.lastIndexOf('\r\n--');
+      fileBuffer = buffer.subarray(start, end);
+    }
+  });
+
+  return { fileName, fileBuffer };
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await defaultHandler(req, res, {
+    POST: handlePOST,
+  });
+};
+
+export async function handlePOST(req, res) {
   // TODO: Upload file against tenant/user
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    res.status(405).json({ error: { message: `Method ${req.method} not allowed.` } });
+
+  const contentType = req.headers['content-type'];
+  if (!contentType) {
+    res.status(400).json({ error: 'Content-Type header is missing' });
     return;
   }
 
+  const boundary = contentType.split('boundary=')[1];
+
+  const { fileName, fileBuffer } = await parseMultipartFormData(req, boundary);
+
+  if (!fileBuffer || !fileName) {
+    res.status(400).json({ error: 'File not found in the request' });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', new Blob([fileBuffer]), fileName);
+
   try {
-    // Forward the request to the backend API
-    const response = await axios({
-      method: 'POST',
-      url: `${llmOptions.fileUpload.baseUrl}/chat/upload_file`,
+    const response = await fetch(`${llmOptions.fileUpload.baseUrl}/chat/upload_file`, {
       headers: {
         Authorization: `Bearer ${llmOptions.fileUpload.token}`,
       },
-      data: req, // Use the request stream as the data
-      responseType: 'stream', // Handle the response as a stream
+      method: 'POST',
+      body: formData,
     });
 
-    // Pipe the response from the backend API to the client
-    response.data.pipe(res);
+    const status = response.status;
+    const contentType = response.headers.get('content-type');
 
-    // Forward the response headers and status
-    response.data.on('end', () => {
-      res.writeHead(response.status, response.headers);
-      res.end();
-    });
+    if (contentType?.includes('application/json')) {
+      res.status(status).json(await response.json());
+    } else {
+      forceConsume(res);
+      res.status(status).end();
+    }
+  } catch (error: any) {
+    const message = error.message || 'An error occurred. Please try again.';
+    const status = error.status || 500;
 
-    response.data.on('error', (error) => {
-      console.error('Error forwarding response', error);
-      res.status(500).send({ message: 'Error forwarding the response' });
-    });
-  } catch (error) {
-    console.error('Error proxying request', error);
-    res.status(500).send({ error: { message: 'Error proxying the request' } });
+    res.status(status).json({ error: { message } });
   }
 }
+
+export default handler;
