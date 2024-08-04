@@ -69,6 +69,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                 get: connectionFetchUrl,
               }}
               successCallback={({ operation }) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 operation === 'UPDATE'
                   ? successToast(t('saved'))
                   : operation === 'DELETE'
@@ -114,6 +115,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                 get: connectionFetchUrl,
               }}
               successCallback={({ operation }) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 operation === 'UPDATE'
                   ? successToast(t('saved'))
                   : operation === 'DELETE'

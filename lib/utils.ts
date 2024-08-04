@@ -33,6 +33,7 @@ const IsJsonString = (body: any): boolean => {
     const json = JSON.parse(body);
 
     return typeof json === 'object';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
@@ -68,6 +69,7 @@ export const oidcMetadataParse = (
     try {
       const oidcMetadata = JSON.parse(body.oidcMetadata);
       return { ...body, oidcMetadata };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       throw new JacksonError('Could not parse OIDC Provider metadata, expected a valid JSON string', 400);
     }
