@@ -96,7 +96,7 @@ export class ChatController {
     const createdAt = Date.now();
     await this.llmConfigStore.put(
       id,
-      { ...config, createdAt },
+      { ...config, id, createdAt },
       // secondary index on tenant
       { name: IndexNames.Tenant, value: config.tenant },
       // secondary index on tenant + provider
