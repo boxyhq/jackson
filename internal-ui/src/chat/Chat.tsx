@@ -26,7 +26,10 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   // Get the provider/model plus loading state from the context
   const { provider, model, onError, urls } = useContext(ChatContext);
   const selectedConversation = useContext(ConversationContext)?.selectedConversation;
-  const isChatWithPDFProvider = useContext(ConversationContext)?.isChatWithPDFProvider;
+  let isChatWithPDFProvider = useContext(ConversationContext)?.isChatWithPDFProvider;
+  if (selectedConversation) {
+    isChatWithPDFProvider = selectedConversation.isChatWithPDFProvider;
+  }
   const [selectedProvider, setSelectedProvider] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
 
