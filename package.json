@@ -111,7 +111,7 @@
     "@types/react": "18.3.2",
     "@typescript-eslint/eslint-plugin": "7.10.0",
     "@typescript-eslint/parser": "7.10.0",
-    "autoprefixer": "10.4.19",
+    "autoprefixer": "10.4.20",
     "env-cmd": "10.1.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
