@@ -89,7 +89,7 @@ export default function ChatSettings() {
       return;
     }
 
-    onSuccess?.(t('chat-config-created'));
+    onSuccess?.(t('bui-chat-config-created'));
     reloadConfigs();
     resetForm();
   };
@@ -114,7 +114,7 @@ export default function ChatSettings() {
     setSelectedConfig(null);
     reloadConfigs();
     setConfirmationDialogVisible(false);
-    onSuccess?.(t('chat-config-deleted'));
+    onSuccess?.(t('bui-chat-config-deleted'));
   };
 
   const updateLLMConfig = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -142,7 +142,7 @@ export default function ChatSettings() {
       return;
     }
 
-    onSuccess?.(t('chat-config-updated'));
+    onSuccess?.(t('bui-chat-config-updated'));
     reloadConfigs();
     resetForm();
   };
@@ -166,7 +166,7 @@ export default function ChatSettings() {
             </Card.Title>
           </Card.Header>
 
-          <h4 className='text-base'>{t('llm-providers')}</h4>
+          <h4 className='text-base'>{t('bui-chat-llm-providers')}</h4>
           {view === 'list' && (
             <Button
               type='button'
@@ -174,7 +174,7 @@ export default function ChatSettings() {
               color='primary'
               size='md'
               onClick={() => switchView('create')}>
-              {t('add')}
+              {t('bui-chat-add')}
             </Button>
           )}
           {isLoadingConfigs && <Loading />}
@@ -188,7 +188,7 @@ export default function ChatSettings() {
                   cells: [
                     {
                       element: config.isChatWithPDFProvider ? (
-                        <Badge color='primary'>{t('Chat with PDF Provider')}</Badge>
+                        <Badge color='primary'>{t('bui-chat-with-pdf-provider')}</Badge>
                       ) : (
                         <span>{providerName}</span>
                       ),
@@ -254,7 +254,7 @@ export default function ChatSettings() {
                     <label
                       htmlFor='chat-with-pdf-provider'
                       className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer'>
-                      {t('Chat with PDF Provider')}
+                      {t('bui-chat-with-pdf-provider')}
                     </label>
                   </div>
                 )}
@@ -263,7 +263,7 @@ export default function ChatSettings() {
                   <>
                     <div>
                       <div className='label'>
-                        <span className='label-text '>{t('provider')}</span>
+                        <span className='label-text '>{t('bui-chat-provider')}</span>
                       </div>
                       <label className='form-control'>
                         {!isLoadingProviders ? (
@@ -295,7 +295,7 @@ export default function ChatSettings() {
                     </div>
                     <div>
                       <div className='label'>
-                        <span className='label-text '>{t('model')}</span>
+                        <span className='label-text '>{t('bui-chat-model')}</span>
                       </div>
                       <label className='form-control'>
                         {selectedProvider !== '' && models.length > 0 && !isLoadingModels ? (
@@ -329,7 +329,7 @@ export default function ChatSettings() {
                               setSelectedModel([e.target.value]);
                             }}
                             value={selectedModel}
-                            placeholder={t('model')}
+                            placeholder={t('bui-chat-model')}
                           />
                         )}
                       </label>
@@ -349,9 +349,9 @@ export default function ChatSettings() {
                 </div>
                 <div>
                   <InputWithLabel
-                    label={t('base-url')}
+                    label={t('bui-chat-base-url')}
                     name='baseURL'
-                    placeholder={t('base-url')}
+                    placeholder={t('bui-chat-base-url')}
                     type='text'
                     value={baseURL}
                     onChange={(e) => setBaseURL(e.target.value)}
@@ -359,7 +359,7 @@ export default function ChatSettings() {
                 </div>
                 <div>
                   <div className='label'>
-                    <span className='label-text '>{t('pii_policy')}</span>
+                    <span className='label-text '>{t('bui-chat-pii-policy')}</span>
                   </div>
                   <label className='form-control'>
                     <select
@@ -405,8 +405,8 @@ export default function ChatSettings() {
         visible={confirmationDialogVisible}
         onCancel={() => setConfirmationDialogVisible(false)}
         onConfirm={() => deleteConfig(selectedConfig)}
-        title={t('chat-config-deletion-title')}
-        description={t('chat-config-deletion-description')}></ConfirmationModal>
+        title={t('bui-chat-config-deletion-title')}
+        description={t('bui-chat-config-deletion-description')}></ConfirmationModal>
     </>
   );
 }

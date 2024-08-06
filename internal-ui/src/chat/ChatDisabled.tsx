@@ -9,8 +9,8 @@ export default function ChatDisabled() {
       <Card>
         <Card.Body>
           <Card.Header>
-            <Card.Title>{t('chat-disabled-title')}</Card.Title>
-            <Card.Description>{t('chat-disabled-description')}</Card.Description>
+            <Card.Title>{t('bui-chat-disabled-title')}</Card.Title>
+            <Card.Description>{t('bui-chat-disabled-description')}</Card.Description>
           </Card.Header>
           <div>{/* <ContactSupport /> */}</div>
         </Card.Body>

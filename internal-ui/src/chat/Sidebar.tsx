@@ -29,7 +29,7 @@ const Sidebar = ({
             toggleChatDrawerVisibility && toggleChatDrawerVisibility();
           }}>
           <PlusIcon className='h-5 w-5' />
-          {t('new-chat')}
+          {t('bui-chat-new-chat')}
         </div>
         <div className='flex-col flex-1 border-b border-white/20 overflow-y-scroll'>
           {!conversationId && (
@@ -62,7 +62,7 @@ const Sidebar = ({
             toggleChatDrawerVisibility && toggleChatDrawerVisibility();
           }}>
           <ChatBubbleLeftEllipsisIcon className='h-5 w-5' />
-          {t('clear-conversation')}
+          {t('bui-chat-clear-conversation')}
         </div>
         <div
           className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm'

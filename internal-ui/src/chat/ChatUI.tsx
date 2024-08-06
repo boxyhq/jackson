@@ -75,7 +75,7 @@ export function ChatUI() {
               <Bars4Icon className='h-6 w-6 text-white' />
             </button>
             <h1 className='flex-1 text-center text-base font-normal'>
-              {showSettings ? t('settings') : selectedConversation?.title || t('new-chat')}
+              {showSettings ? t('settings') : selectedConversation?.title || t('bui-chat-new-chat')}
             </h1>
             <button
               type='button'

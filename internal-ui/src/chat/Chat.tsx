@@ -281,8 +281,8 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
             <div className='flex flex-col items-center text-sm bg-gray-800'>
               {selectedProvider && selectedModel && (
                 <div className='flex w-full items-center justify-center gap-1 border-b border-black/10 bg-gray-50 p-3 text-gray-500 dark:border-gray-900/50 dark:bg-gray-700 dark:text-gray-300'>
-                  {t('provider')}: {providerName} {t('model')}: {modelName || ''}
-                  {isArchived && <span className='font-bold'>({t('archived')})</span>}
+                  {t('bui-chat-provider')}: {providerName} {t('bui-chat-model')}: {modelName || ''}
+                  {isArchived && <span className='font-bold'>({t('bui-chat-archived')})</span>}
                 </div>
               )}
               <div className='w-full overflow-y-scroll max-h-[80vh]'>
@@ -348,7 +348,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                         type='text'
                         name='model'
                         className='input input-bordered rounded'
-                        placeholder={t('model')}
+                        placeholder={t('bui-chat-model')}
                         onChange={(e) => {
                           setSelectedModel(e.target.value);
                         }}
@@ -361,9 +361,11 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
             )}
             {showCreateLLMConfigMessage && (
               <div className='py-10 relative w-full flex flex-col h-full'>
-                <div className='flex items-center justify-center gap-2'>{t('no-chat-configs-found')}</div>
                 <div className='flex items-center justify-center gap-2'>
-                  {t('goto')}{' '}
+                  {t('bui-chat-no-chat-configs-found')}
+                </div>
+                <div className='flex items-center justify-center gap-2'>
+                  {t('bui-chat-goto')}{' '}
                   <span
                     className='link text-blue-700'
                     onClick={() => {
@@ -371,7 +373,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                     }}>
                     {t('settings')}
                   </span>{' '}
-                  {t('to-create-new-config')}
+                  {t('bui-chat-to-create-new-config')}
                 </div>
               </div>
             )}
@@ -417,7 +419,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                       d='M1 6v8a5 5 0 1 0 10 0V4.5a3.5 3.5 0 1 0-7 0V13a2 2 0 0 0 4 0V6'></path>
                   </svg>
                 )}
-                <span className='sr-only'>{t('attach-file')}</span>
+                <span className='sr-only'>{t('bui-chat-attach-file')}</span>
               </label>
               <textarea
                 ref={textAreaRef}

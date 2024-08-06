@@ -141,7 +141,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     },
     {
       href: '/admin/chat',
-      text: t('chat'),
+      text: t('bui-chat'),
       icon: ChatBubbleOvalLeftIcon,
       active: asPath.includes('/admin/chat'),
     },
