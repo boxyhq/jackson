@@ -1,6 +1,14 @@
 import { useTranslation } from 'next-i18next';
-import { PlusIcon, ChatBubbleLeftEllipsisIcon, CogIcon } from '@heroicons/react/24/outline';
+import {
+  PlusIcon,
+  ChatBubbleLeftEllipsisIcon,
+  CogIcon,
+  DocumentMagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 import { LLMConversation } from './types';
+import { ConversationContext } from './ChatUI';
+import { useContext } from 'react';
+import { Badge } from '../shared';
 
 type SidebarProps = {
   setShowSettings: (value: boolean) => void;
@@ -18,6 +26,7 @@ const Sidebar = ({
   setConversationId,
 }: SidebarProps) => {
   const { t } = useTranslation('common');
+  const setIsChatWithPDFProvider = useContext(ConversationContext)?.setIsChatWithPDFProvider;
   return (
     <div className='scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20 dark:bg-gray-800'>
       <nav className='flex h-full flex-1 flex-col space-y-1 p-2'>
@@ -25,6 +34,7 @@ const Sidebar = ({
           className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm mb-1 flex-shrink-0 border border-white/20'
           onClick={() => {
             setConversationId('');
+            setIsChatWithPDFProvider?.(false);
             setShowSettings(false);
             toggleChatDrawerVisibility && toggleChatDrawerVisibility();
           }}>
@@ -39,6 +49,7 @@ const Sidebar = ({
               conversationId={conversationId}
               onClick={() => {
                 toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+                setIsChatWithPDFProvider?.(false);
                 setShowSettings(false);
               }}
             />
@@ -51,6 +62,7 @@ const Sidebar = ({
                 setConversationId(c.id);
                 toggleChatDrawerVisibility && toggleChatDrawerVisibility();
                 setShowSettings(false);
+                setIsChatWithPDFProvider?.(false);
               }}
               conversationId={conversationId}
             />
@@ -64,10 +76,22 @@ const Sidebar = ({
           <ChatBubbleLeftEllipsisIcon className='h-5 w-5' />
           {t('bui-chat-clear-conversation')}
         </div>
+        <button
+          className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm'
+          onClick={() => {
+            setShowSettings(false);
+            setIsChatWithPDFProvider?.(true);
+            setConversationId('');
+            toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+          }}>
+          <DocumentMagnifyingGlassIcon className='h-5 w-5' />
+          {t('bui-chat-with-pdf')}
+        </button>
         <div
           className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm'
           onClick={() => {
             setShowSettings(true);
+            setConversationId('');
             toggleChatDrawerVisibility && toggleChatDrawerVisibility();
           }}>
           <CogIcon className='h-5 w-5' />
@@ -83,20 +107,21 @@ function ConversationTile({
   onClick,
   conversationId,
 }: {
-  conversation: { id: string; title: string };
+  conversation: Partial<LLMConversation>;
   onClick?: (id: string) => void;
   conversationId?: string;
 }) {
-  const { title } = conversation;
+  const { title, isChatWithPDFProvider, id } = conversation;
   return (
     <div
       key={conversation.id}
       className={`flex flex-col gap-2 mb-2 text-gray-100 text-sm rounded-md ${conversation.id === conversationId ? 'bg-gray-500/10' : ''}`}
       onClick={() => {
-        onClick && onClick(conversation.id);
+        onClick && onClick(id!);
       }}>
       <a className='flex py-3 px-3 items-center gap-3 relative rounded-md hover:bg-[#2A2B32] cursor-pointer break-all hover:pr-4 group'>
         <div className='flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative'>{title}</div>
+        {isChatWithPDFProvider && <Badge className='bg-blue-500'>PDF</Badge>}
       </a>
     </div>
   );

@@ -26,6 +26,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   // Get the provider/model plus loading state from the context
   const { provider, model, onError, urls } = useContext(ChatContext);
   const selectedConversation = useContext(ConversationContext)?.selectedConversation;
+  const isChatWithPDFProvider = useContext(ConversationContext)?.isChatWithPDFProvider;
   const [selectedProvider, setSelectedProvider] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
 
@@ -62,6 +63,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
 
   const showCreateLLMConfigMessage = Array.isArray(providers) && providers?.length === 0;
   const showProviderSelection =
+    !isChatWithPDFProvider &&
     !showCreateLLMConfigMessage &&
     !provider &&
     Array.isArray(providers) &&
@@ -89,7 +91,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
   }, [selectedConversation]);
 
   useEffect(() => {
-    if (selectedConversation) {
+    if (selectedConversation && !isChatWithPDFProvider) {
       if (
         providers?.findIndex((p) => p.id === selectedConversation.provider) === -1 ||
         models?.findIndex((m) => m.id === selectedConversation.model) === -1
@@ -99,7 +101,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
         setIsArchived(false);
       }
     }
-  }, [selectedConversation, providers, models]);
+  }, [selectedConversation, providers, models, isChatWithPDFProvider]);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -138,13 +140,15 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
       // const model = getProviderModel();
       const _model = models?.find((m) => m.id === (model || selectedModel));
 
-      if (!provider && !selectedProvider) {
-        setErrorMessage('Please select a Provider');
-        return;
-      }
-      if (!_model) {
-        setErrorMessage('Please select a Model');
-        return;
+      if (!isChatWithPDFProvider) {
+        if (!provider && !selectedProvider) {
+          setErrorMessage('Please select a Provider');
+          return;
+        }
+        if (!_model) {
+          setErrorMessage('Please select a Model');
+          return;
+        }
       }
       // Don't send empty messages
       if (message.length < 1) {
@@ -175,6 +179,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
           model: _model,
           provider: provider || selectedProvider,
           conversationId,
+          isChatWithPDFProvider,
         }),
       });
 
@@ -392,34 +397,38 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
               </div>
             ) : null}
             <div className='flex flex-col w-full py-2 flex-grow md:py-3  relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] focus:border-0 focus-within:bottom-0'>
-              <input
-                type='file'
-                accept='.pdf'
-                className='sr-only'
-                id='pdf-files'
-                onChange={handleFileChange}
-                disabled={isUploadingFile}></input>
-              <label
-                htmlFor='pdf-files'
-                className='absolute left-1 md:left-2 focus:outline-none focus:ring-4 focus:ring-gray-300 top-[50%] translate-y-[-50%] p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'>
-                {isUploadingFile ? (
-                  <Loading spinnerCss='h-6 w-6' />
-                ) : (
-                  <svg
-                    className='w-4 h-4'
-                    aria-hidden='true'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 12 20'>
-                    <path
-                      stroke='currentColor'
-                      strokeLinejoin='round'
-                      strokeWidth='2'
-                      d='M1 6v8a5 5 0 1 0 10 0V4.5a3.5 3.5 0 1 0-7 0V13a2 2 0 0 0 4 0V6'></path>
-                  </svg>
-                )}
-                <span className='sr-only'>{t('bui-chat-attach-file')}</span>
-              </label>
+              {isChatWithPDFProvider && (
+                <>
+                  <input
+                    type='file'
+                    accept='.pdf'
+                    className='sr-only'
+                    id='pdf-files'
+                    onChange={handleFileChange}
+                    disabled={isUploadingFile}></input>
+                  <label
+                    htmlFor='pdf-files'
+                    className='absolute left-1 md:left-2 focus:outline-none focus:ring-4 focus:ring-gray-300 top-[50%] translate-y-[-50%] p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'>
+                    {isUploadingFile ? (
+                      <Loading spinnerCss='h-6 w-6' />
+                    ) : (
+                      <svg
+                        className='w-4 h-4'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 12 20'>
+                        <path
+                          stroke='currentColor'
+                          strokeLinejoin='round'
+                          strokeWidth='2'
+                          d='M1 6v8a5 5 0 1 0 10 0V4.5a3.5 3.5 0 1 0-7 0V13a2 2 0 0 0 4 0V6'></path>
+                      </svg>
+                    )}
+                    <span className='sr-only'>{t('bui-chat-attach-file')}</span>
+                  </label>
+                </>
+              )}
               <textarea
                 ref={textAreaRef}
                 value={message}
@@ -433,8 +442,8 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
               <button
                 disabled={
                   message?.length === 0 ||
-                  (!provider && !selectedProvider) ||
-                  (!model && !selectedModel) ||
+                  (!provider && !selectedProvider && !isChatWithPDFProvider) ||
+                  (!model && !selectedModel && !isChatWithPDFProvider) ||
                   requestInProgress ||
                   isArchived
                 }

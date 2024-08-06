@@ -309,5 +309,6 @@
   "bui-chat-clear-conversation": "Clear conversation",
   "bui-chat-model": "Model",
   "bui-chat-new-chat": "New chat",
-  "bui-chat-with-pdf-provider": "Chat with PDF Provider"
+  "bui-chat-with-pdf-provider": "Chat with PDF Provider",
+  "bui-chat-with-pdf": "Chat with PDF"
 }

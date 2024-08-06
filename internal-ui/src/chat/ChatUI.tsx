@@ -13,6 +13,8 @@ import { LLMConversation } from './types';
 interface ConversationContextType {
   selectedConversation?: LLMConversation;
   isLoadingConversations: boolean;
+  isChatWithPDFProvider: boolean;
+  setIsChatWithPDFProvider: (value: boolean) => void;
 }
 
 export const ConversationContext = createContext<ConversationContextType | null>(null);
@@ -47,6 +49,7 @@ export function ChatUI() {
 
   const [isChatDrawerVisible, setIsChatDrawerVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isChatWithPDFProvider, setIsChatWithPDFProvider] = useState(false);
 
   const toggleChatDrawerVisibility = () => {
     setIsChatDrawerVisible(!isChatDrawerVisible);
@@ -55,7 +58,13 @@ export function ChatUI() {
   const selectedConversation = conversations?.filter((c) => c.id === conversationId)[0];
 
   return (
-    <ConversationContext.Provider value={{ selectedConversation, isLoadingConversations }}>
+    <ConversationContext.Provider
+      value={{
+        selectedConversation,
+        isLoadingConversations,
+        isChatWithPDFProvider,
+        setIsChatWithPDFProvider,
+      }}>
       <div className='overflow-hidden w-full h-[90vh] relative flex'>
         <ChatDrawer
           isChatDrawerVisible={isChatDrawerVisible}
@@ -81,7 +90,6 @@ export function ChatUI() {
               type='button'
               className='px-3'
               onClick={() => {
-                // router.push(`/teams/${teamSlug}/chat`);
                 setConversationId('');
                 setShowSettings(false);
               }}>
