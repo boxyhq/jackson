@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   const { chatController } = await jackson();
   const { tenant } = req.query;
-  const { messages, model, provider } = req.body;
+  const { messages, model, provider, isChatWithPDFProvider } = req.body;
 
   let userId;
   const isAdminPortalTenant = tenant === llmOptions.adminPortalTenant;
@@ -40,18 +40,23 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   }
   let { conversationId } = req.body;
 
-  if (!provider) {
-    res.status(400).json({ error: { message: 'Provider is required' } });
-    return;
-  }
+  if (!isChatWithPDFProvider) {
+    if (!provider) {
+      res.status(400).json({ error: { message: 'Provider is required' } });
+      return;
+    }
 
-  if (!model) {
-    res.status(400).json({ error: { message: 'Model is required' } });
-    return;
+    if (!model) {
+      res.status(400).json({ error: { message: 'Model is required' } });
+      return;
+    }
   }
 
   try {
-    const llmConfigs = await chatController.getLLMConfigsByTenantAndProvider(tenant as string, provider);
+    const llmConfigs = await chatController.getLLMConfigsByTenantAndProvider(
+      tenant as string,
+      isChatWithPDFProvider ? 'openai' : provider
+    );
 
     if (llmConfigs.length === 0) {
       res.status(400).json({
@@ -63,21 +68,34 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       });
       return;
     }
-    const allowedModels = await chatController.getLLMModels(tenant as string, provider as LLMProvider);
-    // const allowedModels = getLLMModels(provider, llmConfigs);
+    if (!isChatWithPDFProvider) {
+      const allowedModels = await chatController.getLLMModels(tenant as string, provider as LLMProvider);
+      // const allowedModels = getLLMModels(provider, llmConfigs);
 
-    if (allowedModels.length > 0 && allowedModels.find((m) => m.id === model.id) === undefined) {
-      res.status(400).json({
-        error: {
-          message: conversationId
-            ? 'The provider and model related to this conversation are no longer available.'
-            : 'Model not allowed',
-        },
-      });
-      return;
+      if (allowedModels.length > 0 && allowedModels.find((m) => m.id === model.id) === undefined) {
+        res.status(400).json({
+          error: {
+            message: conversationId
+              ? 'The provider and model related to this conversation are no longer available.'
+              : 'Model not allowed',
+          },
+        });
+        return;
+      }
     }
 
-    const config = llmConfigs.find((c) => c.models.includes(model.id)) || llmConfigs[0];
+    let config;
+    if (isChatWithPDFProvider) {
+      config = llmConfigs.find((c) => c.isChatWithPDFProvider);
+      if (config === undefined) {
+        res.status(400).json({
+          error: { message: 'No config found for chat with PDF' },
+        });
+        return;
+      }
+    } else {
+      config = llmConfigs.find((c) => c.models.includes(model.id)) || llmConfigs[0];
+    }
 
     const configFromVault = await chatController.getLLMConfigFromVault(
       tenant as string,
@@ -89,8 +107,9 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
         tenant: tenant as string,
         userId,
         title: messages[0].content.trim().slice(0, 50),
-        provider,
+        provider: isChatWithPDFProvider ? 'openai' : provider,
         model: model?.id || '',
+        isChatWithPDFProvider,
       });
       conversationId = conversation.id;
     } else {
@@ -114,8 +133,8 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
           role: m.role,
         };
       }),
-      provider,
-      model,
+      isChatWithPDFProvider ? 'openai' : provider,
+      isChatWithPDFProvider ? 'gpt-4o' : model,
       {
         ...config,
         ...configFromVault,
