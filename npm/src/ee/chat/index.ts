@@ -191,7 +191,7 @@ export class ChatController {
     await this.updateLLMConfigInVault({
       token: config.terminusToken,
       tenant: config.tenant,
-      apiKey: llmConfig.apiKey,
+      apiKey: llmConfig.apiKey || configFromVault.apiKey,
       baseURL: llmConfig.baseURL,
       piiPolicy: llmConfig.piiPolicy,
     });
