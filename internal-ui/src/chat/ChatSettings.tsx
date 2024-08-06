@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Button, Input } from 'react-daisyui';
-import { Table, Card, ConfirmationModal, InputWithLabel, Loading } from '../shared';
+import { Table, Card, Badge, ConfirmationModal, InputWithLabel, Loading } from '../shared';
 import { LLMConfig, LLMModel, LLMProvidersOptionsType, PII_POLICY, PII_POLICY_OPTIONS } from './types';
 import { ChatContext } from '../provider';
 import { useFetch } from '../hooks';
@@ -10,7 +10,7 @@ import { defaultHeaders } from '../utils';
 
 export default function ChatSettings() {
   const { t } = useTranslation('common');
-  const [selectedProvider, setSelectedProvider] = useState('');
+  const [selectedProvider, setSelectedProvider] = useState<LLMProvidersOptionsType[number]['id'] | ''>('');
   const [selectedModel, setSelectedModel] = useState<string[]>([]);
   const [apiKey, setApiKey] = useState('');
   const [baseURL, setBaseURL] = useState('');
@@ -18,6 +18,7 @@ export default function ChatSettings() {
   const [loading, setLoading] = useState(false);
   const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState<any>(null);
+  const [isChatWithPDFProvider, setIsChatWithPDFProvider] = useState(false);
 
   const [view, switchView] = useState<'list' | 'create' | 'edit'>('list');
 
@@ -71,11 +72,12 @@ export default function ChatSettings() {
       method: 'POST',
       headers: defaultHeaders,
       body: JSON.stringify({
-        provider: selectedProvider,
-        models: selectedModel,
-        apiKey,
+        provider: isChatWithPDFProvider ? 'openai' : selectedProvider,
+        models: isChatWithPDFProvider ? [] : selectedModel,
+        apiKey: apiKey ?? undefined,
         baseURL,
         piiPolicy,
+        isChatWithPDFProvider,
       }),
     });
     setLoading(false);
@@ -126,7 +128,8 @@ export default function ChatSettings() {
       body: JSON.stringify({
         provider: selectedProvider,
         models: selectedModel,
-        apiKey: apiKey === selectedConfig.apiKey ? undefined : apiKey,
+        apiKey: apiKey ?? undefined,
+        isChatWithPdfProvider: selectedConfig.isChatWithPdfProvider,
         baseURL,
         piiPolicy,
       }),
@@ -183,19 +186,23 @@ export default function ChatSettings() {
                 return {
                   id: config.id,
                   cells: [
-                    { text: providerName },
+                    {
+                      element: config.isChatWithPDFProvider ? (
+                        <Badge color='primary'>{t('Chat with PDF Provider')}</Badge>
+                      ) : (
+                        <span>{providerName}</span>
+                      ),
+                    },
                     {
                       wrap: true,
                       text:
                         config.models
-                          .map((a: string) => {
-                            const modelName = models.find((m) => m.id === a)?.name;
-                            return (
-                              modelName ||
-                              // ollama is a special case where the model is open ended
-                              config.models
-                            );
-                          })
+                          // .map((a: string) => {
+                          //   // const modelName = models.find((m) => m.id === a)?.name;
+                          //   // return modelName;
+                          //   // ollama is a special case where the model is open ended
+                          //   // config.models
+                          // })
                           .join(', ') || '*',
                     },
                     {
@@ -213,7 +220,7 @@ export default function ChatSettings() {
                             switchView('edit');
                             setSelectedProvider(config.provider);
                             setSelectedModel(config.models);
-                            setApiKey(config.apiKey || '');
+                            // setApiKey(config.apiKey || '');
                             setBaseURL(config.baseURL || '');
                             setPIIPolicy(config.piiPolicy);
                           },
@@ -235,79 +242,100 @@ export default function ChatSettings() {
           {(view === 'edit' || view === 'create') && (
             <form className='w-full' onSubmit={view === 'edit' ? updateLLMConfig : createLLMConfig}>
               <div className='flex flex-col gap-2'>
-                <div>
-                  <div className='label'>
-                    <span className='label-text '>{t('provider')}</span>
+                {view === 'create' && (
+                  <div className='flex items-center'>
+                    <input
+                      checked={isChatWithPDFProvider}
+                      id='chat-with-pdf-provider'
+                      type='checkbox'
+                      className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                      onChange={(e) => setIsChatWithPDFProvider(e.target.checked)}
+                    />
+                    <label
+                      htmlFor='chat-with-pdf-provider'
+                      className='ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer'>
+                      {t('Chat with PDF Provider')}
+                    </label>
                   </div>
-                  <label className='form-control'>
-                    {!isLoadingProviders ? (
-                      <select
-                        className='select-bordered select rounded'
-                        name='role'
-                        onChange={(e) => {
-                          setSelectedProvider(e.target.value);
-                          setSelectedModel([]);
-                        }}
-                        value={selectedProvider}
-                        required>
-                        {[
-                          {
-                            id: '',
-                            name: 'Provider',
-                          },
-                          ...providers,
-                        ].map((role) => (
-                          <option value={role.id} key={role.id}>
-                            {role.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <Loading />
-                    )}
-                  </label>
-                </div>
-                <div>
-                  <div className='label'>
-                    <span className='label-text '>{t('model')}</span>
-                  </div>
-                  <label className='form-control'>
-                    {selectedProvider !== '' && models.length > 0 && !isLoadingModels ? (
-                      <select
-                        className='select-bordered select rounded'
-                        name='role'
-                        onChange={(e) => {
-                          const selectedOptions = Array.from(e.target.selectedOptions).map(
-                            (option) => option.value
-                          );
-                          setSelectedModel(selectedOptions);
-                        }}
-                        value={selectedModel}
-                        multiple>
-                        {[
-                          {
-                            id: '',
-                            name: 'Model',
-                          },
-                          ...models,
-                        ].map((role) => (
-                          <option value={role.id} key={role.id}>
-                            {role.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <Input
-                        name='model'
-                        onChange={(e) => {
-                          setSelectedModel([e.target.value]);
-                        }}
-                        value={selectedModel}
-                        placeholder={t('model')}
-                      />
-                    )}
-                  </label>
-                </div>
+                )}
+                {((view === 'create' && !isChatWithPDFProvider) ||
+                  (view === 'edit' && !selectedConfig.isChatWithPDFProvider)) && (
+                  <>
+                    <div>
+                      <div className='label'>
+                        <span className='label-text '>{t('provider')}</span>
+                      </div>
+                      <label className='form-control'>
+                        {!isLoadingProviders ? (
+                          <select
+                            className='select-bordered select rounded'
+                            name='role'
+                            onChange={(e) => {
+                              setSelectedProvider(e.target.value as LLMProvidersOptionsType[number]['id']);
+                              setSelectedModel([]);
+                            }}
+                            value={selectedProvider}
+                            required>
+                            {[
+                              {
+                                id: '',
+                                name: 'Provider',
+                              },
+                              ...providers,
+                            ].map((role) => (
+                              <option value={role.id} key={role.id}>
+                                {role.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Loading />
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <div className='label'>
+                        <span className='label-text '>{t('model')}</span>
+                      </div>
+                      <label className='form-control'>
+                        {selectedProvider !== '' && models.length > 0 && !isLoadingModels ? (
+                          <select
+                            className='select-bordered select rounded'
+                            name='role'
+                            onChange={(e) => {
+                              const selectedOptions = Array.from(e.target.selectedOptions).map(
+                                (option) => option.value
+                              );
+                              setSelectedModel(selectedOptions);
+                            }}
+                            value={selectedModel}
+                            multiple>
+                            {[
+                              {
+                                id: '',
+                                name: 'Model',
+                              },
+                              ...models,
+                            ].map((role) => (
+                              <option value={role.id} key={role.id}>
+                                {role.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Input
+                            name='model'
+                            onChange={(e) => {
+                              setSelectedModel([e.target.value]);
+                            }}
+                            value={selectedModel}
+                            placeholder={t('model')}
+                          />
+                        )}
+                      </label>
+                    </div>
+                  </>
+                )}
                 <div>
                   <InputWithLabel
                     label={t('bui-chat-api-key')}

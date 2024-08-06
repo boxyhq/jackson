@@ -144,6 +144,7 @@ export class ChatController {
       models: llmConfig.models || [],
       terminusToken: vaultResult || '',
       tenant: llmConfig.tenant,
+      isChatWithPDFProvider: llmConfig.isChatWithPDFProvider,
     });
 
     return config;
@@ -165,8 +166,8 @@ export class ChatController {
     await axios.put(
       `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.llm?.terminusProduct}/data/llm-config?token=${token}`,
       {
-        apiKey: apiKey || '',
-        baseURL: baseURL || '',
+        apiKey,
+        baseURL,
         piiPolicy,
       },
       {

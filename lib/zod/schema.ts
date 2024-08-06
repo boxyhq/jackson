@@ -6,6 +6,7 @@ export const updateLLMConfigSchema = (providers) =>
     configId: llmConfigId,
     tenant: z.string(),
     provider: llmProvider(providers),
+    isChatWithPDFProvider: z.boolean().optional(),
     apiKey: llmApiKey,
     models: llmModels,
     baseURL: llmBaseUrl,
@@ -21,6 +22,7 @@ export const createLLMConfigSchema = (providers) =>
   z.object({
     tenant: z.string(),
     provider: llmProvider(providers),
+    isChatWithPDFProvider: z.boolean().optional(),
     apiKey: llmApiKey,
     models: llmModels,
     baseURL: llmBaseUrl,

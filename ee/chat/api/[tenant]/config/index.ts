@@ -26,7 +26,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const providers = await chatController.getLLMProviders(req.query.tenant as string, false);
 
-  const { provider, apiKey, models, baseURL, piiPolicy, tenant } = validateWithSchema(
+  const { provider, apiKey, models, isChatWithPDFProvider, baseURL, piiPolicy, tenant } = validateWithSchema(
     createLLMConfigSchema(providers),
     { ...req.body, ...req.query }
   );
@@ -38,6 +38,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const config = await chatController.createLLMConfig({
     provider: provider as LLMProvider,
     models: models || [],
+    isChatWithPDFProvider,
     apiKey,
     baseURL,
     piiPolicy,

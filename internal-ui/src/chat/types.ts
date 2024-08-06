@@ -36,6 +36,7 @@ export type LLMConfig = {
   terminusToken: string;
   apiKey?: string;
   baseURL?: string;
+  isChatWithPDFProvider?: boolean;
   piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };
 
