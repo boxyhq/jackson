@@ -401,10 +401,9 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                 disabled={isUploadingFile}></input>
               <label
                 htmlFor='pdf-files'
-                className='absolute left-1 md:left-2 focus:outline-none focus:ring-4 focus:ring-gray-300 bottom-[9px] p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'>
-                {/* TODO: <Loading spinnerCss="h-4 w-4" />  */}
+                className='absolute left-1 md:left-2 focus:outline-none focus:ring-4 focus:ring-gray-300 top-[50%] translate-y-[-50%] p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'>
                 {isUploadingFile ? (
-                  <Loading />
+                  <Loading spinnerCss='h-6 w-6' />
                 ) : (
                   <svg
                     className='w-4 h-4'
