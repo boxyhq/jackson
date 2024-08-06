@@ -31,6 +31,7 @@ export type LLMConversation = {
   title: string;
   provider: string;
   model: string;
+  isChatWithPDFProvider?: boolean;
   createdAt: number;
 };
 

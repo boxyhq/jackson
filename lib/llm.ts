@@ -66,7 +66,7 @@ export async function generateChatResponse(
   config: LLMConfigWithAPIKey,
   isStream = false
 ): Promise<string | AsyncGenerator<ChatCompletionChunk, void, unknown>> {
-  if (!LLM_HANDLERS[provider]) {
+  if (!config.isChatWithPDFProvider && !LLM_HANDLERS[provider]) {
     throw new ApiError('Provider not supported', 400);
   }
   // Set the base URL to the terminus proxy if the provider is supported

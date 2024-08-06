@@ -80,7 +80,7 @@ export class ChatController {
     return configs as LLMConfigMergedFromVault[];
   }
 
-  public async getLLMConfigsByTenantAndProvider(tenant: string, provider: string): Promise<LLMConfig[]> {
+  public async getLLMConfigsByTenantAndProvider(tenant: string, provider: LLMProvider): Promise<LLMConfig[]> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     return (
