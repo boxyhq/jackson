@@ -40,7 +40,7 @@ const useTerminus = {
   groq: false,
   perplexity: true,
   'google-generative-ai': false,
-  ollama: false,
+  ollama: true,
 };
 
 export const LLM_HANDLERS: {
