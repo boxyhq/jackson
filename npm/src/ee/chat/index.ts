@@ -310,7 +310,13 @@ export class ChatController {
     if (filterByTenant) {
       // Will be used for dropdown while chatting with LLM
       const configs = await this.getLLMConfigsByTenant(tenant);
-      return Array.from(new Set(configs.map((config) => config.provider)))
+      return Array.from(
+        new Set(
+          configs
+            .filter(({ isChatWithPDFProvider }) => !isChatWithPDFProvider)
+            .map((config) => config.provider)
+        )
+      )
         .sort()
         .map((provider) => ({
           id: provider,
