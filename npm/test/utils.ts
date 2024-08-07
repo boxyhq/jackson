@@ -13,6 +13,7 @@ const addSSOConnections = async (
     const _record = await ('oidcDiscoveryUrl' in connection
       ? connectionAPIController.createOIDCConnection(connection)
       : connectionAPIController.createSAMLConnection(connection));
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     !('oidcDiscoveryUrl' in connection) &&
       idpEnabledConnectionAPIController &&
       (await idpEnabledConnectionAPIController.createSAMLConnection(connection));

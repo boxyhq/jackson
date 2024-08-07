@@ -163,6 +163,7 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
       const mdxDirectory = path.join(process.cwd(), `components/setup-link-instructions/${idp}`);
       const source = fs.readFileSync(`${mdxDirectory}/${step}.mdx`, 'utf8');
       mdxSource = await serialize(source, { mdxOptions: { remarkPlugins: [remarkGfm] } });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
       return {
         redirect: {

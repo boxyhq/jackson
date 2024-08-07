@@ -18,6 +18,7 @@ export const fetcher = async (url: string, queryParams = '') => {
     if (pageToken !== null) {
       return { ...resContent, pageToken };
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     resContent = await res.clone().text();
   }

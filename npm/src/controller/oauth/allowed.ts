@@ -20,6 +20,7 @@ export const redirect = (redirectUrl: string, redirectUrls: string[]): boolean =
         hostNameAllowed = rUrl.hostname.slice(2);
         hostname = hostname.slice(hostname.indexOf('.') + 1);
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       // no-op
     }

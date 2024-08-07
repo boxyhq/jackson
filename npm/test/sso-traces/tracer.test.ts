@@ -30,6 +30,7 @@ tap.test('SSOTraces', async () => {
     // check if returned traceId from save operation is same as the one in the retrieved record
     t.equal(traces[0].traceId, traceId);
     //cleanup
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     traceId && (await ssoTraces.tracesStore.delete(traceId));
   });
 

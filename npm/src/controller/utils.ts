@@ -57,6 +57,7 @@ export const clientIDOIDCPrefix = 'oidc_';
 export const validateAbsoluteUrl = (url, message) => {
   try {
     new URL(url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     throw new JacksonError(message ? message : 'Invalid url', 400);
   }
@@ -244,6 +245,7 @@ export const extractHostName = (url: string): string | null => {
     }
 
     return pUrl.hostname;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     return null;
   }
@@ -285,6 +287,7 @@ export const getEncodedTenantProduct = (
     }
 
     return null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     return null;
   }
@@ -356,6 +359,7 @@ export const isLocalhost = (url: string) => {
   let givenURL: URL;
   try {
     givenURL = new URL(url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return false;
   }

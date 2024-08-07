@@ -142,6 +142,7 @@ export class LogoutController {
 
     try {
       await this.sessionStore.delete(sessionId);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_err) {
       // Ignore
     }

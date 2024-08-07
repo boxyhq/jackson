@@ -113,6 +113,7 @@ const saml = {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     metadataUrl && validateMetadataURL(metadataUrl);
 
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;
@@ -259,6 +260,7 @@ const saml = {
       metadata = Buffer.from(encodedRawMetadata, 'base64').toString();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     metadataUrl && validateMetadataURL(metadataUrl);
 
     metadata = metadataUrl ? await fetchMetadata(metadataUrl) : metadata;

@@ -5,6 +5,7 @@ export interface ApiError extends Error {
   status: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 enum DirectorySyncProviders {
   'azure-scim-v2' = 'Azure SCIM v2.0',
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',

@@ -38,6 +38,7 @@ class Store implements Storable {
   }
 
   async getCount(idx?: Index) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     idx && (idx.value = dbutils.keyDigest(idx.value));
     return await this.db.getCount(this.namespace, idx);
   }
