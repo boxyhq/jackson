@@ -104,7 +104,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@playwright/test": "1.45.3",
+    "@playwright/test": "1.46.0",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.9",
     "@types/node": "20.12.12",
@@ -118,7 +118,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.9",
     "jose": "5.3.0",
-    "postcss": "8.4.40",
+    "postcss": "8.4.41",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.6.5",
     "release-it": "17.6.0",
