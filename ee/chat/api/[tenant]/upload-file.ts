@@ -70,9 +70,9 @@ export async function handlePOST(req, res) {
   formData.append('file', new Blob([fileBuffer]), fileName);
 
   try {
-    const response = await fetch(`${llmOptions.fileUpload.baseUrl}/chat/upload_file`, {
+    const response = await fetch(`${llmOptions.pdfChat.baseUrl}/chat/upload_file`, {
       headers: {
-        Authorization: `Bearer ${llmOptions.fileUpload.token}`,
+        Authorization: `Bearer ${llmOptions.pdfChat.token}`,
       },
       method: 'POST',
       body: formData,

@@ -140,9 +140,10 @@ const adminPortalSSODefaults = {
 };
 // LLM Chat
 const llmOptions = {
-  fileUpload: {
-    baseUrl: process.env.LLM_FILE_UPLOAD_BASE_URL,
-    token: process.env.LLM_FILE_UPLOAD_TOKEN,
+  pdfChat: {
+    baseUrl: process.env.LLM_PDF_CHAT_BASE_URL,
+    token: process.env.LLM_PDF_CHAT_TOKEN,
+    roleMapping: process.env.LLM_PDF_CHAT_ROLE_MAPPING,
   },
 };
 

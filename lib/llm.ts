@@ -334,7 +334,7 @@ export async function ollamaHandler(
 
 export const fileUploadOptions = {
   headers: {
-    Authorization: `Bearer ${llmOptions.fileUpload.token}`,
+    Authorization: `Bearer ${llmOptions.pdfChat.token}`,
   },
 };
 
