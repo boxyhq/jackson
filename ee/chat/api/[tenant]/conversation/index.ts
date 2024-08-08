@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { defaultHandler } from '@lib/api';
 import { getServerSession } from 'next-auth';
-import { llmOptions } from '@lib/env';
+import { terminusOptions } from '@lib/env';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -17,7 +17,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { tenant } = req.query;
 
   let userId;
-  const isAdminPortalTenant = tenant === llmOptions.adminPortalTenant;
+  const isAdminPortalTenant = tenant === terminusOptions.llm?.tenant;
   if (isAdminPortalTenant) {
     const session = await getServerSession(req, res, authOptions);
     if (!session) {

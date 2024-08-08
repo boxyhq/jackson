@@ -36,6 +36,13 @@ const terminus = {
           write: process.env.TERMINUS_WRITE_API_KEY,
         }
       : undefined,
+  llm:
+    process.env.TERMINUS_LLM_TENANT && process.env.TERMINUS_LLM_PRODUCT
+      ? {
+          product: process.env.TERMINUS_LLM_PRODUCT,
+          tenant: process.env.TERMINUS_LLM_TENANT,
+        }
+      : undefined,
 };
 
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
@@ -137,8 +144,6 @@ const llmOptions = {
     baseUrl: process.env.LLM_FILE_UPLOAD_BASE_URL,
     token: process.env.LLM_FILE_UPLOAD_TOKEN,
   },
-  terminusProduct: process.env.LLM_TERMINUS_PRODUCT,
-  adminPortalTenant: process.env.LLM_TERMINUS_ADMIN_PORTAL_TENANT,
 };
 
 export { adminPortalSSODefaults };

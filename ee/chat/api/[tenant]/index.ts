@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { generateChatResponse } from '@lib/llm';
-import { llmOptions } from '@lib/env';
+import { terminusOptions } from '@lib/env';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import { defaultHandler } from '@lib/api';
@@ -27,7 +27,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   const { messages, model, provider, isChatWithPDFProvider } = req.body;
 
   let userId;
-  const isAdminPortalTenant = tenant === llmOptions.adminPortalTenant;
+  const isAdminPortalTenant = tenant === terminusOptions.llm?.tenant;
   if (isAdminPortalTenant) {
     const session = await getServerSession(req, res, authOptions);
     if (!session) {

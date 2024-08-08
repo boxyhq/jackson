@@ -478,6 +478,10 @@ export interface JacksonOption {
     hostUrl?: string;
     adminToken?: string;
     apiKey?: { read: string; write: string };
+    llm?: {
+      tenant: string;
+      product: string;
+    };
   };
   webhook?: Webhook;
   dsync?: {
@@ -510,7 +514,6 @@ export interface JacksonOption {
       baseUrl: string;
       token: string;
     };
-    terminusProduct?: string;
   };
 }
 

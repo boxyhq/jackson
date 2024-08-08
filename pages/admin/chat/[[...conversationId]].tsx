@@ -1,4 +1,4 @@
-import { llmOptions } from '@lib/env';
+import { terminusOptions } from '@lib/env';
 import type { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import jackson from '@lib/jackson';
@@ -11,7 +11,7 @@ export async function getServerSideProps({ locale }: GetServerSidePropsContext) 
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
-      llmTenant: llmOptions.adminPortalTenant,
+      llmTenant: terminusOptions.llm?.tenant,
       hasValidLicense: await checkLicense(),
     },
   };
