@@ -1,7 +1,7 @@
 import type { LLMConfig, LLMProvider } from '@boxyhq/saml-jackson';
 import { ChatCompletionChunk } from 'openai/resources';
 import { ApiError } from './error';
-import { llmOptions, terminusOptions } from './env';
+import { terminusOptions } from './env';
 import Anthropic from '@anthropic-ai/sdk';
 import { TextBlock } from '@anthropic-ai/sdk/resources';
 import MistralClient from '@mistralai/mistralai';
@@ -70,7 +70,7 @@ export async function generateChatResponse(
     throw new ApiError('Provider not supported', 400);
   }
   // Set the base URL to the terminus proxy if the provider is supported
-  if (useTerminus[provider]) {
+  if (useTerminus[provider] && !config.isChatWithPDFProvider) {
     config.baseURL = terminusOptions.hostUrl + `/v1/proxy/${provider}`;
   }
   if (isStream) {
@@ -171,6 +171,7 @@ export async function openaiHandler(
   config: LLMConfigWithAPIKey,
   isStream = false
 ): Promise<{ text: string } | AsyncGenerator<ChatCompletionChunk, void, unknown>> {
+  console.log(`config`, config.apiKey, config.baseURL);
   const openai = new OpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseURL,
@@ -331,12 +332,6 @@ export async function ollamaHandler(
     return { text };
   }
 }
-
-export const fileUploadOptions = {
-  headers: {
-    Authorization: `Bearer ${llmOptions.pdfChat.token}`,
-  },
-};
 
 function toOpenAIChunk(chunk: any, provider: LLMProvider): ChatCompletionChunk {
   switch (provider) {

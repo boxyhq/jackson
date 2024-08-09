@@ -26,7 +26,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   const { tenant } = req.query;
   const { messages, model, provider, isChatWithPDFProvider } = req.body;
 
-  let userId;
+  let userId, email;
   const isAdminPortalTenant = tenant === terminusOptions.llm?.tenant;
   if (isAdminPortalTenant) {
     const session = await getServerSession(req, res, authOptions);
@@ -35,6 +35,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
     userId = session.user.id;
+    email = session.user.email;
   } else {
     userId = req.body.userId;
   }
@@ -101,6 +102,11 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       tenant as string,
       config.terminusToken
     );
+
+    if (isChatWithPDFProvider) {
+      const jwe = await chatController.generatePDFChatJWE({ email });
+      configFromVault.apiKey = jwe;
+    }
 
     if (!conversationId) {
       const conversation = await chatController.createConversation({

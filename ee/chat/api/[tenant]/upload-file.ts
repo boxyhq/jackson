@@ -1,8 +1,11 @@
-import { defaultHandler } from '@lib/api';
-import { llmOptions } from '@lib/env';
 import type { IncomingMessage } from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { Readable } from 'node:stream';
+import { defaultHandler } from '@lib/api';
+import { llmOptions, terminusOptions } from '@lib/env';
+import jackson from '@lib/jackson';
+import { getServerSession } from 'next-auth';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 // Function to force consume the response body to avoid memory leaks
 export const forceConsume = async (response) => {
@@ -49,7 +52,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export async function handlePOST(req, res) {
+  const { chatController } = await jackson();
+
   // TODO: Upload file against tenant/user
+
+  const { tenant } = req.query;
+
+  let email;
+  const isAdminPortalTenant = tenant === terminusOptions.llm?.tenant;
+  if (isAdminPortalTenant) {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) {
+      res.status(401).json({ error: { message: 'Unauthorized' } });
+      return;
+    }
+    email = session.user.email;
+  } else {
+    // email = req.body.userId;
+  }
 
   const contentType = req.headers['content-type'];
   if (!contentType) {
@@ -69,10 +89,12 @@ export async function handlePOST(req, res) {
   const formData = new FormData();
   formData.append('file', new Blob([fileBuffer]), fileName);
 
+  const jwe = await chatController.generatePDFChatJWE({ email });
+
   try {
     const response = await fetch(`${llmOptions.pdfChat.baseUrl}/chat/upload_file`, {
       headers: {
-        Authorization: `Bearer ${llmOptions.pdfChat.token}`,
+        Authorization: `Bearer ${jwe}`,
       },
       method: 'POST',
       body: formData,

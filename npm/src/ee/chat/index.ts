@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import axios from 'axios';
+import * as jose from 'jose';
 import type {
   Storable,
   JacksonOption,
@@ -9,7 +10,7 @@ import type {
   LLMModel,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
-import { IndexNames } from '../../controller/utils';
+import { importJWTPublicKey, IndexNames } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
 import { JacksonError } from '../../controller/error';
@@ -363,5 +364,48 @@ export class ChatController {
 
     // Will be used for dropdown while creating a new config
     return LLM_PROVIDERS[provider].models;
+  }
+
+  private getUserRole(email: string) {
+    const mappings = this.opts.llm?.pdfChat?.roleMapping.split(',');
+    if (!mappings) {
+      throw new JacksonError('Could not find role mappings on server for chatting with PDF', 500);
+    }
+    const matchedMapping = mappings.find((m) => {
+      const [_email] = m.split(':');
+      if (email === _email) {
+        return true;
+      }
+    });
+
+    if (!matchedMapping) {
+      throw new JacksonError('Insufficient privileges, no role mapped for given user', 403);
+    }
+
+    return matchedMapping.split(':')[1];
+  }
+
+  public async generatePDFChatJWE({ email }: { email: string }) {
+    if (!this.opts.llm?.pdfChat?.jweEncryptionKey) {
+      throw new JacksonError('Could not load JWE encryption keys for chatting with PDF', 500);
+    }
+    const encryptionKey = await importJWTPublicKey(this.opts.llm?.pdfChat?.jweEncryptionKey, 'RSA-OAEP');
+    const jwe = await new jose.CompactEncrypt(
+      new TextEncoder().encode(
+        JSON.stringify({
+          role: this.getUserRole(email),
+          tenant: this.opts.terminus?.llm?.tenant,
+        })
+      )
+    )
+      .setProtectedHeader({ alg: 'RSA-OAEP', enc: 'A128CBC-HS256' })
+      // .setIssuer(this.opts.externalUrl)
+      // .setAudience('urn:example:audience')
+      // .setExpirationTime('3d')
+      .encrypt(encryptionKey);
+
+    console.log(jwe);
+
+    return jwe;
   }
 }

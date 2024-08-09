@@ -510,9 +510,10 @@ export interface JacksonOption {
   };
 
   llm?: {
-    fileUpload?: {
+    pdfChat?: {
       baseUrl: string;
-      token: string;
+      jweEncryptionKey: string;
+      roleMapping: string;
     };
   };
 }
