@@ -70,7 +70,7 @@ export async function generateChatResponse(
     throw new ApiError('Provider not supported', 400);
   }
   // Set the base URL to the terminus proxy if the provider is supported
-  if (useTerminus[provider] && !config.isChatWithPDFProvider) {
+  if (useTerminus[provider]) {
     config.baseURL = terminusOptions.hostUrl + `/v1/proxy/${provider}`;
   }
   if (isStream) {
@@ -171,7 +171,6 @@ export async function openaiHandler(
   config: LLMConfigWithAPIKey,
   isStream = false
 ): Promise<{ text: string } | AsyncGenerator<ChatCompletionChunk, void, unknown>> {
-  console.log(`config`, config.apiKey, config.baseURL);
   const openai = new OpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseURL,
