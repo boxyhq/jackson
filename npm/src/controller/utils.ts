@@ -25,6 +25,10 @@ export enum IndexNames {
   OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
   Product = 'product',
+  Tenant = 'tenant',
+  TenantProvider = 'tenantProvider',
+  TenantUser = 'tenantUser',
+  LLMConversation = 'llmConversation',
 
   // For Setup link
   Service = 'service',

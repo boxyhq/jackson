@@ -2,7 +2,8 @@ import React from 'react';
 
 const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (
-    <div className={`card w-full border border-rounded dark:bg-black dark:border-gray-600 ${className}`}>
+    <div
+      className={`card w-full border border-rounded dark:bg-black dark:border-gray-600${className ? ' ' + className : ''}`}>
       {children}
     </div>
   );

@@ -2,6 +2,7 @@ import type { JWK } from 'jose';
 import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
+export * from './ee/chat/types';
 export * from './sso-traces/types';
 export * from './directory-sync/types';
 export * from './event/types';
@@ -474,8 +475,13 @@ export interface JacksonOption {
   };
   noAnalytics?: boolean;
   terminus?: {
-    host?: string;
+    hostUrl?: string;
     adminToken?: string;
+    apiKey?: { read: string; write: string };
+    llm?: {
+      tenant: string;
+      product: string;
+    };
   };
   webhook?: Webhook;
   dsync?: {
@@ -501,6 +507,14 @@ export interface JacksonOption {
   ory?: {
     projectId: string | undefined;
     sdkToken: string | undefined;
+  };
+
+  llm?: {
+    pdfChat?: {
+      baseUrl: string;
+      jweEncryptionKey: string;
+      roleMapping: string;
+    };
   };
 }
 
