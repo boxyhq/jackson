@@ -64,7 +64,8 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
 
   const providers = providersData?.data;
 
-  const showCreateLLMConfigMessage = Array.isArray(providers) && providers?.length === 0;
+  const showCreateLLMConfigMessage =
+    !isChatWithPDFProvider && Array.isArray(providers) && providers?.length === 0;
   const showProviderSelection =
     !isChatWithPDFProvider &&
     !showCreateLLMConfigMessage &&
