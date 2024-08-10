@@ -10,7 +10,7 @@ import type {
   LLMModel,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
-import { importJWTPublicKey, IndexNames } from '../../controller/utils';
+import { IndexNames, isJWSKeyPairLoaded, loadJWSPrivateKey } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
 import { JacksonError } from '../../controller/error';
@@ -135,17 +135,21 @@ export class ChatController {
   public async createLLMConfig(llmConfig: LLMConfigPayload): Promise<LLMConfig> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    if (!llmConfig.apiKey && llmConfig.provider !== 'ollama') {
+    const { apiKey, provider, isChatWithPDFProvider } = llmConfig;
+
+    if (!apiKey && provider !== 'ollama' && !isChatWithPDFProvider) {
       throw new Error('API Key is required');
     }
 
-    const vaultResult = await this.saveLLMConfigInVault(llmConfig);
+    const vaultResult = await this.saveLLMConfigInVault(
+      isChatWithPDFProvider ? { ...llmConfig, apiKey: 'chat_with_pdf_key' } : llmConfig
+    );
     const config = await this.storeLLMConfig({
       provider: llmConfig.provider,
       models: llmConfig.models || [],
       terminusToken: vaultResult || '',
       tenant: llmConfig.tenant,
-      isChatWithPDFProvider: llmConfig.isChatWithPDFProvider,
+      isChatWithPDFProvider,
     });
 
     return config;
@@ -385,27 +389,26 @@ export class ChatController {
     return matchedMapping.split(':')[1];
   }
 
-  public async generatePDFChatJWE({ email }: { email: string }) {
-    if (!this.opts.llm?.pdfChat?.jweEncryptionKey) {
-      throw new JacksonError('Could not load JWE encryption keys for chatting with PDF', 500);
+  public async generatePDFChatJWT({ email }: { email: string }) {
+    // if (!this.opts.llm?.pdfChat?.jweEncryptionKey) {
+    //   throw new JacksonError('Could not load JWE encryption keys for chatting with PDF', 500);
+    // }
+    // const encryptionKey = await importJWTPublicKey(this.opts.llm?.pdfChat?.jweEncryptionKey, 'RSA-OAEP');
+    const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
+    if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
+      throw new JacksonError('JWT signing keys are not loaded', 500);
     }
-    const encryptionKey = await importJWTPublicKey(this.opts.llm?.pdfChat?.jweEncryptionKey, 'RSA-OAEP');
-    const jwe = await new jose.CompactEncrypt(
-      new TextEncoder().encode(
-        JSON.stringify({
-          role: this.getUserRole(email),
-          tenant: this.opts.terminus?.llm?.tenant,
-        })
-      )
-    )
-      .setProtectedHeader({ alg: 'RSA-OAEP', enc: 'A128CBC-HS256' })
-      // .setIssuer(this.opts.externalUrl)
+    const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
+    const jwt = await new jose.SignJWT({
+      role: this.getUserRole(email),
+      tenant: this.opts.terminus?.llm?.tenant,
+    })
+      .setProtectedHeader({ alg: jwsAlg! })
+      .setIssuer(this.opts.externalUrl)
       // .setAudience('urn:example:audience')
-      // .setExpirationTime('3d')
-      .encrypt(encryptionKey);
+      .setExpirationTime('3d')
+      .sign(signingKey);
 
-    console.log(jwe);
-
-    return jwe;
+    return jwt;
   }
 }

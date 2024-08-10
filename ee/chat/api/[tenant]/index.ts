@@ -104,8 +104,8 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     );
 
     if (isChatWithPDFProvider) {
-      const jwe = await chatController.generatePDFChatJWE({ email });
-      configFromVault.apiKey = jwe;
+      const jwt = await chatController.generatePDFChatJWT({ email });
+      configFromVault.apiKey = jwt;
     }
 
     if (!conversationId) {
