@@ -31,7 +31,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     { ...req.body, ...req.query }
   );
 
-  if (!apiKey && provider !== 'ollama') {
+  if (!apiKey && provider !== 'ollama' && !isChatWithPDFProvider) {
     throw new Error('API Key is required');
   }
 
