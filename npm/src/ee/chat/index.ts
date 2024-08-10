@@ -135,20 +135,20 @@ export class ChatController {
   public async createLLMConfig(llmConfig: LLMConfigPayload): Promise<LLMConfig> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    const { apiKey, provider, isChatWithPDFProvider } = llmConfig;
+    const { apiKey, provider, tenant, isChatWithPDFProvider } = llmConfig;
 
     if (!apiKey && provider !== 'ollama' && !isChatWithPDFProvider) {
       throw new Error('API Key is required');
     }
 
     const vaultResult = await this.saveLLMConfigInVault(
-      isChatWithPDFProvider ? { ...llmConfig, apiKey: 'chat_with_pdf_key' } : llmConfig
+      isChatWithPDFProvider ? { ...llmConfig, apiKey: `chat_with_pdf_${tenant}_key` } : llmConfig
     );
     const config = await this.storeLLMConfig({
       provider: llmConfig.provider,
       models: llmConfig.models || [],
       terminusToken: vaultResult || '',
-      tenant: llmConfig.tenant,
+      tenant,
       isChatWithPDFProvider,
     });
 
