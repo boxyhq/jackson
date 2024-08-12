@@ -50,7 +50,7 @@ const llm = {
   pdfChat: {
     baseUrl: process.env.LLM_PDF_CHAT_BASE_URL || '',
     roleMapping: process.env.LLM_PDF_CHAT_ROLE_MAPPING || '',
-    jweEncryptionKey: process.env.LLM_PDF_CHAT_ENCRYPTION_KEY || '',
+    jwtSigningKey: process.env.LLM_PDF_CHAT_SIGNING_KEY || '',
   },
 };
 

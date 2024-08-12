@@ -10,7 +10,7 @@ import type {
   LLMModel,
 } from '../../typings';
 import * as dbutils from '../../db/utils';
-import { IndexNames, isJWSKeyPairLoaded, loadJWSPrivateKey } from '../../controller/utils';
+import { IndexNames, loadJWSPrivateKey } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
 import { JacksonError } from '../../controller/error';
@@ -390,20 +390,17 @@ export class ChatController {
   }
 
   public async generatePDFChatJWT({ email }: { email: string }) {
-    // if (!this.opts.llm?.pdfChat?.jweEncryptionKey) {
-    //   throw new JacksonError('Could not load JWE encryption keys for chatting with PDF', 500);
-    // }
-    // const encryptionKey = await importJWTPublicKey(this.opts.llm?.pdfChat?.jweEncryptionKey, 'RSA-OAEP');
-    const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
-    if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
-      throw new JacksonError('JWT signing keys are not loaded', 500);
+    if (!this.opts.llm?.pdfChat?.jwtSigningKey) {
+      throw new JacksonError('Could not load JWT signing keys for chatting with PDF', 500);
     }
-    const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
+    const jwsAlg = this.opts.llm?.pdfChat?.jwsAlg || 'RS256';
+    const signingKey = await loadJWSPrivateKey(this.opts.llm?.pdfChat?.jwtSigningKey, jwsAlg);
+
     const jwt = await new jose.SignJWT({
       role: this.getUserRole(email),
       tenant: this.opts.terminus?.llm?.tenant,
     })
-      .setProtectedHeader({ alg: jwsAlg! })
+      .setProtectedHeader({ alg: jwsAlg })
       .setIssuer(this.opts.externalUrl)
       // .setAudience('urn:example:audience')
       .setExpirationTime('3d')
