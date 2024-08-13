@@ -23,12 +23,14 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
         'import/no-anonymous-default-export': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
       },
     },
     {
       files: ['*.js'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
       },
     },
     {

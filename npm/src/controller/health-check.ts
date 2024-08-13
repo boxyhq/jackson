@@ -39,6 +39,7 @@ export class HealthCheckController implements IHealthCheckController {
       return {
         status: 503,
       };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       throw new JacksonError('Service not available', 503);
     }

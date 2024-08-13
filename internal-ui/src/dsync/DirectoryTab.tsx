@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { useContext } from 'react';
 import { BUIContext } from '../provider';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const allTabs = ['directory', 'users', 'groups', 'events'] as const;
 export type Tabs = (typeof allTabs)[number];
 
