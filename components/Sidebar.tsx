@@ -150,7 +150,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   return (
     <>
       {/* Sidebar for mobile */}
-      <div className={classNames('relative z-40', { hidden: isOpen })} role='dialog' aria-modal='true'>
+      <div className={classNames('relative z-40', { hidden: !isOpen })} role='dialog' aria-modal='true'>
         <div className='fixed inset-0 bg-gray-600 bg-opacity-75' />
         <div className='fixed inset-0 z-40 flex'>
           <div className='relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4'>
