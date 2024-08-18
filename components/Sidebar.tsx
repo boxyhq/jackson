@@ -12,6 +12,7 @@ import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
+import { useCallback, useEffect } from 'react';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -29,6 +30,20 @@ type MenuItem = {
 export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
+
+  const closeSidebar = useCallback(() => setIsOpen(false), [setIsOpen]);
+
+  useEffect(() => {
+    function handleEscKey(e) {
+      if ((e as KeyboardEvent).key === 'Escape') {
+        closeSidebar();
+      }
+    }
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [closeSidebar]);
 
   const menus = [
     {
@@ -184,7 +199,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               <MenuItems menus={menus} />
             </div>
           </div>
-          <div className='w-14 flex-shrink-0' aria-hidden='true'></div>
+          <div className='w-14 flex-1' aria-hidden='true' onClick={closeSidebar}></div>
         </div>
       </div>
 
