@@ -401,8 +401,8 @@ export class ChatController {
       tenant: this.opts.terminus?.llm?.tenant,
     })
       .setProtectedHeader({ alg: jwsAlg })
-      .setIssuer(this.opts.externalUrl)
-      // .setAudience('urn:example:audience')
+      .setIssuer(this.opts.llm?.pdfChat.jwtIssuer)
+      .setAudience(this.opts.llm?.pdfChat.jwtAudience)
       .setExpirationTime('3d')
       .sign(signingKey);
 

@@ -514,6 +514,8 @@ export interface JacksonOption {
       baseUrl: string;
       jwtSigningKey: string;
       jwsAlg?: string;
+      jwtAudience: string;
+      jwtIssuer: string;
       roleMapping: string;
     };
   };
