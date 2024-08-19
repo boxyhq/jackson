@@ -11,6 +11,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 export const forceConsume = async (response) => {
   try {
     await response.text();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // Do nothing
   }

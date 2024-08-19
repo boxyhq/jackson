@@ -217,7 +217,9 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
             for (const data of jsonData) {
               if (data.conversationId) {
                 // last chunk
-                conversationId !== data.conversationId && setConversationId(data.conversationId);
+                if (conversationId !== data.conversationId) {
+                  setConversationId(data.conversationId);
+                }
                 setTrailingThread([]);
                 reloadConversationThread();
               } else if (data.choices) {

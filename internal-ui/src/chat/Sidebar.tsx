@@ -36,7 +36,9 @@ const Sidebar = ({
             setConversationId('');
             setIsChatWithPDFProvider?.(false);
             setShowSettings(false);
-            toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+            if (typeof toggleChatDrawerVisibility === 'function') {
+              toggleChatDrawerVisibility();
+            }
           }}>
           <PlusIcon className='h-5 w-5' />
           {t('bui-chat-new-chat')}
@@ -48,7 +50,9 @@ const Sidebar = ({
               conversation={{ id: '', title: 'Untitled' }}
               conversationId={conversationId}
               onClick={() => {
-                toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+                if (typeof toggleChatDrawerVisibility === 'function') {
+                  toggleChatDrawerVisibility();
+                }
                 setIsChatWithPDFProvider?.(false);
                 setShowSettings(false);
               }}
@@ -60,7 +64,9 @@ const Sidebar = ({
               conversation={c}
               onClick={() => {
                 setConversationId(c.id);
-                toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+                if (typeof toggleChatDrawerVisibility === 'function') {
+                  toggleChatDrawerVisibility();
+                }
                 setShowSettings(false);
                 setIsChatWithPDFProvider?.(false);
               }}
@@ -71,7 +77,9 @@ const Sidebar = ({
         <div
           className='flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm'
           onClick={() => {
-            toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+            if (typeof toggleChatDrawerVisibility === 'function') {
+              toggleChatDrawerVisibility();
+            }
           }}>
           <ChatBubbleLeftEllipsisIcon className='h-5 w-5' />
           {t('bui-chat-clear-conversation')}
@@ -82,7 +90,9 @@ const Sidebar = ({
             setShowSettings(false);
             setIsChatWithPDFProvider?.(true);
             setConversationId('');
-            toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+            if (typeof toggleChatDrawerVisibility === 'function') {
+              toggleChatDrawerVisibility();
+            }
           }}>
           <DocumentMagnifyingGlassIcon className='h-5 w-5' />
           {t('bui-chat-with-pdf')}
@@ -92,7 +102,9 @@ const Sidebar = ({
           onClick={() => {
             setShowSettings(true);
             setConversationId('');
-            toggleChatDrawerVisibility && toggleChatDrawerVisibility();
+            if (typeof toggleChatDrawerVisibility === 'function') {
+              toggleChatDrawerVisibility();
+            }
           }}>
           <CogIcon className='h-5 w-5' />
           {t('settings')}
@@ -117,7 +129,9 @@ function ConversationTile({
       key={conversation.id}
       className={`flex flex-col gap-2 mb-2 text-gray-100 text-sm rounded-md ${conversation.id === conversationId ? 'bg-gray-500/10' : ''}`}
       onClick={() => {
-        onClick && onClick(id!);
+        if (typeof onClick === 'function') {
+          onClick(id!);
+        }
       }}>
       <a className='flex py-3 px-3 items-center gap-3 relative rounded-md hover:bg-[#2A2B32] cursor-pointer break-all hover:pr-4 group'>
         <div className='flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative'>{title}</div>
