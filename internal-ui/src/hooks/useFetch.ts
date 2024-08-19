@@ -7,6 +7,7 @@ export async function parseResponseContent(response: Response) {
 
   try {
     return responseText.length ? JSON.parse(responseText) : '';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     return responseText;
   }

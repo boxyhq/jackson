@@ -15,6 +15,7 @@ export default function Error() {
     try {
       const { statusCode, message } = JSON.parse(_error);
       setError({ statusCode, message });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       console.error('Unknown error format');
     }

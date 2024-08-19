@@ -46,6 +46,7 @@ export class OryController {
           break;
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       // empty
     }
@@ -193,6 +194,7 @@ export class OryController {
       }
       try {
         await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         console.error('Ory is not enabled because of invalid license');
         return false;

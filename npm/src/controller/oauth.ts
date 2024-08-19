@@ -1034,6 +1034,7 @@ export class OAuthController implements IOAuthController {
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
         [basic_client_id, basic_client_secret] = credentials.split(':');
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       // no-op
     }
@@ -1159,6 +1160,7 @@ export class OAuthController implements IOAuthController {
     // delete the code
     try {
       await this.codeStore.delete(code);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_err) {
       // ignore error
     }
