@@ -149,6 +149,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm i
+      - run: npm ls vite
+      - run: npm run prune
+      - run: npm ls vite
       - run: npm run check-lint
       - run: npm run check-types
       - run: npm run check-format
