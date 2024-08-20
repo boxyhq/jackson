@@ -12,7 +12,7 @@ updates:
     groups:
       typescript-eslint:
         patterns:
-          - "@typescript-eslint/*"
+          - '@typescript-eslint/*'
   - package-ecosystem: 'npm'
     directory: '/npm'
     schedule:
@@ -20,7 +20,7 @@ updates:
     groups:
       aws-sdk:
         patterns:
-          - "@aws-sdk/*"
+          - '@aws-sdk/*'
   - package-ecosystem: 'npm'
     directory: '/internal-ui'
     schedule:
@@ -28,7 +28,7 @@ updates:
     groups:
       typescript-eslint:
         patterns:
-          - "@typescript-eslint/*"
+          - '@typescript-eslint/*'
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
