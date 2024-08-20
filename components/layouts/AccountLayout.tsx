@@ -24,14 +24,14 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className='flex flex-1 flex-col'>
+      <div className='flex flex-1 flex-col md:pl-64'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <button
             onClick={() => {
               setIsOpen(!isOpen);
             }}
             type='button'
-            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset'>
+            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
             <span className='sr-only'>{t('open_sidebar')}</span>
             <svg
               className='h-6 w-6'

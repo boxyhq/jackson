@@ -4,7 +4,7 @@ import ChatSettings from './ChatSettings';
 import ChatDrawer from './ChatDrawer';
 import { useRouter } from 'next/router';
 import { Bars4Icon, PlusIcon } from '@heroicons/react/24/outline';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { useFetch } from '../hooks';
 import { ApiSuccess } from '../types';
 import { ChatContext } from '../provider';
