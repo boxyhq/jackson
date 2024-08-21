@@ -11,9 +11,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const { oauthController } = await jackson();
-    const requestParams = req.method === 'GET' ? req.query : req.body;
+    let requestParams;
+    const { fedAppId } = req.query;
+
+    if (req.method === 'GET') {
+      requestParams = req.query;
+    } else if (req.method === 'POST') {
+      requestParams = req.body;
+    }
+
     const { redirect_url } = await oauthController.oidcInitiateLogin(
-      requestParams as unknown as OIDCIdPInitiatedReq
+      requestParams as unknown as OIDCIdPInitiatedReq,
+      fedAppId as string
     );
     if (redirect_url) {
       res.redirect(302, redirect_url);
