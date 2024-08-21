@@ -22,6 +22,7 @@ import type {
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
   IdentityFederationApp,
+  OIDCIdPInitiatedReq,
 } from '../typings';
 import {
   relayStatePrefix,
@@ -780,6 +781,11 @@ export class OAuthController implements IOAuthController {
         }),
       };
     }
+  }
+
+  public async oidcInitiateLogin(body: OIDCIdPInitiatedReq): Promise<{ redirect_url: string }> {
+    console.log(body);
+    return { redirect_url: '' };
   }
 
   public async oidcAuthzResponse(
