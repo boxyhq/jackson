@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:13
+    image: postgres:16.4
     ports:
       - 5432:5432
     restart: always
@@ -8,17 +8,17 @@ services:
       POSTGRES_PASSWORD: ''
       POSTGRES_HOST_AUTH_METHOD: trust
   redis:
-    image: redis:6.2.5-alpine
+    image: redis:7.4-alpine
     ports:
       - 6379:6379
     restart: always
   mongo:
-    image: mongo:4.4.28
+    image: mongo:7.0.12
     ports:
       - 27017:27017
     restart: always
   mysql:
-    image: mysql:8.0.31
+    image: mysql:8.4.2
     ports:
       - 3307:3306
     restart: always
@@ -26,7 +26,7 @@ services:
       MYSQL_DATABASE: mysql
       MYSQL_ROOT_PASSWORD: mysql
   maria:
-    image: mariadb:10.10.2
+    image: mariadb:11.5.2
     ports:
       - 3306:3306
     restart: always
@@ -34,7 +34,7 @@ services:
       MARIADB_DATABASE: mysql
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
   mssql:
-    image: mcr.microsoft.com/azure-sql-edge:1.0.6
+    image: mcr.microsoft.com/azure-sql-edge:2.0.0
     ports:
       - 1433:1433
     restart: always
@@ -43,7 +43,7 @@ services:
       SA_PASSWORD: '123ABabc!'
   dynamodb-local:
     command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
-    image: 'amazon/dynamodb-local:latest'
+    image: 'amazon/dynamodb-local:2.5.2'
     container_name: dynamodb-local
     ports:
       - '8000:8000'

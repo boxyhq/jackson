@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: dynamodb
-          image: amazon/dynamodb-local:latest
+          image: amazon/dynamodb-local:2.5.2
           imagePullPolicy: IfNotPresent
           command:
             - java
