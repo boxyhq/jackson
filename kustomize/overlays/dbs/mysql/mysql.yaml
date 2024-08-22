@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:8.0.31
+          image: mysql:8.4.2
           imagePullPolicy: IfNotPresent
           env:
             - name: MYSQL_ROOT_PASSWORD

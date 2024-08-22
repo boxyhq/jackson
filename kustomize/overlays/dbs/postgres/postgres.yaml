@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:13
+          image: postgres:16.4
           imagePullPolicy: IfNotPresent
           env:
             - name: PGDATA
