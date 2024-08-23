@@ -13,7 +13,6 @@ updates:
       typescript-eslint:
         patterns:
           - '@typescript-eslint/*'
-    groups:
       next:
         patterns:
           - 'next'
