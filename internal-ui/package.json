@@ -33,7 +33,7 @@
     "@vitejs/plugin-react": "4.3.1",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.2",
-    "eslint-plugin-react-refresh": "0.4.10",
+    "eslint-plugin-react-refresh": "0.4.11",
     "prettier": "3.3.3",
     "react-daisyui": "5.0.3",
     "typescript": "5.5.4",
