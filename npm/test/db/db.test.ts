@@ -3,7 +3,7 @@ import tap from 'tap';
 import DB from '../../src/db/db';
 import { randomBytes } from 'crypto';
 
-const encryptionKey: EncryptionKey = 'I+mnyTixBoNGu0OtpG0KXJSunoPTiWMb';
+const encryptionKey: EncryptionKey = 'IDv0Q/4meshxZOvDhtZUWsHMRf9VCvBt+PoB8z3bZV8=';
 
 const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
