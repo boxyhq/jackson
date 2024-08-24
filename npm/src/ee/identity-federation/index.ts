@@ -2,6 +2,7 @@ import { SSO } from './sso';
 import { App } from './app';
 import type { JacksonOption, SSOTracesInstance } from '../../typings';
 import { SSOHandler } from '../../controller/sso-handler';
+import { IdPLogin } from './idp-login';
 
 // This is the main entry point for the Identity Federation module
 const IdentityFederation = async ({
@@ -25,10 +26,12 @@ const IdentityFederation = async ({
 
   const app = new App({ store: appStore, opts });
   const sso = new SSO({ app, ssoHandler, ssoTraces, opts });
+  const idpLogin = new IdPLogin({ connectionStore, sessionStore, opts, app });
 
   const response = {
     app,
     sso,
+    idpLogin,
   };
 
   return response;

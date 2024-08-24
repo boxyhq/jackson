@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw { message: 'Method not allowed', statusCode: 405 };
     }
 
-    const { oauthController } = await jackson();
+    const { identityFederationController } = await jackson();
     let requestParams;
     const { fedAppId } = req.query;
 
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       requestParams = req.body;
     }
 
-    const { redirect_url } = await oauthController.oidcInitiateLogin(
+    const { redirect_url } = await identityFederationController.idpLogin.oidcInitiateLogin(
       requestParams as unknown as OIDCIdPInitiatedReq,
       fedAppId as string
     );
