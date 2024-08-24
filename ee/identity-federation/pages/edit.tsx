@@ -5,6 +5,7 @@ import LicenseRequired from '@components/LicenseRequired';
 import { EditIdentityFederationApp, LinkBack } from '@boxyhq/internal-ui';
 
 import 'react-tagsinput/react-tagsinput.css';
+import { jacksonOptions } from '@lib/env';
 
 const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const UpdateApp = ({ hasValidLicense }: { hasValidLicense: boolean }) => {
           getApp: `/api/admin/identity-federation/${id}`,
           updateApp: `/api/admin/identity-federation/${id}`,
           deleteApp: `/api/admin/identity-federation/${id}`,
+          jacksonUrl: jacksonOptions.externalUrl,
         }}
         onUpdate={() => {
           successToast(t('identity_federation_update_success'));
