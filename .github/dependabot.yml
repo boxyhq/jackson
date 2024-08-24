@@ -13,6 +13,10 @@ updates:
       typescript-eslint:
         patterns:
           - '@typescript-eslint/*'
+      next:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
   - package-ecosystem: 'npm'
     directory: '/npm'
     schedule:
