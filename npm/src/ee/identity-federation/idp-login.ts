@@ -1,15 +1,18 @@
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
 import { isConnectionActive } from '../../controller/utils';
-import { OIDCIdPInitiatedReq, OIDCSSORecord } from '../../typings';
+import { JacksonOption, OIDCIdPInitiatedReq, OIDCSSORecord } from '../../typings';
+import { throwIfInvalidLicense } from '../common/checkLicense';
 import { App } from './app';
 
 export class IdPLogin {
   private ssoHandler: SSOHandler;
   private app: App;
+  private opts: JacksonOption;
 
   constructor({ connectionStore, sessionStore, app, opts }) {
     this.app = app;
+    this.opts = opts;
 
     this.ssoHandler = new SSOHandler({
       connection: connectionStore,
@@ -22,6 +25,8 @@ export class IdPLogin {
     body: OIDCIdPInitiatedReq & { idp_hint?: string },
     fedAppId: string // SAML Fed app only
   ): Promise<{ redirect_url: string }> {
+    await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+
     let connection: OIDCSSORecord | undefined;
     // let requestedTenant;
     // let requestedProduct;
