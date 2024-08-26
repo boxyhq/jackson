@@ -50,9 +50,11 @@ export class SSOHandler {
     tenant?: string;
     product?: string;
     entityId?: string;
+    iss?: string;
     idp_hint?: string;
     idFedAppId?: string;
     fedType?: string;
+    idpInitiatorType?: 'oidc' | 'saml';
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -75,6 +77,7 @@ export class SSOHandler {
       tenants,
       idFedAppId = '',
       fedType = '',
+      idpInitiatorType = '',
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
@@ -145,20 +148,35 @@ export class SSOHandler {
       }
 
       // IdP initiated flow
-      if (authFlow === 'idp-initiated' && entityId) {
-        const params = new URLSearchParams({
-          entityId,
-          authFlow,
-        });
+      if (authFlow === 'idp-initiated') {
+        if (entityId) {
+          const params = new URLSearchParams({
+            entityId,
+            authFlow,
+          });
 
-        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
-          {
-            name: 'SAMLResponse',
-            value: originalParams.SAMLResponse,
-          },
-        ]);
+          const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
+            {
+              name: 'SAMLResponse',
+              value: originalParams.SAMLResponse,
+            },
+          ]);
 
-        return { postForm };
+          return { postForm };
+        }
+
+        if (idpInitiatorType === 'oidc') {
+          // Redirect to IdP selection screen
+          // const qps = {
+          //   authFlow: 'idp-initiated',
+          //   idFedAppId,
+          //   fedType, // will be saml
+          //   idpInitiatorType,
+          //   ...originalParams,
+          // };
+          // const params = new URLSearchParams(qps);
+          // return { redirectUrl: `${url}?${params}` };
+        }
       }
     }
 

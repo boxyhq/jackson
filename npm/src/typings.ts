@@ -298,6 +298,12 @@ export type OAuthReq =
   | OAuthReqBodyWithAccessType
   | OAuthReqBodyWithResource;
 
+export type OIDCIdPInitiatedReq = {
+  iss: string;
+  login_hint?: string;
+  target_link_uri?: string;
+};
+
 export interface SAMLResponsePayload {
   SAMLResponse: string;
   RelayState: string;

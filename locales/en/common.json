@@ -170,6 +170,7 @@
   "bui-wku-download": "Download",
   "bui-fs-client-id": "Client ID",
   "bui-fs-client-secret": "Client Secret",
+  "bui-fs-initiate-login-uri": "Login Initiation endpoint for OIDC connections",
   "bui-fs-saml": "SAML",
   "bui-fs-select-app-type": "Select App Type",
   "bui-fs-generate-sp-entity-id": "Generate Entity ID",

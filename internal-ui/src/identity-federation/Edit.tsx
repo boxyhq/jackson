@@ -23,7 +23,7 @@ export const Edit = ({
   excludeFields,
 }: {
   app: IdentityFederationApp;
-  urls: { patch: string };
+  urls: { patch: string; jacksonUrl: string };
   onUpdate?: (data: IdentityFederationApp) => void;
   onError?: (error: Error) => void;
   excludeFields?: 'product'[];
@@ -159,6 +159,24 @@ export const Edit = ({
                     <label className='label'>
                       <span className='label-text-alt'>{t('bui-fs-entity-id-edit-desc')}</span>
                     </label>
+                  </label>
+                )}
+                {connectionIsSAML && (
+                  <label className='form-control w-full'>
+                    <div className='label'>
+                      <span className='label-text'>{t('bui-fs-initiate-login-uri')}</span>
+                      <div className='flex'>
+                        <CopyToClipboardButton
+                          text={`http://localhost:5225/api/identity-federation/oidc/idp-login/${app.id}`}
+                        />
+                      </div>
+                    </div>
+                    <input
+                      type='text'
+                      className='input-bordered input bg-gray-100'
+                      defaultValue={`http://localhost:5225/api/identity-federation/oidc/idp-login/${app.id}`}
+                      readOnly={true}
+                    />
                   </label>
                 )}
                 {connectionIsSAML && (
