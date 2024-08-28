@@ -28,19 +28,20 @@ export class IdPLogin {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     let connection: OIDCSSORecord | undefined;
-    // let requestedTenant;
-    // let requestedProduct;
 
-    const { idp_hint } = body;
+    const { idp_hint, target_link_uri } = body;
 
     // get federated connection
     const fedApp = await this.app.get({
       id: fedAppId,
     });
 
+    const requestedTenant = fedApp.tenant;
+    const requestedProduct = fedApp.product;
+
     const response = await this.ssoHandler.resolveConnection({
-      tenant: fedApp.tenant,
-      product: fedApp.product,
+      tenant: requestedTenant,
+      product: requestedProduct,
       idp_hint,
       authFlow: 'idp-initiated',
       originalParams: { ...body },
@@ -58,8 +59,6 @@ export class IdPLogin {
 
     if ('connection' in response) {
       connection = response.connection as OIDCSSORecord;
-      // requestedTenant = fedApp.tenant;
-      // requestedProduct = fedApp.product;
     }
 
     if (!connection) {
@@ -81,6 +80,7 @@ export class IdPLogin {
       entityId: fedApp.entityId,
       tenant: fedApp.tenant,
       product: fedApp.product,
+      relayState: target_link_uri,
     };
 
     return await this.ssoHandler.createOIDCRequest({
