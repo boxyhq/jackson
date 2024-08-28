@@ -47,7 +47,6 @@ export const parseURL = (url?: string): any => {
   options.encrypt = Boolean(options.encrypt || false);
   options.trustServerCertificate = Boolean(options.trustServerCertificate || false);
 
-
   return {
     host,
     port,
