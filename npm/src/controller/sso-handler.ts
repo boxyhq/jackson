@@ -167,15 +167,15 @@ export class SSOHandler {
 
         if (idpInitiatorType === 'oidc') {
           // Redirect to IdP selection screen
-          // const qps = {
-          //   authFlow: 'idp-initiated',
-          //   idFedAppId,
-          //   fedType, // will be saml
-          //   idpInitiatorType,
-          //   ...originalParams,
-          // };
-          // const params = new URLSearchParams(qps);
-          // return { redirectUrl: `${url}?${params}` };
+          const qps = {
+            authFlow: 'idp-initiated',
+            idFedAppId,
+            fedType, // will be saml
+            idpInitiatorType,
+            ...originalParams,
+          };
+          const params = new URLSearchParams(qps);
+          return { redirectUrl: `${url}?${params}` };
         }
       }
     }
