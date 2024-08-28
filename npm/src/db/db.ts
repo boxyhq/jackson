@@ -132,7 +132,11 @@ class DB implements DatabaseDriver {
 }
 
 const _new = async (options: DatabaseOption | DatabaseDriverOption) => {
-  const encryptionKey = options.encryptionKey ? Buffer.from(options.encryptionKey, 'latin1') : null;
+  const encryptionKey = options.encryptionKey
+    ? options.encryptionKey.length === 32
+      ? Buffer.from(options.encryptionKey, 'latin1')
+      : Buffer.from(options.encryptionKey, 'base64')
+    : null;
 
   if ('driver' in options) {
     return new DB(options.driver, encryptionKey);
