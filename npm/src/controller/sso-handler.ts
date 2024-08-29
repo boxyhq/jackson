@@ -135,25 +135,19 @@ export class SSOHandler {
 
       for (const { oidcProvider, ...rest } of oidcConnections) {
         const connection = { oidcProvider, ...rest };
+        let oidcIssuer;
         if ('metadata' in oidcProvider) {
-          if (oidcProvider.metadata?.issuer === thirdPartyLogin.iss) {
-            if (thirdPartyLogin.target_link_uri) {
-              if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
-                throw new JacksonError('target_link_uri is not allowed');
-              }
-            }
-            return { connection };
-          }
+          oidcIssuer = oidcProvider;
         } else if ('discoveryUrl' in oidcProvider) {
-          const oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
-          if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
-            if (thirdPartyLogin.target_link_uri) {
-              if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
-                throw new JacksonError('target_link_uri is not allowed');
-              }
+          oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
+        }
+        if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
+          if (thirdPartyLogin.target_link_uri) {
+            if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
+              throw new JacksonError('target_link_uri is not allowed');
             }
-            return { connection };
           }
+          return { connection };
         }
       }
       // No match found for iss
