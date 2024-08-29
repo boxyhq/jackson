@@ -45,6 +45,7 @@ export const parseURL = (url?: string): any => {
   delete options.database;
 
   options.encrypt = Boolean(options.encrypt || false);
+  options.trustServerCertificate = Boolean(options.trustServerCertificate || false);
 
   return {
     host,
