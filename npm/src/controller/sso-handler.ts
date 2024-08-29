@@ -54,7 +54,7 @@ export class SSOHandler {
     idp_hint?: string;
     idFedAppId?: string;
     fedType?: string;
-    idpInitiatorType?: 'oidc' | 'saml';
+    thirdPartyLogin?: { idpInitiatorType?: 'oidc' | 'saml'; iss?: string };
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -77,7 +77,7 @@ export class SSOHandler {
       tenants,
       idFedAppId = '',
       fedType = '',
-      idpInitiatorType = '',
+      thirdPartyLogin = null,
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
@@ -126,6 +126,29 @@ export class SSOHandler {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
     }
 
+    // Third party login from an oidcProvider, here we match the connection from the iss param
+    if (thirdPartyLogin?.idpInitiatorType === 'oidc') {
+      const oidcConnections = connections.filter(
+        (connection) => 'oidcProvider' in connection
+      ) as OIDCSSORecord[];
+
+      for (const { oidcProvider, ...rest } of oidcConnections) {
+        const connection = { oidcProvider, ...rest };
+        if ('metadata' in oidcProvider) {
+          if (oidcProvider.metadata?.issuer === thirdPartyLogin.iss) {
+            return { connection };
+          }
+        } else if ('discoveryUrl' in oidcProvider) {
+          const oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
+          if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
+            return { connection };
+          }
+        }
+      }
+      // No match found for iss
+      throw new JacksonError(noSSOConnectionErrMessage, 404);
+    }
+
     // If more than one, redirect to the connection selection page
     if (connections.length > 1) {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
@@ -163,19 +186,6 @@ export class SSOHandler {
           ]);
 
           return { postForm };
-        }
-
-        if (idpInitiatorType === 'oidc') {
-          // Redirect to IdP selection screen
-          const qps = {
-            authFlow: 'idp-initiated',
-            idFedAppId,
-            fedType, // will be saml
-            idpInitiatorType,
-            ...originalParams,
-          };
-          const params = new URLSearchParams(qps);
-          return { redirectUrl: `${url}?${params}` };
         }
       }
     }

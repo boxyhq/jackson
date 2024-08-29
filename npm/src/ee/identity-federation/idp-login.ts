@@ -29,7 +29,7 @@ export class IdPLogin {
 
     let connection: OIDCSSORecord | undefined;
 
-    const { idp_hint, target_link_uri } = body;
+    const { iss, target_link_uri, idp_hint } = body;
 
     // get federated connection
     const fedApp = await this.app.get({
@@ -55,27 +55,15 @@ export class IdPLogin {
       tenants: fedApp.tenants,
       idFedAppId: fedApp.id,
       fedType: fedApp.type, // will be saml
-      idpInitiatorType: 'oidc',
+      thirdPartyLogin: { idpInitiatorType: 'oidc', iss },
     });
-
-    if ('redirectUrl' in response) {
-      return {
-        redirect_url: response.redirectUrl,
-      };
-    }
 
     if ('connection' in response) {
       connection = response.connection as OIDCSSORecord;
     }
 
     if (!connection) {
-      throw new JacksonError('IdP connection not found.', 403);
-    }
-
-    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
-
-    if (!connectionIsOIDC) {
-      throw new JacksonError('Could not find an OIDC connection for the SAML federated app', 400);
+      throw new JacksonError('IdP connection not found.', 404);
     }
 
     if (!isConnectionActive(connection)) {
