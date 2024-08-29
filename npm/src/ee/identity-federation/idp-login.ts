@@ -37,7 +37,10 @@ export class IdPLogin {
     });
 
     if (fedApp.type !== 'saml') {
-      throw new JacksonError('OIDC Federation does not support third party login from an OIDC provider', 400);
+      throw new JacksonError(
+        'Third party login from an OIDC provider is only supported with SAML Federation',
+        400
+      );
     }
 
     const requestedTenant = fedApp.tenant;
