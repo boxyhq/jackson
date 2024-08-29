@@ -18,6 +18,7 @@ import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
+import * as allowed from './oauth/allowed';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -54,7 +55,7 @@ export class SSOHandler {
     idp_hint?: string;
     idFedAppId?: string;
     fedType?: string;
-    thirdPartyLogin?: { idpInitiatorType?: 'oidc' | 'saml'; iss?: string };
+    thirdPartyLogin?: { idpInitiatorType?: 'oidc' | 'saml'; iss?: string; target_link_uri?: string };
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -136,11 +137,21 @@ export class SSOHandler {
         const connection = { oidcProvider, ...rest };
         if ('metadata' in oidcProvider) {
           if (oidcProvider.metadata?.issuer === thirdPartyLogin.iss) {
+            if (thirdPartyLogin.target_link_uri) {
+              if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
+                throw new JacksonError('target_link_uri is not allowed');
+              }
+            }
             return { connection };
           }
         } else if ('discoveryUrl' in oidcProvider) {
           const oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
           if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
+            if (thirdPartyLogin.target_link_uri) {
+              if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
+                throw new JacksonError('target_link_uri is not allowed');
+              }
+            }
             return { connection };
           }
         }

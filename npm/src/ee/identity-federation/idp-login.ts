@@ -55,7 +55,7 @@ export class IdPLogin {
       tenants: fedApp.tenants,
       idFedAppId: fedApp.id,
       fedType: fedApp.type, // will be saml
-      thirdPartyLogin: { idpInitiatorType: 'oidc', iss },
+      thirdPartyLogin: { idpInitiatorType: 'oidc', iss, target_link_uri },
     });
 
     if ('connection' in response) {
