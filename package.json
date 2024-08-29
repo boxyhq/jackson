@@ -68,7 +68,7 @@
     "@heroicons/react": "2.1.5",
     "@retracedhq/logs-viewer": "2.7.4",
     "@retracedhq/retraced": "0.7.15",
-    "@tailwindcss/typography": "0.5.14",
+    "@tailwindcss/typography": "0.5.15",
     "axios": "1.7.5",
     "blockly": "11.1.1",
     "chroma-js": "3.0.0",
