@@ -82,7 +82,7 @@ test.describe('Admin Portal Dyrectory Sync SetupLink', () => {
     await setupLinkPage.getByRole('link', { name: 'New Directory' }).click();
     await setupLinkPage
       .locator('form div')
-      .filter({ hasText: 'Directory providerAzure SCIM' })
+      .filter({ hasText: 'Directory providerEntra ID SCIM' })
       .locator('div')
       .click();
     await setupLinkPage.getByLabel('Directory provider').selectOption('okta-scim-v2');
