@@ -1,24 +1,20 @@
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
-import { isConnectionActive } from '../../controller/utils';
-import { JacksonOption, OIDCIdPInitiatedReq, OIDCSSORecord } from '../../typings';
+  SSOTracesInstance,
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { App } from './app';
 
 export class IdPLogin {
   private ssoHandler: SSOHandler;
+  private ssoTraces: SSOTracesInstance;
   private app: App;
   private opts: JacksonOption;
 
   constructor({ connectionStore, sessionStore, app, opts }) {
     this.app = app;
+    this.ssoHandler = ssoHandler;
+    this.ssoTraces = ssoTraces;
     this.opts = opts;
-
-    this.ssoHandler = new SSOHandler({
-      connection: connectionStore,
-      session: sessionStore,
-      opts,
-    });
   }
 
   public async oidcInitiateLogin(
