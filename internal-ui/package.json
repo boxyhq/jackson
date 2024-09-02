@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "11.1.6",
-    "@types/node": "22.5.1",
-    "@types/react": "18.3.4",
+    "@types/node": "22.5.2",
+    "@types/react": "18.3.5",
     "@typescript-eslint/eslint-plugin": "8.3.0",
     "@typescript-eslint/parser": "8.3.0",
     "@vitejs/plugin-react": "4.3.1",
@@ -35,12 +35,12 @@
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-react-refresh": "0.4.11",
     "prettier": "3.3.3",
-    "react-daisyui": "5.0.3",
+    "react-daisyui": "5.0.4",
     "typescript": "5.5.4",
     "vite": "5.4.2"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.1"
+    "@rollup/rollup-linux-x64-gnu": "4.21.2"
   },
   "peerDependencies": {
     "@boxyhq/react-ui": ">=3.3.42",
