@@ -18,7 +18,7 @@ export class IdPLogin {
   }
 
   public async oidcInitiateLogin(
-    body: OIDCIdPInitiatedReq & { idp_hint?: string },
+    body: OIDCIdPInitiatedReq,
     fedAppId: string // SAML Fed app only
   ): Promise<{ redirect_url: string }> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
