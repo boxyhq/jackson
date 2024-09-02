@@ -51,22 +51,22 @@ test.describe('Admin Portal Dyrectory Sync SetupLink', () => {
     const setupLinkPage = await context.newPage();
     await setupLinkPage.goto(linkContent);
 
-    // Create Azure SCIM v2.0 directory
+    // Create Entra ID SCIM v2.0 directory
     await expect(setupLinkPage.getByRole('heading', { name: 'Directory Sync' })).toBeVisible();
     await setupLinkPage.getByRole('link', { name: 'New Directory' }).click();
     await createDirectory(setupLinkPage);
 
-    // Test if Azure SCIM v2.0 directory is created
-    await expect(setupLinkPage.getByRole('cell', { name: 'Azure SCIM v2.0' })).toBeVisible();
+    // Test if Entra ID SCIM v2.0 directory is created
+    await expect(setupLinkPage.getByRole('cell', { name: 'Entra ID SCIM v2.0' })).toBeVisible();
 
-    // Delete Azure SCIM v2.0 directory
+    // Delete Entra ID SCIM v2.0 directory
     await deleteDirectory(setupLinkPage);
 
     // Create Generic SCIM v2.0 directory
     await setupLinkPage.getByRole('link', { name: 'New Directory' }).click();
     await setupLinkPage
       .locator('form div')
-      .filter({ hasText: 'Directory providerAzure SCIM' })
+      .filter({ hasText: 'Directory providerEntra ID SCIM' })
       .locator('div')
       .click();
     await setupLinkPage.getByLabel('Directory provider').selectOption('generic-scim-v2');
@@ -82,7 +82,7 @@ test.describe('Admin Portal Dyrectory Sync SetupLink', () => {
     await setupLinkPage.getByRole('link', { name: 'New Directory' }).click();
     await setupLinkPage
       .locator('form div')
-      .filter({ hasText: 'Directory providerAzure SCIM' })
+      .filter({ hasText: 'Directory providerEntra ID SCIM' })
       .locator('div')
       .click();
     await setupLinkPage.getByLabel('Directory provider').selectOption('okta-scim-v2');
