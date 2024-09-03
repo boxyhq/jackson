@@ -1,33 +1,33 @@
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   labels:
-#     app: jackson
-#     jacksondev: "1"
-#   name: jackson
-# data:
-#   # BOXYHQ_LICENSE_KEY: ""
-#   # DB_CLEANUP_LIMIT: ""
-#   # DB_ENCRYPTION_KEY: ""
-#   DB_MANUAL_MIGRATION: "true"
-#   # DB_TTL: ""
-#   # DB_TYPE: ""
-#   DB_URL: postgres://postgres:password@jackson-postgres:5432/postgres
-#   JACKSON_API_KEYS: secret
-#   # NEXTAUTH_ACL: ""
-#   # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
-#   NEXTAUTH_SECRET: secret
-#   NEXTAUTH_URL: http://localhost:5225
-#   RETRACED_ADMIN_ROOT_TOKEN: dev
-#   RETRACED_EXTERNAL_URL: http://localhost:3000/auditlog
-#   RETRACED_HOST_URL: http://jackson-api:3000/auditlog
-#   # SAML_AUDIENCE: ""
-#   # SMTP_FROM: ""
-#   # SMTP_HOST: ""
-#   # SMTP_PASSWORD: ""
-#   # SMTP_PORT: ""
-#   # SMTP_USER: ""
-# ---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: jackson
+    jacksondev: "1"
+  name: jackson
+stringData:
+  # BOXYHQ_LICENSE_KEY: ""
+  # DB_CLEANUP_LIMIT: ""
+  # DB_ENCRYPTION_KEY: ""
+  DB_MANUAL_MIGRATION: "true"
+  # DB_TTL: ""
+  # DB_TYPE: ""
+  DB_URL: postgres://postgres:password@jackson-postgres:5432/postgres
+  JACKSON_API_KEYS: secret
+  # NEXTAUTH_ACL: ""
+  # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
+  NEXTAUTH_SECRET: secret
+  NEXTAUTH_URL: http://localhost:5225
+  RETRACED_ADMIN_ROOT_TOKEN: dev
+  RETRACED_EXTERNAL_URL: http://localhost:3000/auditlog
+  RETRACED_HOST_URL: http://jackson-api:3000/auditlog
+  # SAML_AUDIENCE: ""
+  # SMTP_FROM: ""
+  # SMTP_HOST: ""
+  # SMTP_PASSWORD: ""
+  # SMTP_PORT: ""
+  # SMTP_USER: ""
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -105,23 +105,9 @@ spec:
         tier: jackson
     spec:
       containers:
-        - env:
-            - name: DB_MANUAL_MIGRATION
-              value: "true"
-            - name: DB_URL
-              value: postgres://postgres:password@jackson-postgres:5432/postgres
-            - name: JACKSON_API_KEYS
-              value: secret
-            - name: NEXTAUTH_SECRET
-              value: secret
-            - name: NEXTAUTH_URL
-              value: http://localhost:5225
-            - name: RETRACED_ADMIN_ROOT_TOKEN
-              value: dev
-            - name: RETRACED_EXTERNAL_URL
-              value: http://localhost:3000/auditlog
-            - name: RETRACED_HOST_URL
-              value: http://jackson-api:3000/auditlog
+        - envFrom:
+            - secretRef:
+                name: jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
           name: jackson
@@ -243,23 +229,9 @@ spec:
         - command:
             - /bin/sh
             - migrate.sh
-          env:
-            - name: DB_MANUAL_MIGRATION
-              value: "true"
-            - name: DB_URL
-              value: postgres://postgres:password@jackson-postgres:5432/postgres
-            - name: JACKSON_API_KEYS
-              value: secret
-            - name: NEXTAUTH_SECRET
-              value: secret
-            - name: NEXTAUTH_URL
-              value: http://localhost:5225
-            - name: RETRACED_ADMIN_ROOT_TOKEN
-              value: dev
-            - name: RETRACED_EXTERNAL_URL
-              value: http://localhost:3000/auditlog
-            - name: RETRACED_HOST_URL
-              value: http://jackson-api:3000/auditlog
+          envFrom:
+            - secretRef:
+                name: jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
           name: db

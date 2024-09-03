@@ -5,46 +5,36 @@
 #     targetPort: 5225
 #   type: ClusterIP
 # jackson:
+#   dbManualMigration: "true"
+#   dbUrl: postgres://postgres:password@jackson-postgres:5432/postgres
 #   jackson:
-#     env:
-#       dbManualMigration: "true"
-#       dbUrl: postgres://postgres:password@jackson-postgres:5432/postgres
-#       jacksonApiKeys: secret
-#       nextauthSecret: secret
-#       nextauthUrl: http://localhost:5225
-#       retracedAdminRootToken: dev
-#       retracedExternalUrl: http://localhost:3000/auditlog
-#       retracedHostUrl: http://jackson-api:3000/auditlog
 #     image:
 #       repository: boxyhq/jackson-local
-#       tag: 08a83494e08a2d51395f848d6642f2a0ce8e2cfef2bb954ab698bf93c436d8d1
+#       tag: v1.26.1-333-g3d02ee75-dirty
 #     imagePullPolicy: IfNotPresent
 #     resources:
 #       limits:
 #         cpu: 500m
 #       requests:
 #         cpu: 100m
+#   jacksonApiKeys: secret
+#   nextauthSecret: secret
+#   nextauthUrl: http://localhost:5225
 #   ports:
 #   - name: original
 #     port: 5225
 #     targetPort: 5225
 #   replicas: 1
+#   retracedAdminRootToken: dev
+#   retracedExternalUrl: http://localhost:3000/auditlog
+#   retracedHostUrl: http://jackson-api:3000/auditlog
 #   type: LoadBalancer
-# kubernetesClusterDomain: cluster.local
+# # kubernetesClusterDomain: cluster.local
 # migratePg:
 #   db:
-#     env:
-#       dbManualMigration: "true"
-#       dbUrl: postgres://postgres:password@jackson-postgres:5432/postgres
-#       jacksonApiKeys: secret
-#       nextauthSecret: secret
-#       nextauthUrl: http://localhost:5225
-#       retracedAdminRootToken: dev
-#       retracedExternalUrl: http://localhost:3000/auditlog
-#       retracedHostUrl: http://jackson-api:3000/auditlog
 #     image:
 #       repository: boxyhq/jackson-local
-#       tag: 08a83494e08a2d51395f848d6642f2a0ce8e2cfef2bb954ab698bf93c436d8d1
+#       tag: v1.26.1-333-g3d02ee75-dirty
 #     imagePullPolicy: IfNotPresent
 # postgres:
 #   ports:
