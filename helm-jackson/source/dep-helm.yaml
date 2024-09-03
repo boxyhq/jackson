@@ -1,11 +1,11 @@
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   labels:
     app: jackson
     jacksondev: "1"
   name: jackson
-data:
+stringData:
   # BOXYHQ_LICENSE_KEY: ""
   # DB_CLEANUP_LIMIT: ""
   # DB_ENCRYPTION_KEY: ""
@@ -106,7 +106,7 @@ spec:
     spec:
       containers:
         - envFrom:
-            - configMapRef:
+            - secretRef:
                 name: jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
@@ -230,7 +230,7 @@ spec:
             - /bin/sh
             - migrate.sh
           envFrom:
-            - configMapRef:
+            - secretRef:
                 name: jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
