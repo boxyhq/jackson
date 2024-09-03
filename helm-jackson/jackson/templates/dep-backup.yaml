@@ -4,23 +4,24 @@ metadata:
   labels:
     app: jackson
     jacksondev: "1"
-  name: jackson
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-jackson
 stringData:
   # BOXYHQ_LICENSE_KEY: ""
   # DB_CLEANUP_LIMIT: ""
   # DB_ENCRYPTION_KEY: ""
-  DB_MANUAL_MIGRATION: "true"
+  DB_MANUAL_MIGRATION: {{ .Values.jackson.dbManualMigration | quote }}
   # DB_TTL: ""
   # DB_TYPE: ""
-  DB_URL: postgres://postgres:password@jackson-postgres:5432/postgres
-  JACKSON_API_KEYS: secret
+  DB_URL: {{ .Values.jackson.dbUrl | quote }}
+  JACKSON_API_KEYS: {{ .Values.jackson.jacksonApiKeys | quote }}
   # NEXTAUTH_ACL: ""
   # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
-  NEXTAUTH_SECRET: secret
-  NEXTAUTH_URL: http://localhost:5225
-  RETRACED_ADMIN_ROOT_TOKEN: dev
-  RETRACED_EXTERNAL_URL: http://localhost:3000/auditlog
-  RETRACED_HOST_URL: http://jackson-api:3000/auditlog
+  NEXTAUTH_SECRET: {{ .Values.jackson.nextauthSecret | quote }}
+  NEXTAUTH_URL: {{ .Values.jackson.nextauthUrl | quote }}
+  RETRACED_ADMIN_ROOT_TOKEN: {{ .Values.jackson.retracedAdminRootToken | quote }}
+  RETRACED_EXTERNAL_URL: {{ .Values.jackson.retracedExternalUrl | quote }}
+  RETRACED_HOST_URL: {{ .Values.jackson.retracedHostUrl | quote }}
   # SAML_AUDIENCE: ""
   # SMTP_FROM: ""
   # SMTP_HOST: ""
@@ -35,18 +36,18 @@ metadata:
     app: jackson
     jacksondev: "1"
     tier: jackson
-  name: jackson
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-jackson
   namespace: default
 spec:
   ports:
-    - name: original
-      port: 5225
-      targetPort: 5225
+    {{- .Values.jackson.ports | toYaml | nindent 2 }}
   selector:
     app: jackson
     jacksondev: "1"
     tier: jackson
-  type: LoadBalancer
+  {{- include "jackson.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.jackson.type }}
 ---
 apiVersion: v1
 kind: Service
@@ -55,17 +56,18 @@ metadata:
     app: jackson-internal
     jacksondev: "1"
     tier: jackson-internal
-  name: jackson-internal
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-internal
   namespace: default
 spec:
+  type: {{ .Values.internal.type }}
   ports:
-    - name: original
-      port: 5225
-      targetPort: 5225
+  {{- .Values.internal.ports | toYaml | nindent 2 }}
   selector:
     app: jackson
     jacksondev: "1"
     tier: jackson
+  {{- include "jackson.selectorLabels" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
@@ -73,16 +75,15 @@ metadata:
   labels:
     app: postgres
     jacksondev: "1"
-  name: jackson-postgres
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-postgres
 spec:
   ports:
-    - name: postgres
-      port: 5432
-      targetPort: postgres
+  {{- .Values.postgres.ports | toYaml | nindent 2 }}
   selector:
     app: postgres
     jacksondev: "1"
-  type: ClusterIP
+  type: {{ .Values.postgres.type }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,7 +108,7 @@ spec:
       containers:
         - envFrom:
             - secretRef:
-                name: jackson
+                name: {{ include "jackson.fullname" . }}-jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
           name: jackson
@@ -231,7 +232,7 @@ spec:
             - migrate.sh
           envFrom:
             - secretRef:
-                name: jackson
+                name: {{ include "jackson.fullname" . }}-jackson
           image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
           imagePullPolicy: IfNotPresent
           name: db
