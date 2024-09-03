@@ -90,27 +90,31 @@ kind: Deployment
 metadata:
   labels:
     jacksondev: "1"
-  name: jackson
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-jackson
   namespace: default
 spec:
-  replicas: 1
+  replicas: {{ .Values.jackson.replicas }}
   selector:
     matchLabels:
       jacksondev: "1"
       tier: jackson
+    {{- include "jackson.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: jackson
         jacksondev: "1"
         tier: jackson
+      {{- include "jackson.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - envFrom:
             - secretRef:
                 name: {{ include "jackson.fullname" . }}-jackson
-          image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.jackson.jackson.image.repository }}:{{ .Values.jackson.jackson.image.tag
+            | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.jackson.jackson.imagePullPolicy }}
           name: jackson
           ports:
             - containerPort: 5225
@@ -124,11 +128,6 @@ spec:
             periodSeconds: 10
             successThreshold: 2
             timeoutSeconds: 5
-          resources:
-            limits:
-              cpu: 500m
-            requests:
-              cpu: 100m
           startupProbe:
             failureThreshold: 5
             httpGet:
@@ -142,7 +141,8 @@ kind: StatefulSet
 metadata:
   labels:
     jacksondev: "1"
-  name: jackson-postgres
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-postgres
 spec:
   selector:
     matchLabels:
@@ -158,15 +158,16 @@ spec:
       containers:
         - env:
             - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
+              value: {{ quote .Values.postgres.postgres.env.pgdata }}
             - name: POSTGRES_USER
-              value: postgres
+              value: {{ quote .Values.postgres.postgres.env.postgresUser }}
             - name: POSTGRES_PASSWORD
-              value: password
+              value: {{ quote .Values.postgres.postgres.env.postgresPassword }}
             - name: POSTGRES_DB
-              value: postgres
-          image: postgres:16.4
-          imagePullPolicy: IfNotPresent
+              value: {{ quote .Values.postgres.postgres.env.postgresDb }}
+          image: {{ .Values.postgres.postgres.image.repository }}:{{ .Values.postgres.postgres.image.tag
+            | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.postgres.postgres.imagePullPolicy }}
           livenessProbe:
             exec:
               command:
@@ -218,7 +219,8 @@ kind: Job
 metadata:
   labels:
     jacksondev: "1"
-  name: jackson-migrate-pg
+  {{- include "jackson.labels" . | nindent 4 }}
+  name: {{ include "jackson.fullname" . }}-migrate-pg
   namespace: default
 spec:
   template:
@@ -233,8 +235,9 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "jackson.fullname" . }}-jackson
-          image: boxyhq/jackson-local:v1.26.1-333-g3d02ee75-dirty
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.migratePg.db.image.repository }}:{{ .Values.migratePg.db.image.tag
+            | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.migratePg.db.imagePullPolicy }}
           name: db
       restartPolicy: OnFailure
   ttlSecondsAfterFinished: 0

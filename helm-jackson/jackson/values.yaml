@@ -29,13 +29,13 @@ jackson:
   retracedExternalUrl: http://localhost:3000/auditlog
   retracedHostUrl: http://jackson-api:3000/auditlog
   type: LoadBalancer
-# kubernetesClusterDomain: cluster.local
-# migratePg:
-#   db:
-#     image:
-#       repository: boxyhq/jackson-local
-#       tag: v1.26.1-333-g3d02ee75-dirty
-#     imagePullPolicy: IfNotPresent
+kubernetesClusterDomain: cluster.local
+migratePg:
+  db:
+    image:
+      repository: boxyhq/jackson-local
+      tag: v1.26.1-333-g3d02ee75-dirty
+    imagePullPolicy: IfNotPresent
 postgres:
   ports:
   - name: postgres
