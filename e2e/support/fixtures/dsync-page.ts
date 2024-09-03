@@ -74,7 +74,7 @@ export class DSyncPage {
   async setWebHookEventsLogging({ enable }: { enable: boolean }) {
     await this.gotoDSync();
     await this.page.getByLabel('Edit').click();
-    const checkBox = this.page.getByLabel('Enable Webhook events logging');
+    const checkBox = await this.page.getByLabel('Enable Webhook events logging');
     if (enable) {
       await checkBox.check();
     } else {
