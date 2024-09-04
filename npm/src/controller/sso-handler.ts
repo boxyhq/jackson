@@ -355,16 +355,21 @@ export class SSOHandler {
         flattenArray: true,
       });
 
-      const responseForm = saml.createPostForm(session.requested.acsUrl, [
-        {
+      const params: { name: string; value: string }[] = [];
+
+      if (session.requested.relayState) {
+        params.push({
           name: 'RelayState',
           value: session.requested.relayState,
-        },
-        {
-          name: 'SAMLResponse',
-          value: Buffer.from(responseSigned).toString('base64'),
-        },
-      ]);
+        });
+      }
+
+      params.push({
+        name: 'SAMLResponse',
+        value: Buffer.from(responseSigned).toString('base64'),
+      });
+
+      const responseForm = saml.createPostForm(session.requested.acsUrl, params);
 
       return { responseForm };
     } catch (err) {
