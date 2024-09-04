@@ -314,7 +314,7 @@ export const fedAppID = (tenant: string, product: string, type?: string) => {
 // List of well known providers
 const wellKnownProviders = {
   'okta.com': 'Okta',
-  'sts.windows.net': 'Azure AD',
+  'sts.windows.net': 'Entra ID',
   'mocksaml.com': 'MockSAML',
   'onelogin.com': 'OneLogin',
   'keycloak.com': 'Keycloak',

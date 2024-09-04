@@ -11,9 +11,9 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
   const router = useRouter();
   const { t } = useTranslation('common');
 
-  const { directory, isLoading, isValidating, error } = useDirectory(directoryId, setupLinkToken);
+  const { directory, isLoading, error } = useDirectory(directoryId, setupLinkToken);
 
-  if (isLoading || !directory || isValidating) {
+  if (isLoading || !directory) {
     return <Loading />;
   }
 

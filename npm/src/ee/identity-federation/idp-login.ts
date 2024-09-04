@@ -28,48 +28,42 @@ export class IdPLogin {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     let connection: OIDCSSORecord | undefined;
-    // let requestedTenant;
-    // let requestedProduct;
 
-    const { idp_hint } = body;
+    const { iss, target_link_uri, idp_hint } = body;
 
     // get federated connection
     const fedApp = await this.app.get({
       id: fedAppId,
     });
 
+    if (fedApp.type !== 'saml') {
+      throw new JacksonError(
+        'Third party login from an OIDC provider is only supported with SAML Federation',
+        400
+      );
+    }
+
+    const requestedTenant = fedApp.tenant;
+    const requestedProduct = fedApp.product;
+
     const response = await this.ssoHandler.resolveConnection({
-      tenant: fedApp.tenant,
-      product: fedApp.product,
+      tenant: requestedTenant,
+      product: requestedProduct,
       idp_hint,
       authFlow: 'idp-initiated',
       originalParams: { ...body },
       tenants: fedApp.tenants,
       idFedAppId: fedApp.id,
       fedType: fedApp.type, // will be saml
-      idpInitiatorType: 'oidc',
+      thirdPartyLogin: { idpInitiatorType: 'oidc', iss, target_link_uri },
     });
-
-    if ('redirectUrl' in response) {
-      return {
-        redirect_url: response.redirectUrl,
-      };
-    }
 
     if ('connection' in response) {
       connection = response.connection as OIDCSSORecord;
-      // requestedTenant = fedApp.tenant;
-      // requestedProduct = fedApp.product;
     }
 
     if (!connection) {
-      throw new JacksonError('IdP connection not found.', 403);
-    }
-
-    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
-
-    if (!connectionIsOIDC) {
-      throw new JacksonError('Could not find an OIDC connection for the SAML federated app', 400);
+      throw new JacksonError('IdP connection not found.', 404);
     }
 
     if (!isConnectionActive(connection)) {
@@ -81,6 +75,7 @@ export class IdPLogin {
       entityId: fedApp.entityId,
       tenant: fedApp.tenant,
       product: fedApp.product,
+      relayState: target_link_uri,
     };
 
     return await this.ssoHandler.createOIDCRequest({
