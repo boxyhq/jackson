@@ -80,6 +80,7 @@ export class IdPLogin {
         tenant: fedApp.tenant,
         product: fedApp.product,
         relayState: target_link_uri,
+        oidcIdPRequest: body,
       };
 
       return await this.ssoHandler.createOIDCRequest({

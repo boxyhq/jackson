@@ -846,6 +846,7 @@ export class OAuthController implements IOAuthController {
           isSAMLFederated,
           isOIDCFederated,
           requestedOIDCFlow: !!session?.requested?.oidc,
+          oidcIdPRequest: session?.requested?.oidcIdPRequest,
         },
       });
       // Rethrow err and redirect to Jackson error page
@@ -908,6 +909,7 @@ export class OAuthController implements IOAuthController {
           acsUrl: session.requested.acsUrl,
           entityId: session.requested.entityId,
           requestedOIDCFlow: !!session.requested.oidc,
+          oidcIdPRequest: session?.requested?.oidcIdPRequest,
           profile,
           error,
           error_description,
