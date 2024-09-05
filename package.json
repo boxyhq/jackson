@@ -84,7 +84,7 @@
     "next-auth": "4.24.7",
     "next-i18next": "15.3.1",
     "next-mdx-remote": "5.0.0",
-    "nodemailer": "6.9.14",
+    "nodemailer": "6.9.15",
     "raw-body": "3.0.0",
     "react": "18.3.1",
     "react-daisyui": "5.0.3",
