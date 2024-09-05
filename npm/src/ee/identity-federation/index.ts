@@ -26,7 +26,7 @@ const IdentityFederation = async ({
 
   const app = new App({ store: appStore, opts });
   const sso = new SSO({ app, ssoHandler, ssoTraces, opts });
-  const idpLogin = new IdPLogin({ connectionStore, sessionStore, opts, app });
+  const idpLogin = new IdPLogin({ app, ssoHandler, ssoTraces, opts });
 
   const response = {
     app,

@@ -257,6 +257,8 @@
   "bui-traces-stack-trace": "Stack Trace",
   "bui-traces-session-state-from-oidc-idp": "Session State (from OIDC Provider)",
   "bui-traces-scope-from-op-error": "Scope (from OIDC Provider)",
+  "bui-traces-oidc-third-party-login": "OIDC Third Party Login",
+  "bui-traces-oidc-third-party-login-params": "OIDC Third Party Login Request Parameters",
   "bui-sl-name": "Name (Optional)",
   "bui-sl-sso-description": "Description (Optional)",
   "bui-sl-create-link": "Create Setup Link",
