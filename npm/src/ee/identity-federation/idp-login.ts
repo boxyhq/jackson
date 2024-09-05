@@ -24,16 +24,16 @@ export class IdPLogin {
     this.opts = opts;
   }
 
+  // Supported for SAML Federation only
   public async oidcInitiateLogin(
-    body: OIDCIdPInitiatedReq,
-    fedAppId: string // SAML Fed app only
+    body: OIDCIdPInitiatedReq & { fedAppId: string }
   ): Promise<{ redirect_url: string }> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     let connection: OIDCSSORecord | undefined;
     let fedApp: IdentityFederationApp | undefined;
 
-    const { iss, target_link_uri } = body;
+    const { iss, target_link_uri, fedAppId } = body;
 
     try {
       // get federated connection
