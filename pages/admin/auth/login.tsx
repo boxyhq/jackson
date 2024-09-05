@@ -123,37 +123,33 @@ const Login = ({
               <form method='POST' onSubmit={onEmailPasswordLogin}>
                 <div className='mt-6'>
                   <div className='flex flex-col gap-3'>
-                    <label className='block text-sm font-medium' htmlFor='email'>
+                    <label className='block text-sm font-medium'>
                       {t('bui-shared-email')}
-                      <label>
-                        <input
-                          type='email'
-                          placeholder={t('bui-shared-email')}
-                          className='input-bordered input mt-2 w-full rounded-md'
-                          required
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                          }}
-                          value={email}
-                        />
-                      </label>
+                      <input
+                        type='email'
+                        placeholder={t('bui-shared-email')}
+                        className='input-bordered input mt-2 w-full rounded-md'
+                        required
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                        value={email}
+                      />
                     </label>
                     {isEmailPasswordEnabled && (
                       <>
-                        <label className='block text-sm font-medium' htmlFor='password'>
+                        <label className='block text-sm font-medium'>
                           {t('password')}
-                          <label>
-                            <input
-                              type='password'
-                              placeholder={t('password')}
-                              className='input-bordered input mt-2 w-full rounded-md'
-                              required
-                              onChange={(e) => {
-                                setPassword(e.target.value);
-                              }}
-                              value={password}
-                            />
-                          </label>
+                          <input
+                            type='password'
+                            placeholder={t('password')}
+                            className='input-bordered input mt-2 w-full rounded-md'
+                            required
+                            onChange={(e) => {
+                              setPassword(e.target.value);
+                            }}
+                            value={password}
+                          />
                         </label>
                         <ButtonOutline
                           loading={loading && authMethod === 'credentials'}

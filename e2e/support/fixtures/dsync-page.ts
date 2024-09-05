@@ -71,9 +71,15 @@ export class DSyncPage {
     await this.page.waitForURL(/\/admin\/directory-sync\/.*\/events\/.*/);
     await this.page.locator('pre').waitFor();
   }
-  async setWebHookEventsLogging({ enable }: { enable: boolean }) {
+  async setWebHookEventsLogging({ enable, directory }: { enable: boolean; directory: any }) {
     await this.gotoDSync();
+    const responsePromise = this.page.waitForResponse((response) => {
+      const regex = new RegExp(`^\\/api\\/.*\\/directory-sync\\/${directory.id}$`);
+      return regex.test(new URL(response.url()).pathname) && response.status() === 200;
+    });
     await this.page.getByLabel('Edit').click();
+    // Wait for the directory fetch to finish and then interact with the checkbox
+    await responsePromise;
     const checkBox = await this.page.getByLabel('Enable Webhook events logging');
     if (enable) {
       await checkBox.check();

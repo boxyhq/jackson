@@ -17,12 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'GET') {
       requestParams = req.query;
     } else if (req.method === 'POST') {
-      requestParams = req.body;
+      // explicitly added fedAppId here to align with GET which contains fedAppId in req.query
+      requestParams = { ...req.body, fedAppId };
     }
 
     const { redirect_url } = await identityFederationController.idpLogin.oidcInitiateLogin(
-      requestParams as unknown as OIDCIdPInitiatedReq,
-      fedAppId as string
+      requestParams as unknown as OIDCIdPInitiatedReq & { fedAppId: string }
     );
     if (redirect_url) {
       res.redirect(302, redirect_url);

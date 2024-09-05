@@ -167,14 +167,14 @@ export const Edit = ({
                       <span className='label-text'>{t('bui-fs-initiate-login-uri')}</span>
                       <div className='flex'>
                         <CopyToClipboardButton
-                          text={`http://localhost:5225/api/identity-federation/oidc/idp-login/${app.id}`}
+                          text={`${urls.jacksonUrl}/api/identity-federation/oidc/idp-login/${app.id}`}
                         />
                       </div>
                     </div>
                     <input
                       type='text'
                       className='input-bordered input bg-gray-100'
-                      defaultValue={`http://localhost:5225/api/identity-federation/oidc/idp-login/${app.id}`}
+                      defaultValue={`${urls.jacksonUrl}/api/identity-federation/oidc/idp-login/${app.id}`}
                       readOnly={true}
                     />
                   </label>
