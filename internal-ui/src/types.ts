@@ -118,6 +118,12 @@ export interface Trace {
   };
 }
 
+type OIDCIdPInitiatedReq = {
+  iss: string;
+  login_hint?: string;
+  target_link_uri?: string;
+};
+
 export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
   timestamp?: number /** Can be passed in from outside else will be set to Date.now() */;
   context: {
@@ -145,6 +151,7 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     scope_from_op_error?: string;
     stack?: string;
     oidcTokenSet?: { id_token?: string; access_token?: string };
+    oidcIdPRequest?: OIDCIdPInitiatedReq;
   };
 }
 
