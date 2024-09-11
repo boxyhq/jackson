@@ -67,7 +67,7 @@
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.1.5",
     "@retracedhq/logs-viewer": "2.7.4",
-    "@retracedhq/retraced": "0.7.15",
+    "@retracedhq/retraced": "0.7.16",
     "@tailwindcss/typography": "0.5.15",
     "axios": "1.7.7",
     "blockly": "11.1.1",
