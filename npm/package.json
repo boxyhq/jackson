@@ -75,7 +75,7 @@
     "cross-env": "7.0.3",
     "migrate-mongo": "11.0.0",
     "nock": "13.5.5",
-    "sinon": "18.0.1",
+    "sinon": "19.0.0",
     "tap": "21.0.1",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
