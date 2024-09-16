@@ -80,7 +80,7 @@
     "i18next": "23.15.1",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.8",
-    "next": "14.2.9",
+    "next": "14.2.11",
     "next-auth": "4.24.7",
     "next-i18next": "15.3.1",
     "next-mdx-remote": "5.0.0",
@@ -97,7 +97,7 @@
     "swr": "2.2.5"
   },
   "devDependencies": {
-    "@playwright/test": "1.46.1",
+    "@playwright/test": "1.47.1",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.9",
     "@types/node": "20.12.12",
@@ -107,7 +107,7 @@
     "autoprefixer": "10.4.20",
     "env-cmd": "10.1.0",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.9",
+    "eslint-config-next": "14.2.11",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.0.9",
     "jose": "5.3.0",
