@@ -80,7 +80,7 @@ test.describe('GET /api/v1/dsync', () => {
 });
 
 test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
-  test('should be able update', async ({ request }) => {
+  test('should be able update', async ({ request, baseURL }) => {
     const directories = await getDirectory(request, { tenant, product });
     const directory = directories[0];
 
@@ -120,7 +120,7 @@ test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
     // Update webhook
     response = await request.patch(`/api/v1/dsync/${directory.id}`, {
       data: {
-        webhook_url: 'https://example.com/new-webhook',
+        webhook_url: `${baseURL}/api/hello`,
         webhook_secret: 'new-secret',
       },
     });
@@ -133,7 +133,7 @@ test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
         name: 'new name',
         deactivated: true,
         webhook: {
-          endpoint: 'https://example.com/new-webhook',
+          endpoint: `${baseURL}/api/hello`,
           secret: 'new-secret',
         },
       },
@@ -150,7 +150,7 @@ test.describe('PATCH /api/v1/dsync/{directoryId}', () => {
         name: 'new name',
         deactivated: true,
         webhook: {
-          endpoint: 'https://example.com/new-webhook',
+          endpoint: `${baseURL}/api/hello`,
           secret: 'new-secret',
         },
       },

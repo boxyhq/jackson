@@ -41,8 +41,8 @@ const providers = [
 ];
 
 for (const provider of providers) {
-  test(`${provider.type} SCIM connection`, async ({ dsyncPage, request, page }) => {
-    await dsyncPage.addDSyncConnection(provider.type as keyof typeof DirectorySyncProviders);
+  test(`${provider.type} SCIM connection`, async ({ dsyncPage, request, page, baseURL }) => {
+    await dsyncPage.addDSyncConnection(provider.type as keyof typeof DirectorySyncProviders, baseURL!);
     //  Send API requests to user/groups endpoint
     const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
     const providerUser1 = provider.generators.user(1);

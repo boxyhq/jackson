@@ -16,10 +16,10 @@ test.use(options);
 const { tenant, product } = { ...directoryPayload, tenant: 'api-boxyhq-3' };
 const memberId = 'member1';
 
-test.beforeAll(async ({ request }) => {
+test.beforeAll(async ({ request, baseURL }) => {
   let directory = await createDirectory(request, {
     ...directoryPayload,
-    webhook_url: 'https://example.com',
+    webhook_url: `${baseURL}/api/hello`,
     webhook_secret: 'secret',
     tenant,
   });
@@ -49,30 +49,30 @@ test.describe('GET /api/v1/dsync/events', () => {
   });
 });
 
-// test.describe('GET /api/v1/dsync/events/:event', () => {
-//   test('should be able to get event', async ({ request }) => {
-//     const [directory] = await getDirectory(request, { tenant, product });
+test.describe('GET /api/v1/dsync/events/:event', () => {
+  test('should be able to get event', async ({ request }) => {
+    const [directory] = await getDirectory(request, { tenant, product });
 
-//     // Get events using directoryId
-//     const events = await getDirectoryEvents(request, {
-//       directoryId: directory.id,
-//     });
+    // Get events using directoryId
+    const events = await getDirectoryEvents(request, {
+      directoryId: directory.id,
+    });
 
-//     const response = await request.get(`/api/v1/dsync/events/${events[0].id}`, {
-//       params: {
-//         tenant,
-//         product,
-//         directoryId: directory.id,
-//       },
-//     });
+    const response = await request.get(`/api/v1/dsync/events/${events[0].id}`, {
+      params: {
+        tenant,
+        product,
+        directoryId: directory.id,
+      },
+    });
 
-//     const { data: event } = await response.json();
+    const { data: event } = await response.json();
 
-//     expect(response.ok()).toBe(true);
-//     expect(response.status()).toBe(200);
-//     expect(event.status_code).toBe(200);
-//   });
-// });
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+    expect(event.status_code).toBe(200);
+  });
+});
 
 test.describe('DELETE /api/v1/dsync/events', () => {
   test('should be able to delete all the events from directory', async ({ request }) => {
