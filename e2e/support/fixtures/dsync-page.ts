@@ -13,14 +13,14 @@ export class DSyncPage {
     await this.page.goto(`/admin/directory-sync`);
   }
 
-  async addDSyncConnection(provider: keyof typeof DirectorySyncProviders) {
+  async addDSyncConnection(provider: keyof typeof DirectorySyncProviders, baseURL: string) {
     await this.gotoDSync();
     await this.page.getByRole('link', { name: 'New Directory' }).click();
     await this.page.getByLabel('Directory name').fill('DS-1');
     await this.page.getByLabel('Directory provider').selectOption({ value: provider });
     await this.page.getByLabel('Tenant').fill(this.tenant);
     await this.page.getByLabel('Product').fill(this.product);
-    await this.page.getByLabel('Webhook URL').fill('https://example.com');
+    await this.page.getByLabel('Webhook URL').fill(`${baseURL}/api/hello`);
     await this.page.getByLabel('Webhook secret').fill('secret');
     await this.page.getByRole('button', { name: 'Create Directory' }).click();
     const scimUrl = await this.page.getByLabel('SCIM Endpoint').inputValue();
