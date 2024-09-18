@@ -38,6 +38,7 @@ jobs:
       DB_ENGINE: sql
       DB_URL: postgres://postgres:postgres@localhost:5432/postgres
       DB_TYPE: postgres
+      DB_ENCRYPTION_KEY: 'IDv0Q/4meshxZOvDhtZUWsHMRf9VCvBt+PoB8z3bZV8='
       DEBUG: pw:webserver
       SAML_AUDIENCE: https://saml.boxyhq.com
       JACKSON_API_KEYS: secret
@@ -58,7 +59,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:16.4
         ports:
           - 5432:5432
         env:
@@ -71,43 +72,43 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:6.2.5-alpine
+        image: redis:7.4-alpine
         ports:
           - 6379:6379
       mongo:
-        image: mongo:4.4.28
+        image: mongo:7.0.12
         ports:
           - 27017:27017
       planetscale:
-        image: mysql:8.0.31
+        image: mysql:8.4.2
         ports:
           - 3308:3306
         env:
           MYSQL_DATABASE: mysql
           MYSQL_ROOT_PASSWORD: mysql
       mysql:
-        image: mysql:8.0.31
+        image: mysql:8.4.2
         ports:
           - 3307:3306
         env:
           MYSQL_DATABASE: mysql
           MYSQL_ROOT_PASSWORD: mysql
       maria:
-        image: mariadb:10.4.22
+        image: mariadb:11.5.2
         ports:
           - 3306:3306
         env:
           MARIADB_DATABASE: mysql
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
       mssql:
-        image: mcr.microsoft.com/azure-sql-edge:1.0.6
+        image: mcr.microsoft.com/azure-sql-edge:2.0.0
         ports:
           - 1433:1433
         env:
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: '123ABabc!'
       dynamodb-local:
-        image: 'amazon/dynamodb-local:latest'
+        image: 'amazon/dynamodb-local:2.5.2'
         ports:
           - '8000:8000'
       turso:

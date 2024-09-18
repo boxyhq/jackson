@@ -2,25 +2,13 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
-import { LinkBack, Loading } from '@boxyhq/internal-ui';
-import useDirectory from '@lib/ui/hooks/useDirectory';
+import { LinkBack } from '@boxyhq/internal-ui';
 import { EditDirectory as EditDSync } from '@boxyhq/react-ui/dsync';
 import { BOXYHQ_UI_CSS } from '@components/styles';
 
 const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; setupLinkToken?: string }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
-
-  const { directory, isLoading, isValidating, error } = useDirectory(directoryId, setupLinkToken);
-
-  if (isLoading || !directory || isValidating) {
-    return <Loading />;
-  }
-
-  if (error) {
-    errorToast(error.message);
-    return null;
-  }
 
   const backUrl = setupLinkToken ? `/setup/${setupLinkToken}/directory-sync` : '/admin/directory-sync';
 

@@ -18,6 +18,7 @@ import { JacksonError } from './error';
 import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
+import * as allowed from './oauth/allowed';
 import { oidcIssuerInstance } from './oauth/oidc-issuer';
 
 const deflateRawAsync = promisify(deflateRaw);
@@ -50,9 +51,11 @@ export class SSOHandler {
     tenant?: string;
     product?: string;
     entityId?: string;
+    iss?: string;
     idp_hint?: string;
     idFedAppId?: string;
     fedType?: string;
+    thirdPartyLogin?: { idpInitiatorType?: 'oidc' | 'saml'; iss?: string; target_link_uri?: string };
     tenants?: string[]; // Only used for SAML IdP initiated flow
   }): Promise<
     | {
@@ -75,6 +78,7 @@ export class SSOHandler {
       tenants,
       idFedAppId = '',
       fedType = '',
+      thirdPartyLogin = null,
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
@@ -123,6 +127,33 @@ export class SSOHandler {
       throw new JacksonError(noSSOConnectionErrMessage, 404);
     }
 
+    // Third party login from an oidcProvider, here we match the connection from the iss param
+    if (thirdPartyLogin?.idpInitiatorType === 'oidc') {
+      const oidcConnections = connections.filter(
+        (connection) => 'oidcProvider' in connection
+      ) as OIDCSSORecord[];
+
+      for (const { oidcProvider, ...rest } of oidcConnections) {
+        const connection = { oidcProvider, ...rest };
+        let oidcIssuer;
+        if ('metadata' in oidcProvider) {
+          oidcIssuer = oidcProvider;
+        } else if ('discoveryUrl' in oidcProvider) {
+          oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
+        }
+        if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
+          if (thirdPartyLogin.target_link_uri) {
+            if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
+              throw new JacksonError('target_link_uri is not allowed');
+            }
+          }
+          return { connection };
+        }
+      }
+      // No match found for iss
+      throw new JacksonError(noSSOConnectionErrMessage, 404);
+    }
+
     // If more than one, redirect to the connection selection page
     if (connections.length > 1) {
       const url = new URL(`${this.opts.externalUrl}${this.opts.idpDiscoveryPath}`);
@@ -145,20 +176,22 @@ export class SSOHandler {
       }
 
       // IdP initiated flow
-      if (authFlow === 'idp-initiated' && entityId) {
-        const params = new URLSearchParams({
-          entityId,
-          authFlow,
-        });
+      if (authFlow === 'idp-initiated') {
+        if (entityId) {
+          const params = new URLSearchParams({
+            entityId,
+            authFlow,
+          });
 
-        const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
-          {
-            name: 'SAMLResponse',
-            value: originalParams.SAMLResponse,
-          },
-        ]);
+          const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
+            {
+              name: 'SAMLResponse',
+              value: originalParams.SAMLResponse,
+            },
+          ]);
 
-        return { postForm };
+          return { postForm };
+        }
       }
     }
 
@@ -322,16 +355,21 @@ export class SSOHandler {
         flattenArray: true,
       });
 
-      const responseForm = saml.createPostForm(session.requested.acsUrl, [
-        {
+      const params: { name: string; value: string }[] = [];
+
+      if (session.requested.relayState) {
+        params.push({
           name: 'RelayState',
           value: session.requested.relayState,
-        },
-        {
-          name: 'SAMLResponse',
-          value: Buffer.from(responseSigned).toString('base64'),
-        },
-      ]);
+        });
+      }
+
+      params.push({
+        name: 'SAMLResponse',
+        value: Buffer.from(responseSigned).toString('base64'),
+      });
+
+      const responseForm = saml.createPostForm(session.requested.acsUrl, params);
 
       return { responseForm };
     } catch (err) {

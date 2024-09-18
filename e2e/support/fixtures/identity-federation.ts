@@ -81,7 +81,8 @@ export class IdentityFederationPage {
     await this.page
       .locator('form')
       .filter({ hasText: 'NameTenantProductEntity ID /' })
-      .getByRole('button')
+      .getByRole('button', { name: 'Save Changes' })
+      .first()
       .click();
   }
 

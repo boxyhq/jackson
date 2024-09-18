@@ -41,8 +41,8 @@ const providers = [
 ];
 
 for (const provider of providers) {
-  test(`${provider.type} SCIM connection`, async ({ dsyncPage, request, page }) => {
-    await dsyncPage.addDSyncConnection(provider.type as keyof typeof DirectorySyncProviders);
+  test(`${provider.type} SCIM connection`, async ({ dsyncPage, request, page, baseURL }) => {
+    await dsyncPage.addDSyncConnection(provider.type as keyof typeof DirectorySyncProviders, baseURL!);
     //  Send API requests to user/groups endpoint
     const [directory] = await getDirectory(request, { tenant: dsyncPage.tenant, product: dsyncPage.product });
     const providerUser1 = provider.generators.user(1);
@@ -59,7 +59,7 @@ for (const provider of providers) {
     await dsyncPage.switchToGroupsView({ waitForData: true });
     await expect(await page.getByRole('cell', { name: 'BoxyHQ' })).toBeVisible();
     // Enable webhook logs
-    await dsyncPage.setWebHookEventsLogging({ enable: true });
+    await dsyncPage.setWebHookEventsLogging({ enable: true, directory });
     const providerUser2 = provider.generators.user(2);
     const user2 = await createUser(request, directory, providerUser2);
     await addGroupMember(request, directory, group, user2.id);
@@ -118,7 +118,7 @@ for (const provider of providers) {
     await expect(
       page.getByRole('heading', { name: 'No webhook events found for this directory.' })
     ).toBeVisible();
-    await dsyncPage.setWebHookEventsLogging({ enable: false });
+    await dsyncPage.setWebHookEventsLogging({ enable: false, directory });
     // User deletion
     await deleteUser(request, directory, user1.id);
     await deleteUser(request, directory, user2.id);

@@ -9,14 +9,30 @@ updates:
     directory: '/' # Location of package manifests
     schedule:
       interval: 'daily'
+    groups:
+      typescript-eslint:
+        patterns:
+          - '@typescript-eslint/*'
+      next:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
   - package-ecosystem: 'npm'
     directory: '/npm'
     schedule:
       interval: 'daily'
+    groups:
+      aws-sdk:
+        patterns:
+          - '@aws-sdk/*'
   - package-ecosystem: 'npm'
     directory: '/internal-ui'
     schedule:
       interval: 'daily'
+    groups:
+      typescript-eslint:
+        patterns:
+          - '@typescript-eslint/*'
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
