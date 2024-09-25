@@ -1,7 +1,6 @@
 import { CopyToClipboardButton } from '@boxyhq/internal-ui';
+import { PrismLoader } from '@boxyhq/internal-ui';
 import { useTranslation } from 'next-i18next';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => {
   const { t } = useTranslation('common');
@@ -38,9 +37,9 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
             <CopyToClipboardButton text={eventURL} />
           </div>
 
-          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
-            {eventURL}
-          </SyntaxHighlighter>
+          <pre className='language-shell'>
+            <code className='language-shell'>{eventURL}</code>
+          </pre>
         </div>
 
         <div>
@@ -51,9 +50,10 @@ const CodeSnippet = ({ token, baseUrl }: { token: string; baseUrl: string }) => 
             <CopyToClipboardButton text={curlRequest} />
           </div>
 
-          <SyntaxHighlighter language='bash' style={materialOceanic} customStyle={{ borderRadius: '0.5em' }}>
-            {curlRequest}
-          </SyntaxHighlighter>
+          <pre className='language-shell'>
+            <code className='language-shell'>{curlRequest}</code>
+          </pre>
+          <PrismLoader></PrismLoader>
         </div>
       </div>
     </>

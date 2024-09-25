@@ -1,11 +1,9 @@
 import useSWR from 'swr';
 import type { Group } from '../types';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { fetcher } from '../utils';
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
-import { Loading, Error, PageHeader } from '../shared';
+import { Loading, Error, PageHeader, PrismLoader } from '../shared';
 
 export const DirectoryGroupInfo = ({
   urls,
@@ -34,10 +32,12 @@ export const DirectoryGroupInfo = ({
       <PageHeader title={directory.name} />
       <DirectoryTab activeTab='groups' baseUrl={urls.tabBase} />
       <div className='text-sm'>
-        <SyntaxHighlighter language='json' style={materialOceanic}>
-          {JSON.stringify(group, null, 2)}
-        </SyntaxHighlighter>
+        <pre className='language-json'>
+          <code className='language-json'>{JSON.stringify(group, null, 2)}</code>
+        </pre>
       </div>
+
+      <PrismLoader></PrismLoader>
     </>
   );
 };
