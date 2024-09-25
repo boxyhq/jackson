@@ -36,6 +36,7 @@ export const DirectoryUserInfo = ({
           <code className='language-json'>{JSON.stringify(user, null, 2)}</code>
         </pre>
       </div>
+      <PrismLoader></PrismLoader>
     </>
   );
 };
