@@ -108,11 +108,13 @@ export class ChatController {
 
   private async saveLLMConfigInVault({
     tenant,
+    provider,
     apiKey,
     baseURL,
     piiPolicy,
   }: {
     tenant: string;
+    provider: string;
     apiKey?: string;
     baseURL?: string;
     piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
@@ -120,6 +122,7 @@ export class ChatController {
     const res = await axios.post(
       `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data/llm-config`,
       {
+        provider,
         apiKey: apiKey || '',
         baseURL: baseURL || '',
         piiPolicy,
@@ -157,12 +160,14 @@ export class ChatController {
 
   private async updateLLMConfigInVault({
     tenant,
+    provider,
     token,
     apiKey,
     baseURL,
     piiPolicy,
   }: {
     tenant: string;
+    provider: string;
     token: string;
     apiKey?: string;
     baseURL?: string;
@@ -171,6 +176,7 @@ export class ChatController {
     await axios.put(
       `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data/llm-config?token=${token}`,
       {
+        provider,
         apiKey,
         baseURL,
         piiPolicy,
@@ -197,6 +203,7 @@ export class ChatController {
     await this.updateLLMConfigInVault({
       token: config.terminusToken,
       tenant: config.tenant,
+      provider: llmConfig.provider,
       apiKey: llmConfig.apiKey || configFromVault.apiKey,
       baseURL: llmConfig.baseURL,
       piiPolicy: llmConfig.piiPolicy,
