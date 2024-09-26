@@ -137,6 +137,12 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       ],
     },
     {
+      href: '/admin/chat',
+      text: t('bui-chat'),
+      icon: ChatBubbleOvalLeftIcon,
+      active: asPath.includes('/admin/chat'),
+    },
+    {
       href: '/admin/settings',
       text: t('settings'),
       icon: Cog8ToothIcon,
@@ -153,12 +159,6 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           active: asPath.includes('/admin/settings/branding'),
         },
       ],
-    },
-    {
-      href: '/admin/chat',
-      text: t('bui-chat'),
-      icon: ChatBubbleOvalLeftIcon,
-      active: asPath.includes('/admin/chat'),
     },
   ];
 
