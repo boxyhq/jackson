@@ -22,7 +22,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Body = ({ children }: { children: React.ReactNode }) => {
-  return <div className='card-body dark:bg-black gap-4 p-6'>{children}</div>;
+  return <div className='card-body dark:bg-black gap-4 p-6 overflow-auto'>{children}</div>;
 };
 
 const Footer = ({ children }: { children: React.ReactNode }) => {
