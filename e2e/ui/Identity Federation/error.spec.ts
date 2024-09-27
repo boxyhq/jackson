@@ -75,7 +75,7 @@ const errorMessages: string[] = [];
 test('SAML Federated app + Wrong ACS url', async ({ baseURL, page, portal, samlFedPage, ssoPage }) => {
   await samlFedPage.updateApp({ acsUrl: 'https://invalid-url.com' });
   // Add SSO connection for tenant
-  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.goto();
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
@@ -105,7 +105,7 @@ test('SAML Federated app + inactive SSO connection', async ({
   ssoPage,
 }) => {
   // Add SSO connection for tenants
-  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.goto();
   await ssoPage.addSSOConnection({
     name: 'SF-SAML',
     type: 'saml',
@@ -144,7 +144,7 @@ test('OIDC Federated app + SSO Provider with wrong redirect url', async ({
   oidcFedPage,
 }) => {
   // Add SSO connection for tenants
-  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.goto();
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',
@@ -180,7 +180,7 @@ test('OIDC Federated app + inactive SSO connection', async ({
   oidcFedPage,
 }) => {
   // Add SSO connection for tenants
-  await page.getByRole('link', { name: 'Connections' }).first().click();
+  await ssoPage.goto();
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
     type: 'saml',

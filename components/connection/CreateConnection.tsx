@@ -21,6 +21,8 @@ const CreateConnection = ({
 
   const backUrl = redirectUrl;
 
+  const fieldsToExclude: any = isSettingsView ? ['label', 'tenant', 'product'] : ['label'];
+
   return (
     <>
       {backUrl && <LinkBack href={backUrl} />}
@@ -34,7 +36,10 @@ const CreateConnection = ({
           urls={{
             post: '/api/admin/connections',
           }}
-          excludeFields={{ saml: ['label'], oidc: ['label'] }}
+          excludeFields={{
+            saml: fieldsToExclude,
+            oidc: fieldsToExclude,
+          }}
           successCallback={() => router.replace(redirectUrl)}
           errorCallback={(errMessage) => errorToast(errMessage)}
           classNames={BOXYHQ_UI_CSS}
