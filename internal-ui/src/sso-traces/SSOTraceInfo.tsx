@@ -1,11 +1,9 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { fetcher } from '../utils';
 import type { SSOTrace } from '../types';
-import { Loading, Error, PageHeader, Badge } from '../shared';
+import { Loading, Error, PageHeader, Badge, PrismLoader } from '../shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
 
 const ListItem = ({ term, value }: { term: string; value: string | JSX.Element | JSX.Element[] }) => (
@@ -123,9 +121,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlResponse}></CopyToClipboardButton>
-                <SyntaxHighlighter language='xml' style={materialOceanic}>
-                  {trace.context.samlResponse}
-                </SyntaxHighlighter>
+                <pre className='language-xml'>
+                  <code className='language-xml'>{trace.context.samlResponse}</code>
+                </pre>
               </>
             }
           />
@@ -137,9 +135,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlRequest}></CopyToClipboardButton>
-                <SyntaxHighlighter language='xml' style={materialOceanic}>
-                  {trace.context.samlRequest}
-                </SyntaxHighlighter>
+                <pre className='language-xml'>
+                  <code className='language-xml'>{trace.context.samlRequest}</code>
+                </pre>
               </>
             }
           />
@@ -149,9 +147,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
           <ListItem
             term={t('bui-traces-profile')}
             value={
-              <SyntaxHighlighter language='json' style={materialOceanic}>
-                {JSON.stringify(trace.context.profile)}
-              </SyntaxHighlighter>
+              <pre className='language-json'>
+                <code className='language-json'>{JSON.stringify(trace.context.profile)}</code>
+              </pre>
             }
           />
         )}
@@ -173,9 +171,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.id_token}></CopyToClipboardButton>
-                <SyntaxHighlighter language='shell' style={materialOceanic}>
-                  {trace.context.oidcTokenSet.id_token}
-                </SyntaxHighlighter>
+                <pre className='language-shell'>
+                  <code className='language-shell'>{trace.context.oidcTokenSet.id_token}</code>
+                </pre>
               </>
             }
           />
@@ -187,9 +185,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.access_token}></CopyToClipboardButton>
-                <SyntaxHighlighter language='shell' style={materialOceanic}>
-                  {trace.context.oidcTokenSet.access_token}
-                </SyntaxHighlighter>
+                <pre className='language-shell'>
+                  <code className='language-shell'>{trace.context.oidcTokenSet.access_token}</code>
+                </pre>
               </>
             }
           />
@@ -199,9 +197,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
           <ListItem
             term={t('bui-traces-stack-trace')}
             value={
-              <SyntaxHighlighter language='shell' style={materialOceanic}>
-                {trace.context.stack}
-              </SyntaxHighlighter>
+              <pre className='language-shell'>
+                <code className='language-shell'>{trace.context.stack}</code>
+              </pre>
             }
           />
         )}
@@ -224,6 +222,7 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
           />
         )}
       </dl>
+      <PrismLoader></PrismLoader>
     </div>
   );
 };
