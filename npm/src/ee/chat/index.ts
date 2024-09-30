@@ -291,10 +291,14 @@ export class ChatController {
     return { id: chatID, createdAt, ...chat };
   }
 
-  public async getChatThreadByConversationId(conversationId: string): Promise<LLMChat[]> {
+  public async getChatThreadByConversationId(conversationId: string, userId: string): Promise<LLMChat[]> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const conversation = await this.getConversationById(conversationId);
+
+    if (userId !== conversation.userId) {
+      throw new JacksonError('Forbidden', 403);
+    }
 
     if (!conversation) {
       throw new JacksonError('Conversation not found', 404);
