@@ -236,7 +236,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   const { tenant, product } = adminPortalSSODefaults;
 
-  let branding = await getPortalBranding();
+  const branding = await getPortalBranding();
 
   return {
     props: {
