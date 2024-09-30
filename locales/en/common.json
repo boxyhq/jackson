@@ -87,7 +87,7 @@
   "project_name": "Project name",
   "create_project": "Create Project",
   "invalid_setup_link_alert": "Please contact your administrator to get a new setup link. If you are the administrator, visit the Admin Portal to create a new setup link for the service.",
-  "boxyhq_admin_portal": "BoxyHQ Admin Portal",
+  "admin_portal": "Admin Portal",
   "environment": "Environment",
   "group_or_tenant": "Group (Tenant)",
   "id": "ID",

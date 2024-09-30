@@ -63,7 +63,13 @@ const SSOConnectionList = ({
         urls={{
           get: getConnectionsUrl,
         }}
-        cols={isSetupLinkView ? ['provider', 'type', 'status', 'actions'] : undefined}
+        cols={
+          isSetupLinkView
+            ? ['provider', 'type', 'status', 'actions']
+            : isSettingsView
+              ? ['name', 'provider', 'type', 'status', 'actions']
+              : undefined
+        }
         handleListFetchComplete={(connections) => {
           if (connections?.length === 0 && setupLinkToken) {
             router.replace(`/setup/${setupLinkToken}/sso-connection/new`);

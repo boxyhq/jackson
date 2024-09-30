@@ -21,3 +21,4 @@ export { Alert } from './Alert';
 export { InputWithCopyButton, CopyToClipboardButton } from './InputWithCopyButton';
 export { IconButton } from './IconButton';
 export { InputWithLabel } from './InputWithLabel';
+export { PrismLoader } from './PrismLoader';

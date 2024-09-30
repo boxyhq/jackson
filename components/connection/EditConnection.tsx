@@ -32,6 +32,8 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
     ? `/api/setup/${setupLinkToken}/sso-connection/${connectionClientId}`
     : `/api/admin/connections/${connectionClientId}`;
 
+  const fieldsToExclude: any = isSettingsView ? ['label', 'tenant', 'product'] : ['label'];
+
   return (
     <>
       <LinkBack href={backUrl} />
@@ -59,7 +61,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                       'label',
                       'sortOrder',
                     ]
-                  : ['label']
+                  : fieldsToExclude
               }
               classNames={BOXYHQ_UI_CSS}
               variant='advanced'
@@ -106,7 +108,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
                       'label',
                       'sortOrder',
                     ]
-                  : ['label']
+                  : fieldsToExclude
               }
               classNames={BOXYHQ_UI_CSS}
               urls={{
