@@ -36,7 +36,6 @@ metadata:
     jacksondev: "1"
     tier: jackson
   name: jackson
-  namespace: default
 spec:
   ports:
     - name: original
@@ -56,7 +55,6 @@ metadata:
     jacksondev: "1"
     tier: jackson-internal
   name: jackson-internal
-  namespace: default
 spec:
   ports:
     - name: original
@@ -90,7 +88,6 @@ metadata:
   labels:
     jacksondev: "1"
   name: jackson
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -218,7 +215,6 @@ metadata:
   labels:
     jacksondev: "1"
   name: jackson-migrate-pg
-  namespace: default
 spec:
   template:
     metadata:

@@ -9,8 +9,8 @@ jackson:
   dbUrl: postgres://postgres:password@jackson-postgres:5432/postgres
   jackson:
     image:
-      repository: boxyhq/jackson-local
-      tag: v1.26.1-333-g3d02ee75-dirty
+      repository: boxyhq/jackson
+      tag: 1.28.2
     imagePullPolicy: IfNotPresent
     resources:
       limits:
@@ -33,26 +33,7 @@ kubernetesClusterDomain: cluster.local
 migratePg:
   db:
     image:
-      repository: boxyhq/jackson-local
-      tag: v1.26.1-333-g3d02ee75-dirty
+      repository: boxyhq/jackson
+      tag: 1.28.2
     imagePullPolicy: IfNotPresent
-postgres:
-  ports:
-  - name: postgres
-    port: 5432
-    targetPort: postgres
-  postgres:
-    env:
-      pgdata: /var/lib/postgresql/data/pgdata
-      postgresDb: postgres
-      postgresPassword: password
-      postgresUser: postgres
-    image:
-      repository: postgres
-      tag: "16.4"
-    imagePullPolicy: IfNotPresent
-  type: ClusterIP
-  volumeClaims:
-    jacksonPostgresData:
-      requests:
-        storage: 1Gi
+

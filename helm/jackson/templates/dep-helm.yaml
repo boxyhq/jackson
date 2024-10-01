@@ -38,7 +38,6 @@ metadata:
     tier: jackson
   {{- include "jackson.labels" . | nindent 4 }}
   name: {{ include "jackson.fullname" . }}-jackson
-  namespace: default
 spec:
   ports:
     {{- .Values.jackson.ports | toYaml | nindent 2 }}
@@ -58,7 +57,6 @@ metadata:
     tier: jackson-internal
   {{- include "jackson.labels" . | nindent 4 }}
   name: {{ include "jackson.fullname" . }}-internal
-  namespace: default
 spec:
   type: {{ .Values.internal.type }}
   ports:
@@ -92,7 +90,6 @@ metadata:
     jacksondev: "1"
   {{- include "jackson.labels" . | nindent 4 }}
   name: {{ include "jackson.fullname" . }}-jackson
-  namespace: default
 spec:
   replicas: {{ .Values.jackson.replicas }}
   selector:
@@ -221,7 +218,6 @@ metadata:
     jacksondev: "1"
   {{- include "jackson.labels" . | nindent 4 }}
   name: {{ include "jackson.fullname" . }}-migrate-pg
-  namespace: default
 spec:
   template:
     metadata:
