@@ -10,7 +10,9 @@ import { defaultHeaders } from '../utils';
 
 export default function ChatSettings() {
   const { t } = useTranslation('common');
-  const [selectedProvider, setSelectedProvider] = useState<LLMProvidersOptionsType[number]['id'] | ''>('');
+  const [selectedProvider, setSelectedProvider] = useState<LLMProvidersOptionsType[number]['id'] | ''>(
+    'openai'
+  );
   const [selectedModel, setSelectedModel] = useState<string[]>([]);
   const [apiKey, setApiKey] = useState('');
   const [baseURL, setBaseURL] = useState('');
@@ -173,7 +175,10 @@ export default function ChatSettings() {
               className='self-start'
               color='primary'
               size='md'
-              onClick={() => switchView('create')}>
+              onClick={() => {
+                switchView('create');
+                setSelectedProvider('openai');
+              }}>
               {t('bui-chat-add')}
             </Button>
           )}
