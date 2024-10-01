@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 
@@ -12,6 +12,22 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession({ required: true });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [branding, setBranding] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchBrandingInfo = async () => {
+      try {
+        // Replace this with your actual API call
+        const response = await fetch('/api/branding');
+        const data = await response.json();
+        setBranding(data.data);
+      } catch (error) {
+        console.error('Error fetching branding info:', error);
+      }
+    };
+
+    fetchBrandingInfo();
+  }, []);
 
   if (status === 'loading') {
     return <Loading />;
@@ -20,10 +36,10 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Head>
-        <title>{t('boxyhq_admin_portal')}</title>
-        <link rel='icon' href='/favicon.ico' />
+        <title>{(branding ? branding.companyName : 'BoxyHQ') + ' ' + t('admin_portal')}</title>
+        <link rel='icon' href={branding ? branding.faviconUrl : '/favicon.ico'} />
       </Head>
-      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} branding={branding} />
       <div className='flex flex-1 flex-col md:pl-64'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <button

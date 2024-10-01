@@ -45,6 +45,7 @@ const test = baseTest.extend<MyFixtures>({
 });
 
 test('OIDC Federated app + 1 SAML & 1 OIDC providers', async ({ baseURL, oidcFedPage, portal, ssoPage }) => {
+  await ssoPage.goto();
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
@@ -75,6 +76,7 @@ test('OIDC Federated app + 1 SAML & 1 OIDC providers', async ({ baseURL, oidcFed
 });
 
 test('OIDC Federated app + 2 SAML providers', async ({ baseURL, oidcFedPage, ssoPage, portal }) => {
+  await ssoPage.goto();
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
@@ -106,6 +108,7 @@ test('OIDC Federated app + 2 SAML providers', async ({ baseURL, oidcFedPage, sso
 });
 
 test('OIDC Federated app + 2 OIDC providers', async ({ baseURL, oidcFedPage, ssoPage, portal }) => {
+  await ssoPage.goto();
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',
@@ -137,6 +140,7 @@ test('OIDC Federated app + 2 OIDC providers', async ({ baseURL, oidcFedPage, sso
 });
 
 test('OIDC Federated app + 1 SAML provider', async ({ baseURL, oidcFedPage, ssoPage, page, portal }) => {
+  await ssoPage.goto();
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-SAML',
@@ -155,6 +159,7 @@ test('OIDC Federated app + 1 SAML provider', async ({ baseURL, oidcFedPage, ssoP
 });
 
 test('OIDC Federated app + 1 OIDC provider', async ({ baseURL, oidcFedPage, ssoPage, page, portal }) => {
+  await ssoPage.goto();
   // Add SSO connection for tenants
   await ssoPage.addSSOConnection({
     name: 'OF-OIDC',

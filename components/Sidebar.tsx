@@ -15,6 +15,7 @@ import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 type SidebarProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  branding: any;
 };
 
 type MenuItem = {
@@ -25,7 +26,7 @@ type MenuItem = {
   items?: MenuItem[];
 };
 
-export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
 
@@ -171,10 +172,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               </button>
             </div>
             <div className='flex flex-shrink-0 items-center px-4'>
-              <Link href='/' className='flex items-center'>
-                <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-                <span className='ml-4 text-xl font-bold text-gray-900'>{t('boxyhq_admin_portal')}</span>
-              </Link>
+              <BrandingLink t={t} branding={branding}></BrandingLink>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <MenuItems menus={menus} />
@@ -188,10 +186,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
         <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
           <div className='flex flex-shrink-0 items-center px-4'>
-            <Link href='/' className='flex items-center'>
-              <Image src={Logo} alt='BoxyHQ' width={36} height={36} className='h-8 w-auto' />
-              <span className='ml-4 text-lg font-bold text-gray-900'>{t('boxyhq_admin_portal')}</span>
-            </Link>
+            <BrandingLink t={t} branding={branding}></BrandingLink>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
             <MenuItems menus={menus} />
@@ -241,6 +236,42 @@ const ItemLink = (props: MenuItem) => {
       )}>
       {props.icon && <props.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />}
       {text}
+    </Link>
+  );
+};
+
+const BrandingLink = ({ t, branding }) => {
+  return (
+    <Link href='/' className='flex items-center'>
+      {!branding && (
+        <>
+          <svg
+            className='w-10 h-10 text-gray-200 dark:text-gray-600'
+            aria-hidden='true'
+            xmlns='http://www.w3.org/2000/svg'
+            fill='currentColor'
+            viewBox='0 0 20 18'>
+            <path d='M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z' />
+          </svg>
+          <div className='w-full ml-2'>
+            <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48'></div>
+          </div>
+        </>
+      )}
+      {branding && (
+        <>
+          <Image
+            src={branding ? branding.logoUrl : Logo}
+            alt={branding ? branding.companyName : 'BoxyHQ'}
+            width={36}
+            height={36}
+            className='h-8 w-auto'
+          />
+          <span className='ml-4 text-lg font-bold text-gray-900'>
+            {(branding ? branding.companyName : 'BoxyHQ') + ' ' + t('admin_portal')}
+          </span>
+        </>
+      )}
     </Link>
   );
 };

@@ -1,14 +1,12 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter/dist/cjs';
-import { materialOceanic } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { fetcher } from '../utils';
 import type { SSOTrace } from '../types';
-import { Loading, Error, PageHeader, Badge } from '../shared';
+import { Loading, Error, PageHeader, Badge, PrismLoader } from '../shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
 
-const ListItem = ({ term, value }: { term: string; value: string | JSX.Element }) => (
+const ListItem = ({ term, value }: { term: string; value: string | JSX.Element | JSX.Element[] }) => (
   <div className='grid grid-cols-3 py-3'>
     <dt className='text-sm font-medium text-gray-500'>{term}</dt>
     <dd className='text-sm text-gray-900 overflow-auto col-span-2'>{value}</dd>
@@ -46,6 +44,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
     }
   } else if (trace.context.isSAMLFederated) {
     badgeText = t('bui-traces-saml-federation');
+    if (trace.context.oidcIdPRequest) {
+      badgeText += ',' + t('bui-traces-oidc-third-party-login');
+    }
   } else if (trace.context.isIdPFlow) {
     badgeText = t('bui-traces-idp-login');
   } else if (trace.context.requestedOIDCFlow) {
@@ -53,6 +54,17 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
   } else {
     badgeText = t('bui-traces-oauth2');
   }
+
+  const badge = badgeText.split(',').map((text) => (
+    <Badge
+      key={text}
+      color='primary'
+      size='md'
+      className='font-mono uppercase text-white last-of-type:ml-2'
+      aria-label={t('bui-traces-sp-protocol')!}>
+      {text}
+    </Badge>
+  ));
 
   return (
     <div className='space-y-3'>
@@ -62,18 +74,7 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
 
         <ListItem term={t('bui-traces-assertion-type')} value={assertionType} />
 
-        <ListItem
-          term={t('bui-traces-sp-protocol')}
-          value={
-            <Badge
-              color='primary'
-              size='md'
-              className='font-mono uppercase text-white'
-              aria-label={t('bui-traces-sp-protocol')!}>
-              {badgeText}
-            </Badge>
-          }
-        />
+        <ListItem term={t('bui-traces-sp-protocol')} value={badge} />
 
         {typeof trace.timestamp === 'number' && (
           <ListItem term={t('bui-traces-timestamp')} value={new Date(trace.timestamp).toLocaleString()} />
@@ -120,9 +121,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlResponse}></CopyToClipboardButton>
-                <SyntaxHighlighter language='xml' style={materialOceanic}>
-                  {trace.context.samlResponse}
-                </SyntaxHighlighter>
+                <pre className='language-xml'>
+                  <code className='language-xml'>{trace.context.samlResponse}</code>
+                </pre>
               </>
             }
           />
@@ -134,9 +135,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.samlRequest}></CopyToClipboardButton>
-                <SyntaxHighlighter language='xml' style={materialOceanic}>
-                  {trace.context.samlRequest}
-                </SyntaxHighlighter>
+                <pre className='language-xml'>
+                  <code className='language-xml'>{trace.context.samlRequest}</code>
+                </pre>
               </>
             }
           />
@@ -146,9 +147,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
           <ListItem
             term={t('bui-traces-profile')}
             value={
-              <SyntaxHighlighter language='json' style={materialOceanic}>
-                {JSON.stringify(trace.context.profile)}
-              </SyntaxHighlighter>
+              <pre className='language-json'>
+                <code className='language-json'>{JSON.stringify(trace.context.profile)}</code>
+              </pre>
             }
           />
         )}
@@ -170,9 +171,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.id_token}></CopyToClipboardButton>
-                <SyntaxHighlighter language='shell' style={materialOceanic}>
-                  {trace.context.oidcTokenSet.id_token}
-                </SyntaxHighlighter>
+                <pre className='language-shell'>
+                  <code className='language-shell'>{trace.context.oidcTokenSet.id_token}</code>
+                </pre>
               </>
             }
           />
@@ -184,9 +185,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
             value={
               <>
                 <CopyToClipboardButton text={trace.context.oidcTokenSet.access_token}></CopyToClipboardButton>
-                <SyntaxHighlighter language='shell' style={materialOceanic}>
-                  {trace.context.oidcTokenSet.access_token}
-                </SyntaxHighlighter>
+                <pre className='language-shell'>
+                  <code className='language-shell'>{trace.context.oidcTokenSet.access_token}</code>
+                </pre>
               </>
             }
           />
@@ -196,9 +197,9 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
           <ListItem
             term={t('bui-traces-stack-trace')}
             value={
-              <SyntaxHighlighter language='shell' style={materialOceanic}>
-                {trace.context.stack}
-              </SyntaxHighlighter>
+              <pre className='language-shell'>
+                <code className='language-shell'>{trace.context.stack}</code>
+              </pre>
             }
           />
         )}
@@ -213,7 +214,15 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
         {trace.context.scope_from_op_error && (
           <ListItem term={t('bui-traces-scope-from-op-error')} value={trace.context.scope_from_op_error} />
         )}
+
+        {trace.context.oidcIdPRequest && (
+          <ListItem
+            term={t('bui-traces-oidc-third-party-login-params')}
+            value={JSON.stringify(trace.context.oidcIdPRequest)}
+          />
+        )}
       </dl>
+      <PrismLoader></PrismLoader>
     </div>
   );
 };

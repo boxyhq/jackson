@@ -10,6 +10,7 @@ import { errorToast, successToast } from '@components/Toaster';
 import { ButtonOutline, Loading } from '@boxyhq/internal-ui';
 import { Login as SSOLogin } from '@boxyhq/react-ui/sso';
 import { adminPortalSSODefaults } from '@lib/env';
+import { getPortalBranding } from '@ee/branding/utils';
 
 const Login = ({
   csrfToken,
@@ -17,6 +18,7 @@ const Login = ({
   product,
   isEmailPasswordEnabled,
   isMagicLinkEnabled,
+  branding,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation('common');
   const router = useRouter();
@@ -111,10 +113,15 @@ const Login = ({
           <div className='mt-4 border px-6 py-8 text-left shadow-md'>
             <div className='space-y-3'>
               <div className='flex justify-center'>
-                <Image src='/logo.png' alt='BoxyHQ logo' width={50} height={50} />
+                <Image
+                  src={branding ? branding.logoUrl : '/logo.png'}
+                  alt={(branding ? branding.companyName : 'BoxyHQ') + ' logo'}
+                  width={50}
+                  height={50}
+                />
               </div>
               <h2 className='text-center text-3xl font-extrabold text-gray-900'>
-                {t('boxyhq_admin_portal')}
+                {(branding ? branding.companyName : 'BoxyHQ') + ' ' + t('admin_portal')}
               </h2>
               <p className='text-center text-sm text-gray-600'>{t('boxyhq_tagline')}</p>
             </div>
@@ -123,37 +130,33 @@ const Login = ({
               <form method='POST' onSubmit={onEmailPasswordLogin}>
                 <div className='mt-6'>
                   <div className='flex flex-col gap-3'>
-                    <label className='block text-sm font-medium' htmlFor='email'>
+                    <label className='block text-sm font-medium'>
                       {t('bui-shared-email')}
-                      <label>
-                        <input
-                          type='email'
-                          placeholder={t('bui-shared-email')}
-                          className='input-bordered input mt-2 w-full rounded-md'
-                          required
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                          }}
-                          value={email}
-                        />
-                      </label>
+                      <input
+                        type='email'
+                        placeholder={t('bui-shared-email')}
+                        className='input-bordered input mt-2 w-full rounded-md'
+                        required
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                        value={email}
+                      />
                     </label>
                     {isEmailPasswordEnabled && (
                       <>
-                        <label className='block text-sm font-medium' htmlFor='password'>
+                        <label className='block text-sm font-medium'>
                           {t('password')}
-                          <label>
-                            <input
-                              type='password'
-                              placeholder={t('password')}
-                              className='input-bordered input mt-2 w-full rounded-md'
-                              required
-                              onChange={(e) => {
-                                setPassword(e.target.value);
-                              }}
-                              value={password}
-                            />
-                          </label>
+                          <input
+                            type='password'
+                            placeholder={t('password')}
+                            className='input-bordered input mt-2 w-full rounded-md'
+                            required
+                            onChange={(e) => {
+                              setPassword(e.target.value);
+                            }}
+                            value={password}
+                          />
                         </label>
                         <ButtonOutline
                           loading={loading && authMethod === 'credentials'}
@@ -233,6 +236,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   const { tenant, product } = adminPortalSSODefaults;
 
+  const branding = await getPortalBranding();
+
   return {
     props: {
       csrfToken: await getCsrfToken(context),
@@ -240,6 +245,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       product,
       isMagicLinkEnabled,
       isEmailPasswordEnabled,
+      branding,
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
     },
   };

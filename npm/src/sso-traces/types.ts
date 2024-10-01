@@ -1,5 +1,6 @@
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import SSOTraces from '.';
+import { OIDCIdPInitiatedReq } from '../typings';
 
 export interface Trace {
   traceId: string;
@@ -37,6 +38,7 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     scope_from_op_error?: string;
     stack?: string;
     oidcTokenSet?: { id_token?: string; access_token?: string };
+    oidcIdPRequest?: OIDCIdPInitiatedReq;
   };
 }
 

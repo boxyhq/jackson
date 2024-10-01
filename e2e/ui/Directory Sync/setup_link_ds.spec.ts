@@ -15,11 +15,11 @@ export const test = baseTest.extend<MyFixtures>({
     await portal.doCredentialsLogin();
     await use(portal);
   },
-  setuplinkPage: async ({ page }, use) => {
+  setuplinkPage: async ({ page, baseURL }, use) => {
     const setuplinkPage = new SetupLinkDSPage(page, PRODUCT, TENANT);
 
     // Create setup link
-    await setuplinkPage.createSetupLink();
+    await setuplinkPage.createSetupLink(baseURL!);
 
     // use setup link in all tests
     await use(setuplinkPage);

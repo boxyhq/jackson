@@ -25,22 +25,22 @@
     "vite-tsconfig-paths": "5.0.1"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "11.1.6",
-    "@types/node": "22.5.2",
-    "@types/react": "18.3.5",
-    "@typescript-eslint/eslint-plugin": "8.4.0",
-    "@typescript-eslint/parser": "8.4.0",
-    "@vitejs/plugin-react": "4.3.1",
+    "@rollup/plugin-typescript": "12.1.0",
+    "@types/node": "22.7.4",
+    "@types/react": "18.3.10",
+    "@typescript-eslint/eslint-plugin": "8.8.0",
+    "@typescript-eslint/parser": "8.8.0",
+    "@vitejs/plugin-react": "4.3.2",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.2",
-    "eslint-plugin-react-refresh": "0.4.11",
+    "eslint-plugin-react-refresh": "0.4.12",
     "prettier": "3.3.3",
-    "react-daisyui": "5.0.4",
-    "typescript": "5.5.4",
-    "vite": "5.4.2"
+    "react-daisyui": "5.0.5",
+    "typescript": "5.6.2",
+    "vite": "5.4.8"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.2"
+    "@rollup/rollup-linux-x64-gnu": "4.22.5"
   },
   "peerDependencies": {
     "@boxyhq/react-ui": ">=3.3.42",
@@ -49,9 +49,9 @@
     "formik": ">=2.4.5",
     "next": ">=14.1.0",
     "next-i18next": ">=13.3.0",
+    "prismjs": ">=1.29.0",
     "react": ">=18.2.0",
     "react-daisyui": ">=5.0.0",
-    "react-syntax-highlighter": ">=15.5.0",
     "react-tagsinput": ">=3.20.3",
     "swr": ">=2.2.5"
   }

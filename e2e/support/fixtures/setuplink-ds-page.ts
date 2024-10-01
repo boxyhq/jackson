@@ -19,14 +19,14 @@ export class SetupLinkDSPage {
     this.setupLinkUrl = '';
   }
 
-  async createSetupLink() {
+  async createSetupLink(baseURL: string) {
     // Create setup link
     await this.page.goto(this.adminPage);
     await this.page.getByRole('button', { name: 'New Setup Link' }).click();
     await this.page.getByPlaceholder('Acme Directory').fill('acme-test');
     await this.page.getByPlaceholder('acme', { exact: true }).fill(this.tenant);
     await this.page.getByPlaceholder('MyApp').fill(this.product);
-    await this.page.getByPlaceholder('https://yourapp.com/webhook').fill('https://example.com');
+    await this.page.getByPlaceholder('https://yourapp.com/webhook').fill(`${baseURL}/api/hello`);
     await this.page.getByPlaceholder('your-secret').fill('secret');
     await this.page.getByRole('button', { name: 'Create Setup Link' }).click();
 
