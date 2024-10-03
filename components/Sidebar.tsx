@@ -12,7 +12,7 @@ import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -45,6 +45,21 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       document.removeEventListener('keydown', handleEscKey);
     };
   }, [closeSidebar]);
+
+  const [isLLMChatEnabled, setIsLLMChatEnabled] = useState(false);
+  useEffect(() => {
+    const fetchChatFeatureStatus = async () => {
+      try {
+        const response = await fetch('/api/admin/chat/enabled');
+        const data = await response.json();
+        setIsLLMChatEnabled(data.data.enabled);
+      } catch (error) {
+        console.error('Error fetching chat feature status:', error);
+      }
+    };
+
+    fetchChatFeatureStatus();
+  }, []);
 
   const menus = [
     {
@@ -137,12 +152,14 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-    {
-      href: '/admin/chat',
-      text: t('bui-chat'),
-      icon: ChatBubbleOvalLeftIcon,
-      active: asPath.includes('/admin/chat'),
-    },
+    isLLMChatEnabled
+      ? {
+          href: '/admin/chat',
+          text: t('bui-chat'),
+          icon: ChatBubbleOvalLeftIcon,
+          active: asPath.includes('/admin/chat'),
+        }
+      : null,
     {
       href: '/admin/settings',
       text: t('settings'),
@@ -219,17 +236,19 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   );
 };
 
-const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
+const MenuItems = ({ menus }: { menus: (MenuItem | null)[] }) => {
   return (
     <nav className='space-y-1'>
-      {menus.map((menu, id) => {
-        return (
-          <div key={id}>
-            <ItemLink key={id} {...menu} />
-            {menu.items && <SubMenuItems items={menu.items} />}
-          </div>
-        );
-      })}
+      {menus
+        .filter((m) => m !== null)
+        .map((menu, id) => {
+          return (
+            <div key={id}>
+              <ItemLink key={id} {...menu} />
+              {menu.items && <SubMenuItems items={menu.items} />}
+            </div>
+          );
+        })}
     </nav>
   );
 };
