@@ -41,9 +41,9 @@
     "coverage-map": "map.js"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.658.1",
-    "@aws-sdk/credential-providers": "3.658.1",
-    "@aws-sdk/util-dynamodb": "3.658.1",
+    "@aws-sdk/client-dynamodb": "3.662.0",
+    "@aws-sdk/credential-providers": "3.662.0",
+    "@aws-sdk/util-dynamodb": "3.662.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.9",
     "@boxyhq/saml20": "1.5.1",
