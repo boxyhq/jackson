@@ -240,11 +240,11 @@ const MenuItems = ({ menus }: { menus: (MenuItem | null)[] }) => {
   return (
     <nav className='space-y-1'>
       {menus
-        .filter((m) => m !== null)
+        .filter((m): m is MenuItem => m !== null)
         .map((menu, id) => {
           return (
             <div key={id}>
-              <ItemLink key={id} {...menu} />
+              <ItemLink {...menu} />
               {menu.items && <SubMenuItems items={menu.items} />}
             </div>
           );
