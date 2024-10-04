@@ -151,7 +151,7 @@ const adminPortalSSODefaults = {
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
-const isLLMChatEnabled = process.env.LLM_CHAT_ENABLED === 'true';
+const features = { llmChat: process.env.FEATURE_LLM_CHAT === 'true' };
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
@@ -159,4 +159,4 @@ export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
 export { llm as llmOptions };
-export { isLLMChatEnabled };
+export { features };

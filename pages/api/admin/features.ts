@@ -1,5 +1,5 @@
 import { defaultHandler } from '@lib/api';
-import { isLLMChatEnabled } from '@lib/env';
+import { features } from '@lib/env';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -9,7 +9,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  res.json({ data: { enabled: isLLMChatEnabled } });
+  res.json({ data: { features } });
 };
 
 export default handler;

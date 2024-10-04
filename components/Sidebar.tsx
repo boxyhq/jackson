@@ -12,7 +12,8 @@ import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
+import useFeatures from '@lib/ui/hooks/useFeatures';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -34,6 +35,8 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
 
   const closeSidebar = useCallback(() => setIsOpen(false), [setIsOpen]);
 
+  const features = useFeatures();
+
   useEffect(() => {
     function handleEscKey(e) {
       if ((e as KeyboardEvent).key === 'Escape') {
@@ -45,21 +48,6 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       document.removeEventListener('keydown', handleEscKey);
     };
   }, [closeSidebar]);
-
-  const [isLLMChatEnabled, setIsLLMChatEnabled] = useState(false);
-  useEffect(() => {
-    const fetchChatFeatureStatus = async () => {
-      try {
-        const response = await fetch('/api/admin/chat/enabled');
-        const data = await response.json();
-        setIsLLMChatEnabled(data.data.enabled);
-      } catch (error) {
-        console.error('Error fetching chat feature status:', error);
-      }
-    };
-
-    fetchChatFeatureStatus();
-  }, []);
 
   const menus = [
     {
@@ -152,7 +140,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-    isLLMChatEnabled
+    features?.llmChat
       ? {
           href: '/admin/chat',
           text: t('bui-chat'),
