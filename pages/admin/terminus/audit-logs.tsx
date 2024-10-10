@@ -1,5 +1,4 @@
-import type { NextPage } from 'next';
-// import { useRouter } from 'next/router';
+import type { NextPage, GetServerSideProps, NextApiRequest } from 'next';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -8,6 +7,9 @@ import { LinkBack, Loading, Error } from '@boxyhq/internal-ui';
 import { Select } from 'react-daisyui';
 import { retracedOptions, terminusOptions } from '@lib/env';
 import { useTranslation } from 'next-i18next';
+import { getToken } from '@lib/retraced';
+import type { Project } from 'types/retraced';
+import axios from 'axios';
 
 const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
@@ -19,13 +21,10 @@ export interface Props {
 }
 
 const Events: NextPage<Props> = ({ host, projectId }: Props) => {
-  //   const router = useRouter();
   const { t } = useTranslation('common');
 
   const [environment, setEnvironment] = useState('');
   const [group, setGroup] = useState('');
-
-  //   const projectId = router.query.id as string;
 
   const { project, isLoading, isError } = useProject(projectId);
   const { groups } = useGroups(projectId, environment);
@@ -108,14 +107,43 @@ const Events: NextPage<Props> = ({ host, projectId }: Props) => {
   );
 };
 
-export async function getServerSideProps({ locale }) {
+export const getServerSideProps = (async ({ locale, req }) => {
+  if (!terminusOptions.retracedProjectId) {
+    return {
+      notFound: true,
+    };
+  } else {
+    const token = await getToken(req as NextApiRequest);
+    try {
+      const { data } = await axios.get<{ project: Project }>(
+        `${retracedOptions?.hostUrl}/admin/v1/project/${terminusOptions.retracedProjectId}`,
+        {
+          headers: {
+            Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
+          },
+        }
+      );
+      if (data.project.environments.length === 0) {
+        return {
+          notFound: true,
+        };
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        return {
+          notFound: true,
+        };
+      }
+    }
+  }
+
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale!, ['common'])),
       host: retracedOptions.externalUrl,
       projectId: terminusOptions.retracedProjectId,
     },
   };
-}
+}) satisfies GetServerSideProps;
 
 export default Events;
