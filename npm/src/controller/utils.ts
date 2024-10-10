@@ -263,7 +263,7 @@ export const extractOIDCUserProfile = async (tokenSet: TokenSet, oidcClient: Cli
   profile.claims.lastName = idTokenClaims.family_name ?? userinfo.family_name;
   profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
   profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
-  profile.claims.raw = userinfo;
+  profile.claims.raw = { ...idTokenClaims, ...userinfo };
 
   return profile;
 };
