@@ -128,12 +128,11 @@ export const getServerSideProps = (async ({ locale, req }) => {
           notFound: true,
         };
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        return {
-          notFound: true,
-        };
-      }
+      return {
+        notFound: true,
+      };
     }
   }
 
