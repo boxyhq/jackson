@@ -42,6 +42,7 @@ const LogsViewer = (props: { project: Project; environmentId: string; groupId: s
           customClass={'text-primary dark:text-white'}
           skipViewLogEvent={true}
           refreshToken={mutate}
+          toggleDisplay={{ fields: true, metadata: true }}
         />
       )}
     </>
