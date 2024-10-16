@@ -29,6 +29,7 @@ const retraced = {
 const terminus = {
   hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
+  retracedProjectId: process.env.TERMINUS_RETRACED_PROJECT_ID,
 };
 
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
