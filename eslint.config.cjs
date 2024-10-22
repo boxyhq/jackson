@@ -16,11 +16,13 @@ const compat = new FlatCompat({
 
 module.exports = [{
     ignores: [
+        ".next",
         "**/node_modules",
         "**/dist",
         "npm/dist",
         "npm/migration",
         "internal-ui/dist",
+        "eslint.config.cjs"
     ],
 }, ...compat.extends(
     "eslint:recommended",

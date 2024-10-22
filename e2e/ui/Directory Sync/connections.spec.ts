@@ -28,6 +28,7 @@ type MyFixtures = {
 export const test = baseTest.extend<MyFixtures>({
   dsyncPage: async ({ page }, use) => {
     const dsyncPage = new DSyncPage(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(dsyncPage);
     await dsyncPage.deleteConnection();
   },
