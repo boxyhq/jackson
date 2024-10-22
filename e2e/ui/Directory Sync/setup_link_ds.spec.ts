@@ -13,6 +13,7 @@ export const test = baseTest.extend<MyFixtures>({
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
     await portal.doCredentialsLogin();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
   setuplinkPage: async ({ page, baseURL }, use) => {
@@ -22,6 +23,7 @@ export const test = baseTest.extend<MyFixtures>({
     await setuplinkPage.createSetupLink(baseURL!);
 
     // use setup link in all tests
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(setuplinkPage);
 
     // remove setup link
