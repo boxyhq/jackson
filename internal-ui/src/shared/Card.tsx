@@ -2,7 +2,8 @@ import React from 'react';
 
 const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (
-    <div className={`card w-full border border-rounded dark:bg-black dark:border-gray-600 ${className}`}>
+    <div
+      className={`card w-full border border-rounded dark:bg-black dark:border-gray-600${className ? ' ' + className : ''}`}>
       {children}
     </div>
   );
@@ -21,7 +22,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Body = ({ children }: { children: React.ReactNode }) => {
-  return <div className='card-body dark:bg-black gap-4 p-6'>{children}</div>;
+  return <div className='card-body dark:bg-black gap-4 p-6 overflow-auto'>{children}</div>;
 };
 
 const Footer = ({ children }: { children: React.ReactNode }) => {

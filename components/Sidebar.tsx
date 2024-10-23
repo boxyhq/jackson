@@ -11,6 +11,9 @@ import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
+import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
+import { useCallback, useEffect } from 'react';
+import useFeatures from '@lib/ui/hooks/useFeatures';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -29,6 +32,22 @@ type MenuItem = {
 export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
+
+  const closeSidebar = useCallback(() => setIsOpen(false), [setIsOpen]);
+
+  const features = useFeatures();
+
+  useEffect(() => {
+    function handleEscKey(e) {
+      if ((e as KeyboardEvent).key === 'Escape') {
+        closeSidebar();
+      }
+    }
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [closeSidebar]);
 
   const menus = [
     {
@@ -121,6 +140,14 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
+    features?.llmChat
+      ? {
+          href: '/admin/chat',
+          text: t('bui-chat'),
+          icon: ChatBubbleOvalLeftIcon,
+          active: asPath.includes('/admin/chat'),
+        }
+      : null,
     {
       href: '/admin/settings',
       text: t('settings'),
@@ -145,7 +172,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     <>
       {/* Sidebar for mobile */}
       <div
-        className={classNames('relative z-40 md:hidden', { hidden: isOpen })}
+        className={classNames('relative z-40 md:hidden', { hidden: !isOpen })}
         role='dialog'
         aria-modal='true'>
         <div className='fixed inset-0 bg-gray-600 bg-opacity-75' />
@@ -178,7 +205,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
               <MenuItems menus={menus} />
             </div>
           </div>
-          <div className='w-14 flex-shrink-0' aria-hidden='true'></div>
+          <div className='w-14 flex-1' aria-hidden='true' onClick={closeSidebar}></div>
         </div>
       </div>
 
@@ -197,17 +224,19 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   );
 };
 
-const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
+const MenuItems = ({ menus }: { menus: (MenuItem | null)[] }) => {
   return (
     <nav className='space-y-1'>
-      {menus.map((menu, id) => {
-        return (
-          <div key={id}>
-            <ItemLink key={id} {...menu} />
-            {menu.items && <SubMenuItems items={menu.items} />}
-          </div>
-        );
-      })}
+      {menus
+        .filter((m): m is MenuItem => m !== null)
+        .map((menu, id) => {
+          return (
+            <div key={id}>
+              <ItemLink {...menu} />
+              {menu.items && <SubMenuItems items={menu.items} />}
+            </div>
+          );
+        })}
     </nav>
   );
 };

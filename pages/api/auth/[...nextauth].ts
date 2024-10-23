@@ -1,5 +1,5 @@
 import Adapter from '@lib/nextAuthAdapter';
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
@@ -8,7 +8,7 @@ import { validateEmailWithACL } from '@lib/utils';
 import { jacksonOptions as env } from '@lib/env';
 import { sessionName } from '@lib/constants';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   theme: {
     colorScheme: 'light',
   },
@@ -161,6 +161,12 @@ export default NextAuth({
 
       return validateEmailWithACL(user.email);
     },
+    async session({ session, token }) {
+      if (session && token) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
   },
   pages: {
     signIn: '/admin/auth/login',
@@ -168,4 +174,6 @@ export default NextAuth({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   adapter: Adapter(),
-});
+};
+
+export default NextAuth(authOptions);

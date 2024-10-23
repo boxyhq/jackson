@@ -61,11 +61,14 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.24.3",
     "@boxyhq/internal-ui": "file:internal-ui",
     "@boxyhq/metrics": "0.2.9",
     "@boxyhq/react-ui": "3.3.45",
     "@boxyhq/saml-jackson": "file:npm",
+    "@google/generative-ai": "0.15.0",
     "@heroicons/react": "2.1.5",
+    "@mistralai/mistralai": "0.5.0",
     "@next/bundle-analyzer": "15.0.0",
     "@retracedhq/logs-viewer": "2.8.0",
     "@retracedhq/retraced": "0.7.16",
@@ -78,6 +81,7 @@
     "cross-env": "7.0.3",
     "daisyui": "4.12.13",
     "formik": "2.4.6",
+    "groq-sdk": "0.5.0",
     "i18next": "23.16.2",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.8",
@@ -86,6 +90,8 @@
     "next-i18next": "15.3.1",
     "next-mdx-remote": "5.0.0",
     "nodemailer": "6.9.15",
+    "ollama": "0.5.2",
+    "openai": "4.52.7",
     "prismjs": "1.29.0",
     "raw-body": "3.0.0",
     "react": "18.3.1",
@@ -95,7 +101,8 @@
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.0",
     "sharp": "0.33.5",
-    "swr": "2.2.5"
+    "swr": "2.2.5",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@playwright/test": "1.48.1",
@@ -103,7 +110,7 @@
     "@types/micromatch": "4.0.9",
     "@types/node": "20.12.12",
     "@types/prismjs": "1.26.4",
-    "@types/react": "18.3.2",
+    "@types/react": "18.3.3",
     "@typescript-eslint/eslint-plugin": "8.0.1",
     "@typescript-eslint/parser": "8.0.1",
     "autoprefixer": "10.4.20",

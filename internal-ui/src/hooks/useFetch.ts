@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type RefetchFunction = () => void;
 
@@ -24,12 +24,12 @@ export function useFetch<T>({ url }: { url?: string }): {
   const [error, setError] = useState<any>(null);
   const [refetchIndex, setRefetchIndex] = useState<number>(0);
 
-  const refetch = () => setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1);
+  const refetch = useCallback(() => setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1), []);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(_url) {
       setIsLoading(true);
-      const res = await fetch(url!);
+      const res = await fetch(_url);
       setIsLoading(false);
       const resContent = await parseResponseContent(res);
 
@@ -44,9 +44,15 @@ export function useFetch<T>({ url }: { url?: string }): {
         setError(resContent.error);
       }
     }
-    if (url) {
-      fetchData();
+    if (!url) {
+      // Clear states when URL is undefined
+      setData(undefined);
+      setIsLoading(false);
+      setError(null);
+      setRefetchIndex(0);
+      return;
     }
+    fetchData(url);
   }, [url, refetchIndex]);
 
   return { data, isLoading, error, refetch };

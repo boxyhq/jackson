@@ -173,3 +173,13 @@ export type Branding = {
   primaryColor: string;
   companyName: string;
 };
+
+// Chat types
+export type LLMProvider =
+  | 'openai'
+  | 'anthropic'
+  | 'mistral'
+  | 'groq'
+  | 'perplexity'
+  | 'google-generative-ai'
+  | 'ollama';
