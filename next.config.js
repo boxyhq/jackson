@@ -6,7 +6,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 
 module.exports = withBundleAnalyzer({
-  experimental: { esmExternals: false, webpackBuildWorker: true },
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
   i18n,

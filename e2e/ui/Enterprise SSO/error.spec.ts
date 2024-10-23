@@ -9,11 +9,13 @@ type MyFixtures = {
 export const test = baseTest.extend<MyFixtures>({
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
   ssoPage: async ({ page, portal }, use) => {
     const ssoPage = new SSOPage(page);
     await ssoPage.goto();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(ssoPage);
     await portal.doCredentialsLogin();
     await portal.isLoggedIn();

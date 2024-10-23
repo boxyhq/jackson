@@ -11,6 +11,7 @@ type MyFixtures = {
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(ssoPage);
     // Delete SSO Connections mapped to SAML federation
     await ssoPage.deleteSSOConnection('SSO-via-SAML-Fed');
@@ -18,6 +19,7 @@ const test = baseTest.extend<MyFixtures>({
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
   samlFedPage: async ({ baseURL, page, portal }, use) => {
@@ -31,6 +33,7 @@ const test = baseTest.extend<MyFixtures>({
       metadataUrl: `${baseURL}/.well-known/idp-metadata`,
     });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(samlFedPage);
     // Delete Saml Fed connection
     await samlFedPage.deleteApp();

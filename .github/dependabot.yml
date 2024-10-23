@@ -17,6 +17,7 @@ updates:
         patterns:
           - 'next'
           - 'eslint-config-next'
+          - '@next/*'
   - package-ecosystem: 'npm'
     directory: '/npm'
     schedule:

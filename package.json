@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -55,7 +55,7 @@
     "release": "git checkout main && git pull && git checkout release && git merge origin/main && release-it && git checkout main && git merge origin/release && git push origin main",
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
-    "check-lint": "next lint && eslint -c .eslintrc.js --ext ts --ext tsx --ext js ./",
+    "check-lint": "next lint && eslint -c eslint.config.cjs ./",
     "check-unused": "npx knip",
     "check-locale": "node check-locale.js",
     "format": "prettier --write ."
@@ -69,23 +69,23 @@
     "@google/generative-ai": "0.15.0",
     "@heroicons/react": "2.1.5",
     "@mistralai/mistralai": "0.5.0",
-    "@next/bundle-analyzer": "14.2.14",
-    "@retracedhq/logs-viewer": "2.7.4",
+    "@next/bundle-analyzer": "15.0.0",
+    "@retracedhq/logs-viewer": "2.8.0",
     "@retracedhq/retraced": "0.7.16",
     "@tailwindcss/typography": "0.5.15",
     "axios": "1.7.7",
     "blockly": "11.1.1",
-    "chroma-js": "3.1.1",
+    "chroma-js": "3.1.2",
     "classnames": "2.5.1",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
-    "daisyui": "4.12.11",
+    "daisyui": "4.12.13",
     "formik": "2.4.6",
     "groq-sdk": "0.5.0",
-    "i18next": "23.15.1",
+    "i18next": "23.16.2",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.8",
-    "next": "14.2.14",
+    "next": "15.0.0",
     "next-auth": "4.24.8",
     "next-i18next": "15.3.1",
     "next-mdx-remote": "5.0.0",
@@ -95,9 +95,9 @@
     "prismjs": "1.29.0",
     "raw-body": "3.0.0",
     "react": "18.3.1",
-    "react-daisyui": "5.0.4",
+    "react-daisyui": "5.0.5",
     "react-dom": "18.3.1",
-    "react-i18next": "15.0.2",
+    "react-i18next": "15.1.0",
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.0",
     "sharp": "0.33.5",
@@ -105,7 +105,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@playwright/test": "1.47.2",
+    "@playwright/test": "1.48.1",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.9",
     "@types/node": "20.12.12",
@@ -115,17 +115,17 @@
     "@typescript-eslint/parser": "8.0.1",
     "autoprefixer": "10.4.20",
     "env-cmd": "10.1.0",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.14",
+    "eslint": "9.13.0",
+    "eslint-config-next": "15.0.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-i18next": "6.1.0",
     "jose": "5.3.0",
     "postcss": "8.4.47",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "0.6.8",
-    "release-it": "17.6.0",
+    "release-it": "17.10.0",
     "swagger-jsdoc": "6.2.8",
-    "tailwindcss": "3.4.13",
+    "tailwindcss": "3.4.14",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"
@@ -133,6 +133,10 @@
   "overrides": {
     "typeorm": {
       "mssql": "11.0.0"
+    },
+    "next-auth": {
+      "cookie": "0.7.1",
+      "next": ">=15.0.0"
     }
   },
   "engines": {
