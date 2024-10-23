@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
-import { Configuration, authorizationCodeGrant, fetchUserInfo } from 'openid-client';
+import * as client from 'openid-client';
 import saml from '@boxyhq/saml20';
 
 import * as dbutils from '../db/utils';
@@ -251,14 +251,14 @@ export const extractHostName = (url: string): string | null => {
   }
 };
 
-export type AuthorizationCodeGrantResult = Awaited<ReturnType<typeof authorizationCodeGrant>>;
+export type AuthorizationCodeGrantResult = Awaited<ReturnType<typeof client.authorizationCodeGrant>>;
 
 export const extractOIDCUserProfile = async (
   tokens: AuthorizationCodeGrantResult,
-  oidcConfig: Configuration
+  oidcConfig: client.Configuration
 ) => {
   const idTokenClaims = tokens.claims()!;
-  const userinfo = await fetchUserInfo(oidcConfig, tokens.access_token, idTokenClaims.sub);
+  const userinfo = await client.fetchUserInfo(oidcConfig, tokens.access_token, idTokenClaims.sub);
 
   const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
 

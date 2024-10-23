@@ -869,13 +869,12 @@ export class OAuthController implements IOAuthController {
       // });
       tokens = await client.authorizationCodeGrant(
         oidcConfig,
-        new URL(this.opts.externalUrl + this.opts.oidcPath),
+        new URL(this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)),
         {
           pkceCodeVerifier: session.oidcCodeVerifier,
           expectedNonce: session.oidcNonce,
           idTokenExpected: true,
-        },
-        callbackParams as any
+        }
       );
       profile = await extractOIDCUserProfile(tokens, oidcConfig);
 
