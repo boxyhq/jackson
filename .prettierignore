@@ -27,3 +27,4 @@ e2e/state.json
 internal-ui/dist/**
 
 helm
+eslint.config.cjs
