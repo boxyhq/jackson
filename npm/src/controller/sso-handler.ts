@@ -1,9 +1,9 @@
 import saml from '@boxyhq/saml20';
+import * as client from 'openid-client';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import { generators } from 'openid-client';
 
 import type {
   JacksonOption,
@@ -19,7 +19,7 @@ import { IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
 import * as allowed from './oauth/allowed';
-import { oidcIssuerInstance } from './oauth/oidc-issuer';
+import { oidcClientConfig } from './oauth/oidc-client';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -135,13 +135,10 @@ export class SSOHandler {
 
       for (const { oidcProvider, ...rest } of oidcConnections) {
         const connection = { oidcProvider, ...rest };
-        let oidcIssuer;
-        if ('metadata' in oidcProvider) {
-          oidcIssuer = oidcProvider;
-        } else if ('discoveryUrl' in oidcProvider) {
-          oidcIssuer = await oidcIssuerInstance(oidcProvider.discoveryUrl);
-        }
-        if (oidcIssuer.metadata.issuer === thirdPartyLogin.iss) {
+        const { discoveryUrl, metadata, clientId, clientSecret } = oidcProvider;
+        const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+
+        if (oidcConfig.serverMetadata().issuer === thirdPartyLogin.iss) {
           if (thirdPartyLogin.target_link_uri) {
             if (!allowed.redirect(thirdPartyLogin.target_link_uri, connection.redirectUrl as string[])) {
               throw new JacksonError('target_link_uri is not allowed');
@@ -288,17 +285,13 @@ export class SSOHandler {
     const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
 
     try {
-      const oidcIssuer = await oidcIssuerInstance(discoveryUrl, metadata);
-      const oidcClient = new oidcIssuer.Client({
-        client_id: clientId!,
-        client_secret: clientSecret,
-        redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
-        response_types: ['code'],
-      });
-
-      const oidcCodeVerifier = generators.codeVerifier();
-      const code_challenge = generators.codeChallenge(oidcCodeVerifier);
-      const oidcNonce = generators.nonce();
+      const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+      const oidcCodeVerifier = client.randomPKCECodeVerifier();
+      const code_challenge = await client.calculatePKCECodeChallenge(oidcCodeVerifier);
+      const oidcNonce = client.randomNonce();
+      const standardScopes = this.opts.openid?.requestProfileScope
+        ? ['openid', 'email', 'profile']
+        : ['openid', 'email'];
 
       const relayState = await this.createSession({
         requestId: connection.clientID,
@@ -308,13 +301,16 @@ export class SSOHandler {
         mappings,
       });
 
-      const ssoUrl = oidcClient.authorizationUrl({
-        scope: 'openid email profile',
+      const ssoUrl = client.buildAuthorizationUrl(oidcConfig, {
+        scope: standardScopes
+          .filter((value, index, self) => self.indexOf(value) === index) // filter out duplicates
+          .join(' '),
         code_challenge,
         code_challenge_method: 'S256',
         state: relayState,
         nonce: oidcNonce,
-      });
+        redirect_uri: this.opts.externalUrl + this.opts.oidcPath,
+      }).href;
 
       return {
         redirect_url: ssoUrl,
