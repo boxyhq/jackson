@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import type { CallbackParamsType, IssuerMetadata } from 'openid-client';
+import { ServerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
 export * from './sso-traces/types';
@@ -58,7 +58,7 @@ interface OIDCSSOConnection extends SSOConnection {
 
 export interface OIDCSSOConnectionWithMetadata extends OIDCSSOConnection {
   oidcDiscoveryUrl?: never;
-  oidcMetadata: IssuerMetadata;
+  oidcMetadata: ServerMetadata;
 }
 
 export interface OIDCSSOConnectionWithDiscoveryUrl extends OIDCSSOConnection {
@@ -97,7 +97,7 @@ export interface OIDCSSORecord extends SSOConnection {
     provider: string | 'Unknown';
     friendlyProviderName: string | null;
     discoveryUrl?: string;
-    metadata?: IssuerMetadata;
+    metadata?: ServerMetadata;
     clientId: string;
     clientSecret: string;
   };
@@ -156,7 +156,7 @@ export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
 
 export type UpdateOIDCConnectionParams = UpdateConnectionParams & {
   oidcDiscoveryUrl?: string;
-  oidcMetadata?: IssuerMetadata;
+  oidcMetadata?: ServerMetadata;
   oidcClientId?: string;
   oidcClientSecret?: string;
 };
@@ -310,7 +310,7 @@ export interface SAMLResponsePayload {
   idp_hint?: string;
 }
 
-export type OIDCAuthzResponsePayload = CallbackParamsType;
+export type OIDCAuthzResponsePayload = Record<string, string>;
 
 interface OAuthTokenReqBody {
   code: string;

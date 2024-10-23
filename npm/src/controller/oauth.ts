@@ -874,7 +874,8 @@ export class OAuthController implements IOAuthController {
           pkceCodeVerifier: session.oidcCodeVerifier,
           expectedNonce: session.oidcNonce,
           idTokenExpected: true,
-        }
+        },
+        callbackParams as any
       );
       profile = await extractOIDCUserProfile(tokens, oidcConfig);
 
