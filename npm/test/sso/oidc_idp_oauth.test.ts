@@ -1,11 +1,11 @@
 import sinon from 'sinon';
 import tap from 'tap';
+import { generators, Issuer } from 'openid-client';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import path from 'path';
-import * as client from 'openid-client';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -27,11 +27,11 @@ tap.teardown(async () => {
 tap.test('[OIDCProvider]', async (t) => {
   const context: Record<string, any> = {};
   t.test('[authorize] Should return the IdP SSO URL', async (t) => {
-    const codeVerifier = client.randomPKCECodeVerifier();
-    const stubCodeVerifier = sinon.stub(client, 'randomPKCECodeVerifier').returns(codeVerifier);
+    const codeVerifier = generators.codeVerifier();
+    const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
     // will be matched in happy path test
     context.codeVerifier = codeVerifier;
-    const codeChallenge = await client.calculatePKCECodeChallenge(codeVerifier);
+    const codeChallenge = generators.codeChallenge(codeVerifier);
 
     const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
       redirect_url: string;
@@ -200,7 +200,7 @@ tap.test('[OIDCProvider]', async (t) => {
       const fakeCb = sinon.fake(async () => TOKEN_SET);
       function FakeOidcClient(this: any) {
         this.callback = fakeCb;
-        this.fetchUserInfo = async () => ({
+        this.userinfo = async () => ({
           sub: 'USER_IDENTIFIER',
           email: 'jackson@example.com',
           given_name: 'jackson',
@@ -210,7 +210,7 @@ tap.test('[OIDCProvider]', async (t) => {
         });
       }
 
-      sinon.stub(client, 'discovery').callsFake(
+      sinon.stub(Issuer, 'discover').callsFake(
         () =>
           ({
             Client: FakeOidcClient,
