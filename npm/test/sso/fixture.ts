@@ -1,4 +1,3 @@
-import { generators, CallbackParamsType } from 'openid-client';
 import {
   OAuthReqBody,
   OAuthReqBodyWithAccessType,
@@ -11,6 +10,7 @@ import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
 import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
+import * as client from 'openid-client';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -19,12 +19,12 @@ export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
 };
 
-const code_verifier = generators.codeVerifier();
+const code_verifier = client.randomPKCECodeVerifier();
+export const calculateCodeChallenge = async () => await client.calculatePKCECodeChallenge(code_verifier);
 export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
-  code_challenge: generators.codeChallenge(code_verifier),
   code_challenge_method: 'S256',
 };
 export const authz_request_with_forceauthn: Partial<OAuthReqBodyWithClientId> = {
