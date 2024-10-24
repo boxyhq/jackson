@@ -334,7 +334,6 @@ export class Groups extends Base {
 
   // Delete all groups from a directory
   async deleteAll(directoryId: string) {
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: groups } = await this.store('groups').getByIndex(
         {
@@ -361,7 +360,6 @@ export class Groups extends Base {
 
   // Remove all users from a group
   public async removeAllUsers(groupId: string) {
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: members } = await this.store('members').getByIndex(
         {
