@@ -90,7 +90,6 @@ export class EventProcessor {
   private async _process() {
     const batchSize = this.opts.dsync?.webhookBatchSize || 50;
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const events = await this.fetchNextBatch(0, batchSize);
       const eventsCount = events.length;

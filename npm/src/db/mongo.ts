@@ -37,7 +37,6 @@ class Mongo implements DatabaseDriver {
     await this.collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 1 });
     await this.collection.createIndex({ namespace: 1 });
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         if (!this.options.manualMigration) {
@@ -78,7 +77,6 @@ class Mongo implements DatabaseDriver {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(
     namespace: string,
     pageOffset?: number,
@@ -115,7 +113,6 @@ class Mongo implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {

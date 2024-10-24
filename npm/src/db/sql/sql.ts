@@ -185,7 +185,6 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(
     namespace: string,
     pageOffset?: number,
@@ -217,7 +216,6 @@ class Sql implements DatabaseDriver {
     idx: Index,
     pageOffset?: number,
     pageLimit?: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _?: string,
     sortOrder?: SortOrder
   ): Promise<Records> {
