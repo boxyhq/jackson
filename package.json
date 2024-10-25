@@ -128,8 +128,7 @@
       "mssql": "11.0.0"
     },
     "next-auth": {
-      "cookie": "0.7.1",
-      "next": ">=15.0.0"
+      "cookie": "0.7.1"
     }
   },
   "engines": {
