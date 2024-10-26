@@ -150,7 +150,6 @@ export class WebhookEventsLogger extends Base {
 
   // Delete all event logs for a directory
   async deleteAll(directoryId: string) {
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: events } = await this.eventStore().getByIndex(
         {

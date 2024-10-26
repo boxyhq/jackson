@@ -12,11 +12,13 @@ export const test = baseTest.extend<MyFixtures>({
     const ssoName = `saml-${testInfo.workerIndex}`;
     await ssoPage.goto();
     await ssoPage.addSSOConnection({ name: ssoName, type: 'saml', baseURL: baseURL! });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(ssoPage);
     await ssoPage.deleteAllSSOConnections();
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
 });

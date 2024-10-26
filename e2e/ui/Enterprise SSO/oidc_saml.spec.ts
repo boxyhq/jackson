@@ -15,11 +15,13 @@ export const test = baseTest.extend<MyFixtures>({
     await ssoPage.goto();
     ssoName = `oidc-${testInfo.workerIndex}`;
     await ssoPage.addSSOConnection({ name: ssoName, type: 'oidc', baseURL: baseURL! });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(ssoPage);
     await ssoPage.deleteAllSSOConnections();
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
 });

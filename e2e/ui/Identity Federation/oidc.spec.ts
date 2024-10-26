@@ -11,6 +11,7 @@ type MyFixtures = {
 const test = baseTest.extend<MyFixtures>({
   ssoPage: async ({ page }, use) => {
     const ssoPage = new SSOPage(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(ssoPage);
     // Delete SSO Connections mapped to OIDC federation
     await ssoPage.deleteSSOConnection('SSO-via-OIDC-Fed');
@@ -18,6 +19,7 @@ const test = baseTest.extend<MyFixtures>({
   },
   portal: async ({ page }, use) => {
     const portal = new Portal(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(portal);
   },
   oidcFedPage: async ({ baseURL, page, portal }, use) => {
@@ -38,6 +40,7 @@ const test = baseTest.extend<MyFixtures>({
       oidcDiscoveryUrl: `${baseURL}/.well-known/openid-configuration`,
     });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(oidcFedPage);
     // Cleanup OIDC Fed app
     await oidcFedPage.deleteApp();
