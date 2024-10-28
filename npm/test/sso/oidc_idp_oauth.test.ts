@@ -1,6 +1,5 @@
-import sinon from 'sinon';
 import tap from 'tap';
-import { generators, Issuer } from 'openid-client';
+import * as client from 'openid-client';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
@@ -12,8 +11,23 @@ let oauthController: IOAuthController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
+const code_verifier: string = client.randomPKCECodeVerifier();
+let code_challenge: string;
+
 tap.before(async () => {
-  const controller = await (await import('../../src/index')).default(jacksonOptions);
+  const indexModule = tap.mockRequire('../../src/index', {
+    'openid-client': tap.createMock(client, {
+      ...client,
+      randomPKCECodeVerifier: () => {
+        return code_verifier;
+      },
+      calculatePKCECodeChallenge: async () => {
+        code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
+        return code_challenge;
+      },
+    }),
+  });
+  const controller = await indexModule.default(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -26,12 +40,10 @@ tap.teardown(async () => {
 
 tap.test('[OIDCProvider]', async (t) => {
   const context: Record<string, any> = {};
+
   t.test('[authorize] Should return the IdP SSO URL', async (t) => {
-    const codeVerifier = generators.codeVerifier();
-    const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
     // will be matched in happy path test
-    context.codeVerifier = codeVerifier;
-    const codeChallenge = generators.codeChallenge(codeVerifier);
+    context.codeVerifier = code_verifier;
 
     const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
       redirect_url: string;
@@ -40,8 +52,7 @@ tap.test('[OIDCProvider]', async (t) => {
     t.ok('redirect_url' in response, 'got the Idp authorize URL');
     t.ok(params.has('state'), 'state present');
     t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
-    t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
-    stubCodeVerifier.restore();
+    t.match(params.get('code_challenge'), code_challenge, 'codeChallenge present');
     context.state = params.get('state');
   });
 
