@@ -867,15 +867,16 @@ export class OAuthController implements IOAuthController {
       //   nonce: session.oidcNonce,
       //   state: callbackParams.state,
       // });
-      tokens = await client.authorizationCodeGrant(
-        oidcConfig,
-        new URL(this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)),
-        {
-          pkceCodeVerifier: session.oidcCodeVerifier,
-          expectedNonce: session.oidcNonce,
-          idTokenExpected: true,
-        }
+      const currentUrl = new URL(
+        this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)
       );
+      console.log(`currentUrl`, currentUrl);
+      tokens = await client.authorizationCodeGrant(oidcConfig, currentUrl, {
+        pkceCodeVerifier: session.oidcCodeVerifier,
+        expectedNonce: session.oidcNonce,
+        expectedState: callbackParams.state,
+        idTokenExpected: true,
+      });
       profile = await extractOIDCUserProfile(tokens, oidcConfig);
 
       if (isSAMLFederated) {
@@ -900,6 +901,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: any) {
+      console.log(`code grant error`, err);
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = getErrorMessage(err);
       const traceId = await this.ssoTraces.saveTrace({
