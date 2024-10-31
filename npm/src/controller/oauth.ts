@@ -903,7 +903,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: any) {
       console.log(`code grant error`, err);
       const { error, error_description, error_uri, session_state, scope, stack } = err;
-      const error_message = getErrorMessage(err);
+      const error_message = error_description || getErrorMessage(err);
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
         context: {
