@@ -855,18 +855,6 @@ export class OAuthController implements IOAuthController {
     let tokens: AuthorizationCodeGrantResult | undefined = undefined;
     try {
       const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
-
-      // const oidcClient = new oidcIssuer.Client({
-      //   client_id: clientId,
-      //   client_secret: clientSecret,
-      //   redirect_uris: [this.opts.externalUrl + this.opts.oidcPath],
-      //   response_types: ['code'],
-      // });
-      // tokenSet = await oidcClient.callback(this.opts.externalUrl + this.opts.oidcPath, callbackParams, {
-      //   code_verifier: session.oidcCodeVerifier,
-      //   nonce: session.oidcNonce,
-      //   state: callbackParams.state,
-      // });
       const currentUrl = new URL(
         this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)
       );
