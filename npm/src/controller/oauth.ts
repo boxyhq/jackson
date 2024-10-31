@@ -870,7 +870,6 @@ export class OAuthController implements IOAuthController {
       const currentUrl = new URL(
         this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)
       );
-      console.log(`currentUrl`, currentUrl);
       tokens = await client.authorizationCodeGrant(oidcConfig, currentUrl, {
         pkceCodeVerifier: session.oidcCodeVerifier,
         expectedNonce: session.oidcNonce,
@@ -901,7 +900,6 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: any) {
-      console.log(`code grant error`, err);
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
       const traceId = await this.ssoTraces.saveTrace({
