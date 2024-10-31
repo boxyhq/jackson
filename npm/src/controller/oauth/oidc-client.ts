@@ -24,11 +24,27 @@ export const oidcClientConfig = async ({
   clientId: string;
   clientSecret: string;
 }): Promise<client.Configuration> => {
+  const url = discoveryUrl ? new URL(discoveryUrl) : new URL(metadata!.issuer);
+  const isLocalhost = url.hostname === 'localhost';
   if (discoveryUrl) {
-    return await client.discovery(new URL(discoveryUrl), clientId, clientSecret);
+    return await client.discovery(
+      url,
+      clientId,
+      clientSecret,
+      undefined,
+      isLocalhost
+        ? {
+            execute: [client.allowInsecureRequests],
+          }
+        : undefined
+    );
   }
   if (metadata) {
-    return new client.Configuration(metadata, clientId, clientSecret);
+    const config = new client.Configuration(metadata, clientId, clientSecret);
+    if (isLocalhost) {
+      client.allowInsecureRequests(config);
+    }
+    return config;
   }
   throw new JacksonError('Neither "discoveryUrl" nor "metadata" set for the OIDC provider', 500);
 };
