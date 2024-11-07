@@ -74,6 +74,7 @@ export const SetupLinks = ({
     if (nextPageToken) {
       setPageTokenMap((tokenMap) => ({ ...tokenMap, [paginate.offset]: nextPageToken }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextPageToken, paginate.offset]);
 
   if (isLoading) {

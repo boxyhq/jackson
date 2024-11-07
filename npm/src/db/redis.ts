@@ -34,7 +34,6 @@ class Redis implements DatabaseDriver {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(
     namespace: string,
     pageOffset?: number,
