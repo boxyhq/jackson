@@ -173,13 +173,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-  ]
-    .filter((m) => m !== null)
-    .map((menu) => ({
-      ...(menu as MenuItem),
-      onClick: closeSidebar,
-      items: menu?.items?.map((subItem) => ({ ...subItem, onClick: closeSidebar })),
-    }));
+  ].filter((m) => m !== null);
 
   return (
     <>
@@ -218,6 +212,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
           <div className='w-14 flex-1' aria-hidden='true' onClick={closeSidebar}></div>
         </div>
       </div>
+      {/* Sidebar for desktop */}
       <div className={classNames('inset-y-0 flex w-64 flex-col h-full', { hidden: !isOpen })}>
         <div className='flex flex-grow flex-col overflow-y-hidden border-r border-gray-200 bg-white pt-5 h-full'>
           <div className='flex flex-shrink-0 items-center pl-4 pr-2'>
