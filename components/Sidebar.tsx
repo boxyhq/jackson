@@ -25,6 +25,7 @@ type MenuItem = {
   href: string;
   text: string;
   active: boolean;
+  onClick?: () => void;
   icon?: any;
   items?: MenuItem[];
 };
@@ -171,15 +172,18 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-  ];
+  ]
+    .filter((m) => m !== null)
+    .map((menu) => ({
+      ...menu,
+      onClick: closeSidebar,
+      items: menu?.items?.map((subItem) => ({ ...subItem, onClick: closeSidebar })),
+    }));
 
   return (
     <>
       {/* Sidebar for mobile */}
-      <div
-        className={classNames('relative z-40 md:hidden', { hidden: !isOpen })}
-        role='dialog'
-        aria-modal='true'>
+      <div className={classNames('relative z-40', { hidden: !isOpen })} role='dialog' aria-modal='true'>
         <div className='fixed inset-0 bg-gray-600 bg-opacity-75' />
         <div className='fixed inset-0 z-40 flex'>
           <div className='relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4'>
@@ -213,35 +217,21 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
           <div className='w-14 flex-1' aria-hidden='true' onClick={closeSidebar}></div>
         </div>
       </div>
-
-      {/* Sidebar for desktop */}
-      <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
-        <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
-          <div className='flex flex-shrink-0 items-center px-4'>
-            <BrandingLink t={t} branding={branding}></BrandingLink>
-          </div>
-          <div className='mt-5 flex flex-1 flex-col'>
-            <MenuItems menus={menus} />
-          </div>
-        </div>
-      </div>
     </>
   );
 };
 
-const MenuItems = ({ menus }: { menus: (MenuItem | null)[] }) => {
+const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
   return (
     <nav className='space-y-1'>
-      {menus
-        .filter((m): m is MenuItem => m !== null)
-        .map((menu, id) => {
-          return (
-            <div key={id}>
-              <ItemLink {...menu} />
-              {menu.items && <SubMenuItems items={menu.items} />}
-            </div>
-          );
-        })}
+      {menus.map((menu, id) => {
+        return (
+          <div key={id}>
+            <ItemLink {...menu} />
+            {menu.items && <SubMenuItems items={menu.items} />}
+          </div>
+        );
+      })}
     </nav>
   );
 };
@@ -259,11 +249,12 @@ const SubMenuItems = ({ items }: { items: MenuItem[] }) => {
 };
 
 const ItemLink = (props: MenuItem) => {
-  const { href, text, active } = props;
+  const { href, text, active, onClick } = props;
 
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={classNames(
         'group mx-2 flex items-center rounded-md py-2 px-2 text-sm text-gray-900',
         active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'

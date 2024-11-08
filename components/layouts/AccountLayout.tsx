@@ -40,14 +40,14 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         <link rel='icon' href={branding ? branding.faviconUrl : '/favicon.ico'} />
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} branding={branding} />
-      <div className='flex flex-1 flex-col md:pl-64'>
+      <div className='flex flex-1 flex-col'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <button
             onClick={() => {
               setIsOpen(!isOpen);
             }}
             type='button'
-            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
+            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset '>
             <span className='sr-only'>{t('open_sidebar')}</span>
             <svg
               className='h-6 w-6'
@@ -64,7 +64,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <main>
           <div className='py-6'>
-            <div className='mx-auto px-4 sm:px-6 md:px-8'>{children}</div>
+            <div className='mx-auto px-4'>{children}</div>
           </div>
         </main>
       </div>
