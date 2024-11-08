@@ -6,8 +6,8 @@ import { useTranslation } from 'next-i18next';
 import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import { maskSetup } from '@components/terminus/blocks/customblocks';
-import * as locale from 'blockly/msg/en';
-Blockly.setLocale(locale);
+// import * as locale from 'blockly/msg/en';
+// Blockly.setLocale(locale);
 
 import { generateModel } from '@components/terminus/blocks/generator';
 import { errorToast, successToast } from '@components/Toaster';
@@ -84,6 +84,14 @@ function BlocklyComponent(props) {
       const { initialXml, ...rest } = props;
       primaryWorkspace.current = Blockly.inject(blocklyDiv.current as any, {
         toolbox: toolbox.current,
+        zoom: {
+          controls: true,
+          wheel: true,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
+          startScale: 0.8,
+        },
         readOnly: false,
         trashcan: true,
         media: '/terminus/',
