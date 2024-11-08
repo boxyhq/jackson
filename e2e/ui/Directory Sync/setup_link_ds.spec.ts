@@ -43,7 +43,7 @@ async function deleteDirectory(setupLinkPage: Page) {
   await setupLinkPage.getByRole('button', { name: 'Confirm' }).click();
 }
 
-test.describe('Admin Portal Dyrectory Sync SetupLink', () => {
+test.describe('Admin Portal Directory Sync SetupLink', () => {
   test('should be able to create setup link and directories', async ({ page, setuplinkPage }) => {
     // get setuplink url
     const linkContent = await setuplinkPage.getSetupLinkUrl();
