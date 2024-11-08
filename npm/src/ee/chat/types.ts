@@ -22,7 +22,13 @@ export type LLMProvidersType = {
 
 export type LLMProvidersOptionsType = { id: LLMProvider; name: string }[];
 
-export const PII_POLICY_OPTIONS = ['none', 'detect_mask', 'detect_report', 'detect_block'] as const;
+export const PII_POLICY_OPTIONS = [
+  'none',
+  'detect_mask',
+  'detect_anonymize',
+  'detect_report',
+  'detect_block',
+] as const;
 
 export type LLMConversation = {
   id: string;
