@@ -51,7 +51,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     };
   }, [closeSidebar]);
 
-  const menus: MenuItem[] = [
+  const menuItems = [
     {
       href: '/admin/dashboard',
       text: t('dashboard'),
@@ -173,7 +173,9 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-  ].filter((m) => m !== null);
+  ].filter((m): m is NonNullable<typeof m> => m !== null);
+
+  const menus: MenuItem[] = menuItems;
 
   return (
     <>
