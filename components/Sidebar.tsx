@@ -28,6 +28,7 @@ type MenuItem = {
   onClick?: () => void;
   icon?: any;
   items?: MenuItem[];
+  current?: boolean;
 };
 
 export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
@@ -50,7 +51,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     };
   }, [closeSidebar]);
 
-  const menus = [
+  const menus: MenuItem[] = [
     {
       href: '/admin/dashboard',
       text: t('dashboard'),
@@ -175,7 +176,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   ]
     .filter((m) => m !== null)
     .map((menu) => ({
-      ...menu,
+      ...(menu as MenuItem),
       onClick: closeSidebar,
       items: menu?.items?.map((subItem) => ({ ...subItem, onClick: closeSidebar })),
     }));
