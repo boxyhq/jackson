@@ -65,7 +65,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
             )}
             <Navbar session={session} />
           </div>
-          <main className='h-[calc(100vh-4rem)]'>
+          <main className='h-[calc(100vh-4rem)] overflow-auto'>
             <div className='py-6 h-full'>
               <div className='mx-auto px-4 h-full'>{children}</div>
             </div>
