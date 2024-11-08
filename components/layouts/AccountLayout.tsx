@@ -41,7 +41,7 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       </Head>
       <div className='flex h-full'>
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} branding={branding} />
-        <div className='flex flex-1 flex-col'>
+        <div className='flex flex-1 flex-col w-[calc(100%-16rem)]'>
           <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
             {!isOpen && (
               <button

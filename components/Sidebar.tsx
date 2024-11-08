@@ -215,7 +215,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         </div>
       </div>
       {/* Sidebar for desktop */}
-      <div className={classNames('inset-y-0 flex w-64 flex-col h-full', { hidden: !isOpen })}>
+      <div className={classNames('flex w-64 flex-col flex-shrink-0 h-full', { hidden: !isOpen })}>
         <div className='flex flex-grow flex-col overflow-y-hidden border-r border-gray-200 bg-white pt-5 h-full'>
           <div className='flex flex-shrink-0 items-center pl-4 pr-2'>
             <BrandingLink t={t} branding={branding}></BrandingLink>
