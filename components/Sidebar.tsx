@@ -184,20 +184,23 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
   return (
     <>
       {/* Sidebar for mobile */}
-      <div className={classNames('relative z-40', { hidden: !isOpen })} role='dialog' aria-modal='true'>
+      <div
+        className={classNames('relative z-40 md:hidden', { hidden: !isOpen })}
+        role='dialog'
+        aria-modal='true'>
         <div className='fixed inset-0 bg-gray-600 bg-opacity-75' />
         <div className='fixed inset-0 z-40 flex'>
           <div className='relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4'>
-            <div className='absolute top-0 right-0 -mr-12 pt-2'>
+            <div className='absolute top-0 right-0 -mr-12 pt-2'></div>
+            <div className='flex flex-shrink-0 items-center px-4'>
+              <BrandingLink t={t} branding={branding}></BrandingLink>
               <button
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                }}
+                onClick={closeSidebar}
                 type='button'
                 className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
                 <span className='sr-only'>{t('close_sidebar')}</span>
                 <svg
-                  className='h-6 w-6 text-white'
+                  className='h-6 w-6'
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
                   viewBox='0 0 24 24'
@@ -208,14 +211,37 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
                 </svg>
               </button>
             </div>
-            <div className='flex flex-shrink-0 items-center px-4'>
-              <BrandingLink t={t} branding={branding}></BrandingLink>
-            </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <MenuItems menus={menus} />
             </div>
           </div>
           <div className='w-14 flex-1' aria-hidden='true' onClick={closeSidebar}></div>
+        </div>
+      </div>
+      <div className={classNames('inset-y-0 flex w-64 flex-col h-full', { hidden: !isOpen })}>
+        <div className='flex flex-grow flex-col overflow-y-hidden border-r border-gray-200 bg-white pt-5 h-full'>
+          <div className='flex flex-shrink-0 items-center pl-4 pr-2'>
+            <BrandingLink t={t} branding={branding}></BrandingLink>
+            <button
+              onClick={closeSidebar}
+              type='button'
+              className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
+              <span className='sr-only'>{t('close_sidebar')}</span>
+              <svg
+                className='h-6 w-6'
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={2}
+                stroke='currentColor'
+                aria-hidden='true'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+              </svg>
+            </button>
+          </div>
+          <div className='my-5 flex flex-1 flex-col h-full overflow-y-auto '>
+            <MenuItems menus={menus} />
+          </div>
         </div>
       </div>
     </>
@@ -224,7 +250,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
 
 const MenuItems = ({ menus }: { menus: MenuItem[] }) => {
   return (
-    <nav className='space-y-1'>
+    <nav className='space-y-1 h-full overflow-y-auto'>
       {menus.map((menu, id) => {
         return (
           <div key={id}>

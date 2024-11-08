@@ -65,7 +65,7 @@ export function ChatUI() {
         isChatWithPDFProvider,
         setIsChatWithPDFProvider,
       }}>
-      <div className='overflow-hidden w-full h-[90vh] relative flex'>
+      <div className='overflow-hidden w-full h-full relative flex'>
         <ChatDrawer
           isChatDrawerVisible={isChatDrawerVisible}
           toggleChatDrawerVisibility={toggleChatDrawerVisibility}
