@@ -76,7 +76,7 @@ export class SetupLinkPage {
     await expect(this.page.getByRole('table')).toBeVisible();
 
     // Delete the created setuplink
-    await this.page.getByRole('button').nth(5).click();
+    await this.page.getByRole('button').nth(6).click();
     await this.page.getByRole('button', { name: 'Delete' }).click();
   }
 }
