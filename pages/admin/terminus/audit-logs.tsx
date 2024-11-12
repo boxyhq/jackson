@@ -10,6 +10,8 @@ import { useTranslation } from 'next-i18next';
 import { getToken } from '@lib/retraced';
 import type { Project } from 'types/retraced';
 import axios from 'axios';
+import jackson from '@lib/jackson';
+import LicenseRequired from '@components/LicenseRequired';
 
 const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
@@ -18,9 +20,10 @@ const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
 export interface Props {
   host?: string;
   projectId: string;
+  hasValidLicense: boolean;
 }
 
-const Events: NextPage<Props> = ({ host, projectId }: Props) => {
+const Events: NextPage<Props> = ({ host, projectId, hasValidLicense }: Props) => {
   const { t } = useTranslation('common');
 
   const [environment, setEnvironment] = useState('');
@@ -42,6 +45,10 @@ const Events: NextPage<Props> = ({ host, projectId }: Props) => {
       setGroup(groups[0].group_id);
     }
   }, [groups]);
+
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
 
   if (isLoading) {
     return <Loading />;
@@ -108,6 +115,8 @@ const Events: NextPage<Props> = ({ host, projectId }: Props) => {
 };
 
 export const getServerSideProps = (async ({ locale, req }) => {
+  const { checkLicense } = await jackson();
+
   if (!terminusOptions.retracedProjectId) {
     return {
       notFound: true,
@@ -141,6 +150,7 @@ export const getServerSideProps = (async ({ locale, req }) => {
       ...(await serverSideTranslations(locale!, ['common'])),
       host: retracedOptions.externalUrl,
       projectId: terminusOptions.retracedProjectId,
+      hasValidLicense: await checkLicense(),
     },
   };
 }) satisfies GetServerSideProps;

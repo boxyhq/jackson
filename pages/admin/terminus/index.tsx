@@ -6,12 +6,19 @@ import '@components/terminus/blocks/customblocks';
 import '@components/terminus/blocks/generator';
 import { EmptyState } from '@boxyhq/internal-ui';
 import { terminusOptions } from '@lib/env';
+import jackson from '@lib/jackson';
+import LicenseRequired from '@components/LicenseRequired';
 
 export interface Props {
   host?: string;
+  hasValidLicense: boolean;
 }
 
-const TerminusIndexPage: NextPage<Props> = ({ host }: Props) => {
+const TerminusIndexPage: NextPage<Props> = ({ host, hasValidLicense }: Props) => {
+  if (!hasValidLicense) {
+    return <LicenseRequired />;
+  }
+
   if (!host) {
     return (
       <EmptyState
@@ -34,10 +41,13 @@ const TerminusIndexPage: NextPage<Props> = ({ host }: Props) => {
 };
 
 export async function getServerSideProps({ locale }) {
+  const { checkLicense } = await jackson();
+
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
       host: terminusOptions.hostUrl || null,
+      hasValidLicense: await checkLicense(),
     },
   };
 }
