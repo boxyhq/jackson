@@ -117,7 +117,12 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         {
           href: '/admin/terminus',
           text: t('policies'),
-          active: asPath.includes('/admin/terminus'),
+          active: asPath.includes('/admin/terminus') && !asPath.includes('/admin/terminus/audit-logs'),
+        },
+        {
+          href: '/admin/terminus/audit-logs',
+          text: t('audit_logs'),
+          active: asPath.includes('/admin/terminus/audit-logs'),
         },
       ],
     },
