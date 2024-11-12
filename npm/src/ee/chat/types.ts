@@ -25,7 +25,7 @@ export type LLMProvidersOptionsType = { id: LLMProvider; name: string }[];
 export const PII_POLICY_OPTIONS = [
   'none',
   'detect_mask',
-  'detect_anonymize',
+  'detect_redact',
   'detect_report',
   'detect_block',
 ] as const;

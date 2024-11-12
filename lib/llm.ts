@@ -13,7 +13,7 @@ import { Ollama } from 'ollama';
 export const PII_POLICY_OPTIONS = [
   'none',
   'detect_mask',
-  'detect_anonymize',
+  'detect_redact',
   'detect_report',
   'detect_block',
 ] as const;
@@ -23,7 +23,7 @@ export const PII_POLICY: {
 } = {
   none: 'None',
   detect_mask: 'Detect & Mask',
-  detect_anonymize: 'Detect & Anonymize',
+  detect_redact: 'Detect & Redact',
   detect_report: 'Detect & Report',
   detect_block: 'Detect & Block',
 } as const;
