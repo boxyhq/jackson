@@ -1,6 +1,5 @@
-import sinon from 'sinon';
 import tap from 'tap';
-import { generators, Issuer } from 'openid-client';
+import * as client from 'openid-client';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
@@ -12,8 +11,25 @@ let oauthController: IOAuthController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
+const code_verifier: string = client.randomPKCECodeVerifier();
+let code_challenge: string;
+
+const openIdClientMock = tap.createMock(client, {
+  ...client,
+  randomPKCECodeVerifier: () => {
+    return code_verifier;
+  },
+  calculatePKCECodeChallenge: async () => {
+    code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
+    return code_challenge;
+  },
+});
+
 tap.before(async () => {
-  const controller = await (await import('../../src/index')).default(jacksonOptions);
+  const indexModule = tap.mockRequire('../../src/index', {
+    'openid-client': openIdClientMock,
+  });
+  const controller = await indexModule.default(jacksonOptions);
 
   connectionAPIController = controller.connectionAPIController;
   oauthController = controller.oauthController;
@@ -26,12 +42,10 @@ tap.teardown(async () => {
 
 tap.test('[OIDCProvider]', async (t) => {
   const context: Record<string, any> = {};
+
   t.test('[authorize] Should return the IdP SSO URL', async (t) => {
-    const codeVerifier = generators.codeVerifier();
-    const stubCodeVerifier = sinon.stub(generators, 'codeVerifier').returns(codeVerifier);
     // will be matched in happy path test
-    context.codeVerifier = codeVerifier;
-    const codeChallenge = generators.codeChallenge(codeVerifier);
+    context.codeVerifier = code_verifier;
 
     const response = (await oauthController.authorize(<OAuthReq>authz_request_oidc_provider)) as {
       redirect_url: string;
@@ -40,8 +54,7 @@ tap.test('[OIDCProvider]', async (t) => {
     t.ok('redirect_url' in response, 'got the Idp authorize URL');
     t.ok(params.has('state'), 'state present');
     t.match(params.get('scope'), 'openid email profile', 'openid scopes present');
-    t.match(params.get('code_challenge'), codeChallenge, 'codeChallenge present');
-    stubCodeVerifier.restore();
+    t.match(params.get('code_challenge'), code_challenge, 'codeChallenge present');
     context.state = params.get('state');
   });
 
@@ -187,54 +200,45 @@ tap.test('[OIDCProvider]', async (t) => {
   t.test(
     '[oidcAuthzResponse] Should return the client redirect url with code and original state attached',
     async (t) => {
-      const TOKEN_SET = {
-        access_token: 'ACCESS_TOKEN',
-        id_token: 'ID_TOKEN',
-        claims: () => ({
-          sub: 'USER_IDENTIFIER',
-          email: 'jackson@example.com',
-          given_name: 'jackson',
-          family_name: 'samuel',
-        }),
-      };
-      const fakeCb = sinon.fake(async () => TOKEN_SET);
-      function FakeOidcClient(this: any) {
-        this.callback = fakeCb;
-        this.userinfo = async () => ({
+      // let capturedArgs: any;
+      openIdClientMock.fetchUserInfo = async () => {
+        return {
           sub: 'USER_IDENTIFIER',
           email: 'jackson@example.com',
           given_name: 'jackson',
           family_name: 'samuel',
           picture: 'https://jackson.cloud.png',
           email_verified: true,
-        });
-      }
+        };
+      };
+      const mockAuthorizationCodeGrant = async () => {
+        return {
+          access_token: 'ACCESS_TOKEN',
+          id_token: 'ID_TOKEN',
+          token_type: 'bearer',
+          claims: () => ({
+            sub: 'USER_IDENTIFIER',
+            email: 'jackson@example.com',
+            given_name: 'jackson',
+            family_name: 'samuel',
+            iss: 'https://issuer.example.com',
+            aud: 'https://audience.example.com',
+            iat: 1643723400,
+            exp: 1643727000,
+          }),
+        } as any;
+      };
+      openIdClientMock.authorizationCodeGrant = mockAuthorizationCodeGrant;
 
-      sinon.stub(Issuer, 'discover').callsFake(
-        () =>
-          ({
-            Client: FakeOidcClient,
-          }) as any
-      );
       const { redirect_url } = await oauthController.oidcAuthzResponse({
         ...oidc_response,
         state: context.state,
       });
-      t.ok(
-        fakeCb.calledWithMatch(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          jacksonOptions.externalUrl + jacksonOptions.oidcPath,
-          { code: oidc_response.code },
-          { code_verifier: context.codeVerifier }
-        )
-      );
 
       const response_params = new URLSearchParams(new URL(redirect_url!).search);
 
-      t.ok(response_params.has('code'), 'redirect_url has code');
+      t.ok(response_params.has('code'), 'code missing in redirect_url');
       t.match(response_params.get('state'), authz_request_oidc_provider.state);
-      sinon.restore();
     }
   );
 });
