@@ -11,7 +11,6 @@ import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
-import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import { useCallback, useEffect } from 'react';
 import useFeatures from '@lib/ui/hooks/useFeatures';
 
