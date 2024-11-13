@@ -12,7 +12,7 @@ export { default } from '@ee/terminus/pages/audit-logs';
 export const getServerSideProps = (async ({ locale, req }) => {
   const { checkLicense } = await jackson();
 
-  if (!terminusOptions.retracedProjectId) {
+  if (!terminusOptions.llmRetracedProjectId) {
     return {
       notFound: true,
     };
@@ -20,7 +20,7 @@ export const getServerSideProps = (async ({ locale, req }) => {
     const token = await getToken(req as NextApiRequest);
     try {
       const { data } = await axios.get<{ project: Project }>(
-        `${retracedOptions?.hostUrl}/admin/v1/project/${terminusOptions.retracedProjectId}`,
+        `${retracedOptions?.hostUrl}/admin/v1/project/${terminusOptions.llmRetracedProjectId}`,
         {
           headers: {
             Authorization: `id=${token.id} token=${token.token} admin_token=${retracedOptions.adminToken}`,
@@ -44,7 +44,7 @@ export const getServerSideProps = (async ({ locale, req }) => {
     props: {
       ...(await serverSideTranslations(locale!, ['common'])),
       host: retracedOptions.externalUrl,
-      projectId: terminusOptions.retracedProjectId,
+      projectId: terminusOptions.llmRetracedProjectId,
       hasValidLicense: await checkLicense(),
     },
   };

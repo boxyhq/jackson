@@ -10,11 +10,11 @@ const ChatPage = ({ llmTenant, hasValidLicense }: { llmTenant: string; hasValidL
     <ChatContextProvider
       value={{
         urls: {
-          chat: `/api/admin/chat/${llmTenant}`,
-          llmConfig: `/api/admin/chat/${llmTenant}/config`,
-          llmProviders: `/api/admin/chat/${llmTenant}/providers`,
-          fileUpload: `/api/admin/chat/${llmTenant}/upload-file`,
-          conversation: `/api/admin/chat/${llmTenant}/conversation`,
+          chat: `/api/admin/llm-vault/chat/${llmTenant}`,
+          llmConfig: `/api/admin/llm-vault/chat/${llmTenant}/config`,
+          llmProviders: `/api/admin/llm-vault/chat/${llmTenant}/providers`,
+          fileUpload: `/api/admin/llm-vault/chat/${llmTenant}/upload-file`,
+          conversation: `/api/admin/llm-vault/chat/${llmTenant}/conversation`,
         },
       }}>
       <ChatUI />

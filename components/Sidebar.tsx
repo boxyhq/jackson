@@ -147,12 +147,25 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
         },
       ],
     },
-    features?.llmChat
+    features?.llmVault
       ? {
-          href: '/admin/chat',
-          text: t('bui-chat'),
-          icon: ChatBubbleOvalLeftIcon,
-          active: asPath.includes('/admin/chat'),
+          href: '/admin/llm-vault/chat',
+          text: t('llm_vault'),
+          icon: Vault,
+          current: asPath.includes('llm-vault'),
+          active: asPath.includes('/admin/llm-vault'),
+          items: [
+            {
+              href: '/admin/llm-vault/chat',
+              text: t('bui-chat'),
+              active: asPath.includes('/admin/llm-vault/chat'),
+            },
+            {
+              href: '/admin/llm-vault/audit-logs',
+              text: t('audit_logs'),
+              active: asPath.includes('/admin/llm-vault/audit-logs'),
+            },
+          ],
         }
       : null,
     {

@@ -8,7 +8,7 @@ export { default } from '@ee/chat/pages/[[...conversationId]]';
 export async function getServerSideProps({ locale }: GetServerSidePropsContext) {
   const { checkLicense } = await jackson();
 
-  if (!features.llmChat) {
+  if (!features.llmVault) {
     return {
       notFound: true,
     };

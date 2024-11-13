@@ -30,6 +30,7 @@ const terminus = {
   hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
   adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
   retracedProjectId: process.env.TERMINUS_RETRACED_PROJECT_ID,
+  llmRetracedProjectId: process.env.TERMINUS_LLM_RETRACED_PROJECT_ID,
   apiKey:
     process.env.TERMINUS_READ_API_KEY && process.env.TERMINUS_WRITE_API_KEY
       ? {
@@ -152,7 +153,7 @@ const adminPortalSSODefaults = {
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
-const features = { llmChat: process.env.FEATURE_LLM_CHAT === 'true' };
+const features = { llmVault: process.env.FEATURE_LLM_VAULT === 'true' };
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
