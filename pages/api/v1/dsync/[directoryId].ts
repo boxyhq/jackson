@@ -49,6 +49,10 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     body.deactivated = normalizeBooleanParam(req.body.deactivated);
   }
 
+  if ('log_webhook_events' in req.body) {
+    body.log_webhook_events = normalizeBooleanParam(req.body.log_webhook_events);
+  }
+
   const { data, error } = await directorySyncController.directories.update(directoryId, body);
 
   if (error) {
