@@ -150,6 +150,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *    in: formData
    *    type: number
    *    required: false
+   *   forceAuthn:
+   *     name: forceAuthn
+   *     description: Require a new authentication instead of reusing an existing session.
+   *     in: formData
+   *     type: boolean
+   *     required: false
    * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
@@ -176,6 +182,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
    *      - $ref: '#/parameters/sortOrder'
+   *      - $ref: '#/parameters/forceAuthn'
    *     responses:
    *       200:
    *         description: Success
@@ -323,6 +330,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: formData
    *     type: number
    *     required: false
+   *   forceAuthnParamPatch:
+   *     name: forceAuthn
+   *     description: Require a new authentication instead of reusing an existing session.
+   *     in: formData
+   *     type: boolean
+   *     required: false
    * /api/v1/sso:
    *   patch:
    *     summary: Update SSO Connection
@@ -350,6 +363,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/productParamPatch'
    *       - $ref: '#/parameters/deactivatedParamPatch'
    *       - $ref: '#/parameters/sortOrderParamPatch'
+   *       - $ref: '#/parameters/forceAuthnParamPatch'
    *     responses:
    *       204:
    *         description: Success
