@@ -75,6 +75,9 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Update SAML connection
   if (isSAML) {
+    if ('forceAuthn' in req.body) {
+      body.forceAuthn = normalizeBooleanParam(req.body.forceAuthn);
+    }
     await connectionAPIController.updateSAMLConnection(body);
 
     res.status(204).end();
