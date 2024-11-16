@@ -49,7 +49,6 @@ export class ChatController {
   ): Promise<{
     apiKey: string;
     baseURL: string;
-    piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
   }> {
     const res = await axios.get(
       `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data?token=${token}`,
@@ -72,9 +71,8 @@ export class ChatController {
       if (data) {
         configs[i] = {
           ...configs[i],
-          baseURL: data.baseURL,
+          terminusToken: '',
           apiKey: '*'.repeat(data.apiKey.length),
-          piiPolicy: data.piiPolicy,
         } as any;
       }
     }
@@ -108,24 +106,17 @@ export class ChatController {
 
   private async saveLLMConfigInVault({
     tenant,
-    provider,
     apiKey,
-    baseURL,
-    piiPolicy,
   }: {
     tenant: string;
     provider: string;
     apiKey?: string;
     baseURL?: string;
-    piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
   }): Promise<string | undefined> {
     const res = await axios.post(
-      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data/llm-config`,
+      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data`,
       {
-        provider,
         apiKey: apiKey || '',
-        baseURL: baseURL || '',
-        piiPolicy,
       },
       { headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.write}` } }
     );
@@ -149,6 +140,7 @@ export class ChatController {
     );
     const config = await this.storeLLMConfig({
       provider: llmConfig.provider,
+      baseURL: llmConfig.baseURL || '',
       models: llmConfig.models || [],
       terminusToken: vaultResult || '',
       tenant,
@@ -160,26 +152,19 @@ export class ChatController {
 
   private async updateLLMConfigInVault({
     tenant,
-    provider,
     token,
     apiKey,
-    baseURL,
-    piiPolicy,
   }: {
     tenant: string;
     provider: string;
     token: string;
     apiKey?: string;
     baseURL?: string;
-    piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
   }) {
     await axios.put(
-      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data/llm-config?token=${token}`,
+      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data?token=${token}`,
       {
-        provider,
         apiKey,
-        baseURL,
-        piiPolicy,
       },
       {
         headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.write}` },
@@ -206,7 +191,6 @@ export class ChatController {
       provider: llmConfig.provider,
       apiKey: llmConfig.apiKey || configFromVault.apiKey,
       baseURL: llmConfig.baseURL,
-      piiPolicy: llmConfig.piiPolicy,
     });
 
     await this.llmConfigStore.put(configId, {
@@ -224,7 +208,7 @@ export class ChatController {
     }
     await this.llmConfigStore.delete(configId);
     await axios.delete(
-      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data/llm-config?token=${config.terminusToken}`,
+      `${this.opts.terminus?.hostUrl}/v1/vault/${tenant}/${this.opts.terminus?.llm?.product}/data?token=${config.terminusToken}`,
       { headers: { Authorization: `api-key ${this.opts.terminus?.apiKey?.write}` } }
     );
   }

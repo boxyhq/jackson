@@ -31,7 +31,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const providers = await chatController.getLLMProviders(req.query.tenant as string, false);
 
-  const { configId, tenant, apiKey, models, baseURL, piiPolicy, provider } = validateWithSchema(
+  const { configId, tenant, apiKey, models, baseURL, provider } = validateWithSchema(
     updateLLMConfigSchema(providers),
     {
       ...req.body,
@@ -43,7 +43,6 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     tenant,
     apiKey,
     baseURL,
-    piiPolicy,
     provider: provider as LLMProvider,
     models,
   });

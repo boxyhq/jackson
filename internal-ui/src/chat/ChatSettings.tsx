@@ -16,7 +16,6 @@ export default function ChatSettings() {
   const [selectedModel, setSelectedModel] = useState<string[]>([]);
   const [apiKey, setApiKey] = useState('');
   const [baseURL, setBaseURL] = useState('');
-  const [piiPolicy, setPIIPolicy] = useState<(typeof PII_POLICY_OPTIONS)[number]>('none');
   const [loading, setLoading] = useState(false);
   const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState<any>(null);
@@ -78,7 +77,6 @@ export default function ChatSettings() {
         models: isChatWithPDFProvider ? [] : selectedModel,
         apiKey: apiKey ?? undefined,
         baseURL,
-        piiPolicy,
         isChatWithPDFProvider,
       }),
     });
@@ -133,7 +131,6 @@ export default function ChatSettings() {
         apiKey: apiKey ?? undefined,
         isChatWithPdfProvider: selectedConfig.isChatWithPdfProvider,
         baseURL,
-        piiPolicy,
       }),
     });
 
@@ -154,7 +151,6 @@ export default function ChatSettings() {
     setSelectedModel([]);
     setApiKey('');
     setBaseURL('');
-    setPIIPolicy('none');
     switchView('list');
   };
 
@@ -227,7 +223,6 @@ export default function ChatSettings() {
                             setSelectedModel(config.models);
                             // setApiKey(config.apiKey || '');
                             setBaseURL(config.baseURL || '');
-                            setPIIPolicy(config.piiPolicy);
                           },
                         },
                         {
@@ -361,27 +356,6 @@ export default function ChatSettings() {
                     value={baseURL}
                     onChange={(e) => setBaseURL(e.target.value)}
                   />
-                </div>
-                <div>
-                  <div className='label'>
-                    <span className='label-text '>{t('bui-chat-pii-policy')}</span>
-                  </div>
-                  <label className='form-control'>
-                    <select
-                      className='select-bordered select rounded'
-                      name='role'
-                      onChange={(e: any) => {
-                        setPIIPolicy(e.target.value);
-                      }}
-                      value={piiPolicy}
-                      required>
-                      {Object.keys(PII_POLICY).map((value) => (
-                        <option value={value} key={value}>
-                          {PII_POLICY[value]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
                 </div>
                 {(view === 'edit' || view === 'create') && (
                   <div className='self-end'>

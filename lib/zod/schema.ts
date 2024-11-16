@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { llmApiKey, llmBaseUrl, llmConfigId, llmModels, llmPIIPolicy, llmProvider } from './primitives';
+import { llmApiKey, llmBaseUrl, llmConfigId, llmModels, llmProvider } from './primitives';
 
 export const updateLLMConfigSchema = (providers) =>
   z.object({
@@ -10,7 +10,6 @@ export const updateLLMConfigSchema = (providers) =>
     apiKey: llmApiKey,
     models: llmModels,
     baseURL: llmBaseUrl,
-    piiPolicy: llmPIIPolicy,
   });
 
 export const deleteLLMConfigSchema = z.object({
@@ -26,5 +25,4 @@ export const createLLMConfigSchema = (providers) =>
     apiKey: llmApiKey,
     models: llmModels,
     baseURL: llmBaseUrl,
-    piiPolicy: llmPIIPolicy,
   });

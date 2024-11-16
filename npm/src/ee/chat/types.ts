@@ -56,13 +56,13 @@ export type LLMConfigPayload = {
   apiKey?: string;
   baseURL?: string;
   isChatWithPDFProvider?: boolean;
-  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };
 
 export type LLMConfig = {
   id: string;
   createdAt: number;
   provider: LLMProvider;
+  baseURL: string;
   tenant: string;
   models: string[];
   isChatWithPDFProvider?: boolean;
@@ -79,5 +79,4 @@ export type LLMConfigMergedFromVault = {
   apiKey?: string;
   baseURL?: string;
   isChatWithPDFProvider?: boolean;
-  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };

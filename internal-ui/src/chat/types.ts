@@ -44,7 +44,6 @@ export type LLMConfig = {
   apiKey?: string;
   baseURL?: string;
   isChatWithPDFProvider?: boolean;
-  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };
 
 export type LLMModel = {

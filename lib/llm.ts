@@ -37,7 +37,6 @@ export type LLMModel = {
 type LLMConfigWithAPIKey = LLMConfig & {
   apiKey: string;
   baseURL: string;
-  piiPolicy: (typeof PII_POLICY_OPTIONS)[number];
 };
 
 const useTerminus = {
@@ -109,31 +108,22 @@ export async function anthropicHandler(
   for await (const messageStreamEvent of stream) {
     switch (messageStreamEvent.type) {
       case 'message_start':
-        console.log('Message start');
         for (const content of messageStreamEvent.message.content) {
           if (content.type === 'text') {
             text += content.text;
-          } else {
-            console.log('Unsupported content type', content.type);
           }
         }
         break;
       case 'message_stop':
-        console.log('Message stop');
         break;
       case 'content_block_start':
-        console.log('Content block start');
         if (messageStreamEvent.content_block.type === 'text') {
           text += (messageStreamEvent.content_block as TextBlock).text;
-        } else {
-          console.log('Unsupported content block type');
         }
         break;
       case 'content_block_delta':
-        console.log('Content block delta');
         break;
       case 'content_block_stop':
-        console.log('Content block stop');
         break;
     }
   }
