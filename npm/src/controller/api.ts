@@ -150,6 +150,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *    in: formData
    *    type: number
    *    required: false
+   *   forceAuthn:
+   *     name: forceAuthn
+   *     description: Require a new authentication instead of reusing an existing session.
+   *     in: formData
+   *     type: boolean
+   *     required: false
    * /api/v1/sso:
    *   post:
    *     summary: Create SSO connection
@@ -176,6 +182,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *      - $ref: '#/parameters/oidcClientIdPost'
    *      - $ref: '#/parameters/oidcClientSecretPost'
    *      - $ref: '#/parameters/sortOrder'
+   *      - $ref: '#/parameters/forceAuthn'
    *     responses:
    *       200:
    *         description: Success
@@ -239,6 +246,18 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     type: string
    *     in: formData
    *     required: true
+   *   tenantParamPatch:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPatch:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
    *   nameParamPatch:
    *     name: name
    *     description: Name/identifier for the connection
@@ -299,18 +318,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: JSON encoded array containing a list of allowed redirect URLs
    *     in: formData
    *     type: string
-   *   tenantParamPatch:
-   *     name: tenant
-   *     description: Tenant
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   productParamPatch:
-   *     name: product
-   *     description: Product
-   *     in: formData
-   *     required: true
-   *     type: string
    *   deactivatedParamPatch:
    *     name: deactivated
    *     description: Connection status
@@ -322,6 +329,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: Indicate the position of the connection in the IdP selection screen
    *     in: formData
    *     type: number
+   *     required: false
+   *   forceAuthnParamPatch:
+   *     name: forceAuthn
+   *     description: Require a new authentication instead of reusing an existing session.
+   *     in: formData
+   *     type: boolean
    *     required: false
    * /api/v1/sso:
    *   patch:
@@ -350,6 +363,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       - $ref: '#/parameters/productParamPatch'
    *       - $ref: '#/parameters/deactivatedParamPatch'
    *       - $ref: '#/parameters/sortOrderParamPatch'
+   *       - $ref: '#/parameters/forceAuthnParamPatch'
    *     responses:
    *       204:
    *         description: Success
@@ -422,17 +436,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: query
    *     name: tenant
    *     type: string
-   *     description: Tenant
+   *     description: Tenant (Optional if clientID provided)
    *  productParamGet:
    *     in: query
    *     name: product
    *     type: string
-   *     description: Product
+   *     description: Product (Optional if clientID provided)
    *  clientIDParamGet:
    *     in: query
    *     name: clientID
    *     type: string
-   *     description: Client ID
+   *     description: Client ID (Optional if tenant/product provided)
    *  strategyParamGet:
    *     in: query
    *     name: strategy
@@ -652,22 +666,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: clientID
    *     in: query
    *     type: string
-   *     description: Client ID
+   *     description: Client ID (Optional if tenant/product provided)
    *   clientSecretDel:
    *     name: clientSecret
    *     in: query
    *     type: string
-   *     description: Client Secret
+   *     description: Client Secret (Optional if tenant/product provided)
    *   tenantDel:
    *     name: tenant
    *     in: query
    *     type: string
-   *     description: Tenant
+   *     description: Tenant (Optional if clientID/Secret provided)
    *   productDel:
    *     name: product
    *     in: query
    *     type: string
-   *     description: Product
+   *     description: Product (Optional if clientID/Secret provided)
    *   strategyDel:
    *     name: strategy
    *     in: query
