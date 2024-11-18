@@ -246,6 +246,18 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     type: string
    *     in: formData
    *     required: true
+   *   tenantParamPatch:
+   *     name: tenant
+   *     description: Tenant
+   *     in: formData
+   *     required: true
+   *     type: string
+   *   productParamPatch:
+   *     name: product
+   *     description: Product
+   *     in: formData
+   *     required: true
+   *     type: string
    *   nameParamPatch:
    *     name: name
    *     description: Name/identifier for the connection
@@ -305,18 +317,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: redirectUrl
    *     description: JSON encoded array containing a list of allowed redirect URLs
    *     in: formData
-   *     type: string
-   *   tenantParamPatch:
-   *     name: tenant
-   *     description: Tenant
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   productParamPatch:
-   *     name: product
-   *     description: Product
-   *     in: formData
-   *     required: true
    *     type: string
    *   deactivatedParamPatch:
    *     name: deactivated
@@ -436,17 +436,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     in: query
    *     name: tenant
    *     type: string
-   *     description: Tenant
+   *     description: Tenant (Optional if clientID provided)
    *  productParamGet:
    *     in: query
    *     name: product
    *     type: string
-   *     description: Product
+   *     description: Product (Optional if clientID provided)
    *  clientIDParamGet:
    *     in: query
    *     name: clientID
    *     type: string
-   *     description: Client ID
+   *     description: Client ID (Optional if tenant/product provided)
    *  strategyParamGet:
    *     in: query
    *     name: strategy
@@ -666,22 +666,22 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     name: clientID
    *     in: query
    *     type: string
-   *     description: Client ID
+   *     description: Client ID (Optional if tenant/product provided)
    *   clientSecretDel:
    *     name: clientSecret
    *     in: query
    *     type: string
-   *     description: Client Secret
+   *     description: Client Secret (Optional if tenant/product provided)
    *   tenantDel:
    *     name: tenant
    *     in: query
    *     type: string
-   *     description: Tenant
+   *     description: Tenant (Optional if clientID/Secret provided)
    *   productDel:
    *     name: product
    *     in: query
    *     type: string
-   *     description: Product
+   *     description: Product (Optional if clientID/Secret provided)
    *   strategyDel:
    *     name: strategy
    *     in: query
