@@ -155,6 +155,11 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
           active: asPath.includes('/admin/llm-vault'),
           items: [
             {
+              href: '/admin/llm-vault/policy_settings',
+              text: t('policy_settings'),
+              active: asPath.includes('/admin/llm-vault/policy_settings'),
+            },
+            {
               href: '/admin/llm-vault/chat',
               text: t('bui-chat'),
               active: asPath.includes('/admin/llm-vault/chat'),
