@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const AddPolicyForm = () => {
   // Initial entity options (expanded to simulate ~30 entities)
@@ -42,6 +43,8 @@ const AddPolicyForm = () => {
     selectedRegions: [],
   });
 
+  const { t } = useTranslation('common');
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hoveredEntity, setHoveredEntity] = useState(null);
@@ -142,7 +145,7 @@ const AddPolicyForm = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/admin/llm-vault/policy_settings', {
+      const response = await fetch('/api/admin/llm-vault/policies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -185,7 +188,7 @@ const AddPolicyForm = () => {
   return (
     <>
       <div className='max-w-3xl mx-auto p-4'>
-        <LinkBack href='/admin/llm-vault/policy_settings' />
+        <LinkBack href='/admin/llm-vault/policies' />
         <div style={{ marginTop: '10px' }}>
           <Card>
             <div style={{ marginLeft: '10px', marginTop: '10px' }}>
@@ -350,6 +353,7 @@ const AddPolicyForm = () => {
                             } border`}>
                             <input
                               type='checkbox'
+                              className='bg-white'
                               checked={formData.selectedEntities.some((e) => e.region === region)}
                               onClick={(e) => toggleRegion(region)}
                               onMouseEnter={() => setHoveredEntity(region)}
