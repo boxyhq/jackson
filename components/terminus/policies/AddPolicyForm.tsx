@@ -1,8 +1,21 @@
-/* eslint-disable i18next/no-literal-string */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+type entityState = {
+  type: string;
+  description: string;
+  region: string;
+};
+
+type formState = {
+  policy: string;
+  product: string;
+  language: string;
+  selectedEntities: Array<entityState>;
+  selectedRegions: Array<string>;
+};
 
 const AddPolicyForm = () => {
   // Initial entity options
@@ -33,11 +46,9 @@ const AddPolicyForm = () => {
   ];
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<formState>({
     policy: '',
     product: '',
-    description: '',
-    region: '',
     language: '',
     selectedEntities: [],
     selectedRegions: [],
@@ -47,7 +58,7 @@ const AddPolicyForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [hoveredEntity, setHoveredEntity] = useState(null);
+  const [hoveredEntity, setHoveredEntity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRegions, setExpandedRegions] = useState({});
   const [showAllEntities, setShowAllEntities] = useState(false);
@@ -59,7 +70,7 @@ const AddPolicyForm = () => {
 
   useEffect(() => {
     toggleAllRegions();
-  }, []);
+  });
 
   const filteredEntities = useMemo(() => {
     if (!searchQuery) return initialEntities;
@@ -91,6 +102,10 @@ const AddPolicyForm = () => {
         };
       }
     });
+  };
+
+  const selectCount = () => {
+    return `${formData.selectedEntities.length} of ${initialEntities.length} entities selected`;
   };
 
   const handleChange = (e) => {
@@ -196,24 +211,22 @@ const AddPolicyForm = () => {
           <Card>
             <div style={{ marginLeft: '10px', marginTop: '10px' }}>
               <h2 className='card-title text-xl font-medium leading-none tracking-tight gap-4'>
-                Create New Policy
+                {t('new_policy')}
               </h2>
-              <div className='text-gray-600 dark:text-gray-400 text-sm gap-4'>
-                Configure a new LLM policy to manage data protection rules
-              </div>
+              <div className='text-gray-600 dark:text-gray-400 text-sm gap-4'>{t('new_llm_policy_desc')}</div>
             </div>
             <Card.Body>
               <form onSubmit={handleSubmit} className='space-y-6'>
                 {error && (
                   <Alert variant='error'>
-                    <h3>Error</h3>
+                    <h3>{t('bui-traces-error')}</h3>
                     <h3>{error}</h3>
                   </Alert>
                 )}
 
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
-                    Product
+                    {t('bui-shared-product')}
                     <span className='text-red-500'>*</span>
                   </label>
                   <input
@@ -229,7 +242,7 @@ const AddPolicyForm = () => {
 
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
-                    Policy
+                    {t('bui-chat-pii-policy')}
                     <span className='text-red-500'>*</span>
                   </label>
                   <select
@@ -239,7 +252,7 @@ const AddPolicyForm = () => {
                     className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     style={{ backgroundColor: 'white' }}
                     required>
-                    <option value=''>Select a Policy</option>
+                    <option value=''>{t('select_policy')}</option>
                     {policies.map((policy) => (
                       <option key={policy} value={policy}>
                         {policy}
@@ -250,7 +263,7 @@ const AddPolicyForm = () => {
 
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
-                    Language
+                    {t('language')}
                     <span className='text-red-500'>*</span>
                   </label>
                   <select
@@ -260,7 +273,7 @@ const AddPolicyForm = () => {
                     className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     style={{ backgroundColor: 'white' }}
                     required>
-                    <option value=''>Select a language</option>
+                    <option value=''>{t('select_language')}</option>
                     {languages.map((language) => (
                       <option key={language} value={language}>
                         {language}
@@ -274,7 +287,7 @@ const AddPolicyForm = () => {
                 <div className='space-y-4'>
                   <div className='flex justify-between items-center'>
                     <label className='text-sm font-medium'>
-                      Select Entities to Monitor
+                      {t('select_entities')}
                       <span className='text-red-500'>*</span>
                     </label>
                   </div>
@@ -304,9 +317,7 @@ const AddPolicyForm = () => {
 
                   {/* Selected count */}
                   <div className='flex justify-between items-center'>
-                    <div className='text-sm text-gray-600'>
-                      {formData.selectedEntities.length} of {initialEntities.length} entities selected
-                    </div>
+                    <div className='text-sm text-gray-600'>{selectCount()}</div>
                     <div className='flex justify-between gap-2'>
                       <button
                         type='button'
@@ -315,12 +326,12 @@ const AddPolicyForm = () => {
                         {areAllFilteredEntitiesSelected ? (
                           <>
                             <CheckSquare className='w-4 h-4 mr-1' />
-                            Deselect All
+                            {t('unselect_all')}
                           </>
                         ) : (
                           <>
                             <Square className='w-4 h-4 mr-1' />
-                            Select All
+                            {t('select_all')}
                           </>
                         )}
                       </button>
@@ -331,12 +342,12 @@ const AddPolicyForm = () => {
                         {showAllEntities ? (
                           <>
                             <CheckSquare className='w-4 h-4 mr-1' />
-                            Collapse All
+                            {t('collapse_all')}
                           </>
                         ) : (
                           <>
                             <Square className='w-4 h-4 mr-1' />
-                            Expand All
+                            {t('expand_all')}
                           </>
                         )}
                       </button>
@@ -363,9 +374,9 @@ const AddPolicyForm = () => {
                             } border`}>
                             <button
                               type='button'
-                              onClick={(e) => toggleRegion(region)}
+                              onClick={() => toggleRegion(region)}
                               onMouseEnter={() => setHoveredEntity(region)}
-                              onMouseLeave={() => setHoveredEntity(null)}
+                              onMouseLeave={() => setHoveredEntity('')}
                               className='flex items-center text-sm text-teal-800 hover:text-teal-900 focus:outline-none'>
                               {formData.selectedEntities.some((e) => e.region === region) ? (
                                 <>
@@ -406,7 +417,7 @@ const AddPolicyForm = () => {
                                     type='button'
                                     onClick={() => toggleEntity(entity)}
                                     onMouseEnter={() => setHoveredEntity(entity.type)}
-                                    onMouseLeave={() => setHoveredEntity(null)}
+                                    onMouseLeave={() => setHoveredEntity('')}
                                     className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors ${
                                       formData.selectedEntities.some((e) => e.type === entity.type)
                                         ? 'bg-teal-100 border-teal-500 text-teal-700'
@@ -433,7 +444,7 @@ const AddPolicyForm = () => {
                   {/* No results message */}
                   {filteredEntities.length === 0 && (
                     <div className='text-center py-4 text-gray-500'>
-                      No entities found matching &quot;{searchQuery}&quot;
+                      {t('no_entities_found')} &quot;{searchQuery}&quot;
                     </div>
                   )}
                 </div>

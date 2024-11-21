@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import DocumentMagnifyingGlassIcon from '@heroicons/react/24/outline/DocumentMagnifyingGlassIcon';
+import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
 import WrenchScrewdriverIcon from '@heroicons/react/24/outline/WrenchScrewdriverIcon';
 import { useTranslation } from 'next-i18next';
 import { Table, LinkPrimary } from '@boxyhq/internal-ui';
@@ -37,12 +37,12 @@ const Policies: NextPage = () => {
                 {
                   actions: [
                     {
-                      text: t('configuration'),
+                      text: t('bui-shared-edit'),
                       icon: <WrenchScrewdriverIcon className='h-5 w-5' />,
                     },
                     {
-                      text: t('view policy'),
-                      icon: <DocumentMagnifyingGlassIcon className='h-5 w-5' />,
+                      text: t('bui-shared-delete'),
+                      icon: <TrashIcon className='h-5 w-5' />,
                     },
                   ],
                 },

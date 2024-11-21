@@ -1,6 +1,6 @@
 import AddPolicyForm from '../../../../components/terminus/policies/AddPolicyForm';
 
 const NewPolicy = () => {
-  return <AddPolicyForm/>
+  return <AddPolicyForm />;
 };
 export default NewPolicy;
