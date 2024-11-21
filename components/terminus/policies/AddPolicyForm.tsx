@@ -91,6 +91,7 @@ const AddPolicyForm = () => {
           selectedEntities: prev.selectedEntities.filter(
             (selected) => !filteredEntities.some((filtered) => filtered.type === selected.type)
           ),
+          selectedRegions: [],
         };
       } else {
         // Add all filtered entities that aren't already selected
@@ -99,6 +100,7 @@ const AddPolicyForm = () => {
         return {
           ...prev,
           selectedEntities: [...prev.selectedEntities, ...newEntities],
+          selectedRegions: regions,
         };
       }
     });
