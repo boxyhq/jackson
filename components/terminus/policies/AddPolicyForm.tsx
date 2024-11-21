@@ -358,8 +358,8 @@ const AddPolicyForm = () => {
                                 .filter((e) => e.region === region)
                                 .sort()
                                 .toString()
-                                ? 'bg-teal-100 border-teal-500 text-teal-700'
-                                : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+                                ? 'border-teal-200 text-teal-300'
+                                : 'hover:bg-gray-300 border-gray-500'
                             } border`}>
                             <button
                               type='button'
