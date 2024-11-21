@@ -1,11 +1,11 @@
 /* eslint-disable i18next/no-literal-string */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const AddPolicyForm = () => {
-  // Initial entity options (expanded to simulate ~30 entities)
+  // Initial entity options
   const initialEntities = [
     {
       type: 'CREDIT_CARD',
@@ -44,7 +44,7 @@ const AddPolicyForm = () => {
   });
 
   const { t } = useTranslation('common');
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hoveredEntity, setHoveredEntity] = useState(null);
@@ -55,8 +55,11 @@ const AddPolicyForm = () => {
   // Available options
   const regions = ['GLOBAL', 'US', 'UK', 'Spain', 'India'];
   const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
+  const policies = ['Detect & Mask', 'Detect & Redact', 'Detect & Report', 'Detect & Block'];
 
-  const areAllEntitiesSelected = formData.selectedEntities.length === initialEntities.length;
+  useEffect(() => {
+    toggleAllRegions();
+  }, []);
 
   const filteredEntities = useMemo(() => {
     if (!searchQuery) return initialEntities;
@@ -167,7 +170,7 @@ const AddPolicyForm = () => {
         ...prev,
         [region]: prev[region] !== undefined ? !prev[region] : true,
       };
-      setShowAllEntities(Object.values(newExpandedState).every(value => value === true));
+      setShowAllEntities(Object.values(newExpandedState).every((value) => value === true));
       return newExpandedState;
     });
   };
@@ -229,15 +232,20 @@ const AddPolicyForm = () => {
                     Policy
                     <span className='text-red-500'>*</span>
                   </label>
-                  <input
-                    type='text'
+                  <select
                     name='policy'
                     value={formData.policy}
                     onChange={handleChange}
                     className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     style={{ backgroundColor: 'white' }}
-                    required
-                  />
+                    required>
+                    <option value=''>Select a Policy</option>
+                    {policies.map((policy) => (
+                      <option key={policy} value={policy}>
+                        {policy}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className='space-y-2'>
@@ -269,22 +277,6 @@ const AddPolicyForm = () => {
                       Select Entities to Monitor
                       <span className='text-red-500'>*</span>
                     </label>
-                    <button
-                      type='button'
-                      onClick={toggleAllFilteredEntities}
-                      className='flex items-center text-sm text-teal-600 hover:text-teal-800 focus:outline-none'>
-                      {areAllFilteredEntitiesSelected ? (
-                        <>
-                          <CheckSquare className='w-4 h-4 mr-1' />
-                          Deselect All
-                        </>
-                      ) : (
-                        <>
-                          <Square className='w-4 h-4 mr-1' />
-                          Select All
-                        </>
-                      )}
-                    </button>
                   </div>
 
                   {/* Search Input */}
@@ -311,33 +303,51 @@ const AddPolicyForm = () => {
                   </div>
 
                   {/* Selected count */}
-                  <div className='text-sm text-gray-600'>
-                    {formData.selectedEntities.length} of {initialEntities.length} entities selected
-                  </div>
                   <div className='flex justify-between items-center'>
-                    <button
-                      type='button'
-                      onClick={toggleAllRegions}
-                      className='flex items-center text-sm text-teal-600 hover:text-teal-800 focus:outline-none'>
-                      {(showAllEntities) ? (
-                        <>
-                          <CheckSquare className='w-4 h-4 mr-1' />
-                          Collapse All
-                        </>
-                      ) : (
-                        <>
-                          <Square className='w-4 h-4 mr-1' />
-                          Expand All
-                        </>
-                      )}
-                    </button>
+                    <div className='text-sm text-gray-600'>
+                      {formData.selectedEntities.length} of {initialEntities.length} entities selected
+                    </div>
+                    <div className='flex justify-between gap-2'>
+                      <button
+                        type='button'
+                        onClick={toggleAllFilteredEntities}
+                        className='flex items-center text-sm text-teal-600 hover:text-teal-800 focus:outline-none'>
+                        {areAllFilteredEntitiesSelected ? (
+                          <>
+                            <CheckSquare className='w-4 h-4 mr-1' />
+                            Deselect All
+                          </>
+                        ) : (
+                          <>
+                            <Square className='w-4 h-4 mr-1' />
+                            Select All
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type='button'
+                        onClick={toggleAllRegions}
+                        className='flex items-center text-sm text-teal-600 hover:text-teal-800 focus:outline-none'>
+                        {showAllEntities ? (
+                          <>
+                            <CheckSquare className='w-4 h-4 mr-1' />
+                            Collapse All
+                          </>
+                        ) : (
+                          <>
+                            <Square className='w-4 h-4 mr-1' />
+                            Expand All
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Entity Grid */}
-                  <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
+                  <div className='grid grid-flow-row auto-rows-max gap-2'>
                     {regions.map((region) => (
-                      <div className='region-columns' key={region}>
-                        <div key={region}>
+                      <div className='flex gap-2' key={region}>
+                        <div key={region} className='min-w-32'>
                           <label
                             className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors cursor-pointer ${
                               formData.selectedEntities
@@ -351,15 +361,24 @@ const AddPolicyForm = () => {
                                 ? 'bg-teal-100 border-teal-500 text-teal-700'
                                 : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
                             } border`}>
-                            <input
-                              type='checkbox'
-                              className='bg-white'
-                              checked={formData.selectedEntities.some((e) => e.region === region)}
+                            <button
+                              type='button'
                               onClick={(e) => toggleRegion(region)}
                               onMouseEnter={() => setHoveredEntity(region)}
                               onMouseLeave={() => setHoveredEntity(null)}
-                            />
-                            <span className='truncate mr-2'>{region}</span>
+                              className='flex items-center text-sm text-teal-800 hover:text-teal-900 focus:outline-none'>
+                              {formData.selectedEntities.some((e) => e.region === region) ? (
+                                <>
+                                  <CheckSquare className='w-4 h-4 mr-1' />
+                                  {region}
+                                </>
+                              ) : (
+                                <>
+                                  <Square className='w-4 h-4 mr-1' />
+                                  {region}
+                                </>
+                              )}
+                            </button>
 
                             <button
                               type='button'
@@ -377,34 +396,36 @@ const AddPolicyForm = () => {
                             </div>
                           )}
                         </div>
-                        {filteredEntities.map(
-                          (entity) =>
-                            entity.region === region &&
-                            expandedRegions[region] && (
-                              <div key={entity.type}>
-                                <button
-                                  type='button'
-                                  onClick={() => toggleEntity(entity)}
-                                  onMouseEnter={() => setHoveredEntity(entity.type)}
-                                  onMouseLeave={() => setHoveredEntity(null)}
-                                  className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors ${
-                                    formData.selectedEntities.some((e) => e.type === entity.type)
-                                      ? 'bg-teal-100 border-teal-500 text-teal-700'
-                                      : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
-                                  } border`}>
-                                  <span className='truncate mr-2'>{entity.type}</span>
-                                  <Info className='w-4 h-4 flex-shrink-0 text-gray-400' />
-                                </button>
+                        <div className='flex flex-wrap flex-row gap-2'>
+                          {filteredEntities.map(
+                            (entity) =>
+                              entity.region === region &&
+                              expandedRegions[region] && (
+                                <div key={entity.type} className='flex flex-wrap gap-2'>
+                                  <button
+                                    type='button'
+                                    onClick={() => toggleEntity(entity)}
+                                    onMouseEnter={() => setHoveredEntity(entity.type)}
+                                    onMouseLeave={() => setHoveredEntity(null)}
+                                    className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors ${
+                                      formData.selectedEntities.some((e) => e.type === entity.type)
+                                        ? 'bg-teal-100 border-teal-500 text-teal-700'
+                                        : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+                                    } border`}>
+                                    <span className='truncate mr-2'>{entity.type}</span>
+                                    <Info className='w-4 h-4 flex-shrink-0 text-gray-400' />
+                                  </button>
 
-                                {/* Tooltip */}
-                                {hoveredEntity === entity.type && (
-                                  <div className='absolute z-10 w-48 p-2 mt-1 text-sm bg-gray-900 text-white rounded-md shadow-lg'>
-                                    {entity.description}
-                                  </div>
-                                )}
-                              </div>
-                            )
-                        )}
+                                  {/* Tooltip */}
+                                  {hoveredEntity === entity.type && (
+                                    <div className='absolute z-10 w-48 p-2 mt-1 text-sm bg-gray-900 text-white rounded-md shadow-lg'>
+                                      {entity.description}
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

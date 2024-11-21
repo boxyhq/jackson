@@ -4,7 +4,7 @@ import WrenchScrewdriverIcon from '@heroicons/react/24/outline/WrenchScrewdriver
 import { useTranslation } from 'next-i18next';
 import { Table, LinkPrimary } from '@boxyhq/internal-ui';
 
-const policies: NextPage = () => {
+const Policies: NextPage = () => {
   const policies = [
     { id: 'sasd124sjnasfnasf', project_name: 'dev', name: 'dev_test', created: '2023-04-21T07:17:54' },
   ];
@@ -12,7 +12,7 @@ const policies: NextPage = () => {
   return (
     <div>
       <div className='mb-5 flex items-center justify-between'>
-        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>Policies</h2>
+        <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('policies')}</h2>
         <LinkPrimary href={'/admin/llm-vault/policies/new'}>{t('new_policy')}</LinkPrimary>
       </div>
       <>
@@ -54,4 +54,4 @@ const policies: NextPage = () => {
   );
 };
 
-export default policies;
+export default Policies;
