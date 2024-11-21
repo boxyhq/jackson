@@ -70,7 +70,7 @@ const AddPolicyForm = () => {
 
   useEffect(() => {
     toggleAllRegions();
-  });
+  }, []);
 
   const filteredEntities = useMemo(() => {
     if (!searchQuery) return initialEntities;
@@ -416,23 +416,16 @@ const AddPolicyForm = () => {
                                   <button
                                     type='button'
                                     onClick={() => toggleEntity(entity)}
-                                    onMouseEnter={() => setHoveredEntity(entity.type)}
-                                    onMouseLeave={() => setHoveredEntity('')}
                                     className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors ${
                                       formData.selectedEntities.some((e) => e.type === entity.type)
                                         ? 'bg-teal-100 border-teal-500 text-teal-700'
                                         : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
                                     } border`}>
                                     <span className='truncate mr-2'>{entity.type}</span>
-                                    <Info className='w-4 h-4 flex-shrink-0 text-gray-400' />
-                                  </button>
-
-                                  {/* Tooltip */}
-                                  {hoveredEntity === entity.type && (
-                                    <div className='absolute z-10 w-48 p-2 mt-1 text-sm bg-gray-900 text-white rounded-md shadow-lg'>
-                                      {entity.description}
+                                    <div className='z-10 tooltip' data-tip={entity.description}>
+                                      <Info className='w-4 h-4 flex-shrink-0 text-gray-400' />
                                     </div>
-                                  )}
+                                  </button>
                                 </div>
                               )
                           )}
