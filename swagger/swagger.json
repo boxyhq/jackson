@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.30.0",
+    "version": "1.31.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -103,6 +103,9 @@
           },
           {
             "$ref": "#/parameters/sortOrder"
+          },
+          {
+            "$ref": "#/parameters/forceAuthn"
           }
         ],
         "responses": {
@@ -184,6 +187,9 @@
           },
           {
             "$ref": "#/parameters/sortOrderParamPatch"
+          },
+          {
+            "$ref": "#/parameters/forceAuthnParamPatch"
           }
         ],
         "responses": {
@@ -1088,6 +1094,9 @@
             "$ref": "#/parameters/product"
           },
           {
+            "$ref": "#/parameters/directoryId"
+          },
+          {
             "$ref": "#/parameters/groupId"
           }
         ],
@@ -1227,6 +1236,9 @@
             "$ref": "#/parameters/product"
           },
           {
+            "$ref": "#/parameters/directoryId"
+          },
+          {
             "name": "userId",
             "description": "User ID",
             "in": "path",
@@ -1311,6 +1323,12 @@
         "parameters": [
           {
             "$ref": "#/parameters/directoryId"
+          },
+          {
+            "$ref": "#/parameters/tenant"
+          },
+          {
+            "$ref": "#/parameters/product"
           },
           {
             "$ref": "#/parameters/pageOffset"
@@ -2216,6 +2234,13 @@
       "type": "number",
       "required": false
     },
+    "forceAuthn": {
+      "name": "forceAuthn",
+      "description": "Require a new authentication instead of reusing an existing session.",
+      "in": "formData",
+      "type": "boolean",
+      "required": false
+    },
     "clientIDParamPatch": {
       "name": "clientID",
       "description": "Client ID for the connection",
@@ -2229,6 +2254,20 @@
       "type": "string",
       "in": "formData",
       "required": true
+    },
+    "tenantParamPatch": {
+      "name": "tenant",
+      "description": "Tenant",
+      "in": "formData",
+      "required": true,
+      "type": "string"
+    },
+    "productParamPatch": {
+      "name": "product",
+      "description": "Product",
+      "in": "formData",
+      "required": true,
+      "type": "string"
     },
     "nameParamPatch": {
       "name": "name",
@@ -2302,20 +2341,6 @@
       "in": "formData",
       "type": "string"
     },
-    "tenantParamPatch": {
-      "name": "tenant",
-      "description": "Tenant",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
-    "productParamPatch": {
-      "name": "product",
-      "description": "Product",
-      "in": "formData",
-      "required": true,
-      "type": "string"
-    },
     "deactivatedParamPatch": {
       "name": "deactivated",
       "description": "Connection status",
@@ -2328,6 +2353,13 @@
       "description": "Indicate the position of the connection in the IdP selection screen",
       "in": "formData",
       "type": "number",
+      "required": false
+    },
+    "forceAuthnParamPatch": {
+      "name": "forceAuthn",
+      "description": "Require a new authentication instead of reusing an existing session.",
+      "in": "formData",
+      "type": "boolean",
       "required": false
     },
     "tenantParamGet": {
@@ -2348,7 +2380,7 @@
       "in": "query",
       "name": "clientID",
       "type": "string",
-      "description": "Client ID"
+      "description": "Client ID (Optional if tenant/product provided)"
     },
     "strategyParamGet": {
       "in": "query",
@@ -2366,25 +2398,25 @@
       "name": "clientID",
       "in": "query",
       "type": "string",
-      "description": "Client ID"
+      "description": "Client ID (Optional if tenant/product provided)"
     },
     "clientSecretDel": {
       "name": "clientSecret",
       "in": "query",
       "type": "string",
-      "description": "Client Secret"
+      "description": "Client Secret (Optional if tenant/product provided)"
     },
     "tenantDel": {
       "name": "tenant",
       "in": "query",
       "type": "string",
-      "description": "Tenant"
+      "description": "Tenant (Optional if clientID/Secret provided)"
     },
     "productDel": {
       "name": "product",
       "in": "query",
       "type": "string",
-      "description": "Product"
+      "description": "Product (Optional if clientID/Secret provided)"
     },
     "strategyDel": {
       "name": "strategy",
@@ -2438,21 +2470,21 @@
     },
     "tenant": {
       "name": "tenant",
-      "description": "Tenant",
+      "description": "Tenant (Optional if directoryId is provided)",
       "in": "query",
-      "required": true,
+      "required": false,
       "type": "string"
     },
     "product": {
       "name": "product",
-      "description": "Product",
+      "description": "Product (Optional if directoryId is provided)",
       "in": "query",
-      "required": true,
+      "required": false,
       "type": "string"
     },
     "directoryId": {
       "name": "directoryId",
-      "description": "Directory ID",
+      "description": "Directory ID (Optional if tenant/product is provided)",
       "in": "query",
       "required": false,
       "type": "string"
