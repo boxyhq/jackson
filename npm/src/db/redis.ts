@@ -75,6 +75,10 @@ class Redis implements DatabaseDriver {
     const values = await this.client.MGET(keyArray);
 
     for (let i = 0; i < values.length; i++) {
+      if (!values[i]) {
+        continue;
+      }
+
       const valueObject = JSON.parse(values[i].toString());
 
       if (valueObject !== null && valueObject !== '') {

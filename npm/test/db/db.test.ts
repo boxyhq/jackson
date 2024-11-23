@@ -40,6 +40,7 @@ const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
   pageLimit: 2,
+  ttl: 1,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -55,6 +56,7 @@ const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
   pageLimit: 2,
+  ttl: 1,
 };
 
 const mysqlDbConfig = <DatabaseOption>{
@@ -503,6 +505,22 @@ tap.test('dbs', async () => {
 
       t.same(ret1, null, 'ttl for record1 failed');
       t.same(ret2, null, 'ttl for record2 failed');
+    });
+
+    tap.test('getAll() with TTL: ' + dbType, async (t) => {
+      const testMessage =
+        dbType === 'dynamodb' // dynamodb doesn't support sort order
+          ? 'should return all the records upto options.pageLimit'
+          : 'should return all the records upto options.pageLimit in DESC order by creation time';
+      const wanted = dbType === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
+      // getAll without pagination params
+      t.same((await ttlStore.getAll()).data, [], `without pagination params ` + testMessage);
+      // getAll with pagination params
+      t.same((await ttlStore.getAll(0, 2)).data, [], `with pagination params ` + testMessage);
+      // getAll with pageLimit set to 0
+      t.same((await ttlStore.getAll(0, 0)).data, [], `with pageLimit set to 0 ` + testMessage);
+      // getAll with pageLimit > options.pageLimit
+      t.same((await ttlStore.getAll(0, 3)).data, [], `with pageLimit > options.pageLimit ` + testMessage);
     });
 
     tap.test('deleteMany(): ' + dbType, async (t) => {
