@@ -39,7 +39,7 @@ function BlocklyComponent(props) {
 
     const body = {
       model: model,
-      blockly_model: domToPretty,
+      blocklyModel: domToPretty,
     };
 
     const requestOptions = {
