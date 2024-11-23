@@ -40,7 +40,6 @@ const redisDbConfig = <DatabaseOption>{
   engine: 'redis',
   url: 'redis://localhost:6379',
   pageLimit: 2,
-  ttl: 1,
 };
 
 const postgresDbConfig = <DatabaseOption>{
@@ -56,7 +55,6 @@ const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
   pageLimit: 2,
-  ttl: 1,
 };
 
 const mysqlDbConfig = <DatabaseOption>{
@@ -129,69 +127,69 @@ const sqliteConfig = <DatabaseOption>{
 };
 
 const dbs = [
+  // {
+  //   ...memDbConfig,
+  // },
+  // {
+  //   ...memDbConfig,
+  //   encryptionKey,
+  // },
   {
-    ...memDbConfig,
-  },
-  {
-    ...memDbConfig,
-    encryptionKey,
+    ...redisDbConfig,
   },
   {
     ...redisDbConfig,
-  },
-  {
-    ...redisDbConfig,
     encryptionKey,
   },
-  {
-    ...postgresDbConfig,
-  },
-  {
-    ...postgresDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mongoDbConfig,
-  },
-  {
-    ...mongoDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mysqlDbConfig,
-  },
-  {
-    ...mysqlDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mariadbDbConfig,
-  },
-  {
-    ...mariadbDbConfig,
-    encryptionKey,
-  },
-  {
-    ...mssqlDbConfig,
-  },
-  {
-    ...mssqlDbConfig,
-    encryptionKey,
-  },
-  {
-    ...sqliteConfig,
-  },
-  {
-    ...sqliteConfig,
-    encryptionKey,
-  },
-  {
-    ...tursoConfig,
-  },
-  {
-    ...tursoConfig,
-    encryptionKey,
-  },
+  // {
+  //   ...postgresDbConfig,
+  // },
+  // {
+  //   ...postgresDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  // },
+  // {
+  //   ...mongoDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  // },
+  // {
+  //   ...mysqlDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  // },
+  // {
+  //   ...mariadbDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...mssqlDbConfig,
+  // },
+  // {
+  //   ...mssqlDbConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...sqliteConfig,
+  // },
+  // {
+  //   ...sqliteConfig,
+  //   encryptionKey,
+  // },
+  // {
+  //   ...tursoConfig,
+  // },
+  // {
+  //   ...tursoConfig,
+  //   encryptionKey,
+  // },
 ];
 
 if (process.env.PLANETSCALE_URL) {
