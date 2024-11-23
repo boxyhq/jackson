@@ -506,6 +506,11 @@ tap.test('dbs', async () => {
     });
 
     tap.test('getAll() with TTL: ' + dbType, async (t) => {
+      // mongo runs ttl task every 60 seconds
+      if (dbEngine.startsWith('mongo')) {
+        return;
+      }
+
       const testMessage =
         dbType === 'dynamodb' // dynamodb doesn't support sort order
           ? 'should return all the records upto options.pageLimit'
