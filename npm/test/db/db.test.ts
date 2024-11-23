@@ -512,7 +512,6 @@ tap.test('dbs', async () => {
         dbType === 'dynamodb' // dynamodb doesn't support sort order
           ? 'should return all the records upto options.pageLimit'
           : 'should return all the records upto options.pageLimit in DESC order by creation time';
-      const wanted = dbType === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
       // getAll without pagination params
       t.same((await ttlStore.getAll()).data, [], `without pagination params ` + testMessage);
       // getAll with pagination params
