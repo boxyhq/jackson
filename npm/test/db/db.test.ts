@@ -127,13 +127,13 @@ const sqliteConfig = <DatabaseOption>{
 };
 
 const dbs = [
-  // {
-  //   ...memDbConfig,
-  // },
-  // {
-  //   ...memDbConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...memDbConfig,
+  },
+  {
+    ...memDbConfig,
+    encryptionKey,
+  },
   {
     ...redisDbConfig,
   },
@@ -141,55 +141,55 @@ const dbs = [
     ...redisDbConfig,
     encryptionKey,
   },
-  // {
-  //   ...postgresDbConfig,
-  // },
-  // {
-  //   ...postgresDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  // },
-  // {
-  //   ...mongoDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  // },
-  // {
-  //   ...mysqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  // },
-  // {
-  //   ...mariadbDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  // },
-  // {
-  //   ...mssqlDbConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...sqliteConfig,
-  // },
-  // {
-  //   ...sqliteConfig,
-  //   encryptionKey,
-  // },
-  // {
-  //   ...tursoConfig,
-  // },
-  // {
-  //   ...tursoConfig,
-  //   encryptionKey,
-  // },
+  {
+    ...postgresDbConfig,
+  },
+  {
+    ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mongoDbConfig,
+  },
+  {
+    ...mongoDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mysqlDbConfig,
+  },
+  {
+    ...mysqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mariadbDbConfig,
+  },
+  {
+    ...mariadbDbConfig,
+    encryptionKey,
+  },
+  {
+    ...mssqlDbConfig,
+  },
+  {
+    ...mssqlDbConfig,
+    encryptionKey,
+  },
+  {
+    ...sqliteConfig,
+  },
+  {
+    ...sqliteConfig,
+    encryptionKey,
+  },
+  {
+    ...tursoConfig,
+  },
+  {
+    ...tursoConfig,
+    encryptionKey,
+  },
 ];
 
 if (process.env.PLANETSCALE_URL) {
