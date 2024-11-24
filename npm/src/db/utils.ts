@@ -41,4 +41,3 @@ export const normalizeOffsetAndLimit = ({
 };
 export const indexPrefix = '_index';
 export const createdAtPrefix = '_createdAt';
-export const modifiedAtPrefix = '_modifiedAt';
