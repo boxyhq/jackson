@@ -76,11 +76,12 @@ class Redis implements DatabaseDriver {
 
     for (let i = 0; i < values.length; i++) {
       if (!values[i]) {
+        // delete zadd
+        this.client.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), elements[i]);
         continue;
       }
 
       const valueObject = JSON.parse(values[i].toString());
-
       if (valueObject !== null && valueObject !== '') {
         records.push(valueObject);
       }
@@ -125,9 +126,13 @@ class Redis implements DatabaseDriver {
       }
     }
     if (keyArray.length > 0) {
-      const value = await this.client.MGET(keyArray);
-      for (let i = 0; i < value.length; i++) {
-        const valueObject = JSON.parse(value[i].toString());
+      const values = await this.client.MGET(keyArray);
+      for (let i = 0; i < values.length; i++) {
+        if (!values[i]) {
+          continue;
+        }
+
+        const valueObject = JSON.parse(values[i].toString());
         if (valueObject !== null && valueObject !== '') {
           returnValue.push(valueObject);
         }
