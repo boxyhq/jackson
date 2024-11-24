@@ -162,9 +162,6 @@ class Redis implements DatabaseDriver {
         { score: negativeTimestamp, value: key },
       ]);
     }
-    tx = tx.zAdd(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), [
-      { score: negativeTimestamp, value: key },
-    ]);
     await tx.exec();
   }
 
@@ -180,7 +177,6 @@ class Redis implements DatabaseDriver {
       tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
     }
     tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
-    tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
     tx.del(idxKey);
 
     return await tx.exec();
@@ -206,7 +202,6 @@ class Redis implements DatabaseDriver {
       }
 
       tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
-      tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
 
       tx.del(idxKey);
     }
