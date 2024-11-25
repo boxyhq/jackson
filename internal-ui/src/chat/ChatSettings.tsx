@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Button, Input } from 'react-daisyui';
 import { Table, Card, Badge, ConfirmationModal, InputWithLabel, Loading } from '../shared';
-import { LLMConfig, LLMModel, LLMProvidersOptionsType, PII_POLICY, PII_POLICY_OPTIONS } from './types';
+import { LLMConfig, LLMModel, LLMProvidersOptionsType } from './types';
 import { ChatContext } from '../provider';
 import { useFetch } from '../hooks';
 import { ApiSuccess } from '../types';

@@ -18,6 +18,13 @@ type formState = {
   selectedRegions: Array<string>;
 };
 
+type editFormProps = {
+  piiPolicy: string;
+  product: string;
+  language: string;
+  piiEntities: string;
+};
+
 const initialState = {
   piiPolicy: '',
   product: '',
@@ -26,13 +33,14 @@ const initialState = {
   selectedRegions: [],
 };
 
-const AddPolicyForm = () => {
+const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormProps) => {
+  // Initial entity options
   const [initialEntities, setInitialEntities] = useState<Array<entityState>>([]);
-  const [regions, setRegions] = useState<Array<string>>([]);
+
+  // Form state
   const [formData, setFormData] = useState<formState>(initialState);
 
   const { t } = useTranslation('common');
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hoveredEntity, setHoveredEntity] = useState<string>('');
@@ -40,42 +48,10 @@ const AddPolicyForm = () => {
   const [expandedRegions, setExpandedRegions] = useState({});
   const [showAllEntities, setShowAllEntities] = useState(false);
 
+  // Available options
+  const [regions, setRegions] = useState<Array<string>>([]);
   const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
   const policies = ['Detect & Mask', 'Detect & Redact', 'Detect & Report', 'Detect & Block'];
-
-  useEffect(() => {
-    (async function () {
-      const entitiesResp = await fetch(`/api/admin/llm-vault/policies/entities`);
-      const entitiesObject = (await entitiesResp.json())?.data;
-
-      const convertedIdentifiers: Array<entityState> = [];
-      if (entitiesObject) {
-        const regionList = Object.keys(entitiesObject);
-
-        for (const [region, types] of Object.entries(entitiesObject)) {
-          (types as Array<string>).forEach((type) => {
-            convertedIdentifiers.push({
-              type: type,
-              description: getDescription(type),
-              region: region,
-            });
-          });
-        }
-
-        setInitialEntities(convertedIdentifiers);
-        setRegions(regionList);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    toggleAllRegions();
-  }, [initialEntities]);
-
-  const getCleanedType = (type: string) => {
-    const cleanedType = type.replace(/^AU_|^IN_|^SG_|^UK_|^US_/, '');
-    return cleanedType;
-  };
 
   const getDescription = (type) => {
     const descriptions = {
@@ -98,6 +74,61 @@ const AddPolicyForm = () => {
     };
 
     return descriptions[type] || 'No description available.';
+  };
+
+  const getRegionByType = (type) => {
+    const identifier = initialEntities.find((item) => item.type === type);
+
+    return identifier ? identifier.region : '';
+  };
+
+  useEffect(() => {
+    (async function () {
+      const entitiesResp = await fetch(`/api/admin/llm-vault/policies/entities`);
+      const entitiesList = (await entitiesResp.json())?.data;
+
+      const convertedIdentifiers: Array<entityState> = [];
+      const regionList = Object.keys(entitiesList);
+
+      for (const [region, types] of Object.entries(entitiesList)) {
+        (types as Array<string>).forEach((type) => {
+          convertedIdentifiers.push({
+            type: type,
+            description: getDescription(type),
+            region: region,
+          });
+        });
+      }
+
+      setInitialEntities(convertedIdentifiers);
+      setRegions(regionList);
+    })();
+  }, []);
+
+  useEffect(() => {
+    toggleAllRegions();
+    const convertedIdentifiers: Array<entityState> = [];
+
+    piiEntities.split(',').forEach((type) =>
+      convertedIdentifiers.push({
+        type: type,
+        description: getDescription(type),
+        region: getRegionByType(type),
+      })
+    );
+
+    setFormData({
+      piiPolicy,
+      product,
+      language,
+      piiEntities: convertedIdentifiers,
+      selectedRegions: [],
+    });
+  }, [initialEntities]);
+
+  const getCleanedType = (type: string) => {
+    const cleanedType = type.replace(/^AU_|^IN_|^SG_|^UK_|^US_/, '');
+    return cleanedType;
   };
 
   const filteredEntities = useMemo(() => {
@@ -194,20 +225,20 @@ const AddPolicyForm = () => {
 
     try {
       const response = await fetch(`/api/admin/llm-vault/policies/${formData.product}`, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           product: formData.product,
           piiPolicy: formData.piiPolicy,
-          language: formData.language,
           piiEntities: formData.piiEntities.map((e) => e.type).toString(),
+          language: formData.language,
         }),
       });
+
       if (response.ok) {
-        successToast(t('policy_saved_success_toast'));
-        setFormData(initialState);
+        successToast(t('policy_update_success_toast'));
       }
-      if (!response.ok) throw new Error('Failed to create policy');
+      if (!response.ok) throw new Error('Failed to edit policy');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -249,7 +280,7 @@ const AddPolicyForm = () => {
           <Card>
             <div style={{ marginLeft: '10px', marginTop: '10px' }}>
               <h2 className='card-title text-xl font-medium leading-none tracking-tight gap-4'>
-                {t('new_policy')}
+                {t('edit_policy')}
               </h2>
               <div className='text-gray-600 dark:text-gray-400 text-sm gap-4'>{t('new_llm_policy_desc')}</div>
             </div>
@@ -274,7 +305,7 @@ const AddPolicyForm = () => {
                     onChange={handleChange}
                     className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     style={{ backgroundColor: 'white' }}
-                    required
+                    disabled
                   />
                 </div>
 
@@ -485,7 +516,7 @@ const AddPolicyForm = () => {
                   disabled={loading}
                   className='w-full text-white py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
                   style={{ backgroundColor: '#25c2a0' }}>
-                  {loading ? 'Creating Policy...' : 'Create Policy'}
+                  {loading ? 'Editing Policy...' : 'Edit Policy'}
                 </button>
               </form>
             </Card.Body>
@@ -496,4 +527,4 @@ const AddPolicyForm = () => {
   );
 };
 
-export default AddPolicyForm;
+export default EditPolicyForm;

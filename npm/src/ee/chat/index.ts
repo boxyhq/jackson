@@ -12,7 +12,7 @@ import type {
 import * as dbutils from '../../db/utils';
 import { IndexNames, loadJWSPrivateKey } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation, PII_POLICY_OPTIONS } from './types';
+import { LLMChat, LLMConfig, LLMConfigPayload, LLMConversation } from './types';
 import { JacksonError } from '../../controller/error';
 import { LLM_PROVIDERS } from './llm-providers';
 
