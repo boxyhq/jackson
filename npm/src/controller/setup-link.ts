@@ -228,7 +228,7 @@ export class SetupLinkController {
     }
 
     // Remove the existing setup link if regenerate is true
-    if (regenerate) {
+    if (existing.length > 0 && regenerate) {
       await this.setupLinkStore.delete(existing[0].setupID);
     }
 

@@ -195,19 +195,21 @@ export class App {
       );
     }
 
-    // Check if an app already exists with the same entityId
-    const result = await this.store.getByIndex({
-      name: IndexNames.EntityID,
-      value: entityId,
-    });
+    if (type === 'saml') {
+      // Check if an app already exists with the same entityId
+      const result = await this.store.getByIndex({
+        name: IndexNames.EntityID,
+        value: entityId,
+      });
 
-    const apps: IdentityFederationApp[] = result.data;
+      const apps: IdentityFederationApp[] = result.data;
 
-    if (apps && apps.length > 0) {
-      throw new JacksonError(
-        `An app already exists with the same Entity ID. Provide a unique Entity ID and try again.`,
-        400
-      );
+      if (apps && apps.length > 0) {
+        throw new JacksonError(
+          `An app already exists with the same Entity ID. Provide a unique Entity ID and try again.`,
+          400
+        );
+      }
     }
 
     let _tenants: string[] = [];

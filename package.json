@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.30.0",
+  "version": "1.32.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -67,7 +67,7 @@
     "@boxyhq/react-ui": "3.3.45",
     "@boxyhq/saml-jackson": "file:npm",
     "@google/generative-ai": "0.15.0",
-    "@heroicons/react": "2.1.5",
+    "@heroicons/react": "2.2.0",
     "@mistralai/mistralai": "0.5.0",
     "@next/bundle-analyzer": "15.0.3",
     "@retracedhq/logs-viewer": "2.8.0",
@@ -82,7 +82,7 @@
     "daisyui": "4.12.14",
     "formik": "2.4.6",
     "groq-sdk": "0.5.0",
-    "i18next": "23.16.5",
+    "i18next": "23.16.8",
     "lucide-react": "^0.460.0",
     "medium-zoom": "1.1.0",
     "micromatch": "4.0.8",
@@ -106,7 +106,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@playwright/test": "1.48.2",
+    "@playwright/test": "1.49.0",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.9",
     "@types/node": "20.12.12",
@@ -123,10 +123,10 @@
     "jose": "5.3.0",
     "postcss": "8.4.49",
     "prettier": "3.2.5",
-    "prettier-plugin-tailwindcss": "0.6.8",
+    "prettier-plugin-tailwindcss": "0.6.9",
     "release-it": "17.10.0",
     "swagger-jsdoc": "6.2.8",
-    "tailwindcss": "3.4.14",
+    "tailwindcss": "3.4.15",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.4.5"

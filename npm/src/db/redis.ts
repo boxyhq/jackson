@@ -75,8 +75,13 @@ class Redis implements DatabaseDriver {
     const values = await this.client.MGET(keyArray);
 
     for (let i = 0; i < values.length; i++) {
-      const valueObject = JSON.parse(values[i].toString());
+      if (!values[i]) {
+        // delete zadd
+        this.client.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), elements[i]);
+        continue;
+      }
 
+      const valueObject = JSON.parse(values[i].toString());
       if (valueObject !== null && valueObject !== '') {
         records.push(valueObject);
       }
@@ -121,9 +126,13 @@ class Redis implements DatabaseDriver {
       }
     }
     if (keyArray.length > 0) {
-      const value = await this.client.MGET(keyArray);
-      for (let i = 0; i < value.length; i++) {
-        const valueObject = JSON.parse(value[i].toString());
+      const values = await this.client.MGET(keyArray);
+      for (let i = 0; i < values.length; i++) {
+        if (!values[i]) {
+          continue;
+        }
+
+        const valueObject = JSON.parse(values[i].toString());
         if (valueObject !== null && valueObject !== '') {
           returnValue.push(valueObject);
         }
@@ -149,7 +158,8 @@ class Redis implements DatabaseDriver {
       tx = tx.sAdd(dbutils.keyFromParts(dbutils.indexPrefix, k), idxKey);
     }
     const timestamp = Number(Date.now());
-    //Converting Timestamp in negative so that when we get the value, it will be found in reverse order (descending order).
+    // Converting Timestamp in negative so that when we get the value,
+    // it will be found in reverse order (descending order).
     const negativeTimestamp = -Math.abs(timestamp);
     const value = await this.client.get(k);
     if (!value) {
@@ -157,9 +167,6 @@ class Redis implements DatabaseDriver {
         { score: negativeTimestamp, value: key },
       ]);
     }
-    tx = tx.zAdd(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), [
-      { score: negativeTimestamp, value: key },
-    ]);
     await tx.exec();
   }
 
@@ -175,7 +182,6 @@ class Redis implements DatabaseDriver {
       tx.sRem(dbutils.keyFromParts(dbutils.indexPrefix, dbKey), key);
     }
     tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
-    tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
     tx.del(idxKey);
 
     return await tx.exec();
@@ -201,7 +207,6 @@ class Redis implements DatabaseDriver {
       }
 
       tx.ZREM(dbutils.keyFromParts(dbutils.createdAtPrefix, namespace), key);
-      tx.ZREM(dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace), key);
 
       tx.del(idxKey);
     }

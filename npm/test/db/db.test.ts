@@ -305,10 +305,10 @@ tap.test('dbs', async () => {
 
     tap.test('getAll(): ' + dbType, async (t) => {
       const testMessage =
-        dbType === 'dynamodb' // dynamodb doesn't support sort order
+        dbEngine === 'dynamodb' // dynamodb doesn't support sort order
           ? 'should return all the records upto options.pageLimit'
           : 'should return all the records upto options.pageLimit in DESC order by creation time';
-      const wanted = dbType === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
+      const wanted = dbEngine === 'dynamodb' ? records.slice(1, 3) : [...records].reverse().slice(0, 2);
       // getAll without pagination params
       t.same((await connectionStore.getAll()).data, wanted, `without pagination params ` + testMessage);
       // getAll with pagination params
@@ -503,6 +503,23 @@ tap.test('dbs', async () => {
 
       t.same(ret1, null, 'ttl for record1 failed');
       t.same(ret2, null, 'ttl for record2 failed');
+    });
+
+    tap.test('getAll() with TTL: ' + dbType, async (t) => {
+      // mongo runs ttl task every 60 seconds
+      if (dbEngine.startsWith('mongo') || dbEngine == 'dynamodb') {
+        return;
+      }
+
+      const testMessage = 'should return no records';
+      // getAll without pagination params
+      t.same((await ttlStore.getAll()).data, [], `without pagination params ` + testMessage);
+      // getAll with pagination params
+      t.same((await ttlStore.getAll(0, 2)).data, [], `with pagination params ` + testMessage);
+      // getAll with pageLimit set to 0
+      t.same((await ttlStore.getAll(0, 0)).data, [], `with pageLimit set to 0 ` + testMessage);
+      // getAll with pageLimit > options.pageLimit
+      t.same((await ttlStore.getAll(0, 3)).data, [], `with pageLimit > options.pageLimit ` + testMessage);
     });
 
     tap.test('deleteMany(): ' + dbType, async (t) => {

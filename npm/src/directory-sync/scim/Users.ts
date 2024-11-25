@@ -66,6 +66,7 @@ export class Users extends Base {
    *     parameters:
    *       - $ref: '#/parameters/tenant'
    *       - $ref: '#/parameters/product'
+   *       - $ref: '#/parameters/directoryId'
    *       - name: userId
    *         description: User ID
    *         in: path

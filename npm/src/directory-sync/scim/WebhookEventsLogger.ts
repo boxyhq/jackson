@@ -101,6 +101,8 @@ export class WebhookEventsLogger extends Base {
    *     summary: Get event logs for a directory
    *     parameters:
    *       - $ref: '#/parameters/directoryId'
+   *       - $ref: '#/parameters/tenant'
+   *       - $ref: '#/parameters/product'
    *       - $ref: '#/parameters/pageOffset'
    *       - $ref: '#/parameters/pageLimit'
    *       - $ref: '#/parameters/pageToken'
