@@ -19,17 +19,18 @@ const Policies: NextPage = () => {
   const [policies, setPolicies] = useState<Array<policy>>([]);
   const [delModalVisible, setDelModalVisible] = useState(false);
   const [productToDelete, setProductToDelete] = useState('');
-  const [refreshAfterDelete, setRefreshAfterDelete] = useState(false);
 
   const { t } = useTranslation('common');
 
   useEffect(() => {
-    (async function () {
-      const policiesResp = await fetch(`/api/admin/llm-vault/policies`);
-      const policiesList = (await policiesResp.json())?.data;
-      setPolicies(policiesList);
-    })();
-  }, [refreshAfterDelete]);
+    getPolicies();
+  }, []);
+
+  const getPolicies = async () => {
+    const policiesResp = await fetch(`/api/admin/llm-vault/policies`);
+    const policiesList = (await policiesResp.json())?.data;
+    setPolicies(policiesList);
+  };
 
   const deleteApp = async () => {
     try {
@@ -43,7 +44,7 @@ const Policies: NextPage = () => {
       if (!response.ok) throw new Error('Failed to delete piiPolicy');
       setDelModalVisible(false);
       setProductToDelete('');
-      setRefreshAfterDelete(true);
+      getPolicies();
     } catch (error: any) {
       console.log(error);
     }
@@ -72,11 +73,11 @@ const Policies: NextPage = () => {
                 cells: [
                   {
                     wrap: true,
-                    text: policy.piiPolicy,
+                    text: policy.product,
                   },
                   {
                     wrap: true,
-                    text: policy.product,
+                    text: policy.piiPolicy,
                   },
                   {
                     wrap: true,

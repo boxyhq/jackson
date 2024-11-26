@@ -70,3 +70,5 @@ export type LLMChat = {
   conversationId: string;
   createdAt: string;
 };
+
+export const SUPPORTED_LANGUAGES = ['English', 'Spanish', 'Chinese', 'French'] as const;

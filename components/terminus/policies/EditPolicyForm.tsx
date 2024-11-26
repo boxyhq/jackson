@@ -3,6 +3,8 @@ import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { successToast } from '@components/Toaster';
+import { Button } from 'react-daisyui';
+import { PII_POLICY, SUPPORTED_LANGUAGES } from 'internal-ui/src/chat/types';
 
 type entityState = {
   type: string;
@@ -50,8 +52,8 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
 
   // Available options
   const [regions, setRegions] = useState<Array<string>>([]);
-  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
-  const policies = ['Detect & Mask', 'Detect & Redact', 'Detect & Report', 'Detect & Block'];
+  const languages = SUPPORTED_LANGUAGES;
+  const policies = Object.values(PII_POLICY).filter((value) => value !== 'None');
 
   const getDescription = (type) => {
     const descriptions = {
@@ -274,11 +276,11 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
 
   return (
     <>
-      <div className='max-w-3xl mx-auto p-4'>
+      <div className='max-w-5xl mx-auto p-4'>
         <LinkBack href='/admin/llm-vault/policies' />
-        <div style={{ marginTop: '10px' }}>
+        <div className='mt-2.5'>
           <Card>
-            <div style={{ marginLeft: '10px', marginTop: '10px' }}>
+            <div className='mt-2.5 ml-2.5'>
               <h2 className='card-title text-xl font-medium leading-none tracking-tight gap-4'>
                 {t('edit_policy')}
               </h2>
@@ -303,8 +305,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                     name='product'
                     value={formData.product}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     disabled
                   />
                 </div>
@@ -318,8 +319,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                     name='piiPolicy'
                     value={formData.piiPolicy}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required>
                     <option value=''>{t('select_policy')}</option>
                     {policies.map((piiPolicy) => (
@@ -339,8 +339,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                     name='language'
                     value={formData.language}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required>
                     <option value=''>{t('select_language')}</option>
                     {languages.map((language) => (
@@ -370,8 +369,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder='Search entities...'
-                        style={{ backgroundColor: 'white' }}
-                        className='w-full pl-10 pr-10 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                        className='bg-white w-full pl-10 pr-10 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                       />
                       {searchQuery && (
                         <button
@@ -428,7 +426,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                     {regions.map((region) => (
                       <div className='flex gap-2' key={region}>
                         <div key={region} className='min-w-32'>
-                          <label
+                          <div
                             className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors cursor-pointer ${
                               formData.piiEntities
                                 .filter((e) => e.region === region)
@@ -467,7 +465,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                               }}>
                               {expandedRegions[region] ? '-' : '+'}
                             </button>
-                          </label>
+                          </div>
 
                           {/* Tooltip */}
                           {hoveredEntity === region && (
@@ -511,13 +509,11 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                   )}
                 </div>
 
-                <button
-                  type='submit'
-                  disabled={loading}
-                  className='w-full text-white py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-                  style={{ backgroundColor: '#25c2a0' }}>
-                  {loading ? 'Editing Policy...' : 'Edit Policy'}
-                </button>
+                <div className='flex gap-2 justify-end pt-6'>
+                  <Button type='submit' className='btn btn-primary btn-md' loading={loading}>
+                    {loading ? 'Saving Policy...' : 'Save Policy'}
+                  </Button>
+                </div>
               </form>
             </Card.Body>
           </Card>

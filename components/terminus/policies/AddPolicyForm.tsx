@@ -3,6 +3,9 @@ import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { successToast } from '@components/Toaster';
+import router from 'next/router';
+import { Button } from 'react-daisyui';
+import { PII_POLICY, SUPPORTED_LANGUAGES } from 'internal-ui/src/chat/types';
 
 type entityState = {
   type: string;
@@ -40,8 +43,8 @@ const AddPolicyForm = () => {
   const [expandedRegions, setExpandedRegions] = useState({});
   const [showAllEntities, setShowAllEntities] = useState(false);
 
-  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
-  const policies = ['Detect & Mask', 'Detect & Redact', 'Detect & Report', 'Detect & Block'];
+  const languages = SUPPORTED_LANGUAGES;
+  const policies = Object.values(PII_POLICY).filter((value) => value !== 'None');
 
   useEffect(() => {
     (async function () {
@@ -206,6 +209,7 @@ const AddPolicyForm = () => {
       if (response.ok) {
         successToast(t('policy_saved_success_toast'));
         setFormData(initialState);
+        router.push('/admin/llm-vault/policies');
       }
       if (!response.ok) throw new Error('Failed to create policy');
     } catch (err: any) {
@@ -243,11 +247,11 @@ const AddPolicyForm = () => {
 
   return (
     <>
-      <div className='max-w-3xl mx-auto p-4'>
+      <div className='max-w-5xl mx-auto p-4'>
         <LinkBack href='/admin/llm-vault/policies' />
-        <div style={{ marginTop: '10px' }}>
+        <div className='mt-2.5'>
           <Card>
-            <div style={{ marginLeft: '10px', marginTop: '10px' }}>
+            <div className='mt-2.5 ml-2.5'>
               <h2 className='card-title text-xl font-medium leading-none tracking-tight gap-4'>
                 {t('new_policy')}
               </h2>
@@ -272,8 +276,7 @@ const AddPolicyForm = () => {
                     name='product'
                     value={formData.product}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required
                   />
                 </div>
@@ -287,8 +290,7 @@ const AddPolicyForm = () => {
                     name='piiPolicy'
                     value={formData.piiPolicy}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required>
                     <option value=''>{t('select_policy')}</option>
                     {policies.map((piiPolicy) => (
@@ -308,8 +310,7 @@ const AddPolicyForm = () => {
                     name='language'
                     value={formData.language}
                     onChange={handleChange}
-                    className='w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    style={{ backgroundColor: 'white' }}
+                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required>
                     <option value=''>{t('select_language')}</option>
                     {languages.map((language) => (
@@ -339,8 +340,7 @@ const AddPolicyForm = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder='Search entities...'
-                        style={{ backgroundColor: 'white' }}
-                        className='w-full pl-10 pr-10 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                        className='bg-white w-full pl-10 pr-10 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                       />
                       {searchQuery && (
                         <button
@@ -397,7 +397,7 @@ const AddPolicyForm = () => {
                     {regions.map((region) => (
                       <div className='flex gap-2' key={region}>
                         <div key={region} className='min-w-32'>
-                          <label
+                          <div
                             className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors cursor-pointer ${
                               formData.piiEntities
                                 .filter((e) => e.region === region)
@@ -436,7 +436,7 @@ const AddPolicyForm = () => {
                               }}>
                               {expandedRegions[region] ? '-' : '+'}
                             </button>
-                          </label>
+                          </div>
 
                           {/* Tooltip */}
                           {hoveredEntity === region && (
@@ -480,13 +480,11 @@ const AddPolicyForm = () => {
                   )}
                 </div>
 
-                <button
-                  type='submit'
-                  disabled={loading}
-                  className='w-full text-white py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-                  style={{ backgroundColor: '#25c2a0' }}>
-                  {loading ? 'Creating Policy...' : 'Create Policy'}
-                </button>
+                <div className='flex gap-2 justify-end pt-6'>
+                  <Button type='submit' className='btn btn-primary btn-md' loading={loading}>
+                    {loading ? 'Creating Policy...' : 'Create Policy'}
+                  </Button>
+                </div>
               </form>
             </Card.Body>
           </Card>
