@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Card, LinkBack } from '@boxyhq/internal-ui';
+import { Alert, Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { successToast } from '@components/Toaster';
 import { Button } from 'react-daisyui';
-import { PII_POLICY, SUPPORTED_LANGUAGES } from 'internal-ui/src/chat/types';
+import { descriptions, LanguageKey, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
 
 type entityState = {
   type: string;
@@ -52,29 +52,18 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
 
   // Available options
   const [regions, setRegions] = useState<Array<string>>([]);
-  const languages = SUPPORTED_LANGUAGES;
+  const languages = Object.keys(SupportedLanguages);
   const policies = Object.values(PII_POLICY).filter((value) => value !== 'None');
 
-  const getDescription = (type) => {
-    const descriptions = {
-      AU_ABN: 'Australian Business Number, a unique identifier for businesses in Australia.',
-      AU_ACN: 'Australian Company Number, a unique identifier for companies in Australia.',
-      AU_TFN: 'Tax File Number, used for tax purposes in Australia.',
-      AU_MEDICARE: 'Medicare card number for health services in Australia.',
-      IN_AADHAAR: 'Aadhaar number, a unique identification number issued in India.',
-      IN_PAN: 'Permanent Account Number, used for tax identification in India.',
-      IN_PASSPORT: 'Passport number for international travel from India.',
-      IN_VOTER: 'Voter ID number used for electoral purposes in India.',
-      IN_VEHICLE_REGISTRATION: 'Vehicle registration number in India.',
-      SG_NRIC_FIN: 'National Registration Identity Card/Foreign Identification Number in Singapore.',
-      UK_NHS: 'National Health Service number in the United Kingdom.',
-      US_ITIN: 'Individual Taxpayer Identification Number issued by the IRS.',
-      US_PASSPORT: 'Passport number for international travel issued by the U.S.',
-      US_SSN: 'Social Security Number format: XXX-XX-XXXX',
-      US_BANK_NUMBER: 'Bank account numbers used for transactions.',
-      US_DRIVER_LICENSE: "Driver's license numbers issued by U.S. states.",
-    };
+  const LANGUAGE_CODE_MAP: { [key: string]: LanguageKey } = Object.entries(SupportedLanguages).reduce(
+    (acc, [key, value]) => {
+      acc[value] = key as LanguageKey;
+      return acc;
+    },
+    {} as { [key: string]: LanguageKey }
+  );
 
+  const getDescription = (type) => {
     return descriptions[type] || 'No description available.';
   };
 
@@ -108,7 +97,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
   }, []);
 
   useEffect(() => {
-    toggleAllRegions();
+    showAllRegions();
     const convertedIdentifiers: Array<entityState> = [];
 
     piiEntities.split(',').forEach((type) =>
@@ -119,12 +108,14 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
       })
     );
 
+    const preSelectedRegions = getSelectedRegions(convertedIdentifiers);
+
     setFormData({
       piiPolicy,
       product,
-      language,
+      language: LANGUAGE_CODE_MAP[language],
       piiEntities: convertedIdentifiers,
-      selectedRegions: [],
+      selectedRegions: preSelectedRegions,
     });
   }, [initialEntities]);
 
@@ -179,14 +170,27 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     }));
   };
 
-  const toggleEntity = (entity) => {
+  const getSelectedRegions = (entities) => {
+    const selected_regions: Array<string> = [];
+    regions.forEach((region) => {
+      if (entities.some((e) => e.region === region)) {
+        selected_regions.push(region);
+      }
+    });
+    return selected_regions.length > 0 ? selected_regions : [];
+  };
+
+  const onEntityChange = (entity) => {
     setFormData((prev) => {
       const isSelected = prev.piiEntities.some((e) => e.type === entity.type);
+      const newPIIEntities = isSelected
+        ? prev.piiEntities.filter((e) => e.type !== entity.type)
+        : [...prev.piiEntities, entity];
+      const newSelectedRegions = getSelectedRegions(newPIIEntities);
       return {
         ...prev,
-        piiEntities: isSelected
-          ? prev.piiEntities.filter((e) => e.type !== entity.type)
-          : [...prev.piiEntities, entity],
+        piiEntities: newPIIEntities,
+        selectedRegions: newSelectedRegions,
       };
     });
   };
@@ -206,15 +210,15 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     });
   };
 
-  const toggleAllRegions = () => {
+  const showAllRegions = () => {
     if (showAllEntities) {
       regions.forEach((region) => {
-        handleToggleCustom(region, false);
+        showRegionCustom(region, false);
       });
       setShowAllEntities(false);
     } else {
       regions.forEach((region) => {
-        handleToggleCustom(region, true);
+        showRegionCustom(region, true);
       });
       setShowAllEntities(true);
     }
@@ -233,7 +237,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
           product: formData.product,
           piiPolicy: formData.piiPolicy,
           piiEntities: formData.piiEntities.map((e) => e.type).toString(),
-          language: formData.language,
+          language: SupportedLanguages[formData.language],
         }),
       });
 
@@ -248,9 +252,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     }
   };
 
-  const handleToggle = (region) => {
-    console.log('Toggling expanded regions');
-
+  const showRegion = (region) => {
     setExpandedRegions((prev) => {
       const newExpandedState = {
         ...prev,
@@ -261,9 +263,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     });
   };
 
-  const handleToggleCustom = (region, value) => {
-    console.log('Toggling expanded regions');
-
+  const showRegionCustom = (region, value) => {
     setExpandedRegions((prev) => {
       const newExpandedState = {
         ...prev,
@@ -276,16 +276,11 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
 
   return (
     <>
-      <div className='max-w-5xl mx-auto p-4'>
-        <LinkBack href='/admin/llm-vault/policies' />
+      <LinkBack href='/admin/llm-vault/policies' />
+      <div className='mx-auto p-4'>
+        <PageHeader title={t('edit_policy')} description={t('edit_llm_policy_desc')} />
         <div className='mt-2.5'>
           <Card>
-            <div className='mt-2.5 ml-2.5'>
-              <h2 className='card-title text-xl font-medium leading-none tracking-tight gap-4'>
-                {t('edit_policy')}
-              </h2>
-              <div className='text-gray-600 dark:text-gray-400 text-sm gap-4'>{t('new_llm_policy_desc')}</div>
-            </div>
             <Card.Body>
               <form onSubmit={handleSubmit} className='space-y-6'>
                 {error && (
@@ -305,7 +300,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                     name='product'
                     value={formData.product}
                     onChange={handleChange}
-                    className='bg-white w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                    className='bg-gray-100 w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     disabled
                   />
                 </div>
@@ -404,7 +399,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                       </button>
                       <button
                         type='button'
-                        onClick={toggleAllRegions}
+                        onClick={showAllRegions}
                         className='flex items-center text-sm text-teal-600 hover:text-teal-800 focus:outline-none'>
                         {showAllEntities ? (
                           <>
@@ -444,7 +439,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                               onClick={() => toggleRegion(region)}
                               onMouseEnter={() => setHoveredEntity(region)}
                               onMouseLeave={() => setHoveredEntity('')}
-                              className='flex items-center text-sm text-teal-800 hover:text-teal-900 focus:outline-none'>
+                              className='w-11/12 flex items-center text-sm text-teal-800 hover:text-teal-900 focus:outline-none'>
                               {formData.piiEntities.some((e) => e.region === region) ? (
                                 <>
                                   <CheckSquare className='w-4 h-4 mr-1' />
@@ -461,7 +456,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                             <button
                               type='button'
                               onClick={() => {
-                                handleToggle(region);
+                                showRegion(region);
                               }}>
                               {expandedRegions[region] ? '-' : '+'}
                             </button>
@@ -482,7 +477,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                                 <div key={entity.type} className='flex flex-wrap gap-2'>
                                   <button
                                     type='button'
-                                    onClick={() => toggleEntity(entity)}
+                                    onClick={() => onEntityChange(entity)}
                                     className={`w-full px-3 py-2 text-sm rounded-md flex items-center justify-between transition-colors ${
                                       formData.piiEntities.some((e) => e.type === entity.type)
                                         ? 'bg-teal-100 border-teal-500 text-teal-700'

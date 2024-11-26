@@ -6,6 +6,7 @@ import { Table, LinkPrimary, ConfirmationModal, EmptyState } from '@boxyhq/inter
 import { useEffect, useState } from 'react';
 import router from 'next/router';
 import { successToast } from '@components/Toaster';
+import { LanguageKey, SupportedLanguages } from 'internal-ui/src/chat/types';
 
 export type policy = {
   createdAt: string;
@@ -26,10 +27,22 @@ const Policies: NextPage = () => {
     getPolicies();
   }, []);
 
+  const LANGUAGE_CODE_MAP: { [key: string]: LanguageKey } = Object.entries(SupportedLanguages).reduce(
+    (acc, [key, value]) => {
+      acc[value] = key as LanguageKey;
+      return acc;
+    },
+    {} as { [key: string]: LanguageKey }
+  );
+
   const getPolicies = async () => {
     const policiesResp = await fetch(`/api/admin/llm-vault/policies`);
     const policiesList = (await policiesResp.json())?.data;
     setPolicies(policiesList);
+  };
+
+  const getLanguageName = (language: string): string | undefined => {
+    return LANGUAGE_CODE_MAP[language];
   };
 
   const deleteApp = async () => {
@@ -81,7 +94,7 @@ const Policies: NextPage = () => {
                   },
                   {
                     wrap: true,
-                    text: policy.language,
+                    text: getLanguageName(policy.language),
                   },
                   {
                     wrap: true,
