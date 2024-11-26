@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import type { DelConnectionsQuery } from '@boxyhq/saml-jackson';
 import { validateDevelopmentModeLimits } from '@lib/development-mode';
 import { defaultHandler } from '@lib/api';
+import { normalizeBooleanParam } from '@lib/api/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await defaultHandler(req, res, {
@@ -66,16 +67,25 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     throw { message: 'Missing SSO connection params', statusCode: 400 };
   }
 
+  const body = { ...req.body };
+
+  if ('deactivated' in req.body) {
+    body.deactivated = normalizeBooleanParam(req.body.deactivated);
+  }
+
   // Update SAML connection
   if (isSAML) {
-    await connectionAPIController.updateSAMLConnection(req.body);
+    if ('forceAuthn' in req.body) {
+      body.forceAuthn = normalizeBooleanParam(req.body.forceAuthn);
+    }
+    await connectionAPIController.updateSAMLConnection(body);
 
     res.status(204).end();
   }
 
   // Update OIDC connection
   if (isOIDC) {
-    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(req.body) as any);
+    await connectionAPIController.updateOIDCConnection(oidcMetadataParse(body) as any);
 
     res.status(204).end();
   }

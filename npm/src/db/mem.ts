@@ -177,14 +177,6 @@ class Mem implements DatabaseDriver {
         this.store['createdAt'] = new Date().toISOString();
       }
     }
-
-    let modifiedAtSet = this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)];
-    if (!modifiedAtSet) {
-      modifiedAtSet = new Set();
-      this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)] = modifiedAtSet;
-    }
-    modifiedAtSet.add(key);
-    this.store['modifiedAt'] = new Date().toISOString();
   }
 
   async delete(namespace: string, key: string): Promise<any> {
@@ -202,9 +194,6 @@ class Mem implements DatabaseDriver {
     }
     if (this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)]) {
       this.indexes[dbutils.keyFromParts(dbutils.createdAtPrefix, namespace)].delete(key);
-    }
-    if (this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)]) {
-      this.indexes[dbutils.keyFromParts(dbutils.modifiedAtPrefix, namespace)].delete(key);
     }
     delete this.cleanup[idxKey];
     delete this.ttlStore[k];

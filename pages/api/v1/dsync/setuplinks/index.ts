@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SetupLinkService } from '@boxyhq/saml-jackson';
 import jackson from '@lib/jackson';
 import { defaultHandler } from '@lib/api';
+import { normalizeBooleanParam } from '@lib/api/utils';
 
 const service: SetupLinkService = 'dsync';
 
@@ -46,8 +47,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { setupLinkController } = await jackson();
 
+  const body = { ...req.body };
+  if ('regenerate' in req.body) {
+    body.regenerate = normalizeBooleanParam(req.body.regenerate);
+  }
+
   const setupLink = await setupLinkController.create({
-    ...req.body,
+    ...body,
     service,
   });
 
