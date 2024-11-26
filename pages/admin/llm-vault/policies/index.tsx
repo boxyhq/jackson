@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import router from 'next/router';
 import { successToast } from '@components/Toaster';
 import { LanguageKey, SupportedLanguages } from 'internal-ui/src/chat/types';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export type policy = {
   createdAt: string;
@@ -140,5 +141,13 @@ const Policies: NextPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  };
+}
 
 export default Policies;
