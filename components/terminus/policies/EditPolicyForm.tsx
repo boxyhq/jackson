@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { successToast } from '@components/Toaster';
 import { Button } from 'react-daisyui';
 import { descriptions, LanguageKey, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
