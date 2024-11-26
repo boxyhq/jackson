@@ -240,7 +240,7 @@ const AddPolicyForm = () => {
     <>
       <LinkBack href='/admin/llm-vault/policies' />
       <div className='mx-auto p-4'>
-        <PageHeader title={t('new_policy')} description={t('new_llm_policy_desc')} />
+        <PageHeader title={t('new_policy')} description={t('llm_new_policy_desc')} />
         <div className='mt-2.5'>
           <Card>
             <Card.Body>
@@ -269,7 +269,7 @@ const AddPolicyForm = () => {
 
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
-                    {t('bui-chat-pii-policy')}
+                    {t('llm_pii_policy')}
                     <span className='text-red-500'>*</span>
                   </label>
                   <select

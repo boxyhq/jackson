@@ -278,7 +278,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     <>
       <LinkBack href='/admin/llm-vault/policies' />
       <div className='mx-auto p-4'>
-        <PageHeader title={t('edit_policy')} description={t('edit_llm_policy_desc')} />
+        <PageHeader title={t('edit_policy')} description={t('llm_edit_policy_desc')} />
         <div className='mt-2.5'>
           <Card>
             <Card.Body>
@@ -307,7 +307,7 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
 
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
-                    {t('bui-chat-pii-policy')}
+                    {t('llm_pii_policy')}
                     <span className='text-red-500'>*</span>
                   </label>
                   <select

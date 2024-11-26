@@ -74,7 +74,7 @@ const Policies: NextPage = () => {
           <Table
             cols={[
               t('bui-shared-product'),
-              t('bui-chat-pii-policy'),
+              t('llm_pii_policy'),
               t('language'),
               t('created_at'),
               t('updated_at'),
@@ -127,11 +127,11 @@ const Policies: NextPage = () => {
               };
             })}></Table>
         ) : (
-          <EmptyState title={t('bui-llm-no-policies')} description={t('bui-llm-no-policies-desc')} />
+          <EmptyState title={t('llm_no_policies')} description={t('llm_no_policies_desc')} />
         )}
         <ConfirmationModal
-          title={t('bui-fs-delete-policy-title')}
-          description={t('bui-fs-delete-policy-desc')}
+          title={t('llm_delete_policy_title')}
+          description={t('llm_delete_policy_desc')}
           visible={delModalVisible}
           onConfirm={() => deleteApp()}
           onCancel={() => setDelModalVisible(false)}
