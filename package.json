@@ -68,7 +68,7 @@
     "@heroicons/react": "2.2.0",
     "@next/bundle-analyzer": "15.0.3",
     "@retracedhq/logs-viewer": "2.8.0",
-    "@retracedhq/retraced": "0.7.16",
+    "@retracedhq/retraced": "0.7.17",
     "@tailwindcss/typography": "0.5.15",
     "axios": "1.7.8",
     "blockly": "11.1.1",
