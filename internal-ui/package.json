@@ -30,14 +30,14 @@
     "@types/react": "18.3.12",
     "@typescript-eslint/eslint-plugin": "8.16.0",
     "@typescript-eslint/parser": "8.16.0",
-    "@vitejs/plugin-react": "4.3.3",
+    "@vitejs/plugin-react": "4.3.4",
     "eslint": "9.15.0",
     "eslint-plugin-react-hooks": "5.0.0",
     "eslint-plugin-react-refresh": "0.4.14",
     "prettier": "3.4.1",
     "react-daisyui": "5.0.5",
     "typescript": "5.7.2",
-    "vite": "5.4.11"
+    "vite": "6.0.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.27.4"
