@@ -34,7 +34,7 @@
     "eslint": "9.15.0",
     "eslint-plugin-react-hooks": "5.0.0",
     "eslint-plugin-react-refresh": "0.4.14",
-    "prettier": "3.3.3",
+    "prettier": "3.4.1",
     "react-daisyui": "5.0.5",
     "typescript": "5.6.3",
     "vite": "5.4.11"
