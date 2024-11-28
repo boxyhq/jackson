@@ -2,6 +2,27 @@ import * as client from 'openid-client';
 
 import { JacksonError } from '../error';
 
+const NAME = 'openid-client';
+const VERSION = '5.6.5';
+const HOMEPAGE = 'https://github.com/panva/node-openid-client';
+const USER_AGENT = `${NAME}/${VERSION} (${HOMEPAGE})`;
+
+const customFetch = (...args) => {
+  console.log(`args[1]`, args[1]);
+  const headers = {
+    ...args[1].headers,
+    'user-agent': USER_AGENT,
+    // 'accept-encoding': 'identity',
+    // host: 'gateway.id.tools.bbc.co.uk',
+  };
+  console.log(`customFetch called with headers`, headers);
+
+  return fetch(args[0], {
+    ...args[1],
+    headers,
+  });
+};
+
 export const oidcClientConfig = async ({
   discoveryUrl,
   metadata,
@@ -24,12 +45,14 @@ export const oidcClientConfig = async ({
       isLocalhost
         ? {
             execute: [client.allowInsecureRequests],
+            [client.customFetch]: customFetch,
           }
-        : undefined
+        : { [client.customFetch]: customFetch }
     );
   }
   if (metadata) {
     const config = new client.Configuration(metadata, clientId, clientSecret);
+    config[client.customFetch] = customFetch;
     if (isLocalhost) {
       client.allowInsecureRequests(config);
     }
