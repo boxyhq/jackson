@@ -3,7 +3,7 @@ import TagsInput from 'react-tagsinput';
 import { Card, Button } from 'react-daisyui';
 import { useTranslation } from 'next-i18next';
 import type { IdentityFederationApp } from '../types';
-import QuestionMarkCircleIcon from '@heroicons/react/24/outline/QuestionMarkCircleIcon';
+import { CircleHelp } from 'lucide-react';
 import { defaultHeaders } from '../utils';
 import { AttributesMapping } from './AttributesMapping';
 import { PageHeader } from '../shared';
@@ -199,7 +199,7 @@ export const NewIdentityFederationApp = ({
                       {t('bui-fs-generate-sp-entity-id')}
                     </span>
                     <div className='tooltip tooltip-left' data-tip={t('bui-fs-entity-id-instruction')}>
-                      <QuestionMarkCircleIcon className='h-5 w-5' />
+                      <CircleHelp className='h-5 w-5' />
                     </div>
                   </div>
                 </span>

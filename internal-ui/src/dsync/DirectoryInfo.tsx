@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import ArrowTopRightOnSquareIcon from '@heroicons/react/24/outline/ArrowTopRightOnSquareIcon';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 import { useDirectory } from '../hooks';
 import { DirectoryTab } from '../dsync';
@@ -51,7 +51,7 @@ export const DirectoryInfo = ({
                 href={`${directory.google_authorization_url}?directoryId=${directory.id}`}
                 target='_blank'
                 className='btn-md'
-                Icon={ArrowTopRightOnSquareIcon}
+                Icon={SquareArrowOutUpRight}
                 rel='noopener noreferrer'>
                 {t('bui-dsync-authorization-google')}
               </LinkPrimary>

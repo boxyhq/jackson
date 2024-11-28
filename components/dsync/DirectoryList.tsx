@@ -1,4 +1,4 @@
-import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
+import { Link } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { DirectoryList } from '@boxyhq/react-ui/dsync';
@@ -22,7 +22,7 @@ const DSyncDirectoryList = ({ setupLinkToken }: { setupLinkToken?: string }) => 
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('directory_sync')}</h2>
         <div className='flex gap-2'>
           {!setupLinkToken && (
-            <LinkPrimary Icon={LinkIcon} href='/admin/directory-sync/setup-link/new'>
+            <LinkPrimary Icon={Link} href='/admin/directory-sync/setup-link/new'>
               {t('bui-sl-new-link')}
             </LinkPrimary>
           )}

@@ -3,7 +3,7 @@ import Chat from './Chat';
 import ChatSettings from './ChatSettings';
 import ChatDrawer from './ChatDrawer';
 import { useRouter } from 'next/router';
-import { Bars4Icon, PlusIcon } from '@heroicons/react/24/outline';
+import { Menu, Plus } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useFetch } from '../hooks';
 import { ApiSuccess } from '../types';
@@ -81,7 +81,7 @@ export function ChatUI() {
               className='-ml-0.5 -mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white'
               onClick={toggleChatDrawerVisibility}>
               <span className='sr-only'>{t('bui-chat-open-sidebar')}</span>
-              <Bars4Icon className='h-6 w-6 text-white' />
+              <Menu className='h-6 w-6 text-white' />
             </button>
             <h1 className='flex-1 text-center text-base font-normal'>
               {showSettings ? t('settings') : selectedConversation?.title || t('bui-chat-new-chat')}
@@ -93,7 +93,7 @@ export function ChatUI() {
                 setConversationId('');
                 setShowSettings(false);
               }}>
-              <PlusIcon className='h-6 w-6' />
+              <Plus className='h-6 w-6' />
             </button>
           </div>
           {showSettings ? (

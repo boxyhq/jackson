@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
+import { X } from 'lucide-react';
 import type { AttributeMapping } from '../types';
 
 const standardAttributes = {
@@ -134,7 +134,7 @@ const AttributeRow = ({
         </select>
       </div>
       <button type='button' onClick={onMappingDelete}>
-        <XMarkIcon className='h-5 w-5 text-red-500' />
+        <X className='h-5 w-5 text-red-500' />
       </button>
     </div>
   );

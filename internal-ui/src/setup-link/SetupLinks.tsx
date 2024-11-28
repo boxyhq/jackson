@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
-import ArrowPathIcon from '@heroicons/react/24/outline/ArrowPathIcon';
-import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import { Eye, Trash, RefreshCw, Clipboard } from 'lucide-react';
 
 import { addQueryParamsToPath, copyToClipboard } from '../utils';
 import { TableBodyType } from '../shared/Table';
@@ -141,7 +138,7 @@ export const SetupLinks = ({
               copyToClipboard(setupLink.url);
               onCopy(setupLink);
             },
-            icon: <ClipboardDocumentIcon className='h-5 w-5' />,
+            icon: <Clipboard className='h-5 w-5' />,
           },
           {
             text: t('bui-shared-view'),
@@ -149,7 +146,7 @@ export const SetupLinks = ({
               setSetupLink(setupLink);
               setShowSetupLink(true);
             },
-            icon: <EyeIcon className='h-5 w-5' />,
+            icon: <Eye className='h-5 w-5' />,
           },
           {
             text: t('bui-sl-regenerate'),
@@ -157,7 +154,7 @@ export const SetupLinks = ({
               setSetupLink(setupLink);
               setShowRegenModal(true);
             },
-            icon: <ArrowPathIcon className='h-5 w-5' />,
+            icon: <RefreshCw className='h-5 w-5' />,
           },
           {
             destructive: true,
@@ -166,7 +163,7 @@ export const SetupLinks = ({
               setSetupLink(setupLink);
               setDelModal(true);
             },
-            icon: <TrashIcon className='h-5 w-5' />,
+            icon: <Trash className='h-5 w-5' />,
           },
         ],
       }

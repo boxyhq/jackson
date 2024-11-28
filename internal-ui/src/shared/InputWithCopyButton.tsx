@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '../utils';
 import { IconButton } from './IconButton';
-import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import { ClipboardCopy } from 'lucide-react';
 
 export const CopyToClipboardButton = ({ text }: { text: string }) => {
   const { t } = useTranslation('common');
@@ -9,7 +9,7 @@ export const CopyToClipboardButton = ({ text }: { text: string }) => {
   return (
     <IconButton
       tooltip={t('bui-shared-copy')}
-      Icon={ClipboardDocumentIcon}
+      Icon={ClipboardCopy}
       className='hover:text-primary'
       onClick={() => {
         copyToClipboard(text);

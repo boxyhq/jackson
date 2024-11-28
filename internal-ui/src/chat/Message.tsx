@@ -1,4 +1,4 @@
-import { SparklesIcon, UserIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import { Sparkles, User, MessageCircleMore } from 'lucide-react';
 
 const Message = (props: any) => {
   const { message } = props;
@@ -16,11 +16,7 @@ const Message = (props: any) => {
         <div className='flex flex-row gap-4 md:gap-6 md:max-w-2xl lg:max-w-xl xl:max-w-3xl p-4 md:py-6 lg:px-0 m-auto w-full'>
           <div className='w-8 flex flex-col relative items-end'>
             <div className='relative h-7 w-7 p-1 rounded-sm text-white flex items-center justify-center bg-black/75 text-opacity-100r'>
-              {isUser ? (
-                <UserIcon className='h-5 w-5 text-white' />
-              ) : (
-                <SparklesIcon className='h-5 w-5 text-white' />
-              )}
+              {isUser ? <User className='h-5 w-5 text-white' /> : <Sparkles className='h-5 w-5 text-white' />}
             </div>
             <div className='text-xs flex items-center justify-center gap-1 absolute left-0 top-2 -ml-4 -translate-x-full group-hover:visible !invisible'>
               <button disabled className='text-gray-300 dark:text-gray-400'></button>
@@ -33,7 +29,7 @@ const Message = (props: any) => {
               <div className='min-h-20 flex flex-col items-start gap-4 whitespace-pre-wrap break-words'>
                 <div className='prose w-full break-words dark:prose-invert dark'>
                   {!isUser && text === null ? (
-                    <ChatBubbleOvalLeftEllipsisIcon className='h-6 w-6 animate-pulse' />
+                    <MessageCircleMore className='h-6 w-6 animate-pulse' />
                   ) : (
                     <p>{text}</p>
                   )}

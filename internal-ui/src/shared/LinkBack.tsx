@@ -1,4 +1,4 @@
-import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
+import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { ButtonOutline } from './ButtonOutline';
 import { LinkOutline } from './LinkOutline';
@@ -16,7 +16,7 @@ export const LinkBack = ({
 
   if (href) {
     return (
-      <LinkOutline href={href} Icon={ArrowLeftIcon} className={className}>
+      <LinkOutline href={href} Icon={ArrowLeft} className={className}>
         {t('back')}
       </LinkOutline>
     );
@@ -24,7 +24,7 @@ export const LinkBack = ({
 
   if (onClick) {
     return (
-      <ButtonOutline onClick={onClick} Icon={ArrowLeftIcon} className={className}>
+      <ButtonOutline onClick={onClick} Icon={ArrowLeft} className={className}>
         {t('back')}
       </ButtonOutline>
     );

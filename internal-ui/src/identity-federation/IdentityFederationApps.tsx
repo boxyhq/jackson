@@ -10,7 +10,7 @@ import {
 } from '../shared';
 import { useTranslation } from 'next-i18next';
 import type { IdentityFederationApp } from '../types';
-import PencilIcon from '@heroicons/react/24/outline/PencilIcon';
+import { Pencil } from 'lucide-react';
 import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { useFetch, usePaginate } from '../hooks';
@@ -134,7 +134,7 @@ export const IdentityFederationApps = ({
         {
           text: t('bui-shared-edit'),
           onClick: () => onEdit?.(apps.find((app) => app.id === row.id)!),
-          icon: <PencilIcon className='w-5' />,
+          icon: <Pencil className='w-5' />,
         },
         ...actionCols.map((actionCol) => ({
           text: actionCol.text,

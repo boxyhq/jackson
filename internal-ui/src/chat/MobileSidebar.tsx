@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import Sidebar from './Sidebar';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { X } from 'lucide-react';
 
 const MobileSidebar = (props: any) => {
   const { toggleChatDrawerVisibility, setShowSettings, conversations, conversationId, setConversationId } =
@@ -25,7 +25,7 @@ const MobileSidebar = (props: any) => {
                   tabIndex={0}
                   onClick={toggleChatDrawerVisibility}>
                   <span className='sr-only'>{t('bui-chat-close-sidebar')}</span>
-                  <XMarkIcon className='h-6 w-6 text-white' />
+                  <X className='h-6 w-6 text-white' />
                 </button>
               </div>
               <Sidebar

@@ -4,8 +4,7 @@ import type { IdentityFederationApp } from '../types';
 import TagsInput from 'react-tagsinput';
 import { useTranslation } from 'next-i18next';
 import { useFormik } from 'formik';
-import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
-import EyeSlashIcon from '@heroicons/react/24/outline/EyeSlashIcon';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { Card } from '../shared';
 import { defaultHeaders } from '../utils';
@@ -127,7 +126,7 @@ export const Edit = ({
                       <div className='flex'>
                         <IconButton
                           tooltip={isSecretShown ? t('bui-shared-hide') : t('bui-shared-show')}
-                          Icon={isSecretShown ? EyeSlashIcon : EyeIcon}
+                          Icon={isSecretShown ? EyeOff : Eye}
                           className='hover:text-primary mr-2'
                           onClick={(e) => {
                             e.preventDefault();

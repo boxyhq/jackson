@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
+import { Eye } from 'lucide-react';
 import { ApiSuccess, type WebhookEventLog } from '../types';
 import { fetcher, addQueryParamsToPath } from '../utils';
 import { DirectoryTab } from '../dsync';
@@ -116,7 +116,7 @@ export const DirectoryWebhookLogs = ({
               {
                 text: t('bui-shared-view'),
                 onClick: () => onView?.(event),
-                icon: <EyeIcon className='w-5' />,
+                icon: <Eye className='w-5' />,
               },
             ],
           };

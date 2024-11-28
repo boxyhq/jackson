@@ -1,6 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
-import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ButtonOutline } from './ButtonOutline';
 
 export const pageLimit = 50;
@@ -30,7 +29,7 @@ export const Pagination = ({
     <div className='flex justify-center space-x-4 py-4'>
       <ButtonOutline
         className='btn-md'
-        Icon={ArrowLeftIcon}
+        Icon={ArrowLeft}
         aria-label={t('bui-shared-previous') as string}
         onClick={onPrevClick}
         disabled={prevDisabled}>
@@ -38,7 +37,7 @@ export const Pagination = ({
       </ButtonOutline>
       <ButtonOutline
         className='btn-md'
-        Icon={ArrowRightIcon}
+        Icon={ArrowRight}
         aria-label={t('bui-shared-next') as string}
         onClick={onNextClick}
         disabled={nextDisabled}>

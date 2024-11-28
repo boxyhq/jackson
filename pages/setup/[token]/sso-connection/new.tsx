@@ -8,7 +8,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import ArrowsRightLeftIcon from '@heroicons/react/24/outline/ArrowsRightLeftIcon';
+import { ArrowRightLeft } from 'lucide-react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 
@@ -125,7 +125,7 @@ const NewConnection = ({
           <h1 className='text-xl font-noraml'>{heading}</h1>
           {source && (
             <Link className='btn btn-xs h-0' href={linkSelectIdp}>
-              <ArrowsRightLeftIcon className='w-5 h-5' />
+              <ArrowRightLeft className='w-5 h-5' />
               {t('change_identity_provider')}
             </Link>
           )}

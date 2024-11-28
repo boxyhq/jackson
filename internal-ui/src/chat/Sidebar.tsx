@@ -1,10 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import {
-  PlusIcon,
-  ChatBubbleLeftEllipsisIcon,
-  CogIcon,
-  DocumentMagnifyingGlassIcon,
-} from '@heroicons/react/24/outline';
+import { Plus, MessageCircle, Settings, Search } from 'lucide-react';
 import { LLMConversation } from './types';
 import { ConversationContext } from './ChatUI';
 import { useContext } from 'react';
@@ -40,7 +35,7 @@ const Sidebar = ({
               toggleChatDrawerVisibility();
             }
           }}>
-          <PlusIcon className='h-5 w-5' />
+          <Plus className='h-5 w-5' />
           {t('bui-chat-new-chat')}
         </div>
         <div className='flex-col flex-1 border-b border-white/20 overflow-y-scroll'>
@@ -81,7 +76,7 @@ const Sidebar = ({
               toggleChatDrawerVisibility();
             }
           }}>
-          <ChatBubbleLeftEllipsisIcon className='h-5 w-5' />
+          <MessageCircle className='h-5 w-5' />
           {t('bui-chat-clear-conversation')}
         </div>
         <button
@@ -94,7 +89,7 @@ const Sidebar = ({
               toggleChatDrawerVisibility();
             }
           }}>
-          <DocumentMagnifyingGlassIcon className='h-5 w-5' />
+          <Search className='h-5 w-5' />
           {t('bui-chat-with-pdf')}
         </button>
         <div
@@ -106,7 +101,7 @@ const Sidebar = ({
               toggleChatDrawerVisibility();
             }
           }}>
-          <CogIcon className='h-5 w-5' />
+          <Settings className='h-5 w-5' />
           {t('settings')}
         </div>
       </nav>

@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
-import PowerIcon from '@heroicons/react/20/solid/PowerIcon';
+import { Power } from 'lucide-react';
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -49,7 +49,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
                 data-testid='logout'
                 id='user-menu-item-2'
                 onClick={() => signOut()}>
-                <PowerIcon className='mr-1 h-5 w-5' aria-hidden />
+                <Power className='mr-1 h-5 w-5' aria-hidden />
                 {t('sign_out')}
               </Link>
             </div>

@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useTranslation } from 'next-i18next';
-import EyeIcon from '@heroicons/react/24/outline/EyeIcon';
+import { Eye } from 'lucide-react';
 import type { ApiSuccess, User } from '../types';
 import { addQueryParamsToPath, fetcher } from '../utils';
 import { DirectoryTab } from '../dsync';
@@ -109,7 +109,7 @@ export const DirectoryUsers = ({
               {
                 text: t('bui-shared-view'),
                 onClick: () => onView?.(user),
-                icon: <EyeIcon className='w-5' />,
+                icon: <Eye className='w-5' />,
               },
             ],
           };

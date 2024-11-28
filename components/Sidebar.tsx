@@ -1,4 +1,4 @@
-import HomeIcon from '@heroicons/react/24/outline/HomeIcon';
+import { House, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -10,7 +10,6 @@ import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
 import AuditLogsLogo from '@components/logo/AuditLogs';
 import Vault from '@components/logo/Vault';
-import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 import { useCallback, useEffect } from 'react';
 import useFeatures from '@lib/ui/hooks/useFeatures';
 
@@ -54,7 +53,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     {
       href: '/admin/dashboard',
       text: t('dashboard'),
-      icon: HomeIcon,
+      icon: House,
       active: asPath.includes('/admin/dashboard'),
     },
     {
@@ -175,7 +174,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     {
       href: '/admin/settings',
       text: t('settings'),
-      icon: Cog8ToothIcon,
+      icon: Settings,
       active: asPath.includes('/admin/settings'),
       items: [
         {

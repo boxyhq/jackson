@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import ArrowTopRightOnSquareIcon from '@heroicons/react/20/solid/ArrowTopRightOnSquareIcon';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
   const { t } = useTranslation('common');
@@ -156,7 +156,7 @@ const LinkCard = ({
             href={href}
             target='_blank'
             rel='noreferrer'>
-            <ArrowTopRightOnSquareIcon className='w-4 h-4 mr-2' />
+            <SquareArrowOutUpRight className='w-4 h-4 mr-2' />
             {buttonText}
           </Link>
         </div>

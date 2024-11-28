@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { SendHorizontal } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useAutoResizeTextArea, useFetch } from '../hooks';
 import Message from './Message';
@@ -454,7 +454,7 @@ const Chat = ({ setShowSettings, conversationId, setConversationId }: ChatProps)
                   }
                   onClick={sendMessage}
                   className='absolute p-2 rounded-md bottom-[9px] focus:outline-none focus:ring-4 focus:ring-green-300 bg-transparent enabled:bg-primary disabled:bg-gray-500 right-1 md:right-2 disabled:opacity-40'>
-                  <PaperAirplaneIcon className='h-4 w-4' />
+                  <SendHorizontal className='h-4 w-4' />
                 </button>
               </div>
             </div>

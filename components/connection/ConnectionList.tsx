@@ -1,4 +1,4 @@
-import LinkIcon from '@heroicons/react/24/outline/LinkIcon';
+import { Link } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { ConnectionList } from '@boxyhq/react-ui/sso';
@@ -40,7 +40,7 @@ const SSOConnectionList = ({
         <div className='flex gap-2'>
           {!setupLinkToken && !isSettingsView && (
             <LinkPrimary
-              Icon={LinkIcon}
+              Icon={Link}
               href='/admin/sso-connection/setup-link/new'
               data-testid='create-setup-link'>
               {t('bui-sl-new-link')}

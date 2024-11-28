@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
-import DocumentMagnifyingGlassIcon from '@heroicons/react/24/outline/DocumentMagnifyingGlassIcon';
-import WrenchScrewdriverIcon from '@heroicons/react/24/outline/WrenchScrewdriverIcon';
+import { Wrench, FileSearch2 } from 'lucide-react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useProjects } from '@lib/ui/retraced';
 import { useTranslation } from 'next-i18next';
@@ -62,14 +61,14 @@ const ProjectList: NextPage = () => {
                         onClick: () => {
                           router.push(`/admin/retraced/projects/${project.id}`);
                         },
-                        icon: <WrenchScrewdriverIcon className='h-5 w-5' />,
+                        icon: <Wrench className='h-5 w-5' />,
                       },
                       {
                         text: t('view_events'),
                         onClick: () => {
                           router.push(`/admin/retraced/projects/${project.id}/events`);
                         },
-                        icon: <DocumentMagnifyingGlassIcon className='h-5 w-5' />,
+                        icon: <FileSearch2 className='h-5 w-5' />,
                       },
                     ],
                   },
