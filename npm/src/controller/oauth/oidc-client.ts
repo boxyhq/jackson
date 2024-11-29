@@ -39,7 +39,20 @@ const customFetch = (url: RequestInfo | URL, options: RequestInit): Promise<Resp
     });
 
     if (options.body) {
-      req.write(options.body);
+      let body;
+      let contentType: string | undefined;
+
+      if (options.body instanceof URLSearchParams) {
+        body = options.body.toString();
+        contentType = 'application/x-www-form-urlencoded';
+      } else {
+        body = options.body;
+      }
+
+      if (contentType) {
+        req.setHeader('content-type', contentType);
+      }
+      req.write(body);
     }
 
     req.end();
