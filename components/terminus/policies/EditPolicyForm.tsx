@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { successToast } from '@components/Toaster';
 import { Button } from 'react-daisyui';
 import { descriptions, LanguageKey, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
+import CodeEditor from './CodeEditor';
 
 type entityState = {
   type: string;
@@ -18,13 +19,7 @@ type formState = {
   language: string;
   piiEntities: Array<entityState>;
   selectedRegions: Array<string>;
-};
-
-type editFormProps = {
-  piiPolicy: string;
-  product: string;
-  language: string;
-  piiEntities: string;
+  accessControlPolicy: string;
 };
 
 const initialState = {
@@ -33,9 +28,24 @@ const initialState = {
   language: '',
   piiEntities: [],
   selectedRegions: [],
+  accessControlPolicy: '',
 };
 
-const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormProps) => {
+type editFormProps = {
+  piiPolicy: string;
+  product: string;
+  language: string;
+  piiEntities: string;
+  accessControlPolicy: string;
+};
+
+const EditPolicyForm = ({
+  piiPolicy,
+  product,
+  language,
+  piiEntities,
+  accessControlPolicy,
+}: editFormProps) => {
   // Initial entity options
   const [initialEntities, setInitialEntities] = useState<Array<entityState>>([]);
 
@@ -71,6 +81,13 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
     const identifier = initialEntities.find((item) => item.type === type);
 
     return identifier ? identifier.region : '';
+  };
+
+  const setAccessControlPolicy = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      accessControlPolicy: value,
+    }));
   };
 
   useEffect(() => {
@@ -116,6 +133,9 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
       language: LANGUAGE_CODE_MAP[language],
       piiEntities: convertedIdentifiers,
       selectedRegions: preSelectedRegions,
+      accessControlPolicy: accessControlPolicy
+        ? Buffer.from(accessControlPolicy, 'base64').toString('utf-8')
+        : '',
     });
   }, [initialEntities]);
 
@@ -238,11 +258,12 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
           piiPolicy: formData.piiPolicy,
           piiEntities: formData.piiEntities.map((e) => e.type).toString(),
           language: SupportedLanguages[formData.language],
+          accessControlPolicy: Buffer.from(formData.accessControlPolicy, 'utf-8').toString('base64'),
         }),
       });
 
       if (response.ok) {
-        successToast(t('policy_update_success_toast'));
+        successToast(t('llm_policy_update_success_toast'));
       }
       if (!response.ok) throw new Error('Failed to edit policy');
     } catch (err: any) {
@@ -277,8 +298,8 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
   return (
     <>
       <LinkBack href='/admin/llm-vault/policies' />
+      <PageHeader className='mt-4' title={t('llm_edit_policy')} description={t('llm_edit_policy_desc')} />
       <div className='mx-auto p-4'>
-        <PageHeader title={t('edit_policy')} description={t('llm_edit_policy_desc')} />
         <div className='mt-2.5'>
           <Card>
             <Card.Body>
@@ -502,6 +523,14 @@ const EditPolicyForm = ({ piiPolicy, product, language, piiEntities }: editFormP
                       {t('no_entities_found')} &quot;{searchQuery}&quot;
                     </div>
                   )}
+                </div>
+
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>
+                    {t('llm_access_control_policy')}
+                    <span className='text-red-500'>*</span>
+                  </label>
+                  <CodeEditor code={formData.accessControlPolicy} setCode={setAccessControlPolicy} />
                 </div>
 
                 <div className='flex gap-2 justify-end pt-6'>

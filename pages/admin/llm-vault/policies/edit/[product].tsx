@@ -23,7 +23,6 @@ const EditPIIPolicy: NextPage = () => {
   if (isLoading) {
     return <Loading />;
   }
-  console.log(data.data);
 
   if (error) {
     errorToast(error.message);
@@ -40,6 +39,7 @@ const EditPIIPolicy: NextPage = () => {
       product={data.data.product}
       language={data.data.language}
       piiEntities={data.data.piiEntities}
+      accessControlPolicy={data.data.accessControlPolicy}
     />
   );
 };

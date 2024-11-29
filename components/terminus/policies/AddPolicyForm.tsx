@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
+import { Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
-import { successToast } from '@components/Toaster';
+import { errorToast, successToast } from '@components/Toaster';
 import router from 'next/router';
 import { Button } from 'react-daisyui';
 import { descriptions, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
+import CodeEditor from './CodeEditor';
 
 type entityState = {
   type: string;
@@ -19,6 +20,7 @@ type formState = {
   language: string;
   piiEntities: Array<entityState>;
   selectedRegions: Array<string>;
+  accessControlPolicy: string;
 };
 
 const initialState = {
@@ -27,6 +29,7 @@ const initialState = {
   language: '',
   piiEntities: [],
   selectedRegions: [],
+  accessControlPolicy: '',
 };
 
 const AddPolicyForm = () => {
@@ -37,7 +40,6 @@ const AddPolicyForm = () => {
   const { t } = useTranslation('common');
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [hoveredEntity, setHoveredEntity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRegions, setExpandedRegions] = useState({});
@@ -130,6 +132,13 @@ const AddPolicyForm = () => {
     }));
   };
 
+  const setAccessControlPolicy = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      accessControlPolicy: value,
+    }));
+  };
+
   const getSelectedRegions = (entities) => {
     const selected_regions: Array<string> = [];
     regions.forEach((region) => {
@@ -187,7 +196,6 @@ const AddPolicyForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     try {
       const response = await fetch(`/api/admin/llm-vault/policies/${formData.product}`, {
         method: 'POST',
@@ -197,16 +205,21 @@ const AddPolicyForm = () => {
           piiPolicy: formData.piiPolicy,
           language: SupportedLanguages[formData.language],
           piiEntities: formData.piiEntities.map((e) => e.type).toString(),
+          accessControlPolicy: Buffer.from(formData.accessControlPolicy, 'utf-8').toString('base64'),
         }),
       });
+
+      console.log(Buffer.from(formData.accessControlPolicy, 'utf-8').toString('base64'));
       if (response.ok) {
-        successToast(t('policy_saved_success_toast'));
+        successToast(t('llm_policy_saved_success_toast'));
         setFormData(initialState);
         router.push('/admin/llm-vault/policies');
       }
-      if (!response.ok) throw new Error('Failed to create policy');
+      if (!response.ok) {
+        throw new Error('Failed to create policy');
+      }
     } catch (err: any) {
-      setError(err.message);
+      errorToast(err.message);
     } finally {
       setLoading(false);
     }
@@ -239,19 +252,12 @@ const AddPolicyForm = () => {
   return (
     <>
       <LinkBack href='/admin/llm-vault/policies' />
+      <PageHeader className='mt-4' title={t('llm_new_policy')} description={t('llm_new_policy_desc')} />
       <div className='mx-auto p-4'>
-        <PageHeader title={t('new_policy')} description={t('llm_new_policy_desc')} />
         <div className='mt-2.5'>
           <Card>
             <Card.Body>
               <form onSubmit={handleSubmit} className='space-y-6'>
-                {error && (
-                  <Alert variant='error'>
-                    <h3>{t('bui-traces-error')}</h3>
-                    <h3>{error}</h3>
-                  </Alert>
-                )}
-
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
                     {t('bui-shared-product')}
@@ -464,6 +470,14 @@ const AddPolicyForm = () => {
                       {t('no_entities_found')} &quot;{searchQuery}&quot;
                     </div>
                   )}
+                </div>
+
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>
+                    {t('llm_access_control_policy')}
+                    <span className='text-red-500'>*</span>
+                  </label>
+                  <CodeEditor code={formData.accessControlPolicy} setCode={setAccessControlPolicy} />
                 </div>
 
                 <div className='flex gap-2 justify-end pt-6'>

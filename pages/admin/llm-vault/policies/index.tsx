@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
-import TrashIcon from '@heroicons/react/24/outline/TrashIcon';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { Trash2, Pencil } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
-import { Table, LinkPrimary, ConfirmationModal, EmptyState } from '@boxyhq/internal-ui';
+import { Table, LinkPrimary, ConfirmationModal, EmptyState, Loading, Error } from '@boxyhq/internal-ui';
 import { useEffect, useState } from 'react';
 import router from 'next/router';
-import { successToast } from '@components/Toaster';
+import { errorToast, successToast } from '@components/Toaster';
 import { LanguageKey, SupportedLanguages } from 'internal-ui/src/chat/types';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useFetch } from 'internal-ui/src/hooks';
 
 export type policy = {
   createdAt: string;
@@ -17,16 +17,34 @@ export type policy = {
   piiEntities: string;
   language: string;
 };
+
 const Policies: NextPage = () => {
-  const [policies, setPolicies] = useState<Array<policy>>([]);
+  const { t } = useTranslation('common');
+
+  const { data, isLoading, error, refetch } = useFetch<{ data: Array<policy> }>({
+    url: `/api/admin/llm-vault/policies`,
+  });
+
+  const [policies, setPolicies] = useState(data?.data);
   const [delModalVisible, setDelModalVisible] = useState(false);
   const [productToDelete, setProductToDelete] = useState('');
 
-  const { t } = useTranslation('common');
+  const getPolicies = async () => {
+    refetch();
+    setPolicies(data?.data);
+  };
 
   useEffect(() => {
-    getPolicies();
-  }, []);
+    setPolicies(data?.data);
+  }, [data]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error message={t('error_loading_page')} />;
+  }
 
   const LANGUAGE_CODE_MAP: { [key: string]: LanguageKey } = Object.entries(SupportedLanguages).reduce(
     (acc, [key, value]) => {
@@ -35,12 +53,6 @@ const Policies: NextPage = () => {
     },
     {} as { [key: string]: LanguageKey }
   );
-
-  const getPolicies = async () => {
-    const policiesResp = await fetch(`/api/admin/llm-vault/policies`);
-    const policiesList = (await policiesResp.json())?.data;
-    setPolicies(policiesList);
-  };
 
   const getLanguageName = (language: string): string | undefined => {
     return LANGUAGE_CODE_MAP[language];
@@ -53,14 +65,16 @@ const Policies: NextPage = () => {
       });
 
       if (response.ok) {
-        successToast(t('policy_deletion_success_toast'));
+        successToast(t('llm_policy_deletion_success_toast'));
       }
-      if (!response.ok) throw new Error('Failed to delete piiPolicy');
+      if (!response.ok) {
+        errorToast('Failed to delete piiPolicy');
+      }
       setDelModalVisible(false);
       setProductToDelete('');
       getPolicies();
     } catch (error: any) {
-      console.log(error);
+      errorToast(error);
     }
   };
 
@@ -68,10 +82,10 @@ const Policies: NextPage = () => {
     <div>
       <div className='mb-5 flex items-center justify-between'>
         <h2 className='font-bold text-gray-700 dark:text-white md:text-xl'>{t('policies')}</h2>
-        <LinkPrimary href={'/admin/llm-vault/policies/new'}>{t('new_policy')}</LinkPrimary>
+        <LinkPrimary href={'/admin/llm-vault/policies/new'}>{t('llm_new_policy')}</LinkPrimary>
       </div>
       <>
-        {policies?.length > 0 ? (
+        {policies && policies?.length > 0 ? (
           <Table
             cols={[
               t('bui-shared-product'),
@@ -112,7 +126,7 @@ const Policies: NextPage = () => {
                         onClick: () => {
                           router.push(`/admin/llm-vault/policies/edit/${policy.product}`);
                         },
-                        icon: <PencilIcon className='h-5 w-5' />,
+                        icon: <Pencil className='h-5 w-5' />,
                       },
                       {
                         text: t('bui-shared-delete'),
@@ -120,7 +134,7 @@ const Policies: NextPage = () => {
                           setDelModalVisible(true);
                           setProductToDelete(policy.product);
                         },
-                        icon: <TrashIcon className='h-5 w-5' />,
+                        icon: <Trash2 className='h-5 w-5' />,
                       },
                     ],
                   },
