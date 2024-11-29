@@ -1,25 +1,48 @@
 import * as client from 'openid-client';
-
+import * as http from 'http';
+import * as https from 'https';
 import { JacksonError } from '../error';
+import { URL } from 'url';
 
-const NAME = 'openid-client';
-const VERSION = '5.6.5';
-const HOMEPAGE = 'https://github.com/panva/node-openid-client';
-const USER_AGENT = `${NAME}/${VERSION} (${HOMEPAGE})`;
+const customFetch = (url: RequestInfo | URL, options: RequestInit): Promise<Response> => {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
 
-const customFetch = (...args) => {
-  console.log(`args[1]`, args[1]);
-  const headers = {
-    ...args[1].headers,
-    'user-agent': USER_AGENT,
-    // 'accept-encoding': 'identity',
-    // host: 'gateway.id.tools.bbc.co.uk',
-  };
-  console.log(`customFetch called with headers`, headers);
+    const requestOptions: https.RequestOptions = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: options.method || 'GET',
+      headers: options.headers as http.OutgoingHttpHeaders,
+    };
+    const request = parsedUrl.protocol === 'https:' ? https.request : http.request;
 
-  return fetch(args[0], {
-    ...args[1],
-    headers,
+    const req = request(requestOptions, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        const response = new Response(data, {
+          status: res.statusCode,
+          statusText: res.statusMessage,
+          headers: new Headers(res.headers as HeadersInit),
+        });
+
+        resolve(response);
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (options.body) {
+      req.write(options.body);
+    }
+
+    req.end();
   });
 };
 
