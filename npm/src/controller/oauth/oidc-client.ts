@@ -10,6 +10,7 @@ const customFetch = (url: RequestInfo | URL, options: RequestInit): Promise<Resp
 
     const requestOptions: https.RequestOptions = {
       hostname: parsedUrl.hostname,
+      port: parsedUrl.port,
       path: parsedUrl.pathname + parsedUrl.search,
       method: options.method || 'GET',
       headers: options.headers as http.OutgoingHttpHeaders,
@@ -35,6 +36,7 @@ const customFetch = (url: RequestInfo | URL, options: RequestInit): Promise<Resp
     });
 
     req.on('error', (error) => {
+      console.error(`error`, error, error.stack);
       reject(error);
     });
 
