@@ -1,31 +1,23 @@
 import React from 'react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs';
-import 'prismjs/themes/prism.css';
+import { Editor } from '@monaco-editor/react';
 
-const CodeEditor = ({ code, setCode }: { code: string; setCode: any }) => {
+const CodeEditor = ({ code, setCode }: { code: string; setCode: (value: string | undefined) => void }) => {
   return (
-    <div className='mb-5 min-h-80'>
+    <div className='mb-5 border border-gray-300 rounded-md overflow-hidden'>
       <Editor
-        id='acl-code-editor'
+        height='30vh'
+        language='r'
+        theme='light'
         value={code}
-        onValueChange={(newValue) => {
-          setCode(newValue);
+        options={{
+          automaticLayout: true,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          lineNumbers: 'off',
+          fontSize: 14,
+          padding: { top: 10, bottom: 10 },
         }}
-        highlight={(code) => highlight(code, languages.javascript, 'js')}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: '14px',
-          border: '1px solid #ddd',
-          borderRadius: '0.375rem',
-          width: '100%',
-          minHeight: '300px',
-          overflow: 'auto',
-          transition: 'border-color 0.3s ease',
-          boxSizing: 'border-box',
-        }}
-        required
+        onChange={setCode}
       />
     </div>
   );
