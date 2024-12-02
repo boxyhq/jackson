@@ -397,11 +397,28 @@ export class OAuthController implements IOAuthController {
     let oidcNonce: string | undefined;
     if (connectionIsOIDC) {
       const { discoveryUrl, metadata, clientId, clientSecret } = (connection as OIDCSSORecord).oidcProvider;
+      const { ssoTraces } = this;
       try {
         if (!this.opts.oidcPath) {
           throw new JacksonError('OpenID response handler path (oidcPath) is not set');
         }
-        const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+        const oidcConfig = await oidcClientConfig({
+          discoveryUrl,
+          metadata,
+          clientId,
+          clientSecret,
+          ssoTraces: {
+            instance: ssoTraces,
+            context: {
+              tenant: requestedTenant as string,
+              product: requestedProduct as string,
+              clientID: connection.clientID,
+              requestedOIDCFlow,
+              isOIDCFederated,
+              redirectUri: redirect_uri,
+            },
+          },
+        });
         oidcCodeVerifier = client.randomPKCECodeVerifier();
         const code_challenge = await client.calculatePKCECodeChallenge(oidcCodeVerifier);
         oidcNonce = client.randomNonce();
@@ -852,9 +869,32 @@ export class OAuthController implements IOAuthController {
 
     // Reconstruct the oidcClient, code exchange for token and user profile happens here
     const { discoveryUrl, metadata, clientId, clientSecret } = oidcConnection.oidcProvider;
+    const { ssoTraces } = this;
     let tokens: AuthorizationCodeGrantResult | undefined = undefined;
     try {
-      const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+      const oidcConfig = await oidcClientConfig({
+        discoveryUrl,
+        metadata,
+        clientId,
+        clientSecret,
+        ssoTraces: {
+          instance: ssoTraces,
+          context: {
+            tenant: oidcConnection.tenant,
+            product: oidcConnection.product,
+            clientID: oidcConnection.clientID,
+            providerName: oidcConnection.oidcProvider.provider,
+            redirectUri: redirect_uri,
+            relayState: RelayState,
+            isSAMLFederated,
+            isOIDCFederated,
+            acsUrl: session.requested.acsUrl,
+            entityId: session.requested.entityId,
+            requestedOIDCFlow: !!session.requested.oidc,
+            oidcIdPRequest: session?.requested?.oidcIdPRequest,
+          },
+        },
+      });
       const currentUrl = new URL(
         this.opts.externalUrl + this.opts.oidcPath + '?' + new URLSearchParams(callbackParams)
       );
