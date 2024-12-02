@@ -22,7 +22,6 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "lucide-react": "^0.461.0",
     "vite-tsconfig-paths": "5.1.3"
   },
   "devDependencies": {
@@ -44,8 +43,8 @@
     "@rollup/rollup-linux-x64-gnu": "4.27.3"
   },
   "peerDependencies": {
+    "lucide-react": ">=0.461.0",
     "@boxyhq/react-ui": ">=3.3.42",
-    "@heroicons/react": ">=2.1.1",
     "classnames": ">=2.5.1",
     "formik": ">=2.4.5",
     "next": ">=14.1.0",
