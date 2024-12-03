@@ -81,7 +81,8 @@ export async function generateChatResponse(
       baseURL: config.baseURL,
     });
 
-    config.baseURL = terminusOptions.hostUrl + `/v1/proxy/${provider}` + '?' + params.toString();
+    const encodedBaseURL = Buffer.from(params.toString()).toString('base64url');
+    config.baseURL = terminusOptions.hostUrl + `/v1/product/proxy/${encodedBaseURL}/${provider}`;
   }
   if (isStream) {
     return LLM_HANDLERS[provider](messages, model, config, isStream);
