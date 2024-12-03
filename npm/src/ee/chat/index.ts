@@ -366,7 +366,7 @@ export class ChatController {
   }
 
   private getUserRole(email: string) {
-    const mappings = this.opts.llm?.pdfChat?.roleMapping.split(',');
+    const mappings = this.opts.llm?.documentChat?.roleMapping.split(',');
     if (!mappings) {
       throw new JacksonError('Could not find role mappings on server for chatting with PDF', 500);
     }
@@ -384,20 +384,20 @@ export class ChatController {
     return matchedMapping.split(':')[1];
   }
 
-  public async generatePDFChatJWT({ email }: { email: string }) {
-    if (!this.opts.llm?.pdfChat?.jwtSigningKey) {
+  public async generateDocumentChatJWT({ email }: { email: string }) {
+    if (!this.opts.llm?.documentChat?.jwtSigningKey) {
       throw new JacksonError('Could not load JWT signing keys for chatting with PDF', 500);
     }
-    const jwsAlg = this.opts.llm?.pdfChat?.jwsAlg || 'RS256';
-    const signingKey = await loadJWSPrivateKey(this.opts.llm?.pdfChat?.jwtSigningKey, jwsAlg);
+    const jwsAlg = 'RS256';
+    const signingKey = await loadJWSPrivateKey(this.opts.llm?.documentChat?.jwtSigningKey, jwsAlg);
 
     const jwt = await new jose.SignJWT({
       role: this.getUserRole(email),
       tenant: this.opts.terminus?.llm?.tenant,
     })
       .setProtectedHeader({ alg: jwsAlg })
-      .setIssuer(this.opts.llm?.pdfChat.jwtIssuer)
-      .setAudience(this.opts.llm?.pdfChat.jwtAudience)
+      .setIssuer(this.opts.llm?.documentChat.jwtIssuer)
+      .setAudience(this.opts.llm?.documentChat.jwtAudience)
       .setExpirationTime('3d')
       .sign(signingKey);
 

@@ -90,10 +90,10 @@ export async function handlePOST(req, res) {
   const formData = new FormData();
   formData.append('file', new Blob([fileBuffer]), fileName);
 
-  const jwt = await chatController.generatePDFChatJWT({ email });
+  const jwt = await chatController.generateDocumentChatJWT({ email });
 
   try {
-    const response = await fetch(`${llmOptions.pdfChat.baseUrl}/chat/upload_file`, {
+    const response = await fetch(`${llmOptions.documentChat.baseUrl}/chat/upload_file`, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },

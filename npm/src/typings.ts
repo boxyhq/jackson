@@ -516,10 +516,9 @@ export interface JacksonOption {
   };
 
   llm?: {
-    pdfChat?: {
+    documentChat?: {
       baseUrl: string;
       jwtSigningKey: string;
-      jwsAlg?: string;
       jwtAudience: string;
       jwtIssuer: string;
       roleMapping: string;

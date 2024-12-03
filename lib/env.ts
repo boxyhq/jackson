@@ -49,12 +49,12 @@ const terminus = {
 
 // LLM Chat
 const llm = {
-  pdfChat: {
-    baseUrl: process.env.LLM_PDF_CHAT_BASE_URL || '',
-    roleMapping: process.env.LLM_PDF_CHAT_ROLE_MAPPING || '',
-    jwtSigningKey: process.env.LLM_PDF_CHAT_SIGNING_KEY || '',
-    jwtAudience: process.env.LLM_PDF_CHAT_JWT_AUDIENCE || '',
-    jwtIssuer: process.env.LLM_PDF_CHAT_JWT_ISSUER || '',
+  documentChat: {
+    baseUrl: process.env.LLM_DOCUMENT_CHAT_BASE_URL || '',
+    roleMapping: process.env.LLM_DOCUMENT_CHAT_ROLE_MAPPING || '',
+    jwtSigningKey: process.env.LLM_DOCUMENT_CHAT_SIGNING_KEY || '',
+    jwtAudience: process.env.LLM_DOCUMENT_CHAT_JWT_AUDIENCE || '',
+    jwtIssuer: process.env.LLM_DOCUMENT_CHAT_JWT_ISSUER || '',
   },
 };
 
