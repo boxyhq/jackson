@@ -4,7 +4,12 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import { AuthorizationCodeGrantResult, clientIDFederatedPrefix, clientIDOIDCPrefix } from './utils';
+import {
+  AuthorizationCodeGrantResult,
+  clientIDFederatedPrefix,
+  clientIDOIDCPrefix,
+  computeKid,
+} from './utils';
 
 import type {
   IOAuthController,
@@ -1180,8 +1185,9 @@ export class OAuthController implements IOAuthController {
         groups: codeVal.profile.claims.groups,
       };
       const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
+      const kid = await computeKid(jwtSigningKeys.public, jwsAlg!);
       const id_token = await new jose.SignJWT(claims)
-        .setProtectedHeader({ alg: jwsAlg! })
+        .setProtectedHeader({ alg: jwsAlg!, kid })
         .setIssuedAt()
         .setIssuer(this.opts.externalUrl)
         .setSubject(codeVal.profile.claims.id)
