@@ -4,13 +4,6 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
-import {
-  AuthorizationCodeGrantResult,
-  clientIDFederatedPrefix,
-  clientIDOIDCPrefix,
-  computeKid,
-} from './utils';
-
 import type {
   IOAuthController,
   JacksonOption,
@@ -28,11 +21,15 @@ import type {
   IdentityFederationApp,
 } from '../typings';
 import {
+  AuthorizationCodeGrantResult,
+  clientIDFederatedPrefix,
+  clientIDOIDCPrefix,
   relayStatePrefix,
   IndexNames,
   OAuthErrorResponse,
   getErrorMessage,
   loadJWSPrivateKey,
+  computeKid,
   isJWSKeyPairLoaded,
   extractOIDCUserProfile,
   getScopeValues,
