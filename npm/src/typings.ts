@@ -517,7 +517,7 @@ export interface JacksonOption {
 
   llm?: {
     documentChat?: {
-      baseUrl: string;
+      hostUrl: string;
       jwtSigningKey: string;
       jwtAudience: string;
       jwtIssuer: string;

@@ -93,7 +93,7 @@ export async function handlePOST(req, res) {
   const jwt = await chatController.generateDocumentChatJWT({ email });
 
   try {
-    const response = await fetch(`${llmOptions.documentChat.baseUrl}/chat/upload_file`, {
+    const response = await fetch(`${llmOptions.documentChat.hostUrl}/chat/upload_file`, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },

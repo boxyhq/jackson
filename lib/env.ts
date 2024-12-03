@@ -50,7 +50,7 @@ const terminus = {
 // LLM Chat
 const llm = {
   documentChat: {
-    baseUrl: process.env.LLM_DOCUMENT_CHAT_BASE_URL || '',
+    hostUrl: process.env.LLM_DOCUMENT_CHAT_HOST_URL || '',
     roleMapping: process.env.LLM_DOCUMENT_CHAT_ROLE_MAPPING || '',
     jwtSigningKey: process.env.LLM_DOCUMENT_CHAT_SIGNING_KEY || '',
     jwtAudience: process.env.LLM_DOCUMENT_CHAT_JWT_AUDIENCE || '',
