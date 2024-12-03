@@ -33,13 +33,11 @@ const initialState = {
 };
 
 const AddPolicyForm = () => {
+  const { t } = useTranslation('common');
   const [initialEntities, setInitialEntities] = useState<Array<entityState>>([]);
   const [regions, setRegions] = useState<Array<string>>([]);
   const [formData, setFormData] = useState<formState>(initialState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const { t } = useTranslation('common');
-
   const [loading, setLoading] = useState(false);
   const [hoveredEntity, setHoveredEntity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');

@@ -46,49 +46,19 @@ const EditPolicyForm = ({
   piiEntities,
   accessControlPolicy,
 }: editFormProps) => {
-  // Initial entity options
+  const { t } = useTranslation('common');
   const [initialEntities, setInitialEntities] = useState<Array<entityState>>([]);
-
-  // Form state
+  const [regions, setRegions] = useState<Array<string>>([]);
   const [formData, setFormData] = useState<formState>(initialState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [hoveredEntity, setHoveredEntity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRegions, setExpandedRegions] = useState({});
   const [showAllEntities, setShowAllEntities] = useState(false);
 
-  // Available options
-  const [regions, setRegions] = useState<Array<string>>([]);
   const languages = Object.keys(SupportedLanguages);
   const policies = Object.values(PII_POLICY).filter((value) => value !== 'None');
-
-  const LANGUAGE_CODE_MAP: { [key: string]: LanguageKey } = Object.entries(SupportedLanguages).reduce(
-    (acc, [key, value]) => {
-      acc[value] = key as LanguageKey;
-      return acc;
-    },
-    {} as { [key: string]: LanguageKey }
-  );
-
-  const getDescription = (type) => {
-    return descriptions[type] || 'No description available.';
-  };
-
-  const getRegionByType = (type) => {
-    const identifier = initialEntities.find((item) => item.type === type);
-
-    return identifier ? identifier.region : '';
-  };
-
-  const setAccessControlPolicy = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      accessControlPolicy: value,
-    }));
-  };
 
   useEffect(() => {
     (async function () {
@@ -112,6 +82,20 @@ const EditPolicyForm = ({
       setRegions(regionList);
     })();
   }, []);
+
+  const getRegionByType = (type) => {
+    const identifier = initialEntities.find((item) => item.type === type);
+
+    return identifier ? identifier.region : '';
+  };
+
+  const LANGUAGE_CODE_MAP: { [key: string]: LanguageKey } = Object.entries(SupportedLanguages).reduce(
+    (acc, [key, value]) => {
+      acc[value] = key as LanguageKey;
+      return acc;
+    },
+    {} as { [key: string]: LanguageKey }
+  );
 
   useEffect(() => {
     showAllRegions();
@@ -142,6 +126,10 @@ const EditPolicyForm = ({
   const getCleanedType = (type: string) => {
     const cleanedType = type.replace(/^AU_|^IN_|^SG_|^UK_|^US_/, '');
     return cleanedType;
+  };
+
+  const getDescription = (type) => {
+    return descriptions[type] || 'No description available.';
   };
 
   const filteredEntities = useMemo(() => {
@@ -187,6 +175,13 @@ const EditPolicyForm = ({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const setAccessControlPolicy = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      accessControlPolicy: value,
     }));
   };
 

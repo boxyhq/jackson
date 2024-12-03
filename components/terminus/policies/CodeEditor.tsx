@@ -1,36 +1,25 @@
-import React, { Suspense, useCallback } from 'react';
-import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/theme-monokai';
+import React from 'react';
+import { Editor } from '@monaco-editor/react';
 
 const CodeEditor = ({ code, setCode }: { code: string; setCode: (value: string | undefined) => void }) => {
-  const handleChange = useCallback((newValue) => {
-    setCode(newValue);
-  }, []);
-
-  const editorOptions = {
-    enableBasicAutocompletion: false,
-    enableLiveAutocompletion: false,
-    enableSnippets: false,
-    enableMobileMenu: false,
-    showLineNumbers: false,
-    tabSize: 2,
-  };
-
   return (
-    <Suspense fallback={<div>Loading editor...</div>}>
-      <AceEditor
-        mode='python'
-        theme='monokai'
-        name='editor'
+    <div className='mb-5 border border-gray-300 rounded-md overflow-hidden'>
+      <Editor
+        height='40vh'
+        language='r'
+        theme='light'
         value={code}
-        onChange={handleChange}
-        width='100%'
-        height='30vh'
-        editorProps={{ $blockScrolling: true }}
-        setOptions={editorOptions}
+        options={{
+          automaticLayout: true,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          lineNumbers: 'off',
+          fontSize: 14,
+          padding: { top: 10, bottom: 10 },
+        }}
+        onChange={setCode}
       />
-    </Suspense>
+    </div>
   );
 };
 
