@@ -77,7 +77,11 @@ export async function generateChatResponse(
   }
   // Set the base URL to the terminus proxy if the provider is supported
   if (useTerminus[provider]) {
-    config.baseURL = terminusOptions.hostUrl + `/v1/proxy/${provider}`;
+    const params = new URLSearchParams({
+      baseURL: config.baseURL,
+    });
+
+    config.baseURL = terminusOptions.hostUrl + `/v1/proxy/${provider}` + '?' + params.toString();
   }
   if (isStream) {
     return LLM_HANDLERS[provider](messages, model, config, isStream);
