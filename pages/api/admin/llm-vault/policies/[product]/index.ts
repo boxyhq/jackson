@@ -12,68 +12,53 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
 }
 
-const getTerminusUrl = (product) => {
+const getTerminusUrl = (product: string) => {
   return `${terminusOptions.hostUrl}/v1/manage/policies/${product}`;
 };
 
-const getPolicy = async (req: NextApiRequest, res: NextApiResponse) => {
+// Utility function to handle API requests
+const handleApiRequest = async (
+  method: 'get' | 'post' | 'put' | 'delete',
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const { product } = req.query;
+  const url = getTerminusUrl(product as string);
 
-  const { data } = await axios.get<any>(getTerminusUrl(product), {
-    headers: {
-      Authorization: `api-key ${terminusOptions.adminToken}`,
-    },
-  });
+  try {
+    const response = await axios({
+      method,
+      url,
+      headers: {
+        Authorization: `api-key ${terminusOptions.adminToken}`,
+      },
+      data: method !== 'get' ? req.body : undefined,
+    });
 
-  res.json({
-    data,
-    error: null,
-  });
+    res.status(response.status).json({
+      data: response.data,
+      error: null,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status || 500;
+      res.status(status).json({
+        data: null,
+        error: error.message,
+      });
+    } else {
+      console.error('Unexpected error:', error);
+      res.status(500).json({
+        data: null,
+        error: 'An unexpected error occurred',
+      });
+    }
+  }
 };
 
-const savePolicy = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { product } = req.query;
-
-  const { data } = await axios.post<any>(getTerminusUrl(product), req.body, {
-    headers: {
-      Authorization: `api-key ${terminusOptions.adminToken}`,
-    },
-  });
-
-  res.status(201).json({
-    data,
-    error: null,
-  });
-};
-
-const updatePolicy = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { product } = req.query;
-
-  const { data } = await axios.put<any>(getTerminusUrl(product), req.body, {
-    headers: {
-      Authorization: `api-key ${terminusOptions.adminToken}`,
-    },
-  });
-
-  res.status(201).json({
-    data,
-    error: null,
-  });
-};
-
-const deletePolicy = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { product } = req.query;
-
-  const { data } = await axios.delete<any>(getTerminusUrl(product), {
-    headers: {
-      Authorization: `api-key ${terminusOptions.adminToken}`,
-    },
-  });
-
-  res.status(201).json({
-    data,
-    error: null,
-  });
-};
+const getPolicy = (req: NextApiRequest, res: NextApiResponse) => handleApiRequest('get', req, res);
+const savePolicy = (req: NextApiRequest, res: NextApiResponse) => handleApiRequest('post', req, res);
+const updatePolicy = (req: NextApiRequest, res: NextApiResponse) => handleApiRequest('put', req, res);
+const deletePolicy = (req: NextApiRequest, res: NextApiResponse) => handleApiRequest('delete', req, res);
 
 export default handler;

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
+import { Card, LinkBack, PageHeader } from '@boxyhq/internal-ui';
 import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
-import { successToast } from '@components/Toaster';
+import { errorToast, successToast } from '@components/Toaster';
 import { Button } from 'react-daisyui';
 import { descriptions, LanguageKey, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
 import CodeEditor from './CodeEditor';
@@ -51,10 +51,10 @@ const EditPolicyForm = ({
 
   // Form state
   const [formData, setFormData] = useState<formState>(initialState);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [hoveredEntity, setHoveredEntity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRegions, setExpandedRegions] = useState({});
@@ -244,12 +244,48 @@ const EditPolicyForm = ({
     }
   };
 
+  const validateForm = (formData: formState) => {
+    const errors: { [key: string]: string } = {};
+
+    if (!formData.piiPolicy) {
+      errors.piiPolicy = 'PII Policy is required.';
+    }
+
+    if (!formData.product) {
+      errors.product = 'Product is required.';
+    }
+
+    if (!formData.language) {
+      errors.language = 'Language is required.';
+    }
+
+    if (formData.piiEntities.length === 0) {
+      errors.piiEntities = 'At least one PII entity must be selected.';
+    }
+
+    if (formData.selectedRegions.length === 0) {
+      errors.selectedRegions = 'At least one region must be selected.';
+    }
+
+    if (!formData.accessControlPolicy) {
+      errors.accessControlPolicy = 'Access Control Policy is required.';
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
+      const validationErrors = validateForm(formData);
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
       const response = await fetch(`/api/admin/llm-vault/policies/${formData.product}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -265,9 +301,11 @@ const EditPolicyForm = ({
       if (response.ok) {
         successToast(t('llm_policy_update_success_toast'));
       }
-      if (!response.ok) throw new Error('Failed to edit policy');
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
     } catch (err: any) {
-      setError(err.message);
+      errorToast(err.message);
     } finally {
       setLoading(false);
     }
@@ -304,18 +342,12 @@ const EditPolicyForm = ({
           <Card>
             <Card.Body>
               <form onSubmit={handleSubmit} className='space-y-6'>
-                {error && (
-                  <Alert variant='error'>
-                    <h3>{t('bui-traces-error')}</h3>
-                    <h3>{error}</h3>
-                  </Alert>
-                )}
-
                 <div className='space-y-2'>
                   <label className='text-sm font-medium'>
                     {t('bui-shared-product')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.product && <span className='text-red-500'>{errors.product}</span>}
                   <input
                     type='text'
                     name='product'
@@ -331,6 +363,7 @@ const EditPolicyForm = ({
                     {t('llm_pii_policy')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.piiPolicy && <span className='text-red-500'>{errors.piiPolicy}</span>}
                   <select
                     name='piiPolicy'
                     value={formData.piiPolicy}
@@ -351,6 +384,7 @@ const EditPolicyForm = ({
                     {t('language')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.language && <span className='text-red-500'>{errors.language}</span>}
                   <select
                     name='language'
                     value={formData.language}
@@ -374,6 +408,8 @@ const EditPolicyForm = ({
                       {t('select_entities')}
                       <span className='text-red-500'>*</span>
                     </label>
+
+                    {errors.piiEntities && <span className='text-red-500'>{errors.piiEntities}</span>}
                   </div>
 
                   {/* Search Input */}
@@ -526,10 +562,15 @@ const EditPolicyForm = ({
                 </div>
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>
-                    {t('llm_access_control_policy')}
-                    <span className='text-red-500'>*</span>
-                  </label>
+                  <div className='flex justify-between items-center'>
+                    <label className='text-sm font-medium'>
+                      {t('llm_access_control_policy')}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    {errors.accessControlPolicy && (
+                      <span className='text-red-500'>{errors.accessControlPolicy}</span>
+                    )}
+                  </div>
                   <CodeEditor code={formData.accessControlPolicy} setCode={setAccessControlPolicy} />
                 </div>
 

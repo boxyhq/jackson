@@ -14,16 +14,32 @@ const getTerminusUrl = () => {
 };
 
 const getSupportedPIIEntities = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { data } = await axios.get<any>(getTerminusUrl(), {
-    headers: {
-      Authorization: `api-key ${terminusOptions.adminToken}`,
-    },
-  });
+  try {
+    const { data } = await axios.get<any>(getTerminusUrl(), {
+      headers: {
+        Authorization: `api-key ${terminusOptions.adminToken}`,
+      },
+    });
 
-  res.json({
-    data,
-    error: null,
-  });
+    res.json({
+      data,
+      error: null,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      res.status(status || 500).json({
+        data: '',
+        error: error?.message,
+      });
+    } else {
+      console.error('Unexpected error:', error);
+      res.status(500).json({
+        data: null,
+        error: error,
+      });
+    }
+  }
 };
 
 export default handler;

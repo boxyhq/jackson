@@ -36,6 +36,7 @@ const AddPolicyForm = () => {
   const [initialEntities, setInitialEntities] = useState<Array<entityState>>([]);
   const [regions, setRegions] = useState<Array<string>>([]);
   const [formData, setFormData] = useState<formState>(initialState);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const { t } = useTranslation('common');
 
@@ -193,10 +194,47 @@ const AddPolicyForm = () => {
     }
   };
 
+  const validateForm = (formData: formState) => {
+    const errors: { [key: string]: string } = {};
+
+    if (!formData.piiPolicy) {
+      errors.piiPolicy = 'PII Policy is required.';
+    }
+
+    if (!formData.product) {
+      errors.product = 'Product is required.';
+    }
+
+    if (!formData.language) {
+      errors.language = 'Language is required.';
+    }
+
+    if (formData.piiEntities.length === 0) {
+      errors.piiEntities = 'At least one PII entity must be selected.';
+    }
+
+    if (formData.selectedRegions.length === 0) {
+      errors.selectedRegions = 'At least one region must be selected.';
+    }
+
+    if (!formData.accessControlPolicy) {
+      errors.accessControlPolicy = 'Access Control Policy is required.';
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const validationErrors = validateForm(formData);
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
       const response = await fetch(`/api/admin/llm-vault/policies/${formData.product}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -209,14 +247,13 @@ const AddPolicyForm = () => {
         }),
       });
 
-      console.log(Buffer.from(formData.accessControlPolicy, 'utf-8').toString('base64'));
       if (response.ok) {
         successToast(t('llm_policy_saved_success_toast'));
         setFormData(initialState);
         router.push('/admin/llm-vault/policies');
       }
       if (!response.ok) {
-        throw new Error('Failed to create policy');
+        throw new Error(response.statusText);
       }
     } catch (err: any) {
       errorToast(err.message);
@@ -226,8 +263,6 @@ const AddPolicyForm = () => {
   };
 
   const showRegion = (region) => {
-    console.log('Toggling expanded regions');
-
     setExpandedRegions((prev) => {
       const newExpandedState = {
         ...prev,
@@ -263,6 +298,7 @@ const AddPolicyForm = () => {
                     {t('bui-shared-product')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.product && <span className='text-red-500'>{errors.product}</span>}
                   <input
                     type='text'
                     name='product'
@@ -278,6 +314,7 @@ const AddPolicyForm = () => {
                     {t('llm_pii_policy')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.piiPolicy && <span className='text-red-500'>{errors.piiPolicy}</span>}
                   <select
                     name='piiPolicy'
                     value={formData.piiPolicy}
@@ -298,6 +335,7 @@ const AddPolicyForm = () => {
                     {t('language')}
                     <span className='text-red-500'>*</span>
                   </label>
+                  {errors.language && <span className='text-red-500'>{errors.language}</span>}
                   <select
                     name='language'
                     value={formData.language}
@@ -321,6 +359,8 @@ const AddPolicyForm = () => {
                       {t('select_entities')}
                       <span className='text-red-500'>*</span>
                     </label>
+
+                    {errors.piiEntities && <span className='text-red-500'>{errors.piiEntities}</span>}
                   </div>
 
                   {/* Search Input */}
@@ -473,10 +513,15 @@ const AddPolicyForm = () => {
                 </div>
 
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>
-                    {t('llm_access_control_policy')}
-                    <span className='text-red-500'>*</span>
-                  </label>
+                  <div className='flex justify-between items-center'>
+                    <label className='text-sm font-medium'>
+                      {t('llm_access_control_policy')}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    {errors.accessControlPolicy && (
+                      <span className='text-red-500'>{errors.accessControlPolicy}</span>
+                    )}
+                  </div>
                   <CodeEditor code={formData.accessControlPolicy} setCode={setAccessControlPolicy} />
                 </div>
 
