@@ -6,6 +6,7 @@ import {
   JacksonOption,
   OIDCIdPInitiatedReq,
   OIDCSSORecord,
+  SSOTrace,
   SSOTracesInstance,
 } from '../../typings';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -32,8 +33,13 @@ export class IdPLogin {
 
     let connection: OIDCSSORecord | undefined;
     let fedApp: IdentityFederationApp | undefined;
-
     const { iss, target_link_uri, fedAppId } = body;
+    const context = {
+      isSAMLFederated: true,
+      relayState: target_link_uri,
+      isIdPFlow: true,
+      oidcIdPRequest: body,
+    } as unknown as SSOTrace['context'];
 
     try {
       // get federated connection
@@ -41,15 +47,18 @@ export class IdPLogin {
         id: fedAppId,
       });
 
+      const requestedTenant = fedApp.tenant;
+      const requestedProduct = fedApp.product;
+
+      context.tenant = requestedTenant;
+      context.product = requestedProduct;
+
       if (fedApp.type !== 'saml') {
         throw new JacksonError(
           'Third party login from an OIDC provider is only supported with SAML Federation',
           400
         );
       }
-
-      const requestedTenant = fedApp.tenant;
-      const requestedProduct = fedApp.product;
 
       const response = await this.ssoHandler.resolveConnection({
         tenant: requestedTenant,
@@ -60,6 +69,7 @@ export class IdPLogin {
         idFedAppId: fedApp.id,
         fedType: fedApp.type, // will be saml
         thirdPartyLogin: { idpInitiatorType: 'oidc', iss, target_link_uri },
+        ssoTraces: { instance: this.ssoTraces, context },
       });
 
       if ('connection' in response) {
@@ -69,6 +79,11 @@ export class IdPLogin {
       if (!connection) {
         throw new JacksonError('IdP connection not found.', 404);
       }
+
+      context.clientID = connection.clientID;
+      context.providerName = connection?.oidcProvider.friendlyProviderName || '';
+      context.acsUrl = fedApp.acsUrl;
+      context.entityId = fedApp.entityId;
 
       if (!isConnectionActive(connection)) {
         throw new JacksonError('OIDC connection is deactivated. Please contact your administrator.', 403);
@@ -87,24 +102,17 @@ export class IdPLogin {
         connection,
         requestParams,
         mappings: fedApp.mappings,
+        ssoTraces: {
+          instance: this.ssoTraces,
+          context,
+        },
       });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
       this.ssoTraces.saveTrace({
         error: error_description,
-        context: {
-          tenant: fedApp?.tenant || '',
-          product: fedApp?.product || '',
-          clientID: connection?.clientID || '',
-          isSAMLFederated: true,
-          relayState: target_link_uri,
-          providerName: connection?.oidcProvider.friendlyProviderName || '',
-          acsUrl: fedApp?.acsUrl,
-          entityId: fedApp?.entityId,
-          isIdPFlow: true,
-          oidcIdPRequest: body,
-        },
+        context,
       });
 
       throw err;

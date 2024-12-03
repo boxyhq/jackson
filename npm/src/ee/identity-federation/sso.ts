@@ -9,6 +9,7 @@ import type {
   IdentityFederationApp,
   SAMLSSORecord,
   SSOTracesInstance,
+  SSOTrace,
 } from '../../typings';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -58,9 +59,14 @@ export class SSO {
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let app: IdentityFederationApp | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
+    const context = {
+      isSAMLFederated: true,
+      relayState,
+    } as unknown as SSOTrace['context'];
 
     try {
       decodedRequest = await saml.decodeBase64(request, !isPostBinding);
+      context.samlRequest = decodedRequest || request;
 
       const parsedSAMLRequest = await saml.parseSAMLRequest(decodedRequest, isPostBinding);
 
@@ -68,6 +74,8 @@ export class SSO {
       entityId = parsedSAMLRequest.audience;
       publicKey = parsedSAMLRequest.publicKey;
       providerName = parsedSAMLRequest.providerName;
+      context.entityId = entityId;
+      context.providerName = providerName;
 
       // Verify the request if it is signed
       if (publicKey && !saml.hasValidSignature(decodedRequest, publicKey, null)) {
@@ -76,6 +84,9 @@ export class SSO {
 
       app = await this.app.getByEntityId(entityId);
       acsUrl = parsedSAMLRequest.acsUrl || app.acsUrl; // acsUrl is optional in the SAMLRequest
+      context.tenant = app.tenant;
+      context.product = app.product;
+      context.acsUrl = acsUrl;
 
       if (app.acsUrl !== acsUrl) {
         throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
@@ -112,6 +123,8 @@ export class SSO {
         throw new JacksonError('No SSO connection found.', 404);
       }
 
+      context.clientID = connection.clientID;
+
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
@@ -137,23 +150,17 @@ export class SSO {
             connection,
             requestParams,
             mappings: app.mappings,
+            ssoTraces: {
+              instance: this.ssoTraces,
+              context,
+            },
           });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
 
       this.ssoTraces.saveTrace({
         error: error_description,
-        context: {
-          tenant: app?.tenant || '',
-          product: app?.product || '',
-          clientID: connection?.clientID || '',
-          isSAMLFederated: true,
-          relayState,
-          providerName,
-          acsUrl,
-          entityId,
-          samlRequest: decodedRequest || request,
-        },
+        context,
       });
 
       throw err;

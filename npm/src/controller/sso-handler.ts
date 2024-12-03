@@ -11,6 +11,8 @@ import type {
   SAMLSSORecord,
   OIDCSSORecord,
   IdentityFederationApp,
+  SSOTracesInstance,
+  SSOTrace,
 } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
@@ -57,6 +59,7 @@ export class SSOHandler {
     fedType?: string;
     thirdPartyLogin?: { idpInitiatorType?: 'oidc' | 'saml'; iss?: string; target_link_uri?: string };
     tenants?: string[]; // Only used for SAML IdP initiated flow
+    ssoTraces?: { instance: SSOTracesInstance; context: SSOTrace['context'] };
   }): Promise<
     | {
         connection: SAMLSSORecord | OIDCSSORecord;
@@ -79,6 +82,7 @@ export class SSOHandler {
       idFedAppId = '',
       fedType = '',
       thirdPartyLogin = null,
+      ssoTraces,
     } = params;
 
     let connections: (SAMLSSORecord | OIDCSSORecord)[] | null = null;
@@ -136,7 +140,13 @@ export class SSOHandler {
       for (const { oidcProvider, ...rest } of oidcConnections) {
         const connection = { oidcProvider, ...rest };
         const { discoveryUrl, metadata, clientId, clientSecret } = oidcProvider;
-        const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+        const oidcConfig = await oidcClientConfig({
+          discoveryUrl,
+          metadata,
+          clientId,
+          clientSecret,
+          ssoTraces: ssoTraces!,
+        });
 
         if (oidcConfig.serverMetadata().issuer === thirdPartyLogin.iss) {
           if (thirdPartyLogin.target_link_uri) {
@@ -273,10 +283,12 @@ export class SSOHandler {
     connection,
     requestParams,
     mappings,
+    ssoTraces,
   }: {
     connection: OIDCSSORecord;
     requestParams: Record<string, any>;
     mappings: IdentityFederationApp['mappings'];
+    ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] };
   }) {
     if (!this.opts.oidcPath) {
       throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
@@ -285,7 +297,13 @@ export class SSOHandler {
     const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
 
     try {
-      const oidcConfig = await oidcClientConfig({ discoveryUrl, metadata, clientId, clientSecret });
+      const oidcConfig = await oidcClientConfig({
+        discoveryUrl,
+        metadata,
+        clientId,
+        clientSecret,
+        ssoTraces,
+      });
       const oidcCodeVerifier = client.randomPKCECodeVerifier();
       const code_challenge = await client.calculatePKCECodeChallenge(oidcCodeVerifier);
       const oidcNonce = client.randomNonce();
