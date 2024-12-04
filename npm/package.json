@@ -34,16 +34,16 @@
     "db:migration:run:mssql": "cross-env DB_TYPE=mssql DB_URL='sqlserver://localhost:1433;database=master;username=sa;password=123ABabc!' ts-node --transpile-only ../node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "db:migration:run:sqlite": "cross-env DB_TYPE=sqlite DB_URL='file:///tmp/migration-sqlite.db' ts-node --transpile-only ../node_modules/typeorm/cli.js migration:run -d typeorm.ts",
     "prepublishOnly": "npm run build",
-    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 NODE_OPTIONS='--experimental-require-module' tap --timeout=0 --allow-incomplete-coverage --allow-empty-coverage test/**/*.test.ts",
+    "test": "cross-env BOXYHQ_NO_ANALYTICS=1 NODE_OPTIONS='--experimental-require-module' tap --timeout=0 --allow-incomplete-coverage --allow-empty-coverage --bail test/**/*.test.ts",
     "sort": "npx sort-package-json"
   },
   "tap": {
     "coverage-map": "map.js"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.699.0",
+    "@aws-sdk/client-dynamodb": "3.705.0",
     "@aws-sdk/credential-providers": "3.699.0",
-    "@aws-sdk/util-dynamodb": "3.699.0",
+    "@aws-sdk/util-dynamodb": "3.705.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.9",
     "@boxyhq/saml20": "1.5.1",
@@ -67,11 +67,11 @@
     "typeorm": "0.3.20"
   },
   "devDependencies": {
-    "@faker-js/faker": "9.2.0",
+    "@faker-js/faker": "9.3.0",
     "@types/lodash": "4.17.13",
     "@types/node": "22.10.1",
     "@types/sinon": "17.0.3",
-    "@types/tap": "15.0.12",
+    "@types/tap": "18.0.0",
     "cross-env": "7.0.3",
     "migrate-mongo": "11.0.0",
     "nock": "13.5.6",

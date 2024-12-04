@@ -563,6 +563,7 @@ tap.test('token()', async (t) => {
         };
 
         const stubLoadJWSPrivateKey = sinon.stub(utils, 'loadJWSPrivateKey').resolves(keyPair.privateKey);
+        const stubimportJWTPublicKey = sinon.stub(utils, 'importJWTPublicKey').resolves(keyPair.publicKey);
         const stubValidate = sinon.stub(saml, 'validate').resolves({
           audience: '',
           claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
@@ -612,6 +613,7 @@ tap.test('token()', async (t) => {
         stubRandomBytes.restore();
         stubValidate.restore();
         stubLoadJWSPrivateKey.restore();
+        stubimportJWTPublicKey.restore();
       });
 
       t.test('PKCE check', async (t) => {

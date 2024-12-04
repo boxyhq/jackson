@@ -125,6 +125,12 @@ export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
   return thumbprint;
 };
 
+export const computeKid = async (key: string, jwsAlg: string): Promise<string> => {
+  const importedPublicKey = await importJWTPublicKey(key, jwsAlg!);
+  const publicKeyJWK = await exportPublicKeyJWK(importedPublicKey);
+  return await generateJwkThumbprint(publicKeyJWK);
+};
+
 export const validateSSOConnection = (
   body:
     | SAMLSSOConnectionWithRawMetadata
