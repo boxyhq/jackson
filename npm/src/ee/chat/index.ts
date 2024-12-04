@@ -396,8 +396,8 @@ export class ChatController {
       tenant: this.opts.terminus?.llm?.tenant,
     })
       .setProtectedHeader({ alg: jwsAlg })
-      .setIssuer(this.opts.llm?.documentChat.jwtIssuer)
-      .setAudience(this.opts.llm?.documentChat.jwtAudience)
+      .setIssuer('urn:boxyhq')
+      .setAudience('urn:boxyhq')
       .setExpirationTime('3d')
       .sign(signingKey);
 

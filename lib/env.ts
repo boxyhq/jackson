@@ -53,8 +53,6 @@ const llm = {
     hostUrl: process.env.LLM_DOCUMENT_CHAT_HOST_URL || '',
     roleMapping: process.env.LLM_DOCUMENT_CHAT_ROLE_MAPPING || '',
     jwtSigningKey: process.env.LLM_DOCUMENT_CHAT_SIGNING_KEY || '',
-    jwtAudience: process.env.LLM_DOCUMENT_CHAT_JWT_AUDIENCE || '',
-    jwtIssuer: process.env.LLM_DOCUMENT_CHAT_JWT_ISSUER || '',
   },
 };
 
