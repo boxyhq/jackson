@@ -30,7 +30,6 @@ export interface SSOConnection {
   name?: string;
   label?: string;
   description?: string;
-  ory?: OryConfig;
   sortOrder?: number | null;
 }
 
@@ -142,7 +141,6 @@ export type UpdateConnectionParams = TenantProduct & {
   defaultRedirectUrl?: string;
   redirectUrl?: string[] | string;
   deactivated?: boolean;
-  ory?: OryConfig;
   sortOrder?: number | null;
 };
 
@@ -503,11 +501,6 @@ export interface JacksonOption {
   /**  The number of days a setup link is valid for. Defaults to 3 days. */
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
-
-  ory?: {
-    projectId: string | undefined;
-    sdkToken: string | undefined;
-  };
 }
 
 export interface SLORequestParams {
@@ -649,6 +642,5 @@ export interface ProductConfig {
   primaryColor: string | null;
   faviconUrl: string | null;
   companyName: string | null;
-  ory: OryConfig | null;
   development?: boolean;
 }

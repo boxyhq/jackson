@@ -19,7 +19,6 @@ import { BrandingController } from './ee/branding';
 import SSOTraces from './sso-traces';
 import EventController from './event';
 import { ProductController } from './ee/product';
-import { OryController } from './ee/ory/ory';
 
 const tracesTTL = 7 * 24 * 60 * 60;
 
@@ -96,12 +95,10 @@ export const controllers = async (
   const eventController = new EventController({ opts });
   const productController = new ProductController({ productStore, opts });
 
-  const oryController = new OryController({ opts, productController });
   const connectionAPIController = new ConnectionAPIController({
     connectionStore,
     opts,
     eventController,
-    oryController,
   });
   const adminController = new AdminController({ connectionStore, ssoTraces });
   const healthCheckController = new HealthCheckController({ healthCheckStore });
