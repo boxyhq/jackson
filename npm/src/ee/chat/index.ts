@@ -393,7 +393,6 @@ export class ChatController {
 
     const jwt = await new jose.SignJWT({
       role: this.getUserRole(email),
-      tenant: this.opts.terminus?.llm?.tenant,
     })
       .setProtectedHeader({ alg: jwsAlg })
       .setIssuer('urn:boxyhq')
