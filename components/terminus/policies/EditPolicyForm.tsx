@@ -4,7 +4,12 @@ import { CheckSquare, Info, Square, Search, X } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import { Button } from 'react-daisyui';
-import { descriptions, LanguageKey, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
+import {
+  descriptions,
+  LanguageKey,
+  PII_POLICY,
+  SupportedLanguages,
+} from '@components/terminus/policies/types';
 import CodeEditor from './CodeEditor';
 
 type entityState = {

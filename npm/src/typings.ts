@@ -2,7 +2,6 @@ import type { JWK } from 'jose';
 import { ServerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
-export * from './ee/chat/types';
 export * from './sso-traces/types';
 export * from './directory-sync/types';
 export * from './event/types';
@@ -513,14 +512,6 @@ export interface JacksonOption {
   ory?: {
     projectId: string | undefined;
     sdkToken: string | undefined;
-  };
-
-  llm?: {
-    documentChat?: {
-      hostUrl: string;
-      jwtSigningKey: string;
-      roleMapping: string;
-    };
   };
 }
 
