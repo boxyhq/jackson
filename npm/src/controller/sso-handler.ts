@@ -1,5 +1,4 @@
 import saml from '@boxyhq/saml20';
-import * as client from 'openid-client';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
@@ -17,7 +16,7 @@ import type {
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
-import { IndexNames } from './utils';
+import { dynamicImport, IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
 import * as allowed from './oauth/allowed';
@@ -297,6 +296,7 @@ export class SSOHandler {
     const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
 
     try {
+      const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
       const oidcConfig = await oidcClientConfig({
         discoveryUrl,
         metadata,

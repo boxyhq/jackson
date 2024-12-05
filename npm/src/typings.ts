@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import { ServerMetadata } from 'openid-client';
+import type { ServerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
 export * from './sso-traces/types';
