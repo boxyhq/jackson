@@ -147,7 +147,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
     },
     features?.llmVault
       ? {
-          href: '/admin/llm-vault/chat',
+          href: '/admin/llm-vault/policies',
           text: t('llm_vault'),
           icon: Vault,
           current: asPath.includes('llm-vault'),
@@ -157,11 +157,6 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
               href: '/admin/llm-vault/policies',
               text: t('policies'),
               active: asPath.includes('/admin/llm-vault/policies'),
-            },
-            {
-              href: '/admin/llm-vault/chat',
-              text: t('bui-chat'),
-              active: asPath.includes('/admin/llm-vault/chat'),
             },
             {
               href: '/admin/llm-vault/audit-logs',

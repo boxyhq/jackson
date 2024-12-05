@@ -11,7 +11,7 @@ const LogsViewer = dynamic(() => import('@components/retraced/LogsViewer'), {
   ssr: false,
 });
 
-export interface Props {
+interface Props {
   host?: string;
   projectId: string;
   hasValidLicense: boolean;

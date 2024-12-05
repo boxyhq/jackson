@@ -5,7 +5,7 @@ import { Table, LinkPrimary, ConfirmationModal, EmptyState, Loading, Error } fro
 import { useEffect, useState } from 'react';
 import router from 'next/router';
 import { errorToast, successToast } from '@components/Toaster';
-import { LanguageKey, SupportedLanguages } from 'internal-ui/src/chat/types';
+import { LanguageKey, SupportedLanguages } from '@components/terminus/policies/types';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useFetch } from 'internal-ui/src/hooks';
 

@@ -47,15 +47,6 @@ const terminus = {
       : undefined,
 };
 
-// LLM Chat
-const llm = {
-  documentChat: {
-    hostUrl: process.env.LLM_DOCUMENT_CHAT_HOST_URL || '',
-    roleMapping: process.env.LLM_DOCUMENT_CHAT_ROLE_MAPPING || '',
-    jwtSigningKey: process.env.LLM_DOCUMENT_CHAT_SIGNING_KEY || '',
-  },
-};
-
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
   ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
   : 3;
@@ -111,7 +102,6 @@ const jacksonOptions: JacksonOption = {
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
   terminus,
-  llm,
   webhook: {
     endpoint: process.env.WEBHOOK_URL || '',
     secret: process.env.WEBHOOK_SECRET || '',
@@ -158,5 +148,4 @@ export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
-export { llm as llmOptions };
 export { features };

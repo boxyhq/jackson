@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { errorToast, successToast } from '@components/Toaster';
 import router from 'next/router';
 import { Button } from 'react-daisyui';
-import { descriptions, PII_POLICY, SupportedLanguages } from 'internal-ui/src/chat/types';
+import { descriptions, PII_POLICY, SupportedLanguages } from '@components/terminus/policies/types';
 import CodeEditor from './CodeEditor';
 
 type entityState = {

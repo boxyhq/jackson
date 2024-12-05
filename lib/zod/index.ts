@@ -1,8 +1,6 @@
 import { ApiError } from '@lib/error';
 import z, { ZodType } from 'zod';
 
-export * from './schema';
-
 export const validateWithSchema = <ZSchema extends ZodType>(schema: ZSchema, data: any) => {
   const result = schema.safeParse(data);
 

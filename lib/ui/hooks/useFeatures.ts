@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 function useFeatures() {
   const [features, setFeatures] = useState<{ [key: string]: boolean } | null>(null);
   useEffect(() => {
-    const fetchChatFeatureStatus = async () => {
+    const fetchLLMVaultFeatureStatus = async () => {
       try {
         const response = await fetch('/api/admin/features');
         const { data } = await response.json();
@@ -13,7 +13,7 @@ function useFeatures() {
       }
     };
 
-    fetchChatFeatureStatus();
+    fetchLLMVaultFeatureStatus();
   }, []);
 
   return features;
