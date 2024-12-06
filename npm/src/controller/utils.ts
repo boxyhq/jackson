@@ -1,8 +1,7 @@
 import crypto from 'crypto';
 import * as jose from 'jose';
-import * as client from 'openid-client';
 import saml from '@boxyhq/saml20';
-
+import type { Configuration, authorizationCodeGrant } from 'openid-client';
 import * as dbutils from '../db/utils';
 import type {
   ConnectionType,
@@ -18,6 +17,9 @@ import type {
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
+
+export const dynamicImport = async <ReturnType>(packageName: string): Promise<ReturnType> =>
+  new Function(`return import('${packageName}')`)();
 
 export enum IndexNames {
   EntityID = 'entityID',
@@ -257,13 +259,14 @@ export const extractHostName = (url: string): string | null => {
   }
 };
 
-export type AuthorizationCodeGrantResult = Awaited<ReturnType<typeof client.authorizationCodeGrant>>;
+export type AuthorizationCodeGrantResult = Awaited<ReturnType<typeof authorizationCodeGrant>>;
 
 export const extractOIDCUserProfile = async (
   tokens: AuthorizationCodeGrantResult,
-  oidcConfig: client.Configuration
+  oidcConfig: Configuration
 ) => {
   const idTokenClaims = tokens.claims()!;
+  const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
   const userinfo = await client.fetchUserInfo(oidcConfig, tokens.access_token, idTokenClaims.sub);
 
   const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
