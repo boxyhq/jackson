@@ -1,5 +1,5 @@
 import tap from 'tap';
-import * as client from 'openid-client';
+import * as utils from '../../src/controller/utils';
 import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
@@ -11,23 +11,60 @@ let oauthController: IOAuthController;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
-const code_verifier: string = client.randomPKCECodeVerifier();
+let code_verifier: string;
 let code_challenge: string;
 
-const openIdClientMock = tap.createMock(client, {
-  ...client,
-  randomPKCECodeVerifier: () => {
-    return code_verifier;
-  },
-  calculatePKCECodeChallenge: async () => {
-    code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
-    return code_challenge;
-  },
-});
-
 tap.before(async () => {
+  const client = await import('openid-client');
+  code_verifier = client.randomPKCECodeVerifier();
+  code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
+  const utilsMock = tap.createMock(utils, {
+    ...utils,
+    dynamicImport: async (packageName) => {
+      if (packageName === 'openid-client') {
+        return {
+          ...client,
+          randomPKCECodeVerifier: () => {
+            return code_verifier;
+          },
+          calculatePKCECodeChallenge: async () => {
+            return code_challenge;
+          },
+          authorizationCodeGrant: async () => {
+            return {
+              access_token: 'ACCESS_TOKEN',
+              id_token: 'ID_TOKEN',
+              token_type: 'bearer',
+              claims: () => ({
+                sub: 'USER_IDENTIFIER',
+                email: 'jackson@example.com',
+                given_name: 'jackson',
+                family_name: 'samuel',
+                iss: 'https://issuer.example.com',
+                aud: 'https://audience.example.com',
+                iat: 1643723400,
+                exp: 1643727000,
+              }),
+            } as any;
+          },
+          fetchUserInfo: async () => {
+            return {
+              sub: 'USER_IDENTIFIER',
+              email: 'jackson@example.com',
+              given_name: 'jackson',
+              family_name: 'samuel',
+              picture: 'https://jackson.cloud.png',
+              email_verified: true,
+            };
+          },
+        };
+      }
+      // fallback to original impl for other packages
+      return utils.dynamicImport(packageName);
+    },
+  });
   const indexModule = tap.mockRequire('../../src/index', {
-    'openid-client': openIdClientMock,
+    '../../src/controller/utils': utilsMock,
   });
   const controller = await indexModule.default(jacksonOptions);
 
@@ -45,7 +82,7 @@ tap.test('[OIDCProvider]', async (t) => {
 
   t.test(
     '[authorize] Should return the IdP SSO URL',
-    { todo: 'fix mocking of openid-client which is dynamically imported' },
+    // { todo: 'fix mocking of openid-client which is dynamically imported' },
     async (t) => {
       // will be matched in happy path test
       context.codeVerifier = code_verifier;
@@ -157,7 +194,7 @@ tap.test('[OIDCProvider]', async (t) => {
 
   t.test(
     '[oidcAuthzResponse] Should throw an error if `state` is missing',
-    { todo: 'fix mocking of openid-client which is dynamically imported' },
+    // { todo: 'fix mocking of openid-client which is dynamically imported' },
     async (t) => {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -183,7 +220,7 @@ tap.test('[OIDCProvider]', async (t) => {
 
   t.test(
     '[oidcAuthzResponse] Should forward any provider errors to redirect_uri',
-    { todo: 'fix mocking of openid-client which is dynamically imported' },
+    // { todo: 'fix mocking of openid-client which is dynamically imported' },
     async (t) => {
       const { redirect_url } = await oauthController.oidcAuthzResponse({
         ...oidc_response_with_error,
@@ -211,37 +248,37 @@ tap.test('[OIDCProvider]', async (t) => {
 
   t.test(
     '[oidcAuthzResponse] Should return the client redirect url with code and original state attached',
-    { todo: 'fix mocking of openid-client which is dynamically imported' },
+    // { todo: 'fix mocking of openid-client which is dynamically imported' },
     async (t) => {
       // let capturedArgs: any;
-      openIdClientMock.fetchUserInfo = async () => {
-        return {
-          sub: 'USER_IDENTIFIER',
-          email: 'jackson@example.com',
-          given_name: 'jackson',
-          family_name: 'samuel',
-          picture: 'https://jackson.cloud.png',
-          email_verified: true,
-        };
-      };
-      const mockAuthorizationCodeGrant = async () => {
-        return {
-          access_token: 'ACCESS_TOKEN',
-          id_token: 'ID_TOKEN',
-          token_type: 'bearer',
-          claims: () => ({
-            sub: 'USER_IDENTIFIER',
-            email: 'jackson@example.com',
-            given_name: 'jackson',
-            family_name: 'samuel',
-            iss: 'https://issuer.example.com',
-            aud: 'https://audience.example.com',
-            iat: 1643723400,
-            exp: 1643727000,
-          }),
-        } as any;
-      };
-      openIdClientMock.authorizationCodeGrant = mockAuthorizationCodeGrant;
+      // openIdClientMock.fetchUserInfo = async () => {
+      //   return {
+      //     sub: 'USER_IDENTIFIER',
+      //     email: 'jackson@example.com',
+      //     given_name: 'jackson',
+      //     family_name: 'samuel',
+      //     picture: 'https://jackson.cloud.png',
+      //     email_verified: true,
+      //   };
+      // };
+      // const mockAuthorizationCodeGrant = async () => {
+      //   return {
+      //     access_token: 'ACCESS_TOKEN',
+      //     id_token: 'ID_TOKEN',
+      //     token_type: 'bearer',
+      //     claims: () => ({
+      //       sub: 'USER_IDENTIFIER',
+      //       email: 'jackson@example.com',
+      //       given_name: 'jackson',
+      //       family_name: 'samuel',
+      //       iss: 'https://issuer.example.com',
+      //       aud: 'https://audience.example.com',
+      //       iat: 1643723400,
+      //       exp: 1643727000,
+      //     }),
+      //   } as any;
+      // };
+      // openIdClientMock.authorizationCodeGrant = mockAuthorizationCodeGrant;
 
       const { redirect_url } = await oauthController.oidcAuthzResponse({
         ...oidc_response,
