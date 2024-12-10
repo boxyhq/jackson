@@ -259,7 +259,6 @@ tap.test('[OIDCProvider]', async (t) => {
     async (t) => {
       // let capturedArgs: any;
       openIdClientMock.authorizationCodeGrant = async () => {
-        console.log(`mock authorizationCodeGrant called `);
         return {
           access_token: 'ACCESS_TOKEN',
           id_token: 'ID_TOKEN',
