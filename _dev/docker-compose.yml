@@ -69,5 +69,3 @@ services:
       - '26257:26257'
       - '8081:8080'
     command: start-single-node --insecure
-    volumes:
-      - '${PWD}/cockroach-data/crdb:/cockroach/cockroach-data'
