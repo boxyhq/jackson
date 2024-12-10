@@ -34,15 +34,13 @@ import {
   redirect_uri_not_set,
   response_type_not_code,
   state_not_set,
-  token_req_cv_mismatch,
   token_req_encoded_client_id,
   token_req_dummy_client_id_idp_saml_login,
   token_req_unencoded_client_id_gen,
-  token_req_with_cv,
+  token_req,
   token_req_encoded_client_id_idp_saml_login,
   token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
-  calculateCodeChallenge,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
@@ -59,8 +57,14 @@ const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 const metadataPath = path.join(__dirname, '/data/metadata');
 
 let connections: Array<any> = [];
+let code_verifier: string;
+let code_challenge: string;
 
 tap.before(async () => {
+  const client = await import('openid-client');
+  code_verifier = client.randomPKCECodeVerifier();
+  code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
+
   keyPair = await jose.generateKeyPair('RS256', { modulusLength: 3072 });
 
   const controller = await (await import('../../src/index')).default(jacksonOptions);
@@ -618,7 +622,7 @@ tap.test('token()', async (t) => {
 
       t.test('PKCE check', async (t) => {
         const authBody = authz_request_normal_with_code_challenge;
-        authBody.code_challenge = await calculateCodeChallenge();
+        authBody.code_challenge = code_challenge;
 
         const { redirect_url } = (await oauthController.authorize(<OAuthReq>authBody)) as {
           redirect_url: string;
@@ -647,7 +651,10 @@ tap.test('token()', async (t) => {
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
         try {
-          await oauthController.token(<OAuthTokenReq>token_req_cv_mismatch);
+          await oauthController.token(<OAuthTokenReq>{
+            ...token_req,
+            code_verifier: code_verifier + 'invalid_chars',
+          });
           t.fail('Expecting JacksonError.');
         } catch (err) {
           const { message, statusCode } = err as JacksonError;
@@ -655,7 +662,7 @@ tap.test('token()', async (t) => {
           t.equal(statusCode, 401, 'got expected status code');
         }
 
-        const tokenRes = await oauthController.token(<OAuthTokenReq>token_req_with_cv);
+        const tokenRes = await oauthController.token(<OAuthTokenReq>{ ...token_req, code_verifier });
 
         t.ok('access_token' in tokenRes, 'includes access_token');
         t.ok('token_type' in tokenRes, 'includes token_type');
