@@ -46,7 +46,7 @@ const baseOpts = {
   logging: 'all',
   entities: [`src/db/${entitiesDir}/entity/**/*.ts`],
   migrations:
-    type === 'mssql' || type === 'sqlite'
+    type === 'mssql' || type === 'sqlite' || type === 'cockroachdb'
       ? [`migration/${migrationsDir}/**/*.ts`]
       : [`migration/${migrationsDir}/**/*.ts`, `migration/sql/**/*.ts`],
 };

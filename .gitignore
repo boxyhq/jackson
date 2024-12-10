@@ -56,3 +56,4 @@ _dev/docker/libsql/iku.db
 /playwright-report/
 /playwright/.cache/
 .idea
+_dev/cockroach-data
