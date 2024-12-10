@@ -35,6 +35,7 @@ services:
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
   mssql:
     image: mcr.microsoft.com/azure-sql-edge:2.0.0
+    platform: linux/amd64
     ports:
       - 1433:1433
     restart: always
@@ -61,3 +62,10 @@ services:
     command: '/bin/sqld --enable-http-console'
     volumes:
       - ./docker/libsql:/var/lib/sqld
+  cockroachdb:
+    image: cockroachdb/cockroach:v24.3.0
+    platform: linux/amd64
+    ports:
+      - '26257:26257'
+      - '8081:8080'
+    command: start-single-node --insecure
