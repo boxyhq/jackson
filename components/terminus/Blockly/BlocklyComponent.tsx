@@ -16,9 +16,9 @@ import { ButtonBase, ButtonPrimary, ConfirmationModal } from '@boxyhq/internal-u
 function BlocklyComponent(props) {
   const { t } = useTranslation('common');
 
-  const blocklyDiv = useRef();
-  const toolbox = useRef();
-  const primaryWorkspace = useRef();
+  const blocklyDiv = useRef(null);
+  const toolbox = useRef(null);
+  const primaryWorkspace = useRef(null);
   const productField = createRef();
 
   const getEndpoint = () => {
