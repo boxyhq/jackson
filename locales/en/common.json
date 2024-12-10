@@ -83,6 +83,7 @@
   "discard_and_retrieve_model": "Retrieve Model?",
   "discard_and_retrieve_model_desc": "Discard any unsaved changes and retrieve the Model from the server?",
   "retrieve": "Retrieve",
+  "model_retrieve_failed": "Failed to retrieve model. Please try again!",
   "retraced_project_created": "Project created successfully",
   "project_name": "Project name",
   "create_project": "Create Project",

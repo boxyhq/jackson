@@ -63,6 +63,11 @@ function BlocklyComponent(props) {
   const retrieveModel = async () => {
     const rsp = await fetch(getEndpoint());
     const response = await rsp.json();
+    if (!response.ok) {
+      errorToast(t('model_retrieve_failed'));
+      return;
+    }
+
     (primaryWorkspace.current! as any).clear();
     const textToDom = Blockly.utils.xml.textToDom(response.data);
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);
