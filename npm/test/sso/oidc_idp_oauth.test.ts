@@ -1,10 +1,11 @@
 import tap from 'tap';
 import * as utils from '../../src/controller/utils';
-import { IConnectionAPIController, IOAuthController, OAuthReq } from '../../src/typings';
+import { IConnectionAPIController, IOAuthController, OAuthReq, Profile } from '../../src/typings';
 import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
 import { JacksonError } from '../../src/controller/error';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import path from 'path';
+import type { Configuration } from 'openid-client';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
@@ -37,6 +38,35 @@ tap.before(async () => {
       }
       // fallback to original impl for other packages
       return utils.dynamicImport(packageName);
+    },
+    extractOIDCUserProfile: async (tokens: utils.AuthorizationCodeGrantResult, oidcConfig: Configuration) => {
+      const idTokenClaims = tokens.claims()!;
+      const client = openIdClientMock as typeof import('openid-client');
+      openIdClientMock.fetchUserInfo = async () => {
+        return {
+          sub: 'USER_IDENTIFIER',
+          email: 'jackson@example.com',
+          given_name: 'jackson',
+          family_name: 'samuel',
+          picture: 'https://jackson.cloud.png',
+          email_verified: true,
+        };
+      };
+      const userinfo = await client.fetchUserInfo(oidcConfig, tokens.access_token, idTokenClaims.sub);
+
+      const profile: { claims: Partial<Profile & { raw: Record<string, unknown> }> } = { claims: {} };
+
+      profile.claims.id = idTokenClaims.sub;
+      profile.claims.email = typeof idTokenClaims.email === 'string' ? idTokenClaims.email : userinfo.email;
+      profile.claims.firstName =
+        typeof idTokenClaims.given_name === 'string' ? idTokenClaims.given_name : userinfo.given_name;
+      profile.claims.lastName =
+        typeof idTokenClaims.family_name === 'string' ? idTokenClaims.family_name : userinfo.family_name;
+      profile.claims.roles = idTokenClaims.roles ?? (userinfo.roles as any);
+      profile.claims.groups = idTokenClaims.groups ?? (userinfo.groups as any);
+      profile.claims.raw = { ...idTokenClaims, ...userinfo };
+
+      return profile;
     },
   });
 
@@ -228,41 +258,23 @@ tap.test('[OIDCProvider]', async (t) => {
     // { todo: 'fix mocking of openid-client which is dynamically imported' },
     async (t) => {
       // let capturedArgs: any;
-      utilsMock.dynamicImport = async (packageName) => {
-        if (packageName === 'openid-client') {
-          return {
-            ...openIdClientMock,
-            fetchUserInfo: async () => {
-              return {
-                sub: 'USER_IDENTIFIER',
-                email: 'jackson@example.com',
-                given_name: 'jackson',
-                family_name: 'samuel',
-                picture: 'https://jackson.cloud.png',
-                email_verified: true,
-              };
-            },
-            authorizationCodeGrant: async () => {
-              return {
-                access_token: 'ACCESS_TOKEN',
-                id_token: 'ID_TOKEN',
-                token_type: 'bearer',
-                claims: () => ({
-                  sub: 'USER_IDENTIFIER',
-                  email: 'jackson@example.com',
-                  given_name: 'jackson',
-                  family_name: 'samuel',
-                  iss: 'https://issuer.example.com',
-                  aud: 'https://audience.example.com',
-                  iat: 1643723400,
-                  exp: 1643727000,
-                }),
-              } as any;
-            },
-          };
-        }
-        // fallback to original impl for other packages
-        return utils.dynamicImport(packageName);
+      openIdClientMock.authorizationCodeGrant = async () => {
+        console.log(`mock authorizationCodeGrant called `);
+        return {
+          access_token: 'ACCESS_TOKEN',
+          id_token: 'ID_TOKEN',
+          token_type: 'bearer',
+          claims: () => ({
+            sub: 'USER_IDENTIFIER',
+            email: 'jackson@example.com',
+            given_name: 'jackson',
+            family_name: 'samuel',
+            iss: 'https://issuer.example.com',
+            aud: 'https://audience.example.com',
+            iat: 1643723400,
+            exp: 1643727000,
+          }),
+        } as any;
       };
 
       const { redirect_url } = await oauthController.oidcAuthzResponse({
