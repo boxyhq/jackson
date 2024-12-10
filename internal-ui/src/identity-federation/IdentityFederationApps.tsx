@@ -15,7 +15,7 @@ import { TableBodyType } from '../shared/Table';
 import { pageLimit } from '../shared/Pagination';
 import { useFetch, usePaginate } from '../hooks';
 import { useRouter } from '../hooks';
-import { useEffect } from 'react';
+import { useEffect, JSX } from 'react';
 
 type ExcludeFields = keyof Pick<IdentityFederationApp, 'product'>;
 
