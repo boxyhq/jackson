@@ -136,6 +136,7 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
           check-latest: true
+      - run: ls -lisa
       - name: Run docker-compose up
         id: docker_compose
         uses: isbang/compose-action@v2.0.2
