@@ -54,7 +54,7 @@ jobs:
       BOXYHQ_LICENSE_KEY: 'dummy-license'
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
