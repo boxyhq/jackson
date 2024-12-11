@@ -73,7 +73,6 @@
     "@types/lodash": "4.17.13",
     "@types/node": "22.10.1",
     "@types/sinon": "17.0.3",
-    "@types/tap": "18.0.0",
     "cross-env": "7.0.3",
     "migrate-mongo": "11.0.0",
     "nock": "13.5.6",
