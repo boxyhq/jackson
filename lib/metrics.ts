@@ -1,4 +1,9 @@
 import packageInfo from '../package.json';
 import { initializeMetrics } from '@boxyhq/metrics';
 
-initializeMetrics({ name: packageInfo.name, version: packageInfo.version });
+const g = global as any;
+
+if (!g.metricsInit) {
+  initializeMetrics({ name: packageInfo.name, version: packageInfo.version });
+  g.metricsInit = true;
+}
