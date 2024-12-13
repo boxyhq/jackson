@@ -7,7 +7,8 @@ import '@lib/metrics';
 const g = global as any;
 
 export default async function init() {
-  if (!g.jacksonInstance) {
+  if (!g.jacksonInstanceInit) {
+    g.jacksonInstanceInit = true;
     g.jacksonInstance = await jackson(jacksonOptions);
   }
 
