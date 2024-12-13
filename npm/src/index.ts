@@ -169,9 +169,6 @@ export const controllers = async (
   } else {
     const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
     console.info(`Using engine: ${opts.db.engine}.${type}`);
-    if (opts.boxyhqHosted) {
-      console.trace(`Using engine: ${opts.db.engine}.${type}`);
-    }
   }
 
   return {
