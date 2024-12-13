@@ -7,10 +7,11 @@ import '@lib/metrics';
 const g = global as any;
 
 export default async function init() {
-  if (!g.jacksonInstanceInit) {
-    g.jacksonInstanceInit = true;
-    g.jacksonInstance = await jackson(jacksonOptions);
+  if (!g.jacksonInstance) {
+    g.jacksonInstance = new Promise((resolve, reject) => {
+      jackson(jacksonOptions).then(resolve).catch(reject);
+    });
   }
 
-  return g.jacksonInstance as SAMLJackson;
+  return (await g.jacksonInstance) as Promise<SAMLJackson>;
 }
