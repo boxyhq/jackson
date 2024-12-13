@@ -213,7 +213,10 @@ export default {
       return g.__jacksonDb;
     }
 
-    g.__jacksonDb = await _new(options);
-    return g.__jacksonDb;
+    g.__jacksonDb = new Promise((resolve, reject) => {
+      _new(options).then(resolve).catch(reject);
+    });
+
+    return await g.__jacksonDb;
   },
 };
