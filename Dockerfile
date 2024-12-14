@@ -55,7 +55,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Fix for dynamic import of openid-client
-RUN npm i openid-client@6.1.7
+RUN mv package.json package.json.bak
+RUN npm i --no-package-lock --no-save --omit=dev openid-client@$(npm --prefix npm pkg get dependencies.openid-client | xargs)
+RUN mv package.json.bak package.json
 
 # Support for DB migration
 COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
