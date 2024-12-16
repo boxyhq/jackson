@@ -36,6 +36,7 @@ import {
   getEncodedTenantProduct,
   isConnectionActive,
   dynamicImport,
+  tenantInfoErrString,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -242,6 +243,9 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       metrics.increment('oauthAuthorizeError');
+      const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+
+      console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: error_description,
@@ -290,6 +294,9 @@ export class OAuthController implements IOAuthController {
       }
 
       metrics.increment('oauthAuthorizeError');
+      const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+
+      console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
 
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
@@ -374,6 +381,9 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         metrics.increment('oauthAuthorizeError');
+        const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+
+        console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -450,6 +460,9 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         metrics.increment('oauthAuthorizeError');
+        const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+
+        console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -562,6 +575,9 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       metrics.increment('oauthAuthorizeError');
+      const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+
+      console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
