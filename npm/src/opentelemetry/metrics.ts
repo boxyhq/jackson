@@ -27,18 +27,35 @@ const counters = {
       name: 'jackson.oauth.authorize',
       counterOptions: { description: 'Number of oauth authorize requests' },
     }),
+  oauthAuthorizeError: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.authorize.error',
+      counterOptions: { description: 'Number of errors in oauth authorize requests' },
+    }),
   oauthToken: () =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.token',
       counterOptions: { description: 'Number of oauth token requests' },
     }),
-
+  oauthTokenError: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.token.error',
+      counterOptions: { description: 'Number of errors in oauth token requests' },
+    }),
   oauthUserInfo: () =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.userinfo',
       counterOptions: { description: 'Number of oauth user info requests' },
+    }),
+  oauthUserInfoError: () =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.userinfo.error',
+      counterOptions: { description: 'Number of errors in oauth user info requests' },
     }),
 
   createDsyncConnection: () =>
