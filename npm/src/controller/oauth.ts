@@ -241,6 +241,7 @@ export class OAuthController implements IOAuthController {
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('oauthAuthorizeError');
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: error_description,
@@ -287,6 +288,8 @@ export class OAuthController implements IOAuthController {
         error = 'server_error';
         error_description = 'Connection appears to be misconfigured';
       }
+
+      metrics.increment('oauthAuthorizeError');
 
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
@@ -370,6 +373,7 @@ export class OAuthController implements IOAuthController {
         });
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        metrics.increment('oauthAuthorizeError');
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -445,6 +449,7 @@ export class OAuthController implements IOAuthController {
         }).href;
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        metrics.increment('oauthAuthorizeError');
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -556,6 +561,7 @@ export class OAuthController implements IOAuthController {
       throw 'Connection appears to be misconfigured';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('oauthAuthorizeError');
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
