@@ -243,8 +243,8 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       metrics.increment('oauthAuthorizeError');
+      // Log error to stderr
       const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
-
       console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
       // Save the error trace
       await this.ssoTraces.saveTrace({
@@ -294,8 +294,8 @@ export class OAuthController implements IOAuthController {
       }
 
       metrics.increment('oauthAuthorizeError');
+      // Log error to stderr
       const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
-
       console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
 
       // Save the error trace
@@ -343,6 +343,10 @@ export class OAuthController implements IOAuthController {
         } else {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
           const error_description = 'SAML binding could not be retrieved';
+          metrics.increment('oauthAuthorizeError');
+          // Log error to stderr
+          const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
+          console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
           // Save the error trace
           const traceId = await this.ssoTraces.saveTrace({
             error: error_description,
@@ -381,8 +385,8 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         metrics.increment('oauthAuthorizeError');
+        // Log error to stderr
         const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
-
         console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
@@ -460,8 +464,8 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         metrics.increment('oauthAuthorizeError');
+        // Log error to stderr
         const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
-
         console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
@@ -575,8 +579,8 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       metrics.increment('oauthAuthorizeError');
+      // Log error to stderr
       const tenantInfo = tenantInfoErrString(requestedTenant, requestedProduct);
-
       console.error(`oauth.authorize.error${tenantInfo}: ${error_description}`);
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
