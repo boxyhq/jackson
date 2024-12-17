@@ -48,6 +48,7 @@ import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcClientConfig } from './oauth/oidc-client';
 import { App } from '../ee/identity-federation/app';
+import { error } from 'console';
 
 const deflateRawAsync = promisify(deflateRaw);
 
@@ -595,6 +596,8 @@ export class OAuthController implements IOAuthController {
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
+    const should_disable_sso_trace = process.env.DISABLE_SSO_TRACE === 'true';
+
     try {
       isIdPFlow = !RelayState.startsWith(relayStatePrefix);
       rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
@@ -708,29 +711,31 @@ export class OAuthController implements IOAuthController {
       if (session && session.id) {
         validateOpts['inResponseTo'] = session.id;
       }
-
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
       // Save the error trace
-      await this.ssoTraces.saveTrace({
-        error: getErrorMessage(err),
-        context: {
-          samlResponse: rawResponse,
-          tenant: session?.requested?.tenant || connection?.tenant,
-          product: session?.requested?.product || connection?.product,
-          clientID: session?.requested?.client_id || connection?.clientID,
-          providerName: connection?.idpMetadata?.provider,
-          redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
-          issuer,
-          isSAMLFederated,
-          isOIDCFederated,
-          isIdPFlow,
-          requestedOIDCFlow: !!session?.requested?.oidc,
-          acsUrl: session?.requested?.acsUrl,
-          entityId: session?.requested?.entityId,
-          relayState: RelayState,
-        },
-      });
+      if (!should_disable_sso_trace) {
+        await this.ssoTraces.saveTrace({
+          error: getErrorMessage(err),
+          context: {
+            samlResponse: rawResponse,
+            tenant: session?.requested?.tenant || connection?.tenant,
+            product: session?.requested?.product || connection?.product,
+            clientID: session?.requested?.client_id || connection?.clientID,
+            providerName: connection?.idpMetadata?.provider,
+            redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
+            issuer,
+            isSAMLFederated,
+            isOIDCFederated,
+            isIdPFlow,
+            requestedOIDCFlow: !!session?.requested?.oidc,
+            acsUrl: session?.requested?.acsUrl,
+            entityId: session?.requested?.entityId,
+            relayState: RelayState,
+          },
+        });
+      }
+
       throw err; // Rethrow the error
     }
     let profile: SAMLProfile | undefined;
@@ -763,26 +768,30 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       // Trace the error
-      const traceId = await this.ssoTraces.saveTrace({
-        error: error_description,
-        context: {
-          samlResponse: rawResponse,
-          tenant: connection.tenant,
-          product: connection.product,
-          clientID: connection.clientID,
-          providerName: connection?.idpMetadata?.provider,
-          redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
-          isSAMLFederated,
-          isOIDCFederated,
-          isIdPFlow,
-          acsUrl: session?.requested?.acsUrl,
-          entityId: session?.requested?.entityId,
-          requestedOIDCFlow: !!session?.requested?.oidc,
-          relayState: RelayState,
-          issuer,
-          profile,
-        },
-      });
+      let traceId: string | undefined;
+
+      if (!should_disable_sso_trace) {
+        traceId = await this.ssoTraces.saveTrace({
+          error: error_description,
+          context: {
+            samlResponse: rawResponse,
+            tenant: connection.tenant,
+            product: connection.product,
+            clientID: connection.clientID,
+            providerName: connection?.idpMetadata?.provider,
+            redirectUri: isIdPFlow ? connection?.defaultRedirectUrl : session?.redirect_uri,
+            isSAMLFederated,
+            isOIDCFederated,
+            isIdPFlow,
+            acsUrl: session?.requested?.acsUrl,
+            entityId: session?.requested?.entityId,
+            requestedOIDCFlow: !!session?.requested?.oidc,
+            relayState: RelayState,
+            issuer,
+            profile,
+          },
+        });
+      }
 
       if (isSAMLFederated) {
         throw err;
@@ -810,6 +819,8 @@ export class OAuthController implements IOAuthController {
     let profile;
 
     const callbackParams = body;
+
+    const should_disable_sso_trace = process.env.DISABLE_SSO_TRACE === 'true';
 
     let RelayState = callbackParams.state || '';
     try {
@@ -849,23 +860,26 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
-      await this.ssoTraces.saveTrace({
-        error: getErrorMessage(err),
-        context: {
-          tenant: session?.requested?.tenant || oidcConnection?.tenant,
-          product: session?.requested?.product || oidcConnection?.product,
-          clientID: session?.requested?.client_id || oidcConnection?.clientID,
-          providerName: oidcConnection?.oidcProvider?.provider,
-          acsUrl: session?.requested?.acsUrl,
-          entityId: session?.requested?.entityId,
-          redirectUri: redirect_uri,
-          relayState: RelayState,
-          isSAMLFederated,
-          isOIDCFederated,
-          requestedOIDCFlow: !!session?.requested?.oidc,
-          oidcIdPRequest: session?.requested?.oidcIdPRequest,
-        },
-      });
+      if (!should_disable_sso_trace) {
+        await this.ssoTraces.saveTrace({
+          error: getErrorMessage(err),
+          context: {
+            tenant: session?.requested?.tenant || oidcConnection?.tenant,
+            product: session?.requested?.product || oidcConnection?.product,
+            clientID: session?.requested?.client_id || oidcConnection?.clientID,
+            providerName: oidcConnection?.oidcProvider?.provider,
+            acsUrl: session?.requested?.acsUrl,
+            entityId: session?.requested?.entityId,
+            redirectUri: redirect_uri,
+            relayState: RelayState,
+            isSAMLFederated,
+            isOIDCFederated,
+            requestedOIDCFlow: !!session?.requested?.oidc,
+            oidcIdPRequest: session?.requested?.oidcIdPRequest,
+          },
+        });
+      }
+
       // Rethrow err and redirect to Jackson error page
       throw err;
     }
@@ -929,36 +943,40 @@ export class OAuthController implements IOAuthController {
       }
 
       await this.sessionStore.delete(RelayState);
-
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
-      const traceId = await this.ssoTraces.saveTrace({
-        error: error_message,
-        context: {
-          tenant: oidcConnection.tenant,
-          product: oidcConnection.product,
-          clientID: oidcConnection.clientID,
-          providerName: oidcConnection.oidcProvider.provider,
-          redirectUri: redirect_uri,
-          relayState: RelayState,
-          isSAMLFederated,
-          isOIDCFederated,
-          acsUrl: session.requested.acsUrl,
-          entityId: session.requested.entityId,
-          requestedOIDCFlow: !!session.requested.oidc,
-          oidcIdPRequest: session?.requested?.oidcIdPRequest,
-          profile,
-          error,
-          error_description,
-          error_uri,
-          session_state_from_op_error: session_state,
-          scope_from_op_error: scope,
-          stack,
-          oidcTokenSet: { id_token: tokens?.id_token, access_token: tokens?.access_token },
-        },
-      });
+      let traceId: string | undefined;
+
+      if (!should_disable_sso_trace) {
+        traceId = await this.ssoTraces.saveTrace({
+          error: error_message,
+          context: {
+            tenant: oidcConnection.tenant,
+            product: oidcConnection.product,
+            clientID: oidcConnection.clientID,
+            providerName: oidcConnection.oidcProvider.provider,
+            redirectUri: redirect_uri,
+            relayState: RelayState,
+            isSAMLFederated,
+            isOIDCFederated,
+            acsUrl: session.requested.acsUrl,
+            entityId: session.requested.entityId,
+            requestedOIDCFlow: !!session.requested.oidc,
+            oidcIdPRequest: session?.requested?.oidcIdPRequest,
+            profile,
+            error,
+            error_description,
+            error_uri,
+            session_state_from_op_error: session_state,
+            scope_from_op_error: scope,
+            stack,
+            oidcTokenSet: { id_token: tokens?.id_token, access_token: tokens?.access_token },
+          },
+        });
+      }
+
       if (isSAMLFederated) {
         throw err;
       }
