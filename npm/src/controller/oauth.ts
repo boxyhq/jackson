@@ -595,7 +595,7 @@ export class OAuthController implements IOAuthController {
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
 
-    const should_disable_sso_trace = process.env.DISABLE_SSO_TRACE === 'true';
+    const shouldDisableSsoTrace = this.opts.shouldDisableSsoTrace;
 
     try {
       isIdPFlow = !RelayState.startsWith(relayStatePrefix);
@@ -713,7 +713,7 @@ export class OAuthController implements IOAuthController {
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
       // Save the error trace
-      if (!should_disable_sso_trace) {
+      if (!shouldDisableSsoTrace) {
         await this.ssoTraces.saveTrace({
           error: getErrorMessage(err),
           context: {
@@ -769,7 +769,7 @@ export class OAuthController implements IOAuthController {
       // Trace the error
       let traceId: string | undefined;
 
-      if (!should_disable_sso_trace) {
+      if (!shouldDisableSsoTrace) {
         traceId = await this.ssoTraces.saveTrace({
           error: error_description,
           context: {
@@ -819,7 +819,7 @@ export class OAuthController implements IOAuthController {
 
     const callbackParams = body;
 
-    const should_disable_sso_trace = process.env.DISABLE_SSO_TRACE === 'true';
+    const shouldDisableSsoTrace = this.opts.shouldDisableSsoTrace;
 
     let RelayState = callbackParams.state || '';
     try {
@@ -859,7 +859,7 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
-      if (!should_disable_sso_trace) {
+      if (!shouldDisableSsoTrace) {
         await this.ssoTraces.saveTrace({
           error: getErrorMessage(err),
           context: {
@@ -948,7 +948,7 @@ export class OAuthController implements IOAuthController {
       const error_message = error_description || getErrorMessage(err);
       let traceId: string | undefined;
 
-      if (!should_disable_sso_trace) {
+      if (!shouldDisableSsoTrace) {
         traceId = await this.ssoTraces.saveTrace({
           error: error_message,
           context: {
