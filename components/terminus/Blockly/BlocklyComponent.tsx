@@ -16,9 +16,9 @@ import { ButtonBase, ButtonPrimary, ConfirmationModal } from '@boxyhq/internal-u
 function BlocklyComponent(props) {
   const { t } = useTranslation('common');
 
-  const blocklyDiv = useRef();
-  const toolbox = useRef();
-  const primaryWorkspace = useRef();
+  const blocklyDiv = useRef(null);
+  const toolbox = useRef(null);
+  const primaryWorkspace = useRef(null);
   const productField = createRef();
 
   const getEndpoint = () => {
@@ -63,6 +63,11 @@ function BlocklyComponent(props) {
   const retrieveModel = async () => {
     const rsp = await fetch(getEndpoint());
     const response = await rsp.json();
+    if (!response.ok) {
+      errorToast(t('model_retrieve_failed'));
+      return;
+    }
+
     (primaryWorkspace.current! as any).clear();
     const textToDom = Blockly.utils.xml.textToDom(response.data);
     Blockly.Xml.domToWorkspace(textToDom, primaryWorkspace.current! as any);

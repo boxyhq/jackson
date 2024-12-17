@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import { ServerMetadata } from 'openid-client';
+import type { ServerMetadata } from 'openid-client';
 
 export * from './ee/identity-federation/types';
 export * from './sso-traces/types';
@@ -419,7 +419,7 @@ export type EncryptionKey = any;
 
 export type DatabaseEngine = 'redis' | 'sql' | 'mongo' | 'mem' | 'planetscale' | 'dynamodb';
 
-export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql' | 'sqlite';
+export type DatabaseType = 'postgres' | 'mysql' | 'mariadb' | 'mssql' | 'sqlite' | 'cockroachdb';
 
 export interface DatabaseOption {
   engine?: DatabaseEngine;

@@ -20,6 +20,7 @@
     "baseUrl": ".",
     "downlevelIteration": true,
     "paths": {
+      "react": ["./node_modules/@types/react"],
       "@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
       "@styles/*": ["styles/*"],

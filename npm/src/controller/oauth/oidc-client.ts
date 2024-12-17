@@ -1,9 +1,10 @@
-import * as client from 'openid-client';
+import type { ServerMetadata, Configuration } from 'openid-client';
 import * as http from 'http';
 import * as https from 'https';
 import { JacksonError } from '../error';
 import { URL } from 'url';
 import { SSOTrace, SSOTracesInstance } from '../../typings';
+import { dynamicImport } from '../utils';
 
 const createCustomFetch = (ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] }) => {
   return async (url: RequestInfo, options: RequestInit): Promise<Response> => {
@@ -74,14 +75,15 @@ export const oidcClientConfig = async ({
   ssoTraces,
 }: {
   discoveryUrl?: string;
-  metadata?: client.ServerMetadata;
+  metadata?: ServerMetadata;
   clientId: string;
   clientSecret: string;
   ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] };
-}): Promise<client.Configuration> => {
+}): Promise<Configuration> => {
   const url = discoveryUrl ? new URL(discoveryUrl) : new URL(metadata!.issuer);
   const isLocalhost = url.hostname === 'localhost';
   const customFetchWithSsoTraces = createCustomFetch(ssoTraces);
+  const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
 
   if (discoveryUrl) {
     return await client.discovery(

@@ -10,7 +10,6 @@ import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
 import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
-import * as client from 'openid-client';
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -19,8 +18,6 @@ export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
 };
 
-const code_verifier = client.randomPKCECodeVerifier();
-export const calculateCodeChallenge = async () => await client.calculatePKCECodeChallenge(code_verifier);
 export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
@@ -230,19 +227,12 @@ export const token_req_encoded_client_id_idp_saml_login_wrong_secretverifier = {
   client_secret: 'TOP-SECRET-WRONG',
 };
 
-export const token_req_cv_mismatch = {
+export const token_req = {
   grant_type: 'authorization_code',
   code: CODE,
-  code_verifier: code_verifier + 'invalid_chars',
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
-export const token_req_with_cv = {
-  grant_type: 'authorization_code',
-  code: CODE,
-  code_verifier,
-  redirect_uri: boxyhq.defaultRedirectUrl,
-};
 // END: Fixtures for token
 
 // BEGIN: Fixtures for *_api.test.ts

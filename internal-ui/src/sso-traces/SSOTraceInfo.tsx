@@ -5,6 +5,7 @@ import { fetcher } from '../utils';
 import type { SSOTrace } from '../types';
 import { Loading, Error, PageHeader, Badge, PrismLoader } from '../shared';
 import { CopyToClipboardButton } from '../shared/InputWithCopyButton';
+import { JSX } from 'react';
 
 const ListItem = ({ term, value }: { term: string; value: string | JSX.Element | JSX.Element[] }) => (
   <div className='grid grid-cols-3 py-3'>

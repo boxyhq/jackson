@@ -35,6 +35,7 @@ import {
   getScopeValues,
   getEncodedTenantProduct,
   isConnectionActive,
+  dynamicImport,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -45,7 +46,6 @@ import * as redirect from './oauth/redirect';
 import { getDefaultCertificate } from '../saml/x509';
 import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
-import * as client from 'openid-client';
 import { oidcClientConfig } from './oauth/oidc-client';
 import { App } from '../ee/identity-federation/app';
 
@@ -404,6 +404,7 @@ export class OAuthController implements IOAuthController {
         if (!this.opts.oidcPath) {
           throw new JacksonError('OpenID response handler path (oidcPath) is not set');
         }
+        const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
         const oidcConfig = await oidcClientConfig({
           discoveryUrl,
           metadata,
@@ -874,6 +875,7 @@ export class OAuthController implements IOAuthController {
     const { ssoTraces } = this;
     let tokens: AuthorizationCodeGrantResult | undefined = undefined;
     try {
+      const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
       const oidcConfig = await oidcClientConfig({
         discoveryUrl,
         metadata,
