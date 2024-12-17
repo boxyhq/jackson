@@ -1114,24 +1114,37 @@ export class OAuthController implements IOAuthController {
     metrics.increment('oauthToken');
 
     if (grant_type !== 'authorization_code') {
-      throw new JacksonError('Unsupported grant_type', 400);
+      const error = 'Unsupported grant_type';
+      metrics.increment('oauthTokenError');
+      // Log error to stderr
+      console.error(`oauth.token.error: ${error}`);
+      throw new JacksonError(error, 400);
     }
 
     if (!code) {
-      throw new JacksonError('Please specify code', 400);
+      const error = 'Please specify code';
+      metrics.increment('oauthTokenError');
+      // Log error to stderr
+      console.error(`oauth.token.error: ${error}`);
+      throw new JacksonError(error, 400);
     }
 
     const codeVal = await this.codeStore.get(code);
     if (!codeVal || !codeVal.profile) {
-      throw new JacksonError('Invalid code', 403);
+      const error = 'Invalid code';
+      metrics.increment('oauthTokenError');
+      // Log error to stderr
+      console.error(`oauth.token.error: ${error}`);
+      throw new JacksonError(error, 403);
     }
 
     if (codeVal.requested?.redirect_uri) {
       if (redirect_uri !== codeVal.requested.redirect_uri) {
-        throw new JacksonError(
-          `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
-          400
-        );
+        const error = `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`;
+        metrics.increment('oauthTokenError');
+        // Log error to stderr
+        console.error(`oauth.token.error: ${error}`);
+        throw new JacksonError(error, 400);
       }
     }
 
@@ -1143,7 +1156,11 @@ export class OAuthController implements IOAuthController {
       }
 
       if (codeVal.session.code_challenge !== cv) {
-        throw new JacksonError('Invalid code_verifier', 401);
+        const error = 'Invalid code_verifier';
+        metrics.increment('oauthTokenError');
+        // Log error to stderr
+        console.error(`oauth.token.error: ${error}`);
+        throw new JacksonError(error, 401);
       }
 
       // For Federation flow, we need to verify the client_secret
@@ -1152,7 +1169,11 @@ export class OAuthController implements IOAuthController {
           client_id !== codeVal.session?.oidcFederated?.clientID ||
           client_secret !== codeVal.session?.oidcFederated?.clientSecret
         ) {
-          throw new JacksonError('Invalid client_id or client_secret', 401);
+          const error = 'Invalid client_id or client_secret';
+          metrics.increment('oauthTokenError');
+          // Log error to stderr
+          console.error(`oauth.token.error: ${error}`);
+          throw new JacksonError(error, 401);
         }
       }
     } else if (client_id && client_secret) {
@@ -1162,27 +1183,47 @@ export class OAuthController implements IOAuthController {
         if (!sp) {
           // OAuth flow
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
-            throw new JacksonError('Invalid client_id or client_secret', 401);
+            const error = 'Invalid client_id or client_secret';
+            metrics.increment('oauthTokenError');
+            // Log error to stderr
+            console.error(`oauth.token.error: ${error}`);
+            throw new JacksonError(error, 401);
           }
         } else {
           if (
             !codeVal.isIdPFlow &&
             (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
           ) {
-            throw new JacksonError('Invalid tenant or product', 401);
+            const error = 'Invalid tenant or product';
+            metrics.increment('oauthTokenError');
+            // Log error to stderr
+            console.error(`oauth.token.error: ${error}`);
+            throw new JacksonError(error, 401);
           }
           // encoded client_id, verify client_secret
           if (client_secret !== this.opts.clientSecretVerifier) {
+            const error = 'Invalid client_secret';
+            metrics.increment('oauthTokenError');
+            // Log error to stderr
+            console.error(`oauth.token.error: ${error}`);
             throw new JacksonError('Invalid client_secret', 401);
           }
         }
       } else {
         if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
-          throw new JacksonError('Invalid client_secret', 401);
+          const error = 'Invalid client_secret';
+          metrics.increment('oauthTokenError');
+          // Log error to stderr
+          console.error(`oauth.token.error: ${error}`);
+          throw new JacksonError(error, 401);
         }
       }
     } else if (codeVal && codeVal.session) {
-      throw new JacksonError('Please specify client_secret or code_verifier', 401);
+      const error = 'Please specify client_secret or code_verifier';
+      metrics.increment('oauthTokenError');
+      // Log error to stderr
+      console.error(`oauth.token.error: ${error}`);
+      throw new JacksonError(error, 401);
     }
 
     // store details against a token
@@ -1197,7 +1238,11 @@ export class OAuthController implements IOAuthController {
     if (requestedOIDCFlow) {
       const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
-        throw new JacksonError('JWT signing keys are not loaded', 500);
+        const error = 'JWT signing keys are not loaded';
+        metrics.increment('oauthTokenError');
+        // Log error to stderr
+        console.error(`oauth.token.error: ${error}`);
+        throw new JacksonError(error, 500);
       }
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
       claims = {
