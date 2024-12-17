@@ -48,7 +48,6 @@ import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcClientConfig } from './oauth/oidc-client';
 import { App } from '../ee/identity-federation/app';
-import { error } from 'console';
 
 const deflateRawAsync = promisify(deflateRaw);
 
