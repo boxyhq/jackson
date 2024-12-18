@@ -25,8 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.send(response_form);
     }
   } catch (err: any) {
-    console.error('callback error:', err);
     const { message, statusCode = 500 } = err;
+    console.error('OIDC IdP response processing error:', message);
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');

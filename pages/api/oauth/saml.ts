@@ -44,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (error: any) {
     const { message, statusCode = 500 } = error;
+    console.error('SAML IdP response processing error:', message);
 
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
 
