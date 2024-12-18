@@ -718,7 +718,7 @@ export class OAuthController implements IOAuthController {
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
-      metrics.increment('oAuthIdpResponseError', { isSAML: true });
+      metrics.increment('oAuthResponseError', { protocol: 'saml' });
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
@@ -769,7 +769,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
-      metrics.increment('oAuthIdpResponseError', { isSAML: true });
+      metrics.increment('oAuthResponseError', { protocol: 'saml' });
       const error_description = getErrorMessage(err);
       // Trace the error
       const traceId = await this.ssoTraces.saveTrace({
@@ -858,7 +858,7 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
-      metrics.increment('oAuthIdpResponseError', { isOIDC: true });
+      metrics.increment('oAuthResponseError', { protocol: 'oidc' });
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
         context: {
@@ -944,7 +944,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
-      metrics.increment('oAuthIdpResponseError', { isOIDC: true });
+      metrics.increment('oAuthResponseError', { protocol: 'oidc' });
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
         context: {
