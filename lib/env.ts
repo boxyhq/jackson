@@ -114,10 +114,6 @@ const jacksonOptions: JacksonOption = {
   },
   setupLinkExpiryDays,
   boxyhqHosted,
-  ory: {
-    projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
-    sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
-  },
   disableSSOTrace,
 };
 
