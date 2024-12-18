@@ -737,6 +737,7 @@ export class OAuthController implements IOAuthController {
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
+      metrics.increment('oAuthIdpResponseError', { isSAML: true });
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
@@ -787,6 +788,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
+      metrics.increment('oAuthIdpResponseError', { isSAML: true });
       const error_description = getErrorMessage(err);
       // Trace the error
       const traceId = await this.ssoTraces.saveTrace({
@@ -875,6 +877,7 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
+      metrics.increment('oAuthIdpResponseError', { isOIDC: true });
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
         context: {
@@ -960,6 +963,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
+      metrics.increment('oAuthIdpResponseError', { isOIDC: true });
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
         context: {
@@ -1118,7 +1122,7 @@ export class OAuthController implements IOAuthController {
       metrics.increment('oauthTokenError');
       // Log error to stderr
       console.error(`oauth.token.error: ${error}`);
-      throw new JacksonError(error, 400);
+      throw new JacksonError('Unsupported grant_type', 400);
     }
 
     if (!code) {
@@ -1344,6 +1348,7 @@ export class OAuthController implements IOAuthController {
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
+      metrics.increment('oauthUserInfoError');
       throw new JacksonError('Invalid token', 403);
     }
 
