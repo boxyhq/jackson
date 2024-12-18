@@ -708,6 +708,7 @@ export class OAuthController implements IOAuthController {
       if (session && session.id) {
         validateOpts['inResponseTo'] = session.id;
       }
+
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
       // Save the error trace
@@ -730,7 +731,6 @@ export class OAuthController implements IOAuthController {
           relayState: RelayState,
         },
       });
-
       throw err; // Rethrow the error
     }
     let profile: SAMLProfile | undefined;
@@ -866,7 +866,6 @@ export class OAuthController implements IOAuthController {
           oidcIdPRequest: session?.requested?.oidcIdPRequest,
         },
       });
-
       // Rethrow err and redirect to Jackson error page
       throw err;
     }
@@ -930,6 +929,7 @@ export class OAuthController implements IOAuthController {
       }
 
       await this.sessionStore.delete(RelayState);
+
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
@@ -959,7 +959,6 @@ export class OAuthController implements IOAuthController {
           oidcTokenSet: { id_token: tokens?.id_token, access_token: tokens?.access_token },
         },
       });
-
       if (isSAMLFederated) {
         throw err;
       }
