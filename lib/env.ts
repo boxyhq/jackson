@@ -10,7 +10,7 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
-const shouldDisableSsoTrace = process.env.DISABLE_SSO_TRACE === 'true';
+const disableSSOTrace = process.env.DISABLE_SSO_TRACE === 'true';
 
 let ssl;
 if (process.env.DB_SSL === 'true') {
@@ -118,7 +118,7 @@ const jacksonOptions: JacksonOption = {
     projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
     sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
   },
-  shouldDisableSsoTrace,
+  disableSSOTrace,
 };
 
 const adminPortalSSODefaults = {

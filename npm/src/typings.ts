@@ -508,7 +508,7 @@ export interface JacksonOption {
     projectId: string | undefined;
     sdkToken: string | undefined;
   };
-  shouldDisableSsoTrace?: boolean;
+  disableSSOTrace?: boolean;
 }
 
 export interface SLORequestParams {
