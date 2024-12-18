@@ -71,7 +71,7 @@
     "@retracedhq/retraced": "0.7.18",
     "@tailwindcss/typography": "0.5.15",
     "axios": "1.7.9",
-    "blockly": "11.1.1",
+    "blockly": "11.2.0",
     "chroma-js": "3.1.2",
     "classnames": "2.5.1",
     "cors": "2.8.5",
