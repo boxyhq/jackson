@@ -85,10 +85,6 @@ export function getErrorMessage(error: unknown) {
   return String(error);
 }
 
-export function tenantInfoErrString(tenant?: string, product?: string) {
-  return tenant && product ? ` for product: ${product} with tenant: ${tenant}` : '';
-}
-
 export const createRandomSecret = async (length: number) => {
   return crypto
     .randomBytes(length)
