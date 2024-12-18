@@ -71,7 +71,7 @@ class SSOTraces {
 
   public async saveTrace(payload: SSOTrace) {
     if (this.opts.disableSSOTrace) {
-      return '';
+      return;
     }
 
     try {
