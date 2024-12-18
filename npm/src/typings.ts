@@ -501,6 +501,7 @@ export interface JacksonOption {
   /**  The number of days a setup link is valid for. Defaults to 3 days. */
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
+  disableSSOTrace?: boolean;
 }
 
 export interface SLORequestParams {

@@ -8,9 +8,10 @@ const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 tap.before(async () => {
   const { db: dbOptions } = jacksonOptions;
+  const opts = jacksonOptions;
   const db = await DB.new(dbOptions);
   const tracesStore = db.store('saml:tracer');
-  ssoTraces = new SSOTraces({ tracesStore });
+  ssoTraces = new SSOTraces({ tracesStore, opts });
 });
 
 tap.test('SSOTraces', async () => {
