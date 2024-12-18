@@ -1,4 +1,4 @@
-import { incrementCounter, CounterOperationParams } from '@boxyhq/metrics';
+import { incrementCounter, type CounterOperationParams } from '@boxyhq/metrics';
 
 const METER = 'jackson';
 
@@ -33,10 +33,10 @@ const counters = {
       name: 'jackson.oauth.authorize.error',
       counterOptions: { description: 'Number of errors in oauth authorize requests' },
     }),
-  oAuthIdpResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+  oAuthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
-      name: 'jackson.oauth.idp_response.error',
+      name: 'jackson.oauth.response.error',
       counterOptions: { description: 'Number of errors in idp response path' },
       counterAttributes,
     }),
