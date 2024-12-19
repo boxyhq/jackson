@@ -80,7 +80,7 @@ class SSOTraces {
       const { context } = payload;
 
       if (this.opts.ssoTraceOptions?.redactSSOTrace) {
-        let redactOptions = this.opts.ssoTraceOptions?.redactSSOTrace;
+        const redactOptions = this.opts.ssoTraceOptions?.redactSSOTrace;
         redactOptions.split(',').forEach((option) => {
           if (option.trim() === SSO_TRACE_OPTION_PROFILE) {
             delete context.profile;
