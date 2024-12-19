@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
-    console.error('OIDC IdP response processing error:', message);
+    console.error('Error processing OIDC IdP response:', message);
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');
