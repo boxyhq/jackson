@@ -92,7 +92,7 @@ export const controllers = async (
   const productStore = db.store('product:config');
   const tracesStore = db.store('saml:tracer', tracesTTL);
 
-  const ssoTraces = new SSOTraces({ tracesStore });
+  const ssoTraces = new SSOTraces({ tracesStore, opts });
   const eventController = new EventController({ opts });
   const productController = new ProductController({ productStore, opts });
 

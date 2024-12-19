@@ -13,5 +13,5 @@ export default async function init() {
     });
   }
 
-  return (await g.jacksonInstance) as Promise<SAMLJackson>;
+  return (await g.jacksonInstance) as SAMLJackson;
 }
