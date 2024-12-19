@@ -1,4 +1,10 @@
-import type { DatabaseEngine, DatabaseOption, DatabaseType, JacksonOption } from '@boxyhq/saml-jackson';
+import type {
+  DatabaseEngine,
+  DatabaseOption,
+  DatabaseType,
+  JacksonOption,
+  SSOTraceOptions,
+} from '@boxyhq/saml-jackson';
 
 const samlPath = '/api/oauth/saml';
 const oidcPath = '/api/oauth/oidc';
@@ -10,7 +16,6 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
-const disableSSOTrace = process.env.DISABLE_SSO_TRACE === 'true';
 
 let ssl;
 if (process.env.DB_SSL === 'true') {
@@ -52,6 +57,12 @@ const db: DatabaseOption = {
     writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
   manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
+};
+
+// ssoTrace options
+const ssoTraceOptions: SSOTraceOptions = {
+  disableSSOTrace: process.env.DISABLE_SSO_TRACE === 'true',
+  redactSSOTrace: process.env.REDACT_SSO_TRACE_FILEDS,
 };
 
 /** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
@@ -118,7 +129,7 @@ const jacksonOptions: JacksonOption = {
     projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
     sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
   },
-  disableSSOTrace,
+  ssoTraceOptions,
 };
 
 const adminPortalSSODefaults = {
