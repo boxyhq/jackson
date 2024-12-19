@@ -27,11 +27,12 @@ const counters = {
       name: 'jackson.oauth.authorize',
       counterOptions: { description: 'Number of oauth authorize requests' },
     }),
-  oauthAuthorizeError: () =>
+  oauthAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.authorize.error',
       counterOptions: { description: 'Number of errors in oauth authorize requests' },
+      counterAttributes,
     }),
   oAuthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
