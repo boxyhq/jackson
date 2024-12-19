@@ -1,4 +1,4 @@
-import { incrementCounter } from '@boxyhq/metrics';
+import { incrementCounter, type CounterOperationParams } from '@boxyhq/metrics';
 
 const METER = 'jackson';
 
@@ -27,18 +27,45 @@ const counters = {
       name: 'jackson.oauth.authorize',
       counterOptions: { description: 'Number of oauth authorize requests' },
     }),
+  oauthAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.authorize.error',
+      counterOptions: { description: 'Number of errors in oauth authorize requests' },
+      counterAttributes,
+    }),
+  oAuthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.response.error',
+      counterOptions: { description: 'Number of errors in idp response path' },
+      counterAttributes,
+    }),
   oauthToken: () =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.token',
       counterOptions: { description: 'Number of oauth token requests' },
     }),
-
+  oauthTokenError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.token.error',
+      counterOptions: { description: 'Number of errors in oauth token requests' },
+      counterAttributes,
+    }),
   oauthUserInfo: () =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.userinfo',
       counterOptions: { description: 'Number of oauth user info requests' },
+    }),
+  oauthUserInfoError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.userinfo.error',
+      counterOptions: { description: 'Number of errors in oauth user info requests' },
+      counterAttributes,
     }),
 
   createDsyncConnection: () =>
@@ -71,10 +98,13 @@ const counters = {
   },
 };
 
-const increment = (action: keyof typeof counters) => {
+const increment = (
+  action: keyof typeof counters,
+  counterAttributes?: CounterOperationParams['counterAttributes']
+) => {
   const counterIncrement = counters[action];
   if (typeof counterIncrement === 'function') {
-    counterIncrement();
+    counterIncrement(counterAttributes);
   }
 };
 
