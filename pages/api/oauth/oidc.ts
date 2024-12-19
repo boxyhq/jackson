@@ -12,11 +12,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { oauthController } = await jackson();
 
-    const { redirect_url, response_form } = await oauthController.oidcAuthzResponse(
+    const { redirect_url, response_form, error } = await oauthController.oidcAuthzResponse(
       req.query as OIDCAuthzResponsePayload
     );
 
     if (redirect_url) {
+      if (error) {
+        console.error(`Error processing OIDC IdP response: ${error}`);
+      }
       res.redirect(302, redirect_url);
     }
 

@@ -77,7 +77,9 @@ export class OAuthController implements IOAuthController {
     });
   }
 
-  public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
+  public async authorize(
+    body: OAuthReq
+  ): Promise<{ redirect_url?: string; authorize_form?: string; error?: string }> {
     const {
       tenant,
       product,
@@ -320,6 +322,7 @@ export class OAuthController implements IOAuthController {
           redirect_uri,
           state,
         }),
+        error: `${error} - ${error_description}`,
       };
     }
 
@@ -611,7 +614,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string; error?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
     let sessionId: string | undefined;
@@ -828,13 +831,14 @@ export class OAuthController implements IOAuthController {
           redirect_uri,
           state: session?.requested?.state,
         }),
+        error: `access_denied - ${error_description}`,
       };
     }
   }
 
   public async oidcAuthzResponse(
     body: OIDCAuthzResponsePayload
-  ): Promise<{ redirect_url?: string; response_form?: string }> {
+  ): Promise<{ redirect_url?: string; response_form?: string; error?: string }> {
     let oidcConnection: OIDCSSORecord | undefined;
     let session: any;
     let isSAMLFederated: boolean | undefined;
@@ -1008,6 +1012,7 @@ export class OAuthController implements IOAuthController {
           redirect_uri: redirect_uri!,
           state: session.state,
         }),
+        error: `${error} - ${error_message}`,
       };
     }
   }

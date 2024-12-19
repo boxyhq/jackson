@@ -196,13 +196,13 @@ export interface IConnectionAPIController {
 }
 
 export interface IOAuthController {
-  authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }>;
+  authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string; error?: string }>;
   samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }>;
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string; error?: string }>;
   oidcAuthzResponse(
     body: OIDCAuthzResponsePayload
-  ): Promise<{ redirect_url?: string; response_form?: string }>;
+  ): Promise<{ redirect_url?: string; response_form?: string; error?: string }>;
   token(body: OAuthTokenReq): Promise<OAuthTokenRes>;
   userInfo(token: string): Promise<Profile>;
 }
