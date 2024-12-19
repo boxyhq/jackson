@@ -77,7 +77,9 @@ export class OAuthController implements IOAuthController {
     });
   }
 
-  public async authorize(body: OAuthReq): Promise<{ redirect_url?: string; authorize_form?: string }> {
+  public async authorize(
+    body: OAuthReq
+  ): Promise<{ redirect_url?: string; authorize_form?: string; error?: string }> {
     const {
       tenant,
       product,
@@ -104,6 +106,10 @@ export class OAuthController implements IOAuthController {
     let isOIDCFederated: boolean | undefined;
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let fedApp: IdentityFederationApp | undefined;
+    let connectionIsSAML;
+    let connectionIsOIDC;
+    let protocol;
+    const login_type = 'sp-initiated';
 
     try {
       requestedTenant = tenant;
@@ -239,8 +245,15 @@ export class OAuthController implements IOAuthController {
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
+      connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
+      connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
+      protocol = isOIDCFederated ? 'OIDC Federation' : connectionIsSAML ? 'SAML' : 'OIDC';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('oauthAuthorizeError', {
+        protocol,
+        login_type,
+      });
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: error_description,
@@ -261,9 +274,6 @@ export class OAuthController implements IOAuthController {
       (!this.opts.openid?.jwtSigningKeys || !isJWSKeyPairLoaded(this.opts.openid.jwtSigningKeys));
 
     const oAuthClientReqError = !state || response_type !== 'code';
-
-    const connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
-    const connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
 
     if (isMissingJWTKeysForOIDCFlow || oAuthClientReqError || (!connectionIsSAML && !connectionIsOIDC)) {
       let error, error_description;
@@ -288,6 +298,11 @@ export class OAuthController implements IOAuthController {
         error_description = 'Connection appears to be misconfigured';
       }
 
+      metrics.increment('oauthAuthorizeError', {
+        protocol,
+        login_type,
+      });
+
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
@@ -307,6 +322,7 @@ export class OAuthController implements IOAuthController {
           redirect_uri,
           state,
         }),
+        error: `${error} - ${error_description}`,
       };
     }
 
@@ -333,6 +349,10 @@ export class OAuthController implements IOAuthController {
         } else {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
           const error_description = 'SAML binding could not be retrieved';
+          metrics.increment('oauthAuthorizeError', {
+            protocol,
+            login_type,
+          });
           // Save the error trace
           const traceId = await this.ssoTraces.saveTrace({
             error: error_description,
@@ -370,6 +390,10 @@ export class OAuthController implements IOAuthController {
         });
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        metrics.increment('oauthAuthorizeError', {
+          protocol,
+          login_type,
+        });
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -445,6 +469,10 @@ export class OAuthController implements IOAuthController {
         }).href;
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        metrics.increment('oauthAuthorizeError', {
+          protocol,
+          login_type,
+        });
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -556,6 +584,10 @@ export class OAuthController implements IOAuthController {
       throw 'Connection appears to be misconfigured';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('oauthAuthorizeError', {
+        protocol,
+        login_type,
+      });
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
@@ -582,7 +614,7 @@ export class OAuthController implements IOAuthController {
 
   public async samlResponse(
     body: SAMLResponsePayload
-  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string }> {
+  ): Promise<{ redirect_url?: string; app_select_form?: string; response_form?: string; error?: string }> {
     let connection: SAMLSSORecord | undefined;
     let rawResponse: string | undefined;
     let sessionId: string | undefined;
@@ -594,6 +626,7 @@ export class OAuthController implements IOAuthController {
     let validateOpts: ValidateOption;
     let redirect_uri: string | undefined;
     const { SAMLResponse, idp_hint, RelayState = '' } = body;
+    let protocol, login_type;
 
     try {
       isIdPFlow = !RelayState.startsWith(relayStatePrefix);
@@ -634,7 +667,8 @@ export class OAuthController implements IOAuthController {
       isSAMLFederated = session && 'samlFederated' in session;
       isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
-
+      protocol = isOIDCFederated ? 'OIDC Federation' : isSAMLFederated ? 'SAML Federation' : 'SAML';
+      login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
       // IdP initiated SSO flow
       if (isIdPFlow) {
         const response = await this.ssoHandler.resolveConnection({
@@ -711,6 +745,7 @@ export class OAuthController implements IOAuthController {
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
     } catch (err: unknown) {
+      metrics.increment('oAuthResponseError', { protocol, login_type });
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
@@ -761,6 +796,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
+      metrics.increment('oAuthResponseError', { protocol, login_type });
       const error_description = getErrorMessage(err);
       // Trace the error
       const traceId = await this.ssoTraces.saveTrace({
@@ -795,19 +831,22 @@ export class OAuthController implements IOAuthController {
           redirect_uri,
           state: session?.requested?.state,
         }),
+        error: `access_denied - ${error_description}`,
       };
     }
   }
 
   public async oidcAuthzResponse(
     body: OIDCAuthzResponsePayload
-  ): Promise<{ redirect_url?: string; response_form?: string }> {
+  ): Promise<{ redirect_url?: string; response_form?: string; error?: string }> {
     let oidcConnection: OIDCSSORecord | undefined;
     let session: any;
     let isSAMLFederated: boolean | undefined;
     let isOIDCFederated: boolean | undefined;
     let redirect_uri: string | undefined;
     let profile;
+    let protocol;
+    const login_type = 'sp-initiated';
 
     const callbackParams = body;
 
@@ -825,6 +864,8 @@ export class OAuthController implements IOAuthController {
 
       isSAMLFederated = session && 'samlFederated' in session;
       isOIDCFederated = session && 'oidcFederated' in session;
+
+      protocol = isOIDCFederated ? 'OIDC Federation' : isSAMLFederated ? 'SAML Federation' : 'OIDC';
 
       oidcConnection = await this.connectionStore.get(session.id);
 
@@ -849,6 +890,7 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
+      metrics.increment('oAuthResponseError', { protocol, login_type });
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
         context: {
@@ -934,6 +976,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
+      metrics.increment('oAuthResponseError', { protocol, login_type });
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
         context: {
@@ -969,6 +1012,7 @@ export class OAuthController implements IOAuthController {
           redirect_uri: redirect_uri!,
           state: session.state,
         }),
+        error: `${error} - ${error_message}`,
       };
     }
   }
@@ -1088,20 +1132,24 @@ export class OAuthController implements IOAuthController {
     metrics.increment('oauthToken');
 
     if (grant_type !== 'authorization_code') {
+      metrics.increment('oauthTokenError');
       throw new JacksonError('Unsupported grant_type', 400);
     }
 
     if (!code) {
+      metrics.increment('oauthTokenError');
       throw new JacksonError('Please specify code', 400);
     }
 
     const codeVal = await this.codeStore.get(code);
     if (!codeVal || !codeVal.profile) {
+      metrics.increment('oauthTokenError');
       throw new JacksonError('Invalid code', 403);
     }
 
     if (codeVal.requested?.redirect_uri) {
       if (redirect_uri !== codeVal.requested.redirect_uri) {
+        metrics.increment('oauthTokenError');
         throw new JacksonError(
           `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
           400
@@ -1117,6 +1165,7 @@ export class OAuthController implements IOAuthController {
       }
 
       if (codeVal.session.code_challenge !== cv) {
+        metrics.increment('oauthTokenError');
         throw new JacksonError('Invalid code_verifier', 401);
       }
 
@@ -1126,6 +1175,7 @@ export class OAuthController implements IOAuthController {
           client_id !== codeVal.session?.oidcFederated?.clientID ||
           client_secret !== codeVal.session?.oidcFederated?.clientSecret
         ) {
+          metrics.increment('oauthTokenError');
           throw new JacksonError('Invalid client_id or client_secret', 401);
         }
       }
@@ -1136,6 +1186,7 @@ export class OAuthController implements IOAuthController {
         if (!sp) {
           // OAuth flow
           if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
+            metrics.increment('oauthTokenError');
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
         } else {
@@ -1143,19 +1194,23 @@ export class OAuthController implements IOAuthController {
             !codeVal.isIdPFlow &&
             (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
           ) {
+            metrics.increment('oauthTokenError');
             throw new JacksonError('Invalid tenant or product', 401);
           }
           // encoded client_id, verify client_secret
           if (client_secret !== this.opts.clientSecretVerifier) {
+            metrics.increment('oauthTokenError');
             throw new JacksonError('Invalid client_secret', 401);
           }
         }
       } else {
         if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
+          metrics.increment('oauthTokenError');
           throw new JacksonError('Invalid client_secret', 401);
         }
       }
     } else if (codeVal && codeVal.session) {
+      metrics.increment('oauthTokenError');
       throw new JacksonError('Please specify client_secret or code_verifier', 401);
     }
 
@@ -1171,6 +1226,7 @@ export class OAuthController implements IOAuthController {
     if (requestedOIDCFlow) {
       const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
       if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
+        metrics.increment('oauthTokenError');
         throw new JacksonError('JWT signing keys are not loaded', 500);
       }
       let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
@@ -1273,6 +1329,7 @@ export class OAuthController implements IOAuthController {
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
+      metrics.increment('oauthUserInfoError');
       throw new JacksonError('Invalid token', 403);
     }
 
