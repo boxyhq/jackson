@@ -500,7 +500,10 @@ export class OAuthController implements IOAuthController {
     }
     // Session persistence happens here
     try {
-      const requested = { client_id, state, redirect_uri } as Record<string, string | boolean | string[]>;
+      const requested = { client_id, state, redirect_uri, protocol, login_type } as Record<
+        string,
+        string | boolean | string[]
+      >;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
       }
@@ -1112,6 +1115,7 @@ export class OAuthController implements IOAuthController {
   public async token(body: OAuthTokenReq, authHeader?: string | null): Promise<OAuthTokenRes> {
     let basic_client_id: string | undefined;
     let basic_client_secret: string | undefined;
+    let protocol, login_type;
     try {
       if (authHeader) {
         // Authorization: Basic {Base64(<client_id>:<client_secret>)}
@@ -1131,149 +1135,147 @@ export class OAuthController implements IOAuthController {
 
     metrics.increment('oauthToken');
 
-    if (grant_type !== 'authorization_code') {
-      metrics.increment('oauthTokenError');
-      throw new JacksonError('Unsupported grant_type', 400);
-    }
-
-    if (!code) {
-      metrics.increment('oauthTokenError');
-      throw new JacksonError('Please specify code', 400);
-    }
-
-    const codeVal = await this.codeStore.get(code);
-    if (!codeVal || !codeVal.profile) {
-      metrics.increment('oauthTokenError');
-      throw new JacksonError('Invalid code', 403);
-    }
-
-    if (codeVal.requested?.redirect_uri) {
-      if (redirect_uri !== codeVal.requested.redirect_uri) {
-        metrics.increment('oauthTokenError');
-        throw new JacksonError(
-          `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
-          400
-        );
-      }
-    }
-
-    if (code_verifier) {
-      // PKCE flow
-      let cv = code_verifier;
-      if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
-        cv = codeVerifier.encode(code_verifier);
+    try {
+      if (grant_type !== 'authorization_code') {
+        throw new JacksonError('Unsupported grant_type', 400);
       }
 
-      if (codeVal.session.code_challenge !== cv) {
-        metrics.increment('oauthTokenError');
-        throw new JacksonError('Invalid code_verifier', 401);
+      if (!code) {
+        throw new JacksonError('Please specify code', 400);
       }
 
-      // For Federation flow, we need to verify the client_secret
-      if (client_id?.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
-        if (
-          client_id !== codeVal.session?.oidcFederated?.clientID ||
-          client_secret !== codeVal.session?.oidcFederated?.clientSecret
-        ) {
-          metrics.increment('oauthTokenError');
-          throw new JacksonError('Invalid client_id or client_secret', 401);
+      const codeVal = await this.codeStore.get(code);
+      if (!codeVal || !codeVal.profile) {
+        throw new JacksonError('Invalid code', 403);
+      }
+
+      protocol = codeVal.requested.protocol || 'SAML';
+      login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
+
+      if (codeVal.requested?.redirect_uri) {
+        if (redirect_uri !== codeVal.requested.redirect_uri) {
+          throw new JacksonError(
+            `Invalid request: ${!redirect_uri ? 'redirect_uri missing' : 'redirect_uri mismatch'}`,
+            400
+          );
         }
       }
-    } else if (client_id && client_secret) {
-      // check if we have an encoded client_id
-      if (client_id !== 'dummy') {
-        const sp = getEncodedTenantProduct(client_id);
-        if (!sp) {
-          // OAuth flow
-          if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
-            metrics.increment('oauthTokenError');
+
+      if (code_verifier) {
+        // PKCE flow
+        let cv = code_verifier;
+        if (codeVal.session.code_challenge_method?.toLowerCase() === 's256') {
+          cv = codeVerifier.encode(code_verifier);
+        }
+
+        if (codeVal.session.code_challenge !== cv) {
+          throw new JacksonError('Invalid code_verifier', 401);
+        }
+
+        // For Federation flow, we need to verify the client_secret
+        if (client_id?.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
+          if (
+            client_id !== codeVal.session?.oidcFederated?.clientID ||
+            client_secret !== codeVal.session?.oidcFederated?.clientSecret
+          ) {
             throw new JacksonError('Invalid client_id or client_secret', 401);
           }
-        } else {
-          if (
-            !codeVal.isIdPFlow &&
-            (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
-          ) {
-            metrics.increment('oauthTokenError');
-            throw new JacksonError('Invalid tenant or product', 401);
+        }
+      } else if (client_id && client_secret) {
+        // check if we have an encoded client_id
+        if (client_id !== 'dummy') {
+          const sp = getEncodedTenantProduct(client_id);
+          if (!sp) {
+            // OAuth flow
+            if (client_id !== codeVal.clientID || client_secret !== codeVal.clientSecret) {
+              throw new JacksonError('Invalid client_id or client_secret', 401);
+            }
+          } else {
+            if (
+              !codeVal.isIdPFlow &&
+              (sp.tenant !== codeVal.requested?.tenant || sp.product !== codeVal.requested?.product)
+            ) {
+              throw new JacksonError('Invalid tenant or product', 401);
+            }
+            // encoded client_id, verify client_secret
+            if (client_secret !== this.opts.clientSecretVerifier) {
+              throw new JacksonError('Invalid client_secret', 401);
+            }
           }
-          // encoded client_id, verify client_secret
-          if (client_secret !== this.opts.clientSecretVerifier) {
-            metrics.increment('oauthTokenError');
+        } else {
+          if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
             throw new JacksonError('Invalid client_secret', 401);
           }
         }
-      } else {
-        if (client_secret !== this.opts.clientSecretVerifier && client_secret !== codeVal.clientSecret) {
-          metrics.increment('oauthTokenError');
-          throw new JacksonError('Invalid client_secret', 401);
-        }
+      } else if (codeVal && codeVal.session) {
+        throw new JacksonError('Please specify client_secret or code_verifier', 401);
       }
-    } else if (codeVal && codeVal.session) {
-      metrics.increment('oauthTokenError');
-      throw new JacksonError('Please specify client_secret or code_verifier', 401);
-    }
 
-    // store details against a token
-    const token = crypto.randomBytes(20).toString('hex');
+      // store details against a token
+      const token = crypto.randomBytes(20).toString('hex');
 
-    const tokenVal = {
-      ...codeVal.profile,
-      requested: codeVal.requested,
-    };
-    const requestedOIDCFlow = !!codeVal.requested?.oidc;
-    const requestHasNonce = !!codeVal.requested?.nonce;
-    if (requestedOIDCFlow) {
-      const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
-      if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
-        metrics.increment('oauthTokenError');
-        throw new JacksonError('JWT signing keys are not loaded', 500);
-      }
-      let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
-      claims = {
-        ...claims,
-        id: codeVal.profile.claims.id,
-        email: codeVal.profile.claims.email,
-        firstName: codeVal.profile.claims.firstName,
-        lastName: codeVal.profile.claims.lastName,
-        roles: codeVal.profile.claims.roles,
-        groups: codeVal.profile.claims.groups,
+      const tokenVal = {
+        ...codeVal.profile,
+        requested: codeVal.requested,
+        login_type,
+        protocol,
       };
-      const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
-      const kid = await computeKid(jwtSigningKeys.public, jwsAlg!);
-      const id_token = await new jose.SignJWT(claims)
-        .setProtectedHeader({ alg: jwsAlg!, kid })
-        .setIssuedAt()
-        .setIssuer(this.opts.externalUrl)
-        .setSubject(codeVal.profile.claims.id)
-        .setAudience(tokenVal.requested.client_id)
-        .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
-        .sign(signingKey);
-      tokenVal.id_token = id_token;
-      tokenVal.claims.sub = codeVal.profile.claims.id;
+      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+      const requestHasNonce = !!codeVal.requested?.nonce;
+      if (requestedOIDCFlow) {
+        const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
+        if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
+          throw new JacksonError('JWT signing keys are not loaded', 500);
+        }
+        let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
+        claims = {
+          ...claims,
+          id: codeVal.profile.claims.id,
+          email: codeVal.profile.claims.email,
+          firstName: codeVal.profile.claims.firstName,
+          lastName: codeVal.profile.claims.lastName,
+          roles: codeVal.profile.claims.roles,
+          groups: codeVal.profile.claims.groups,
+        };
+        const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
+        const kid = await computeKid(jwtSigningKeys.public, jwsAlg!);
+        const id_token = await new jose.SignJWT(claims)
+          .setProtectedHeader({ alg: jwsAlg!, kid })
+          .setIssuedAt()
+          .setIssuer(this.opts.externalUrl)
+          .setSubject(codeVal.profile.claims.id)
+          .setAudience(tokenVal.requested.client_id)
+          .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
+          .sign(signingKey);
+        tokenVal.id_token = id_token;
+        tokenVal.claims.sub = codeVal.profile.claims.id;
+      }
+
+      await this.tokenStore.put(token, tokenVal);
+
+      // delete the code
+      try {
+        await this.codeStore.delete(code);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_err) {
+        // ignore error
+      }
+
+      const tokenResponse: OAuthTokenRes = {
+        access_token: token,
+        token_type: 'bearer',
+        expires_in: this.opts.db.ttl!,
+      };
+
+      if (requestedOIDCFlow) {
+        tokenResponse.id_token = tokenVal.id_token;
+      }
+
+      return tokenResponse;
+    } catch (err) {
+      metrics.increment('oauthTokenError', { protocol, login_type });
+      throw err;
     }
-
-    await this.tokenStore.put(token, tokenVal);
-
-    // delete the code
-    try {
-      await this.codeStore.delete(code);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_err) {
-      // ignore error
-    }
-
-    const tokenResponse: OAuthTokenRes = {
-      access_token: token,
-      token_type: 'bearer',
-      expires_in: this.opts.db.ttl!,
-    };
-
-    if (requestedOIDCFlow) {
-      tokenResponse.id_token = tokenVal.id_token;
-    }
-
-    return tokenResponse;
   }
 
   /**
@@ -1329,7 +1331,7 @@ export class OAuthController implements IOAuthController {
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
-      metrics.increment('oauthUserInfoError');
+      metrics.increment('oauthUserInfoError', { protocol: rsp.protocol, login_type: rsp.login_type });
       throw new JacksonError('Invalid token', 403);
     }
 

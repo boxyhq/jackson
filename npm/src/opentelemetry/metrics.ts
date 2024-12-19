@@ -47,11 +47,12 @@ const counters = {
       name: 'jackson.oauth.token',
       counterOptions: { description: 'Number of oauth token requests' },
     }),
-  oauthTokenError: () =>
+  oauthTokenError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.token.error',
       counterOptions: { description: 'Number of errors in oauth token requests' },
+      counterAttributes,
     }),
   oauthUserInfo: () =>
     incrementCounter({
@@ -59,11 +60,12 @@ const counters = {
       name: 'jackson.oauth.userinfo',
       counterOptions: { description: 'Number of oauth user info requests' },
     }),
-  oauthUserInfoError: () =>
+  oauthUserInfoError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.userinfo.error',
       counterOptions: { description: 'Number of errors in oauth user info requests' },
+      counterAttributes,
     }),
 
   createDsyncConnection: () =>
