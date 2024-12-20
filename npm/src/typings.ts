@@ -656,5 +656,5 @@ export interface ProductConfig {
 
 export interface SSOTraceOptions {
   disableSSOTrace?: boolean;
-  redactSSOTrace?: string;
+  redactSSOTrace?: boolean;
 }

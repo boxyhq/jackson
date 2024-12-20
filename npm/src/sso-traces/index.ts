@@ -7,8 +7,7 @@ import { JacksonError } from '../controller/error';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
-const SSO_TRACE_OPTION_PROFILE = 'profile';
-const SSO_TRACE_OPTION_OIDC_TOKENSET = 'oidcTokenSet';
+const REDACT_SSO_TRACE_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
 
 /**
  * @swagger
@@ -80,14 +79,7 @@ class SSOTraces {
       const { context } = payload;
 
       if (this.opts.ssoTraceOptions?.redactSSOTrace) {
-        const redactOptions = this.opts.ssoTraceOptions?.redactSSOTrace;
-        redactOptions.split(',').forEach((option) => {
-          if (option.trim() === SSO_TRACE_OPTION_PROFILE) {
-            delete context.profile;
-          } else if (option.trim() === SSO_TRACE_OPTION_OIDC_TOKENSET) {
-            delete context.oidcTokenSet;
-          }
-        });
+        REDACT_SSO_TRACE_KEYS.forEach((key) => delete context[key]);
       }
       // Friendly trace id
       const traceId: string = await generateMnemonic();

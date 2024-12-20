@@ -62,7 +62,7 @@ const db: DatabaseOption = {
 // ssoTrace options
 const ssoTraceOptions: SSOTraceOptions = {
   disableSSOTrace: process.env.DISABLE_SSO_TRACE === 'true',
-  redactSSOTrace: process.env.REDACT_SSO_TRACE_FIELDS,
+  redactSSOTrace: process.env.REDACT_SSO_TRACE === 'true',
 };
 
 /** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
