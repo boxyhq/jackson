@@ -189,6 +189,7 @@ export class OAuthController implements IOAuthController {
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
             isOIDCFederated = true;
+            protocol = 'OIDC Federation';
             fedApp = await this.idFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
@@ -232,6 +233,10 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('IdP connection not found.', 403);
       }
 
+      connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
+      connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
+      protocol = isOIDCFederated ? 'OIDC Federation' : connectionIsSAML ? 'SAML' : 'OIDC';
+
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
         if (fedApp) {
           if (!allowed.redirect(redirect_uri, fedApp.redirectUrl as string[])) {
@@ -245,9 +250,6 @@ export class OAuthController implements IOAuthController {
       if (!isConnectionActive(connection)) {
         throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
       }
-      connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
-      connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
-      protocol = isOIDCFederated ? 'OIDC Federation' : connectionIsSAML ? 'SAML' : 'OIDC';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
       metrics.increment('oauthAuthorizeError', {
@@ -644,6 +646,7 @@ export class OAuthController implements IOAuthController {
         );
       }
 
+      login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
       sessionId = RelayState.replace(relayStatePrefix, '');
 
       if (!issuer) {
@@ -671,7 +674,6 @@ export class OAuthController implements IOAuthController {
       isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
       protocol = isOIDCFederated ? 'OIDC Federation' : isSAMLFederated ? 'SAML Federation' : 'SAML';
-      login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
       // IdP initiated SSO flow
       if (isIdPFlow) {
         const response = await this.ssoHandler.resolveConnection({
