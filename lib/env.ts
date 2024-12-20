@@ -3,7 +3,7 @@ import type {
   DatabaseOption,
   DatabaseType,
   JacksonOption,
-  SSOTraceOptions,
+  SSOTraceOption,
 } from '@boxyhq/saml-jackson';
 
 const samlPath = '/api/oauth/saml';
@@ -60,9 +60,9 @@ const db: DatabaseOption = {
 };
 
 // ssoTrace options
-const ssoTraceOptions: SSOTraceOptions = {
-  disableSSOTrace: process.env.DISABLE_SSO_TRACE === 'true',
-  redactSSOTrace: process.env.REDACT_SSO_TRACE === 'true',
+const ssoTrace: SSOTraceOption = {
+  disable: process.env.DISABLE_SSO_TRACE === 'true',
+  redact: process.env.REDACT_SSO_TRACE === 'true',
 };
 
 /** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
@@ -129,7 +129,7 @@ const jacksonOptions: JacksonOption = {
     projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
     sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
   },
-  ssoTraceOptions,
+  ssoTrace,
 };
 
 const adminPortalSSODefaults = {

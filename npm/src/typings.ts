@@ -508,7 +508,7 @@ export interface JacksonOption {
     projectId: string | undefined;
     sdkToken: string | undefined;
   };
-  ssoTraceOptions?: SSOTraceOptions;
+  ssoTrace?: SSOTraceOption;
 }
 
 export interface SLORequestParams {
@@ -654,7 +654,7 @@ export interface ProductConfig {
   development?: boolean;
 }
 
-export interface SSOTraceOptions {
-  disableSSOTrace?: boolean;
-  redactSSOTrace?: boolean;
+export interface SSOTraceOption {
+  disable?: boolean;
+  redact?: boolean;
 }
