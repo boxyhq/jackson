@@ -508,7 +508,7 @@ export interface JacksonOption {
     projectId: string | undefined;
     sdkToken: string | undefined;
   };
-  disableSSOTrace?: boolean;
+  ssoTrace?: SSOTraceOption;
 }
 
 export interface SLORequestParams {
@@ -652,4 +652,9 @@ export interface ProductConfig {
   companyName: string | null;
   ory: OryConfig | null;
   development?: boolean;
+}
+
+export interface SSOTraceOption {
+  disable?: boolean;
+  redact?: boolean;
 }

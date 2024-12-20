@@ -7,6 +7,7 @@ import { JacksonError } from '../controller/error';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
+const REDACT_SSO_TRACE_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
 
 /**
  * @swagger
@@ -70,12 +71,16 @@ class SSOTraces {
   }
 
   public async saveTrace(payload: SSOTrace) {
-    if (this.opts.disableSSOTrace) {
+    if (this.opts.ssoTrace?.disable) {
       return;
     }
 
     try {
       const { context } = payload;
+
+      if (this.opts.ssoTrace?.redact) {
+        REDACT_SSO_TRACE_KEYS.forEach((key) => delete context[key]);
+      }
       // Friendly trace id
       const traceId: string = await generateMnemonic();
       // If timestamp present in payload use that value, else generate the current timestamp
