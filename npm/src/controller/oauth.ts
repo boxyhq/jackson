@@ -647,6 +647,9 @@ export class OAuthController implements IOAuthController {
       }
 
       login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
+      if (isIdPFlow) {
+        protocol = 'SAML';
+      }
       sessionId = RelayState.replace(relayStatePrefix, '');
 
       if (!issuer) {
