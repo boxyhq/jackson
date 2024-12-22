@@ -55,8 +55,8 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
 
   newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
 
-  newOpts.ssoTraceOptions = newOpts.ssoTraceOptions || {};
-  newOpts.ssoTraceOptions.tracesTTL = newOpts.ssoTraceOptions?.tracesTTL || TRACES_TTL_DEFAULT;
+  newOpts.ssoTrace = newOpts.ssoTrace || {};
+  newOpts.ssoTrace.ttl = newOpts.ssoTrace?.ttl || TRACES_TTL_DEFAULT;
 
   return newOpts;
 };
@@ -93,7 +93,7 @@ export const controllers = async (
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
   const productStore = db.store('product:config');
-  const tracesStore = db.store('saml:tracer', opts.ssoTraceOptions?.tracesTTL);
+  const tracesStore = db.store('saml:tracer', opts.ssoTrace?.ttl);
 
   const ssoTraces = new SSOTraces({ tracesStore, opts });
   const eventController = new EventController({ opts });
