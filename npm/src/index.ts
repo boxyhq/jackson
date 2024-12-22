@@ -21,7 +21,7 @@ import EventController from './event';
 import { ProductController } from './ee/product';
 import { OryController } from './ee/ory/ory';
 
-const tracesTTL = 7 * 24 * 60 * 60;
+const TRACES_TTL_DEFAULT = 7 * 24 * 60 * 60;
 
 const defaultOpts = (opts: JacksonOption): JacksonOption => {
   const newOpts = {
@@ -54,6 +54,9 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.openid.forwardOIDCParams = newOpts.openid?.forwardOIDCParams ?? false;
 
   newOpts.boxyhqLicenseKey = newOpts.boxyhqLicenseKey || undefined;
+
+  newOpts.ssoTraces = newOpts.ssoTraces || {};
+  newOpts.ssoTraces.ttl = newOpts.ssoTraces?.ttl || TRACES_TTL_DEFAULT;
 
   return newOpts;
 };
@@ -90,7 +93,7 @@ export const controllers = async (
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
   const productStore = db.store('product:config');
-  const tracesStore = db.store('saml:tracer', tracesTTL);
+  const tracesStore = db.store('saml:tracer', opts.ssoTraces?.ttl);
 
   const ssoTraces = new SSOTraces({ tracesStore, opts });
   const eventController = new EventController({ opts });
