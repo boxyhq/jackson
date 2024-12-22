@@ -657,4 +657,5 @@ export interface ProductConfig {
 export interface SSOTraceOptions {
   disableSSOTrace?: boolean;
   redactSSOTrace?: boolean;
+  tracesTTL?: number;
 }
