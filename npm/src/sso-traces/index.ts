@@ -71,14 +71,14 @@ class SSOTraces {
   }
 
   public async saveTrace(payload: SSOTrace) {
-    if (this.opts.ssoTrace?.disable) {
+    if (this.opts.ssoTraces?.disable) {
       return;
     }
 
     try {
       const { context } = payload;
 
-      if (this.opts.ssoTrace?.redact) {
+      if (this.opts.ssoTraces?.redact) {
         SSO_TRACES_REDACT_KEYS.forEach((key) => delete context[key]);
       }
       // Friendly trace id

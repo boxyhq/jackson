@@ -3,7 +3,7 @@ import type {
   DatabaseOption,
   DatabaseType,
   JacksonOption,
-  SSOTraceOption,
+  SSOTracesOption,
 } from '@boxyhq/saml-jackson';
 
 const samlPath = '/api/oauth/saml';
@@ -59,8 +59,8 @@ const db: DatabaseOption = {
   manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
 };
 
-// ssoTrace options
-const ssoTrace: SSOTraceOption = {
+// ssoTraces options
+const ssoTraces: SSOTracesOption = {
   disable: process.env.SSO_TRACES_DISABLE === 'true',
   redact: process.env.SSO_TRACES_REDACT === 'true',
   ttl: process.env.SSO_TRACES_TTL ? Number(process.env.SSO_TRACES_TTL) * 60 * 60 : undefined,
@@ -130,7 +130,7 @@ const jacksonOptions: JacksonOption = {
     projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
     sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
   },
-  ssoTrace,
+  ssoTraces,
 };
 
 const adminPortalSSODefaults = {
