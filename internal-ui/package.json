@@ -37,10 +37,10 @@
     "prettier": "3.4.2",
     "react-daisyui": "5.0.5",
     "typescript": "5.7.2",
-    "vite": "6.0.4"
+    "vite": "6.0.5"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.28.1"
+    "@rollup/rollup-linux-x64-gnu": "4.29.1"
   },
   "peerDependencies": {
     "@boxyhq/react-ui": ">=3.3.42",
