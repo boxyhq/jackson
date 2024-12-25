@@ -189,7 +189,7 @@ export class OAuthController implements IOAuthController {
           // First we check if it's a federated connection
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
             isOIDCFederated = true;
-            protocol = 'OIDC Federation';
+            protocol = 'oidc-federation';
             fedApp = await this.idFedApp.get({
               id: client_id.replace(clientIDFederatedPrefix, ''),
             });
@@ -235,7 +235,7 @@ export class OAuthController implements IOAuthController {
 
       connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
       connectionIsOIDC = 'oidcProvider' in connection && connection.oidcProvider !== undefined;
-      protocol = isOIDCFederated ? 'OIDC Federation' : connectionIsSAML ? 'SAML' : 'OIDC';
+      protocol = isOIDCFederated ? 'oidc-federation' : connectionIsSAML ? 'saml' : 'oidc';
 
       if (!allowed.redirect(redirect_uri, connection.redirectUrl as string[])) {
         if (fedApp) {
@@ -648,7 +648,7 @@ export class OAuthController implements IOAuthController {
 
       login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
       if (isIdPFlow) {
-        protocol = 'SAML';
+        protocol = 'saml';
       }
       sessionId = RelayState.replace(relayStatePrefix, '');
 
@@ -676,7 +676,7 @@ export class OAuthController implements IOAuthController {
       isSAMLFederated = session && 'samlFederated' in session;
       isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
-      protocol = isOIDCFederated ? 'OIDC Federation' : isSAMLFederated ? 'SAML Federation' : 'SAML';
+      protocol = isOIDCFederated ? 'oidc-federation' : isSAMLFederated ? 'saml-federation' : 'saml';
       // IdP initiated SSO flow
       if (isIdPFlow) {
         const response = await this.ssoHandler.resolveConnection({
@@ -873,7 +873,7 @@ export class OAuthController implements IOAuthController {
       isSAMLFederated = session && 'samlFederated' in session;
       isOIDCFederated = session && 'oidcFederated' in session;
 
-      protocol = isOIDCFederated ? 'OIDC Federation' : isSAMLFederated ? 'SAML Federation' : 'OIDC';
+      protocol = isOIDCFederated ? 'oidc-federation' : isSAMLFederated ? 'saml-federation' : 'oidc';
 
       oidcConnection = await this.connectionStore.get(session.id);
 
@@ -1154,7 +1154,7 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Invalid code', 403);
       }
 
-      protocol = codeVal.requested.protocol || 'SAML';
+      protocol = codeVal.requested.protocol || 'saml';
       login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
 
       if (codeVal.requested?.redirect_uri) {
