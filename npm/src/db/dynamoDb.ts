@@ -73,12 +73,12 @@ class DynamoDB implements DatabaseDriver {
           },
         })
       );
-    } catch (error: any) {
+    } catch (err: any) {
       if (
-        !error?.message?.includes('Cannot create preexisting table') &&
-        !error?.message?.toLowerCase().includes('table already exists')
+        !err?.message?.includes('Cannot create preexisting table') &&
+        !err?.message?.toLowerCase().includes('table already exists')
       ) {
-        throw error;
+        throw err;
       }
     }
     try {
@@ -145,12 +145,12 @@ class DynamoDB implements DatabaseDriver {
           TableName: indexTableName,
         })
       );
-    } catch (error: any) {
+    } catch (err: any) {
       if (
-        !error?.message?.includes('Cannot create preexisting table') &&
-        !error?.message?.toLowerCase().includes('table already exists')
+        !err?.message?.includes('Cannot create preexisting table') &&
+        !err?.message?.toLowerCase().includes('table already exists')
       ) {
-        throw error;
+        throw err;
       }
     }
     return this;

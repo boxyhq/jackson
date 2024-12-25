@@ -21,9 +21,9 @@ export const defaultHandler = async (req: NextApiRequest, res: NextApiResponse, 
     // Call the handler
     await handler(req, res);
     return;
-  } catch (error: any) {
-    const message = error.message || 'Internal Server Error';
-    const status = error.statusCode || 500;
+  } catch (err: any) {
+    const message = err.message || 'Internal Server Error';
+    const status = err.statusCode || 500;
 
     console.error(`${req.method} ${req.url} - ${status} - ${message}`);
 

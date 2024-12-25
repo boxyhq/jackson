@@ -32,8 +32,8 @@ async function fetchMetadata(resource: string) {
       timeout: 8000,
     });
     return response.data;
-  } catch (error: any) {
-    throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
+  } catch (err: any) {
+    throw new JacksonError("Couldn't fetch XML data", err.response?.status || 400);
   }
 }
 
