@@ -153,11 +153,11 @@ export class EventProcessor {
           }
 
           await this.logWebhookEvent(directory, events, status);
-        } catch (error: any) {
-          const message = `Error sending payload to webhook ${directory.webhook.endpoint}. Marking the events as failed. ${error.message}`;
-          const status = error.response?.status || 500;
+        } catch (err: any) {
+          const message = `Error sending payload to webhook ${directory.webhook.endpoint}. Marking the events as failed. ${err.message}`;
+          const status = err.response?.status || 500;
 
-          console.error(message, error);
+          console.error(message, err);
 
           await this.markAsFailed(events);
           await this.logWebhookEvent(directory, events, status);

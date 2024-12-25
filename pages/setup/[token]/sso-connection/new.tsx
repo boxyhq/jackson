@@ -164,7 +164,7 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
       const source = fs.readFileSync(`${mdxDirectory}/${step}.mdx`, 'utf8');
       mdxSource = await serialize(source, { mdxOptions: { remarkPlugins: [remarkGfm] } });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error: any) {
+    } catch (err: any) {
       return {
         redirect: {
           destination: `/setup/${token}/sso-connection/new`,

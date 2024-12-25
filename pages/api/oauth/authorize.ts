@@ -12,17 +12,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { oauthController } = await jackson();
     const requestParams = req.method === 'GET' ? req.query : req.body;
-    const { redirect_url, authorize_form } = await oauthController.authorize(
+    const { redirect_url, authorize_form, error } = await oauthController.authorize(
       requestParams as unknown as OAuthReq
     );
     if (redirect_url) {
+      if (error) {
+        console.error(`authorize error: ${error}`);
+      }
       res.redirect(302, redirect_url);
     } else {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(authorize_form);
     }
   } catch (err: any) {
-    console.error('authorize error:', err);
+    console.error('authorize error: ', err);
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });

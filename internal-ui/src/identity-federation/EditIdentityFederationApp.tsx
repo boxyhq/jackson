@@ -55,8 +55,8 @@ export const EditIdentityFederationApp = ({
       await fetch(urls.deleteApp, { method: 'DELETE', headers: defaultHeaders });
       setDelModalVisible(false);
       onDelete?.();
-    } catch (error: any) {
-      onError?.(error);
+    } catch (err: any) {
+      onError?.(err);
     }
   };
 
