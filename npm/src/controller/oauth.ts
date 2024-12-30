@@ -49,7 +49,7 @@ import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcClientConfig } from './oauth/oidc-client';
 import { App } from '../ee/identity-federation/app';
 import * as encrypter from '../db/encrypter';
-import { Encrypted, EncryptionKey } from '../typings';
+import { Encrypted } from '../typings';
 
 const deflateRawAsync = promisify(deflateRaw);
 
