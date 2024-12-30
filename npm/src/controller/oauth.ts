@@ -54,9 +54,9 @@ import { Encrypted } from '../typings';
 const deflateRawAsync = promisify(deflateRaw);
 
 function encrypt(val: any) {
-  const GenKey = crypto.randomBytes(32);
-  const hexKey = Buffer.from(GenKey).toString('hex');
-  const encVal = encrypter.encrypt(JSON.stringify(val), GenKey);
+  const genKey = crypto.randomBytes(32);
+  const hexKey = genKey.toString('hex');
+  const encVal = encrypter.encrypt(JSON.stringify(val), genKey);
   return {
     hexKey,
     encVal,

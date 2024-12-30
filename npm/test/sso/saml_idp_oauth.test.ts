@@ -41,6 +41,9 @@ import {
   token_req_encoded_client_id_idp_saml_login,
   token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
+  code,
+  token,
+  genKey,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
@@ -50,9 +53,6 @@ let oauthController: IOAuthController;
 let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated saml flow enabled
 let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
-
-const code = '1234567890';
-const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
@@ -310,14 +310,13 @@ tap.test('samlResponse()', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
-
+    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(genKey);
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok(stubValidate.calledOnce, 'validate called once');
-    t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+    t.ok(stubRandomBytes.calledTwice, 'randomBytes called twice');
     t.ok('redirect_url' in response, 'response contains redirect_url');
     t.ok(params.has('code'), 'query string includes code');
     t.ok(params.has('state'), 'query string includes state');
@@ -477,11 +476,15 @@ tap.test('token()', async (t) => {
           .onFirstCall()
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          .returns(token);
+          .returns(token)
+          .onSecondCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey);
 
         const response = await oauthController.token(<OAuthTokenReq>body);
 
-        t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+        t.ok(stubRandomBytes.calledTwice, 'randomBytes called twice');
         t.ok('access_token' in response, 'includes access_token');
         t.ok('token_type' in response, 'includes token_type');
         t.ok('expires_in' in response, 'includes expires_in');
@@ -577,7 +580,23 @@ tap.test('token()', async (t) => {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = sinon
+          .stub(crypto, 'randomBytes')
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(code)
+          .onSecondCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onThirdCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(token)
+          .onCall(3)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey);
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
