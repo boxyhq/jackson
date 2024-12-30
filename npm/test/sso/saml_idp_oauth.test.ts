@@ -316,7 +316,7 @@ tap.test('samlResponse()', async (t) => {
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok(stubValidate.calledOnce, 'validate called once');
-    t.ok(stubRandomBytes.calledTwice, 'randomBytes called twice');
+    t.ok(stubRandomBytes.calledTwice, 'samlResponse randomBytes called twice: ' + stubRandomBytes.callCount);
     t.ok('redirect_url' in response, 'response contains redirect_url');
     t.ok(params.has('code'), 'query string includes code');
     t.ok(params.has('state'), 'query string includes state');
@@ -484,7 +484,7 @@ tap.test('token()', async (t) => {
 
         const response = await oauthController.token(<OAuthTokenReq>body);
 
-        t.ok(stubRandomBytes.calledTwice, 'randomBytes called twice');
+        t.ok(stubRandomBytes.calledTwice, 'token randomBytes called twice: ' + stubRandomBytes.callCount);
         t.ok('access_token' in response, 'includes access_token');
         t.ok('token_type' in response, 'includes token_type');
         t.ok('expires_in' in response, 'includes expires_in');
