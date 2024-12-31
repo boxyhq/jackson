@@ -1,8 +1,8 @@
-import pino from 'pino';
+import pino, { type Logger } from 'pino';
 import fs from 'fs';
 import { logger as loggerEnv } from '@lib/env';
 
-export function initLogger(logFile?: string, logLevel?: string): any {
+export function initLogger(logFile?: string, logLevel?: string): Logger {
   if (logFile) {
     return pino(fs.createWriteStream(logFile));
   }
@@ -13,7 +13,7 @@ export function initLogger(logFile?: string, logLevel?: string): any {
   });
 }
 
-function initLoggerFromEnv(): any {
+function initLoggerFromEnv(): Logger {
   return initLogger(loggerEnv.file, loggerEnv.level);
 }
 
