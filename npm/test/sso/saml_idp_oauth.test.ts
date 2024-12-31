@@ -44,6 +44,7 @@ import {
   code,
   token,
   genKey,
+  iv,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
@@ -308,15 +309,28 @@ tap.test('samlResponse()', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(genKey);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv);
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok(stubValidate.calledOnce, 'validate called once');
-    t.ok(stubRandomBytes.calledTwice, 'samlResponse randomBytes called twice: ' + stubRandomBytes.callCount);
+    t.ok(
+      stubRandomBytes.calledThrice,
+      'samlResponse randomBytes called thrice: ' + stubRandomBytes.callCount
+    );
     t.ok('redirect_url' in response, 'response contains redirect_url');
     t.ok(params.has('code'), 'query string includes code');
     t.ok(params.has('state'), 'query string includes state');
@@ -480,11 +494,14 @@ tap.test('token()', async (t) => {
           .onSecondCall()
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          .returns(genKey);
-
+          .returns(genKey)
+          .onThirdCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv);
         const response = await oauthController.token(<OAuthTokenReq>body);
 
-        t.ok(stubRandomBytes.calledTwice, 'token randomBytes called twice: ' + stubRandomBytes.callCount);
+        t.ok(stubRandomBytes.calledThrice, 'token randomBytes called thrice: ' + stubRandomBytes.callCount);
         t.ok('access_token' in response, 'includes access_token');
         t.ok('token_type' in response, 'includes token_type');
         t.ok('expires_in' in response, 'includes expires_in');
@@ -592,12 +609,19 @@ tap.test('token()', async (t) => {
           .onThirdCall()
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          .returns(token)
+          .returns(iv)
           .onCall(3)
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          .returns(genKey);
-
+          .returns(token)
+          .onCall(4)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onCall(5)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv);
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
         const body = token_req_encoded_client_id;

@@ -15,6 +15,7 @@ import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidss
 export const code = '1234567890';
 export const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 export const genKey = crypto.randomBytes(32);
+export const iv = crypto.randomBytes(12);
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
