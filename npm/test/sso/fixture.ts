@@ -16,6 +16,8 @@ export const code = '1234567890';
 export const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 export const genKey = crypto.randomBytes(32);
 export const iv = crypto.randomBytes(12);
+export const clientCode = genKey.toString('hex') + '.' + code;
+export const clientToken = genKey.toString('hex') + '.' + token;
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -103,7 +105,7 @@ export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq
     grant_type: 'authorization_code',
     client_id: `tenant=${tenant}&product=${product}`,
     client_secret: 'dummy',
-    code: genKey.toString('hex') + '.' + code,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
@@ -144,21 +146,21 @@ export const bodyWithInvalidRedirectUri: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   redirect_uri: 'http://example.com',
 };
 export const bodyWithMissingRedirectUri: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
 };
 //encoded clientId and wrong secret
 export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: 'dummy',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 //unencoded clientId with wrong secret
@@ -170,7 +172,7 @@ export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (connectionReco
     grant_type: 'authorization_code',
     client_id: connectionRecord.clientID,
     client_secret: 'dummy',
-    code: genKey.toString('hex') + '.' + code,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
@@ -179,7 +181,7 @@ export const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `dummy`,
   client_secret: 'dummy',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
@@ -187,7 +189,7 @@ export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
@@ -199,42 +201,42 @@ export const token_req_unencoded_client_id_gen = (connectionRecords) => {
     grant_type: 'authorization_code',
     client_id: connectionRecord.clientID,
     client_secret: connectionRecord.clientSecret,
-    code: genKey.toString('hex') + '.' + code,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
 
 export const token_req_dummy_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   client_id: 'dummy',
   client_secret: 'TOP-SECRET-WRONG',
 };
 
 export const token_req_dummy_client_id_idp_saml_login = {
   grant_type: 'authorization_code',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   client_id: 'dummy',
   client_secret: 'TOP-SECRET',
 };
 
 export const token_req_encoded_client_id_idp_saml_login = {
   grant_type: 'authorization_code',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   client_id: 'tenant=boxyhq.com&product=crm',
   client_secret: 'TOP-SECRET',
 };
 
 export const token_req_encoded_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   client_id: 'tenant=boxyhq.com&product=crm',
   client_secret: 'TOP-SECRET-WRONG',
 };
 
 export const token_req = {
   grant_type: 'authorization_code',
-  code: genKey.toString('hex') + '.' + code,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
