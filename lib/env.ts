@@ -136,8 +136,14 @@ const adminPortalSSODefaults = {
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
+const logger = {
+  file: process.env.LOG_FILE,
+  level: process.env.LOG_LEVEL,
+};
+
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
 export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
+export { logger };
