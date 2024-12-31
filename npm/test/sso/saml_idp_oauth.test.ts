@@ -322,6 +322,7 @@ tap.test('samlResponse()', async (t) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .returns(iv);
+
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
@@ -499,6 +500,7 @@ tap.test('token()', async (t) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           .returns(iv);
+
         const response = await oauthController.token(<OAuthTokenReq>body);
 
         t.ok(stubRandomBytes.calledThrice, 'token randomBytes called thrice: ' + stubRandomBytes.callCount);
@@ -540,7 +542,31 @@ tap.test('token()', async (t) => {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = sinon
+          .stub(crypto, 'randomBytes')
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(code)
+          .onSecondCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onThirdCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv)
+          .onCall(3)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(token)
+          .onCall(4)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onCall(5)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv);
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -622,6 +648,7 @@ tap.test('token()', async (t) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           .returns(iv);
+
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
         const body = token_req_encoded_client_id;
@@ -689,7 +716,31 @@ tap.test('token()', async (t) => {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = sinon
+          .stub(crypto, 'randomBytes')
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(code)
+          .onSecondCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onThirdCall()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv)
+          .onCall(3)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(token)
+          .onCall(4)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(genKey)
+          .onCall(5)
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .returns(iv);
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -748,10 +799,37 @@ tap.test('IdP initiated flow', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+      .onCall(3)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(token)
+      .onCall(4)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onCall(5)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv);
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(
+      new URLSearchParams(new URL(redirect_url!).search).get('code'),
+      genKey.toString('hex') + '.' + code
+    );
 
     const body = token_req_encoded_client_id_idp_saml_login_wrong_secretverifier;
 
@@ -781,10 +859,37 @@ tap.test('IdP initiated flow', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+      .onCall(3)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(token)
+      .onCall(4)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onCall(5)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv);
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(
+      new URLSearchParams(new URL(redirect_url!).search).get('code'),
+      genKey.toString('hex') + '.' + code
+    );
 
     const body = token_req_dummy_client_id_idp_saml_login_wrong_secretverifier;
 
@@ -814,10 +919,37 @@ tap.test('IdP initiated flow', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+      .onCall(3)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(token)
+      .onCall(4)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onCall(5)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv);
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(
+      new URLSearchParams(new URL(redirect_url!).search).get('code'),
+      genKey.toString('hex') + '.' + code
+    );
 
     const body = token_req_encoded_client_id_idp_saml_login;
 
@@ -852,10 +984,37 @@ tap.test('IdP initiated flow', async (t) => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+      .onCall(3)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(token)
+      .onCall(4)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onCall(5)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv);
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(
+      new URLSearchParams(new URL(redirect_url!).search).get('code'),
+      genKey.toString('hex') + '.' + code
+    );
 
     const body = token_req_dummy_client_id_idp_saml_login;
 
