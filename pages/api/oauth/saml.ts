@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -47,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
-    console.error('Error processing SAML IdP response:', err);
+    logger.error('Error processing SAML IdP response:', err);
 
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
 

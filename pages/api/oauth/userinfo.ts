@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -29,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(profile);
   } catch (err: any) {
-    console.error('userinfo error:', err);
+    logger.error('userinfo error:', err);
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).json({ message });
