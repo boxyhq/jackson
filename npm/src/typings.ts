@@ -502,6 +502,11 @@ export interface JacksonOption {
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
   ssoTraces?: SSOTracesOption;
+  logger?: {
+    info?: (...args: any[]) => void;
+    warn?: (...args: any[]) => void;
+    error?: (...args: any[]) => void;
+  };
 }
 
 export interface SLORequestParams {

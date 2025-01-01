@@ -80,6 +80,7 @@ export const controllers = async (
   close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
+  const infoLogger = opts.logger?.info ?? console.info;
 
   const db = await DB.new(opts.db);
 
@@ -147,12 +148,12 @@ export const controllers = async (
         await connectionAPIController.createSAMLConnection(connection);
       }
 
-      console.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
+      infoLogger(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
   if (!opts.noAnalytics) {
-    console.info(
+    infoLogger(
       'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
     );
     const analyticsStore = db.store('_analytics:events');
@@ -165,10 +166,10 @@ export const controllers = async (
   }
 
   if ('driver' in opts.db) {
-    console.info(`Using external database driver`);
+    infoLogger(`Using external database driver`);
   } else {
     const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
-    console.info(`Using engine: ${opts.db.engine}.${type}`);
+    infoLogger(`Using engine: ${opts.db.engine}.${type}`);
   }
 
   return {

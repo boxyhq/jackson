@@ -335,7 +335,7 @@ export class SSOHandler {
         authorize_form: null,
       };
     } catch (err: any) {
-      console.error(err);
+      (this.opts.logger?.error ?? console.error)(err);
       throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
     }
   }
@@ -387,7 +387,7 @@ export class SSOHandler {
 
       return { responseForm };
     } catch (err) {
-      console.error('Error creating SAML response:', err);
+      (this.opts.logger?.error ?? console.error)('Error creating SAML response:', err);
       // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }
