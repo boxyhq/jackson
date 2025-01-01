@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.send(authorize_form);
     }
   } catch (err: any) {
-    logger.error('authorize error: ', err);
+    logger.error(err, 'authorize error');
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
