@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(profile);
   } catch (err: any) {
-    logger.error('userinfo error:', err);
+    logger.error(err, 'userinfo error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).json({ message });

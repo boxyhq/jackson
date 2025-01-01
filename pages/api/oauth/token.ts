@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(result);
   } catch (err: any) {
-    logger.error('token error:', err);
+    logger.error(err, 'token error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);
