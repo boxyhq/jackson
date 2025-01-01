@@ -7,7 +7,7 @@ import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import { maskSetup } from '@components/terminus/blocks/customblocks';
 import * as locale from 'blockly/msg/en';
-Blockly.setLocale(locale);
+Blockly.setLocale(locale as any);
 
 import { generateModel } from '@components/terminus/blocks/generator';
 import { errorToast, successToast } from '@components/Toaster';
