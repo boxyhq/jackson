@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
   } catch (err: any) {
-    logger.error(err, 'authorize error');
+    logger.error(err, 'SAML Federation authorize error');
     const { message, statusCode = 500 } = err;
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');
