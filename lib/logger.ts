@@ -3,6 +3,7 @@ import fs from 'fs';
 import { logger as loggerEnv } from '@lib/env';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const g = global as any;
 
 // Custom error serializer for production that omits stack traces
 const productionErrorSerializer = (err: Error & { statusCode?: number }) => {
@@ -33,7 +34,10 @@ export function initLogger(logFile?: string, logLevel?: string): Logger {
 }
 
 function initLoggerFromEnv(): Logger {
-  return initLogger(loggerEnv.file, loggerEnv.level);
+  if (!g.loggerInstance) {
+    g.loggerInstance = initLogger(loggerEnv.file, loggerEnv.level);
+  }
+  return g.loggerInstance;
 }
 
 export const logger = initLoggerFromEnv();
