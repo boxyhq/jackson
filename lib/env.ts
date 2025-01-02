@@ -5,6 +5,7 @@ import type {
   JacksonOption,
   SSOTracesOption,
 } from '@boxyhq/saml-jackson';
+import { logger } from './logger';
 
 const samlPath = '/api/oauth/saml';
 const oidcPath = '/api/oauth/oidc';
@@ -127,6 +128,11 @@ const jacksonOptions: JacksonOption = {
   setupLinkExpiryDays,
   boxyhqHosted,
   ssoTraces,
+  logger: {
+    info: (msg: string, err?: any) => logger.info(err, msg),
+    error: (msg: string, err?: any) => logger.error(err, msg),
+    warn: (msg: string, err?: any) => logger.warn(err, msg),
+  },
 };
 
 const adminPortalSSODefaults = {
