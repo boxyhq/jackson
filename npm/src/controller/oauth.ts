@@ -36,6 +36,7 @@ import {
   getEncodedTenantProduct,
   isConnectionActive,
   dynamicImport,
+  GENERIC_ERR_STRING,
 } from './utils';
 
 import * as metrics from '../opentelemetry/metrics';
@@ -230,7 +231,8 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!connection) {
-        throw new JacksonError('IdP connection not found.', 403);
+        this.opts.logger.error('IdP connection not found.');
+        throw new JacksonError(GENERIC_ERR_STRING, 403);
       }
 
       connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
@@ -248,7 +250,8 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!isConnectionActive(connection)) {
-        throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+        this.opts.logger.error('SSO connection is deactivated.');
+        throw new JacksonError(GENERIC_ERR_STRING, 403);
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
@@ -281,8 +284,10 @@ export class OAuthController implements IOAuthController {
       let error, error_description;
       if (isMissingJWTKeysForOIDCFlow) {
         error = 'server_error';
-        error_description =
-          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded';
+        error_description = GENERIC_ERR_STRING;
+        this.opts.logger.error(
+          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded'
+        );
       }
 
       if (!state) {
@@ -297,7 +302,8 @@ export class OAuthController implements IOAuthController {
 
       if (!connectionIsSAML && !connectionIsOIDC) {
         error = 'server_error';
-        error_description = 'Connection appears to be misconfigured';
+        error_description = GENERIC_ERR_STRING;
+        this.opts.logger.error('Connection appears to be misconfigured');
       }
 
       metrics.increment('oauthAuthorizeError', {
