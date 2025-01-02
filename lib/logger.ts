@@ -1,6 +1,6 @@
 import pino, { type Logger } from 'pino';
 import fs from 'fs';
-import { logger as loggerEnv } from '@lib/env';
+import { loggerOptions } from '@lib/env';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const g = global as any;
@@ -35,7 +35,7 @@ export function initLogger(logFile?: string, logLevel?: string): Logger {
 
 function initLoggerFromEnv(): Logger {
   if (!g.loggerInstance) {
-    g.loggerInstance = initLogger(loggerEnv.file, loggerEnv.level);
+    g.loggerInstance = initLogger(loggerOptions.file, loggerOptions.level);
   }
   return g.loggerInstance;
 }
