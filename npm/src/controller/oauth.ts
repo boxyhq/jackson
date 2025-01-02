@@ -6,7 +6,6 @@ import saml from '@boxyhq/saml20';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import type {
   IOAuthController,
-  JacksonOption,
   OAuthReq,
   OAuthTokenReq,
   OAuthTokenRes,
@@ -19,6 +18,7 @@ import type {
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
   IdentityFederationApp,
+  JacksonOptionWithRequiredLogger,
 } from '../typings';
 import {
   AuthorizationCodeGrantResult,
@@ -57,7 +57,7 @@ export class OAuthController implements IOAuthController {
   private codeStore: Storable;
   private tokenStore: Storable;
   private ssoTraces: ssoTraces;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
   private ssoHandler: SSOHandler;
   private idFedApp: App;
 

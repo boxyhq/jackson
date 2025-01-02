@@ -1,6 +1,6 @@
 import { SSO } from './sso';
 import { App } from './app';
-import type { JacksonOption, SSOTracesInstance } from '../../typings';
+import type { JacksonOptionWithRequiredLogger, SSOTracesInstance } from '../../typings';
 import { SSOHandler } from '../../controller/sso-handler';
 import { IdPLogin } from './idp-login';
 
@@ -11,7 +11,7 @@ const IdentityFederation = async ({
   ssoTraces,
 }: {
   db;
-  opts: JacksonOption;
+  opts: JacksonOptionWithRequiredLogger;
   ssoTraces: SSOTracesInstance;
 }) => {
   const appStore = db.store('samlfed:apps');

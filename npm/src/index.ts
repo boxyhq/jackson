@@ -1,4 +1,9 @@
-import type { IDirectorySyncController, JacksonOption } from './typings';
+import type {
+  IDirectorySyncController,
+  JacksonOption,
+  JacksonOptionWithRequiredLogger,
+  RequiredLogger,
+} from './typings';
 import DB from './db/db';
 import defaultDb from './db/defaultDb';
 import loadConnection from './loadConnection';
@@ -22,7 +27,7 @@ import { ProductController } from './ee/product';
 
 const TRACES_TTL_DEFAULT = 7 * 24 * 60 * 60;
 
-const defaultOpts = (opts: JacksonOption): JacksonOption => {
+const defaultOpts = (opts: JacksonOption): JacksonOptionWithRequiredLogger => {
   const newOpts = {
     ...opts,
   };
@@ -57,7 +62,15 @@ const defaultOpts = (opts: JacksonOption): JacksonOption => {
   newOpts.ssoTraces = newOpts.ssoTraces || {};
   newOpts.ssoTraces.ttl = newOpts.ssoTraces?.ttl || TRACES_TTL_DEFAULT;
 
-  return newOpts;
+  const defaultLogger: RequiredLogger = {
+    info: console.info.bind(console),
+    error: console.error.bind(console),
+    warn: console.warn.bind(console),
+  };
+
+  newOpts.logger = { ...defaultLogger, ...newOpts.logger } as RequiredLogger;
+
+  return newOpts as JacksonOptionWithRequiredLogger;
 };
 
 export const controllers = async (
@@ -80,9 +93,9 @@ export const controllers = async (
   close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
-  const infoLogger = opts.logger?.info ?? console.info;
 
   const db = await DB.new(opts.db);
+  const logger = opts.logger as RequiredLogger;
 
   const connectionStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
@@ -113,7 +126,11 @@ export const controllers = async (
   await x509.init(certificateStore, opts);
 
   // Enterprise Features
-  const identityFederationController = await initIdentityFederation({ db, opts, ssoTraces });
+  const identityFederationController = await initIdentityFederation({
+    db,
+    opts: opts as JacksonOptionWithRequiredLogger,
+    ssoTraces,
+  });
   const brandingController = new BrandingController({ store: settingsStore, opts });
 
   const oauthController = new OAuthController({
@@ -148,12 +165,12 @@ export const controllers = async (
         await connectionAPIController.createSAMLConnection(connection);
       }
 
-      infoLogger(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
+      logger.info(`loaded connection for tenant "${connection.tenant}" and product "${connection.product}"`);
     }
   }
 
   if (!opts.noAnalytics) {
-    infoLogger(
+    logger.info(
       'Anonymous analytics enabled. You can disable this by setting the DO_NOT_TRACK=1 or BOXYHQ_NO_ANALYTICS=1 environment variables'
     );
     const analyticsStore = db.store('_analytics:events');
@@ -166,10 +183,10 @@ export const controllers = async (
   }
 
   if ('driver' in opts.db) {
-    infoLogger(`Using external database driver`);
+    logger.info(`Using external database driver`);
   } else {
     const type = opts.db.engine === 'sql' && opts.db.type ? ' Type: ' + opts.db.type : '';
-    infoLogger(`Using engine: ${opts.db.engine}.${type}`);
+    logger.info(`Using engine: ${opts.db.engine}.${type}`);
   }
 
   return {

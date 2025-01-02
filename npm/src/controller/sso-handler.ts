@@ -5,13 +5,13 @@ import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
-  JacksonOption,
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
   IdentityFederationApp,
   SSOTracesInstance,
   SSOTrace,
+  JacksonOptionWithRequiredLogger,
 } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
@@ -27,7 +27,7 @@ const deflateRawAsync = promisify(deflateRaw);
 export class SSOHandler {
   private connection: Storable;
   private session: Storable;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
   constructor({
     connection,
@@ -36,7 +36,7 @@ export class SSOHandler {
   }: {
     connection: Storable;
     session: Storable;
-    opts: JacksonOption;
+    opts: JacksonOptionWithRequiredLogger;
   }) {
     this.connection = connection;
     this.session = session;
@@ -387,7 +387,7 @@ export class SSOHandler {
 
       return { responseForm };
     } catch (err) {
-      (this.opts.logger?.error ?? console.error)('Error creating SAML response:', err);
+      this.opts.logger.error('Error creating SAML response:', err);
       // TODO: Instead send saml response with status code
       throw new JacksonError('Unable to validate SAML Response.', 403);
     }

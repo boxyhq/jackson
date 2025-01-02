@@ -3,7 +3,7 @@ import { SSOHandler } from '../../controller/sso-handler';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import {
   IdentityFederationApp,
-  JacksonOption,
+  JacksonOptionWithRequiredLogger,
   OIDCIdPInitiatedReq,
   OIDCSSORecord,
   SSOTrace,
@@ -16,7 +16,7 @@ export class IdPLogin {
   private ssoHandler: SSOHandler;
   private ssoTraces: SSOTracesInstance;
   private app: App;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
   constructor({ app, ssoHandler, ssoTraces, opts }) {
     this.app = app;
