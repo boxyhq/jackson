@@ -18,6 +18,8 @@ import type {
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 
+export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
+
 export const dynamicImport = async <ReturnType>(packageName: string): Promise<ReturnType> =>
   new Function(`return import('${packageName}')`)();
 

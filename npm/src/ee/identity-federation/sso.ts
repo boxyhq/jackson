@@ -4,12 +4,12 @@ import { App } from './app';
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
 import type {
-  JacksonOption,
   OIDCSSORecord,
   IdentityFederationApp,
   SAMLSSORecord,
   SSOTracesInstance,
   SSOTrace,
+  JacksonOptionWithRequiredLogger,
 } from '../../typings';
 import { getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
@@ -22,7 +22,7 @@ export class SSO {
   private app: App;
   private ssoHandler: SSOHandler;
   private ssoTraces: SSOTracesInstance;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
   constructor({
     app,
@@ -33,7 +33,7 @@ export class SSO {
     app: App;
     ssoHandler: SSOHandler;
     ssoTraces: SSOTracesInstance;
-    opts: JacksonOption;
+    opts: JacksonOptionWithRequiredLogger;
   }) {
     this.app = app;
     this.ssoHandler = ssoHandler;

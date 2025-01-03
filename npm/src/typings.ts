@@ -502,6 +502,11 @@ export interface JacksonOption {
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
   ssoTraces?: SSOTracesOption;
+  logger?: {
+    info?: (msg: string, err?: any) => void;
+    warn?: (msg: string, err?: any) => void;
+    error?: (msg: string, err?: any) => void;
+  };
 }
 
 export interface SLORequestParams {
@@ -651,3 +656,13 @@ export interface SSOTracesOption {
   redact?: boolean;
   ttl?: number;
 }
+
+export type RequiredLogger = {
+  info: (msg: string, err?: any) => void;
+  error: (msg: string, err?: any) => void;
+  warn: (msg: string, err?: any) => void;
+};
+
+export type JacksonOptionWithRequiredLogger = Omit<JacksonOption, 'logger'> & {
+  logger: RequiredLogger;
+};
