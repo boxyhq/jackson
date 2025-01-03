@@ -48,8 +48,29 @@ import { SSOHandler } from './sso-handler';
 import { ValidateOption, extractSAMLResponseAttributes } from '../saml/lib';
 import { oidcClientConfig } from './oauth/oidc-client';
 import { App } from '../ee/identity-federation/app';
+import * as encrypter from '../db/encrypter';
+import { Encrypted } from '../typings';
 
 const deflateRawAsync = promisify(deflateRaw);
+
+function encrypt(val: any) {
+  const genKey = crypto.randomBytes(32);
+  const hexKey = genKey.toString('hex');
+  const encVal = encrypter.encrypt(JSON.stringify(val), genKey);
+  return {
+    hexKey,
+    encVal,
+  };
+}
+
+function decrypt(res: Encrypted, encryptionKey: string) {
+  const encKey = Buffer.from(encryptionKey, 'hex');
+  if (res.iv && res.tag) {
+    return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encKey));
+  }
+
+  return JSON.parse(res.value);
+}
 
 export class OAuthController implements IOAuthController {
   private connectionStore: Storable;
@@ -1053,9 +1074,11 @@ export class OAuthController implements IOAuthController {
       codeVal['session'] = session;
     }
 
-    await this.codeStore.put(code, codeVal);
+    const { hexKey, encVal } = encrypt(codeVal);
 
-    return code;
+    await this.codeStore.put(code, encVal);
+
+    return hexKey + '.' + code;
   }
 
   /**
@@ -1149,7 +1172,18 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Please specify code', 400);
       }
 
-      const codeVal = await this.codeStore.get(code);
+      const codes = code.split('.');
+      if (codes.length !== 2) {
+        throw new JacksonError('Invalid code', 403);
+      }
+
+      const encCodeVal = await this.codeStore.get(codes[1]);
+      if (!encCodeVal) {
+        throw new JacksonError('Invalid code', 403);
+      }
+
+      const codeVal = decrypt(encCodeVal, codes[0]);
+
       if (!codeVal || !codeVal.profile) {
         throw new JacksonError('Invalid code', 403);
       }
@@ -1256,7 +1290,9 @@ export class OAuthController implements IOAuthController {
         tokenVal.claims.sub = codeVal.profile.claims.id;
       }
 
-      await this.tokenStore.put(token, tokenVal);
+      const { hexKey, encVal } = encrypt(tokenVal);
+
+      await this.tokenStore.put(token, encVal);
 
       // delete the code
       try {
@@ -1267,7 +1303,7 @@ export class OAuthController implements IOAuthController {
       }
 
       const tokenResponse: OAuthTokenRes = {
-        access_token: token,
+        access_token: hexKey + '.' + token,
         token_type: 'bearer',
         expires_in: this.opts.db.ttl!,
       };
@@ -1331,7 +1367,17 @@ export class OAuthController implements IOAuthController {
    *             }
    */
   public async userInfo(token: string): Promise<Profile> {
-    const rsp = await this.tokenStore.get(token);
+    const tokens = token.split('.');
+    if (tokens.length !== 2) {
+      throw new JacksonError('Invalid token', 403);
+    }
+
+    const encRsp = await this.tokenStore.get(tokens[1]);
+    if (!encRsp) {
+      throw new JacksonError('Invalid token', 403);
+    }
+
+    const rsp = decrypt(encRsp, tokens[0]);
 
     metrics.increment('oauthUserInfo');
 
