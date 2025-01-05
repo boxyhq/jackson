@@ -315,6 +315,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     description: JSON encoded array containing a list of allowed redirect URLs
    *     in: formData
    *     type: string
+   *     additionalProperties:
+   *       oneOf:
+   *         - type: array
    *   deactivatedParamPatch:
    *     name: deactivated
    *     description: Connection status

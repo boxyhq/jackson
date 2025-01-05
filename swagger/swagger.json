@@ -2339,7 +2339,14 @@
       "name": "redirectUrl",
       "description": "JSON encoded array containing a list of allowed redirect URLs",
       "in": "formData",
-      "type": "string"
+      "type": "string",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "array"
+          }
+        ]
+      }
     },
     "deactivatedParamPatch": {
       "name": "deactivated",
