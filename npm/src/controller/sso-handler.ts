@@ -16,7 +16,7 @@ import type {
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
-import { dynamicImport, IndexNames } from './utils';
+import { dynamicImport, GENERIC_ERR_STRING, IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
 import * as allowed from './oauth/allowed';
@@ -92,7 +92,7 @@ export class SSOHandler {
       const connection = await this.connection.get(idp_hint);
 
       if (!connection) {
-        throw new JacksonError(noSSOConnectionErrMessage, 404);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
       }
 
       return { connection };
@@ -127,7 +127,7 @@ export class SSOHandler {
     }
 
     if (!connections || connections.length === 0) {
-      throw new JacksonError(noSSOConnectionErrMessage, 404);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
     }
 
     // Third party login from an oidcProvider, here we match the connection from the iss param
@@ -157,7 +157,7 @@ export class SSOHandler {
         }
       }
       // No match found for iss
-      throw new JacksonError(noSSOConnectionErrMessage, 404);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
     }
 
     // If more than one, redirect to the connection selection page
@@ -189,14 +189,21 @@ export class SSOHandler {
             authFlow,
           });
 
-          const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
-            {
-              name: 'SAMLResponse',
-              value: originalParams.SAMLResponse,
-            },
-          ]);
-
-          return { postForm };
+          try {
+            const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
+              {
+                name: 'SAMLResponse',
+                value: originalParams.SAMLResponse,
+              },
+            ]);
+            return { postForm };
+          } catch (err: any) {
+            throw new JacksonError(
+              GENERIC_ERR_STRING,
+              403,
+              `SAML IdP initiated flow error creating app select form: ${err.message}`
+            );
+          }
         }
       }
     }

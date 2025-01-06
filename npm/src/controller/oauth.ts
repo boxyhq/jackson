@@ -231,8 +231,7 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!connection) {
-        this.opts.logger.error('IdP connection not found.');
-        throw new JacksonError(GENERIC_ERR_STRING, 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'IdP connection not found.');
       }
 
       connectionIsSAML = 'idpMetadata' in connection && connection.idpMetadata !== undefined;
@@ -250,8 +249,7 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!isConnectionActive(connection)) {
-        this.opts.logger.error('SSO connection is deactivated.');
-        throw new JacksonError(GENERIC_ERR_STRING, 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'SSO connection is deactivated.');
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
@@ -281,13 +279,13 @@ export class OAuthController implements IOAuthController {
     const oAuthClientReqError = !state || response_type !== 'code';
 
     if (isMissingJWTKeysForOIDCFlow || oAuthClientReqError || (!connectionIsSAML && !connectionIsOIDC)) {
-      let error, error_description;
+      let error, error_description, internalError;
       if (isMissingJWTKeysForOIDCFlow) {
         error = 'server_error';
+        internalError =
+          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded';
         error_description = GENERIC_ERR_STRING;
-        this.opts.logger.error(
-          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded'
-        );
+        this.opts.logger.error(internalError);
       }
 
       if (!state) {
@@ -302,8 +300,9 @@ export class OAuthController implements IOAuthController {
 
       if (!connectionIsSAML && !connectionIsOIDC) {
         error = 'server_error';
+        internalError = 'Connection appears to be misconfigured';
         error_description = GENERIC_ERR_STRING;
-        this.opts.logger.error('Connection appears to be misconfigured');
+        this.opts.logger.error(internalError);
       }
 
       metrics.increment('oauthAuthorizeError', {
@@ -313,7 +312,7 @@ export class OAuthController implements IOAuthController {
 
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
-        error: error_description,
+        error: internalError ?? error_description,
         context: {
           tenant: requestedTenant,
           product: requestedProduct,
@@ -342,7 +341,7 @@ export class OAuthController implements IOAuthController {
     const sessionId = crypto.randomBytes(16).toString('hex');
     const relayState = relayStatePrefix + sessionId;
     // SAML connection: SAML request will be constructed here
-    let samlReq;
+    let samlReq, internalError;
     if (connectionIsSAML) {
       try {
         const { sso } = (connection as SAMLSSORecord).idpMetadata;
@@ -356,14 +355,17 @@ export class OAuthController implements IOAuthController {
           post = true;
         } else {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
-          const error_description = 'SAML binding could not be retrieved';
+          internalError = 'SAML binding could not be retrieved';
+          const error_description = GENERIC_ERR_STRING;
+          this.opts.logger.error(internalError);
+
           metrics.increment('oauthAuthorizeError', {
             protocol,
             login_type,
           });
           // Save the error trace
           const traceId = await this.ssoTraces.saveTrace({
-            error: error_description,
+            error: internalError ?? error_description,
             context: {
               tenant: requestedTenant as string,
               product: requestedProduct as string,
@@ -434,7 +436,11 @@ export class OAuthController implements IOAuthController {
       const { ssoTraces } = this;
       try {
         if (!this.opts.oidcPath) {
-          throw new JacksonError('OpenID response handler path (oidcPath) is not set');
+          throw new JacksonError(
+            GENERIC_ERR_STRING,
+            500,
+            'OpenID response handler path (oidcPath) is not set'
+          );
         }
         const client = (await dynamicImport('openid-client')) as typeof import('openid-client');
         const oidcConfig = await oidcClientConfig({
@@ -647,8 +653,9 @@ export class OAuthController implements IOAuthController {
       if (!this.opts.idpEnabled && isIdPFlow) {
         // IdP login is disabled so block the request
         throw new JacksonError(
-          'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
-          403
+          GENERIC_ERR_STRING,
+          403,
+          'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.'
         );
       }
 
@@ -659,7 +666,7 @@ export class OAuthController implements IOAuthController {
       sessionId = RelayState.replace(relayStatePrefix, '');
 
       if (!issuer) {
-        throw new JacksonError('Issuer not found.', 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'Issuer not found.');
       }
 
       const connections: SAMLSSORecord[] = (
@@ -670,7 +677,7 @@ export class OAuthController implements IOAuthController {
       ).data;
 
       if (!connections || connections.length === 0) {
-        throw new JacksonError('SAML connection not found.', 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'SAML connection not found.');
       }
 
       session = sessionId ? await this.sessionStore.get(sessionId) : null;
@@ -705,7 +712,11 @@ export class OAuthController implements IOAuthController {
         if ('connection' in response) {
           connection = response.connection as SAMLSSORecord;
           if (!isConnectionActive(connection)) {
-            throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+            throw new JacksonError(
+              GENERIC_ERR_STRING,
+              403,
+              'SSO connection is deactivated. Please contact your administrator.'
+            );
           }
         }
       }
@@ -723,7 +734,7 @@ export class OAuthController implements IOAuthController {
       }
 
       if (!connection) {
-        throw new JacksonError('SAML connection not found.', 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'SAML connection not found.');
       }
 
       if (
@@ -884,7 +895,7 @@ export class OAuthController implements IOAuthController {
       oidcConnection = await this.connectionStore.get(session.id);
 
       if (!oidcConnection) {
-        throw new JacksonError('OIDC connection not found.', 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'OIDC connection not found.');
       }
 
       if (!isSAMLFederated) {

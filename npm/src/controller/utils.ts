@@ -82,6 +82,9 @@ export function getErrorMessage(error: unknown) {
     return error.message + ' ' + error.inner.message;
   }
   if (error instanceof Error) {
+    if (error instanceof JacksonError) {
+      return error.internalError ?? error.message;
+    }
     return error.message;
   }
   return String(error);

@@ -6,9 +6,17 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const g = global as any;
 
 // Custom error serializer for production that omits stack traces
-const productionErrorSerializer = (err: Error & { statusCode?: number }) => {
+const productionErrorSerializer = ({
+  message,
+  statusCode = 500,
+  internalError,
+}: Error & { statusCode?: number; internalError?: string }) => {
   // stack trace is intentionally omitted
-  return { message: err.message, statusCode: err.statusCode ?? 500 };
+  const err: any = { message, statusCode };
+  if (internalError) {
+    err.internalError = internalError;
+  }
+  return err;
 };
 
 export function initLogger(logFile?: string, logLevel?: string): Logger {
