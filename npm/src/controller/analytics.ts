@@ -1,4 +1,9 @@
-import { IConnectionAPIController, IDirectorySyncController, Storable } from '../typings';
+import {
+  IConnectionAPIController,
+  IDirectorySyncController,
+  JacksonOptionWithRequiredLogger,
+  Storable,
+} from '../typings';
 import Mixpanel, { type Event } from 'mixpanel';
 import { randomUUID } from 'crypto';
 
@@ -11,13 +16,15 @@ export class AnalyticsController {
   directorySyncController: IDirectorySyncController;
   client: Mixpanel.Mixpanel;
   anonymousId: string;
+  private opts: JacksonOptionWithRequiredLogger;
 
-  constructor({ analyticsStore, connectionAPIController, directorySyncController }) {
+  constructor({ opts, analyticsStore, connectionAPIController, directorySyncController }) {
     this.analyticsStore = analyticsStore;
     this.client = Mixpanel.init('1028494897a5520b90e7344344060fa7');
     this.connectionAPIController = connectionAPIController;
     this.directorySyncController = directorySyncController;
     this.anonymousId = '';
+    this.opts = opts;
   }
 
   public async init(): Promise<void> {
@@ -80,7 +87,7 @@ export class AnalyticsController {
         this.analyticsStore.put(sentKey, new Date().toISOString());
       });
     } catch (err) {
-      console.error('Error sending analytics', err);
+      this.opts.logger.error('Error sending analytics', err);
     }
   }
 }

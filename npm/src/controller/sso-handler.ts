@@ -335,7 +335,7 @@ export class SSOHandler {
         authorize_form: null,
       };
     } catch (err: any) {
-      (this.opts.logger?.error ?? console.error)(err);
+      this.opts.logger.error(err);
       throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
     }
   }

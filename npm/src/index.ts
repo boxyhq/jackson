@@ -151,7 +151,11 @@ export const controllers = async (
 
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSSOConfig(opts);
-  const directorySyncController = await initDirectorySync({ db, opts, eventController });
+  const directorySyncController = await initDirectorySync({
+    db,
+    opts: opts as JacksonOptionWithRequiredLogger,
+    eventController,
+  });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection;
@@ -175,6 +179,7 @@ export const controllers = async (
     );
     const analyticsStore = db.store('_analytics:events');
     const analyticsController = new AnalyticsController({
+      opts,
       analyticsStore,
       connectionAPIController,
       directorySyncController,
