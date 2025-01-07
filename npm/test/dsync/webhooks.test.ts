@@ -7,12 +7,13 @@ import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
-import axios from '../../src/event/axios';
+import { createAxiosInstance } from '../../src/event/axios';
 import { createSignatureString } from '../../src/event/webhook';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
 const fakeDirectory = getFakeDirectory();
+const axios = createAxiosInstance(console);
 
 const webhook: Directory['webhook'] = {
   endpoint: 'http://localhost',
