@@ -94,8 +94,8 @@ export const controllers = async (
 }> => {
   opts = defaultOpts(opts);
 
-  const db = await DB.new(opts.db);
   const logger = opts.logger as RequiredLogger;
+  const db = await DB.new({ db: opts.db, logger });
 
   const connectionStore = db.store('saml:config');
   const sessionStore = db.store('oauth:session', opts.db.ttl);
@@ -109,7 +109,7 @@ export const controllers = async (
   const tracesStore = db.store('saml:tracer', opts.ssoTraces?.ttl);
 
   const ssoTraces = new SSOTraces({ tracesStore, opts });
-  const eventController = new EventController({ opts });
+  const eventController = new EventController({ opts: opts as JacksonOptionWithRequiredLogger });
   const productController = new ProductController({ productStore, opts });
 
   const connectionAPIController = new ConnectionAPIController({

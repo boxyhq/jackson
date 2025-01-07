@@ -3,13 +3,14 @@ import DB from 'npm/src/db/db';
 import { jacksonOptions } from './env';
 import type { AdapterUser, VerificationToken } from 'next-auth/adapters';
 import defaultDb from 'npm/src/db/defaultDb';
+import { logger } from './logger';
 
 const g = global as any;
 
 export async function initNextAuthDB(): Promise<Storable> {
   if (!g.adminAuthStore) {
     const _opts = defaultDb(jacksonOptions);
-    const db = await DB.new(_opts.db);
+    const db = await DB.new({ db: _opts.db, logger });
     g.adminAuthStore = db.store('admin:auth');
   }
   return g.adminAuthStore as Storable;
