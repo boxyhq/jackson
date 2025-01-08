@@ -45,8 +45,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     return res.send('Authorized done successfully. You may close this window.');
-  } catch (error: any) {
-    return res.status(500).send({ error });
+  } catch (err: any) {
+    return res.status(500).send({ err });
   }
 };
 

@@ -1,4 +1,4 @@
-ARG NODEJS_IMAGE=node:20.17-alpine3.19
+ARG NODEJS_IMAGE=node:22.12-alpine3.21
 FROM --platform=$BUILDPLATFORM $NODEJS_IMAGE AS base
 
 # Install dependencies only when needed
@@ -54,6 +54,7 @@ COPY --from=builder /app/public ./public
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
 # Support for DB migration
 COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
 COPY npm npm

@@ -1,4 +1,4 @@
-import { GetByProductParams, Records, Storable } from '../typings';
+import { GetByProductParams, Records, Storable, JacksonOption } from '../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
@@ -7,6 +7,7 @@ import { JacksonError } from '../controller/error';
 
 const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
+const SSO_TRACES_REDACT_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
 
 /**
  * @swagger
@@ -56,9 +57,11 @@ const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
  */
 class SSOTraces {
   tracesStore: Storable;
+  opts: JacksonOption;
 
-  constructor({ tracesStore }) {
+  constructor({ tracesStore, opts }) {
     this.tracesStore = tracesStore;
+    this.opts = opts;
     // Clean up stale traces at the start
     this.cleanUpStaleTraces();
     // Set timer to run every day
@@ -68,8 +71,16 @@ class SSOTraces {
   }
 
   public async saveTrace(payload: SSOTrace) {
+    if (this.opts.ssoTraces?.disable) {
+      return;
+    }
+
     try {
       const { context } = payload;
+
+      if (this.opts.ssoTraces?.redact) {
+        SSO_TRACES_REDACT_KEYS.forEach((key) => delete context[key]);
+      }
       // Friendly trace id
       const traceId: string = await generateMnemonic();
       // If timestamp present in payload use that value, else generate the current timestamp

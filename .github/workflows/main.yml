@@ -54,7 +54,7 @@ jobs:
       BOXYHQ_LICENSE_KEY: 'dummy-license'
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
@@ -136,6 +136,11 @@ jobs:
           scope: '@boxyhq'
           cache: 'npm'
           check-latest: true
+      - name: Run docker-compose up
+        id: docker_compose
+        uses: isbang/compose-action@v2.0.2
+        with:
+          compose-file: './_dev/docker-compose-cockroachdb.yml'
       - run: node -v
       - run: npm -v
       - name: Setup Next.js cache

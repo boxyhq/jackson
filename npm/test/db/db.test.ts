@@ -51,6 +51,15 @@ const postgresDbConfig = <DatabaseOption>{
   pageLimit: 2,
 };
 
+const cockroachDbConfig = <DatabaseOption>{
+  engine: 'sql',
+  url: 'postgresql://root@localhost:26257/postgres?sslmode=disable',
+  type: 'cockroachdb',
+  ttl: 1,
+  cleanupLimit: 10,
+  pageLimit: 2,
+};
+
 const mongoDbConfig = <DatabaseOption>{
   engine: 'mongo',
   url: 'mongodb://localhost:27017/jackson',
@@ -146,6 +155,13 @@ const dbs = [
   },
   {
     ...postgresDbConfig,
+    encryptionKey,
+  },
+  {
+    ...cockroachDbConfig,
+  },
+  {
+    ...cockroachDbConfig,
     encryptionKey,
   },
   {

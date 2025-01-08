@@ -22,7 +22,6 @@ import {
   validateSortOrder,
 } from '../utils';
 import { JacksonError } from '../error';
-import { OryController } from '../../ee/ory/ory';
 
 async function fetchMetadata(resource: string) {
   try {
@@ -32,8 +31,8 @@ async function fetchMetadata(resource: string) {
       timeout: 8000,
     });
     return response.data;
-  } catch (error: any) {
-    throw new JacksonError("Couldn't fetch XML data", error.response?.status || 400);
+  } catch (err: any) {
+    throw new JacksonError("Couldn't fetch XML data", err.response?.status || 400);
   }
 }
 
@@ -60,8 +59,7 @@ function validateMetadataURL(metadataUrl: string) {
 const saml = {
   create: async (
     body: SAMLSSOConnectionWithRawMetadata | SAMLSSOConnectionWithEncodedMetadata,
-    connectionStore: Storable,
-    oryController: OryController
+    connectionStore: Storable
   ) => {
     const {
       encodedRawMetadata,
@@ -155,8 +153,6 @@ const saml = {
     }
 
     const exists = await connectionStore.get(record.clientID);
-    const oryProjectId = exists?.ory?.projectId;
-    const oryOrganizationId = exists?.ory?.organizationId;
 
     if (exists) {
       connectionClientSecret = exists.clientSecret;
@@ -165,21 +161,6 @@ const saml = {
     }
 
     record.clientSecret = connectionClientSecret;
-
-    const oryRes = await oryController.createConnection(
-      {
-        sdkToken: undefined,
-        projectId: oryProjectId,
-        domains: body.ory?.domains,
-        organizationId: oryOrganizationId,
-        error: undefined,
-      },
-      tenant,
-      product
-    );
-    if (oryRes) {
-      record.ory = oryRes;
-    }
 
     await connectionStore.put(
       record.clientID,
@@ -206,8 +187,7 @@ const saml = {
   update: async (
     body: UpdateSAMLConnectionParams,
     connectionStore: Storable,
-    connectionsGetter: IConnectionAPIController['getConnections'],
-    oryController: OryController
+    connectionsGetter: IConnectionAPIController['getConnections']
   ) => {
     const {
       encodedRawMetadata, // could be empty
@@ -317,21 +297,6 @@ const saml = {
 
     if ('identifierFormat' in body) {
       record['identifierFormat'] = body.identifierFormat;
-    }
-
-    const oryRes = await oryController.updateConnection(
-      {
-        sdkToken: undefined,
-        projectId: _savedConnection.ory?.projectId,
-        domains: _savedConnection.ory?.domains,
-        organizationId: _savedConnection.ory?.organizationId,
-        error: undefined,
-      },
-      _savedConnection.tenant,
-      _savedConnection.product
-    );
-    if (oryRes) {
-      record.ory = oryRes;
     }
 
     await connectionStore.put(

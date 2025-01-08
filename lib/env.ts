@@ -1,4 +1,10 @@
-import type { DatabaseEngine, DatabaseOption, DatabaseType, JacksonOption } from '@boxyhq/saml-jackson';
+import type {
+  DatabaseEngine,
+  DatabaseOption,
+  DatabaseType,
+  JacksonOption,
+  SSOTracesOption,
+} from '@boxyhq/saml-jackson';
 
 const samlPath = '/api/oauth/saml';
 const oidcPath = '/api/oauth/oidc';
@@ -51,6 +57,13 @@ const db: DatabaseOption = {
     writeCapacityUnits: process.env.DB_DYNAMODB_RCUS ? Number(process.env.DB_DYNAMODB_WCUS) : undefined,
   },
   manualMigration: process.env.DB_MANUAL_MIGRATION === 'true',
+};
+
+// ssoTraces options
+const ssoTraces: SSOTracesOption = {
+  disable: process.env.SSO_TRACES_DISABLE === 'true',
+  redact: process.env.SSO_TRACES_REDACT === 'true',
+  ttl: process.env.SSO_TRACES_TTL ? Number(process.env.SSO_TRACES_TTL) * 60 * 60 : undefined,
 };
 
 /** Indicates if the Jackson instance is hosted (i.e. not self-hosted) */
@@ -113,10 +126,7 @@ const jacksonOptions: JacksonOption = {
   },
   setupLinkExpiryDays,
   boxyhqHosted,
-  ory: {
-    projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
-    sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
-  },
+  ssoTraces,
 };
 
 const adminPortalSSODefaults = {

@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
   OAuthReqBody,
   OAuthReqBodyWithAccessType,
@@ -10,7 +11,13 @@ import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
 import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
-import * as client from 'openid-client';
+
+export const code = '1234567890';
+export const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
+export const genKey = crypto.randomBytes(32);
+export const iv = crypto.randomBytes(12);
+export const clientCode = genKey.toString('hex') + '.' + code;
+export const clientToken = genKey.toString('hex') + '.' + token;
 
 // BEGIN: Fixtures for authorize
 export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
@@ -19,8 +26,6 @@ export const authz_request_normal: Partial<OAuthReqBodyWithClientId> = {
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
 };
 
-const code_verifier = client.randomPKCECodeVerifier();
-export const calculateCodeChallenge = async () => await client.calculatePKCECodeChallenge(code_verifier);
 export const authz_request_normal_with_code_challenge: Partial<OAuthReqBodyWithClientId> = {
   redirect_uri: boxyhq.defaultRedirectUrl,
   state: 'state-123',
@@ -100,7 +105,7 @@ export const invalid_tenant_product = (product?, tenant?): Partial<OAuthTokenReq
     grant_type: 'authorization_code',
     client_id: `tenant=${tenant}&product=${product}`,
     client_secret: 'dummy',
-    code: CODE,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
@@ -128,7 +133,6 @@ export const oidc_response_with_error: CallbackParamsType = {
 // END: Fixtures for oidcAuthzResponse
 
 // BEGIN: Fixtures for token
-const CODE = '1234567890';
 const CLIENT_SECRET_VERIFIER = 'TOP-SECRET';
 export const bodyWithInvalidCode: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
@@ -142,21 +146,21 @@ export const bodyWithInvalidRedirectUri: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: CODE,
+  code: clientCode,
   redirect_uri: 'http://example.com',
 };
 export const bodyWithMissingRedirectUri: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: CODE,
+  code: clientCode,
 };
 //encoded clientId and wrong secret
 export const bodyWithInvalidClientSecret: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: 'dummy',
-  code: CODE,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 //unencoded clientId with wrong secret
@@ -168,7 +172,7 @@ export const bodyWithUnencodedClientId_InvalidClientSecret_gen = (connectionReco
     grant_type: 'authorization_code',
     client_id: connectionRecord.clientID,
     client_secret: 'dummy',
-    code: CODE,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
@@ -177,7 +181,7 @@ export const bodyWithDummyCredentials: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `dummy`,
   client_secret: 'dummy',
-  code: CODE,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
@@ -185,7 +189,7 @@ export const token_req_encoded_client_id: Partial<OAuthTokenReq> = {
   grant_type: 'authorization_code',
   client_id: `tenant=${boxyhq.tenant}&product=${boxyhq.product}`,
   client_secret: CLIENT_SECRET_VERIFIER,
-  code: CODE,
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
@@ -197,52 +201,45 @@ export const token_req_unencoded_client_id_gen = (connectionRecords) => {
     grant_type: 'authorization_code',
     client_id: connectionRecord.clientID,
     client_secret: connectionRecord.clientSecret,
-    code: CODE,
+    code: clientCode,
     redirect_uri: boxyhq.defaultRedirectUrl,
   };
 };
 
 export const token_req_dummy_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
-  code: CODE,
+  code: clientCode,
   client_id: 'dummy',
   client_secret: 'TOP-SECRET-WRONG',
 };
 
 export const token_req_dummy_client_id_idp_saml_login = {
   grant_type: 'authorization_code',
-  code: CODE,
+  code: clientCode,
   client_id: 'dummy',
   client_secret: 'TOP-SECRET',
 };
 
 export const token_req_encoded_client_id_idp_saml_login = {
   grant_type: 'authorization_code',
-  code: CODE,
+  code: clientCode,
   client_id: 'tenant=boxyhq.com&product=crm',
   client_secret: 'TOP-SECRET',
 };
 
 export const token_req_encoded_client_id_idp_saml_login_wrong_secretverifier = {
   grant_type: 'authorization_code',
-  code: CODE,
+  code: clientCode,
   client_id: 'tenant=boxyhq.com&product=crm',
   client_secret: 'TOP-SECRET-WRONG',
 };
 
-export const token_req_cv_mismatch = {
+export const token_req = {
   grant_type: 'authorization_code',
-  code: CODE,
-  code_verifier: code_verifier + 'invalid_chars',
+  code: clientCode,
   redirect_uri: boxyhq.defaultRedirectUrl,
 };
 
-export const token_req_with_cv = {
-  grant_type: 'authorization_code',
-  code: CODE,
-  code_verifier,
-  redirect_uri: boxyhq.defaultRedirectUrl,
-};
 // END: Fixtures for token
 
 // BEGIN: Fixtures for *_api.test.ts

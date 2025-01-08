@@ -71,8 +71,8 @@ export class GoogleAuth {
       };
 
       return { data, error: null };
-    } catch (error: any) {
-      return apiError(error);
+    } catch (err: any) {
+      return apiError(err);
     }
   }
 
@@ -92,8 +92,8 @@ export class GoogleAuth {
       const { tokens } = await oauth2Client.getToken(code);
 
       return { data: tokens, error: null };
-    } catch (error: any) {
-      return apiError(error);
+    } catch (err: any) {
+      return apiError(err);
     }
   }
 
@@ -124,8 +124,8 @@ export class GoogleAuth {
       }
 
       return { data, error: null };
-    } catch (error: any) {
-      return apiError(error);
+    } catch (err: any) {
+      return apiError(err);
     }
   }
 }
