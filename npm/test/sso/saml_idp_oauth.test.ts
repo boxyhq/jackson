@@ -41,6 +41,12 @@ import {
   token_req_encoded_client_id_idp_saml_login,
   token_req_dummy_client_id_idp_saml_login_wrong_secretverifier,
   token_req_encoded_client_id_idp_saml_login_wrong_secretverifier,
+  code,
+  token,
+  genKey,
+  iv,
+  clientCode,
+  clientToken,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
@@ -51,14 +57,67 @@ let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated
 let idpEnabledOAuthController: IOAuthController;
 let keyPair: jose.GenerateKeyPairResult;
 
-const code = '1234567890';
-const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
-
 const metadataPath = path.join(__dirname, '/data/metadata');
 
 let connections: Array<any> = [];
 let code_verifier: string;
 let code_challenge: string;
+
+function _stubRandomBytes(codeOrToken: string) {
+  return (
+    sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(codeOrToken)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+  );
+}
+
+function stubRandomBytesCode() {
+  return _stubRandomBytes(code);
+}
+
+function stubRandomBytesToken() {
+  return _stubRandomBytes(token);
+}
+
+function stubRandomBytesAll() {
+  return (
+    sinon
+      .stub(crypto, 'randomBytes')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(code)
+      .onSecondCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onThirdCall()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+      .onCall(3)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(token)
+      .onCall(4)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(genKey)
+      .onCall(5)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .returns(iv)
+  );
+}
 
 tap.before(async () => {
   const client = await import('openid-client');
@@ -308,16 +367,17 @@ tap.test('samlResponse()', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code);
+    const stubRandomBytes = stubRandomBytesCode();
 
     const response = await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
     const params = new URLSearchParams(new URL(response.redirect_url!).search);
 
     t.ok(stubValidate.calledOnce, 'validate called once');
-    t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+    t.ok(
+      stubRandomBytes.calledThrice,
+      'samlResponse randomBytes called thrice: ' + stubRandomBytes.callCount
+    );
     t.ok('redirect_url' in response, 'response contains redirect_url');
     t.ok(params.has('code'), 'query string includes code');
     t.ok(params.has('state'), 'query string includes state');
@@ -472,21 +532,16 @@ tap.test('token()', async (t) => {
     async (t) => {
       t.test('encoded client_id', async (t) => {
         const body = token_req_encoded_client_id;
-        const stubRandomBytes = sinon
-          .stub(crypto, 'randomBytes')
-          .onFirstCall()
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          .returns(token);
+        const stubRandomBytes = stubRandomBytesToken();
 
         const response = await oauthController.token(<OAuthTokenReq>body);
 
-        t.ok(stubRandomBytes.calledOnce, 'randomBytes called once');
+        t.ok(stubRandomBytes.calledThrice, 'token randomBytes called thrice: ' + stubRandomBytes.callCount);
         t.ok('access_token' in response, 'includes access_token');
         t.ok('token_type' in response, 'includes token_type');
         t.ok('expires_in' in response, 'includes expires_in');
         t.notOk('id_token' in response, 'does not include id_token');
-        t.match(response.access_token, token);
+        t.match(response.access_token, clientToken);
         t.match(response.token_type, 'bearer');
         t.match(response.expires_in, 300);
 
@@ -518,9 +573,7 @@ tap.test('token()', async (t) => {
           sessionIndex: '',
         });
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = stubRandomBytesAll();
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -532,7 +585,7 @@ tap.test('token()', async (t) => {
         t.ok('token_type' in tokenRes, 'includes token_type');
         t.ok('expires_in' in tokenRes, 'includes expires_in');
         t.notOk('id_token' in tokenRes, 'does not include id_token');
-        t.match(tokenRes.access_token, token);
+        t.match(tokenRes.access_token, clientToken);
         t.match(tokenRes.token_type, 'bearer');
         t.match(tokenRes.expires_in, 300);
 
@@ -575,9 +628,7 @@ tap.test('token()', async (t) => {
           sessionIndex: '',
         });
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = stubRandomBytesAll();
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -644,9 +695,7 @@ tap.test('token()', async (t) => {
           sessionIndex: '',
         });
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+        const stubRandomBytes = stubRandomBytesAll();
 
         await oauthController.samlResponse(<SAMLResponsePayload>responseBody);
 
@@ -703,12 +752,10 @@ tap.test('IdP initiated flow', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = stubRandomBytesAll();
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), clientCode);
 
     const body = token_req_encoded_client_id_idp_saml_login_wrong_secretverifier;
 
@@ -736,12 +783,10 @@ tap.test('IdP initiated flow', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = stubRandomBytesAll();
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), clientCode);
 
     const body = token_req_dummy_client_id_idp_saml_login_wrong_secretverifier;
 
@@ -769,12 +814,10 @@ tap.test('IdP initiated flow', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = stubRandomBytesAll();
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), clientCode);
 
     const body = token_req_encoded_client_id_idp_saml_login;
 
@@ -782,7 +825,7 @@ tap.test('IdP initiated flow', async (t) => {
     t.ok('access_token' in tokenRes, 'includes access_token');
     t.ok('token_type' in tokenRes, 'includes token_type');
     t.ok('expires_in' in tokenRes, 'includes expires_in');
-    t.equal(tokenRes.access_token, token);
+    t.equal(tokenRes.access_token, clientToken);
     t.equal(tokenRes.token_type, 'bearer');
     t.equal(tokenRes.expires_in, 300);
     const profile = await idpEnabledOAuthController.userInfo(tokenRes.access_token);
@@ -807,12 +850,10 @@ tap.test('IdP initiated flow', async (t) => {
       sessionIndex: '',
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const stubRandomBytes = sinon.stub(crypto, 'randomBytes').returns(code).onSecondCall().returns(token);
+    const stubRandomBytes = stubRandomBytesAll();
 
     const { redirect_url } = await idpEnabledOAuthController.samlResponse(<SAMLResponsePayload>responseBody);
-    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), code);
+    t.equal(new URLSearchParams(new URL(redirect_url!).search).get('code'), clientCode);
 
     const body = token_req_dummy_client_id_idp_saml_login;
 
@@ -820,7 +861,7 @@ tap.test('IdP initiated flow', async (t) => {
     t.ok('access_token' in tokenRes, 'includes access_token');
     t.ok('token_type' in tokenRes, 'includes token_type');
     t.ok('expires_in' in tokenRes, 'includes expires_in');
-    t.equal(tokenRes.access_token, token);
+    t.equal(tokenRes.access_token, clientToken);
     t.equal(tokenRes.token_type, 'bearer');
     t.equal(tokenRes.expires_in, 300);
     const profile = await idpEnabledOAuthController.userInfo(tokenRes.access_token);
