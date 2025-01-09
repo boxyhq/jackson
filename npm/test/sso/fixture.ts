@@ -12,6 +12,7 @@ import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
 import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
 
+export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
 export const code = '1234567890';
 export const token = '24c1550190dd6a5a9bd6fe2a8ff69d593121c7b9';
 export const genKey = crypto.randomBytes(32);

@@ -297,7 +297,7 @@ export class SSOHandler {
     ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] };
   }) {
     if (!this.opts.oidcPath) {
-      throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
+      throw new JacksonError(GENERIC_ERR_STRING, 400, 'OpenID response handler path (oidcPath) is not set');
     }
 
     const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
@@ -342,8 +342,7 @@ export class SSOHandler {
         authorize_form: null,
       };
     } catch (err: any) {
-      this.opts.logger.error(err);
-      throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
+      throw new JacksonError(GENERIC_ERR_STRING, 400, `Unable to complete OIDC request. - ${err.message}`);
     }
   }
 
@@ -393,10 +392,9 @@ export class SSOHandler {
       const responseForm = saml.createPostForm(session.requested.acsUrl, params);
 
       return { responseForm };
-    } catch (err) {
-      this.opts.logger.error('Error creating SAML response:', err);
+    } catch (err: any) {
       // TODO: Instead send saml response with status code
-      throw new JacksonError('Unable to validate SAML Response.', 403);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, `Error creating SAML Response: ${err.message}`);
     }
   };
 
