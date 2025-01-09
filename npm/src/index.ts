@@ -20,7 +20,6 @@ import SSOTraces from './sso-traces';
 import EventController from './event';
 import { ProductController } from './ee/product';
 import { OryController } from './ee/ory/ory';
-import { ChatController } from './ee/chat';
 
 const tracesTTL = 7 * 24 * 60 * 60;
 
@@ -76,7 +75,6 @@ export const controllers = async (
   brandingController: IBrandingController;
   checkLicense: () => Promise<boolean>;
   productController: ProductController;
-  chatController: ChatController;
   close: () => Promise<void>;
 }> => {
   opts = defaultOpts(opts);
@@ -93,7 +91,6 @@ export const controllers = async (
   const settingsStore = db.store('portal:settings');
   const productStore = db.store('product:config');
   const tracesStore = db.store('saml:tracer', tracesTTL);
-  const chatStore = db.store('llm:chat');
   const conversationStore = db.store('llm:conversation');
   const llmConfigStore = db.store('llm:config');
 
@@ -139,7 +136,6 @@ export const controllers = async (
   const oidcDiscoveryController = new OidcDiscoveryController({ opts });
   const spConfig = new SPSSOConfig(opts);
   const directorySyncController = await initDirectorySync({ db, opts, eventController });
-  const chatController = new ChatController({ chatStore, conversationStore, llmConfigStore, opts });
 
   // write pre-loaded connections if present
   const preLoadedConnection = opts.preLoadedConnection;
@@ -194,7 +190,6 @@ export const controllers = async (
       return checkLicense(opts.boxyhqLicenseKey);
     },
     productController,
-    chatController,
     close: async () => {
       await db.close();
     },
