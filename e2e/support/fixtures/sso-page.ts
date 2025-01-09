@@ -1,6 +1,8 @@
 import { type Page, type Locator, expect } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
+export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
+
 const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;
 export const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
 

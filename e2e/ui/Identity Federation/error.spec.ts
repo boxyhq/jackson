@@ -1,5 +1,5 @@
 import { test as baseTest, expect, request } from '@playwright/test';
-import { ADMIN_PORTAL_PRODUCT, Portal, SSOPage } from 'e2e/support/fixtures';
+import { ADMIN_PORTAL_PRODUCT, GENERIC_ERR_STRING, Portal, SSOPage } from 'e2e/support/fixtures';
 import { IdentityFederationPage } from 'e2e/support/fixtures/identity-federation';
 
 type MyFixtures = {
@@ -130,10 +130,8 @@ test('SAML Federated app + inactive SSO connection', async ({
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(
-    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
-  ).toBeVisible();
-  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
+  errorMessages.push(GENERIC_ERR_STRING);
   await portal.doCredentialsLogin();
   await portal.isLoggedIn();
 
@@ -205,10 +203,8 @@ test('OIDC Federated app + inactive SSO connection', async ({
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(
-    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
-  ).toBeVisible();
-  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
+  errorMessages.push(GENERIC_ERR_STRING);
   await portal.doCredentialsLogin();
   await portal.isLoggedIn();
 
