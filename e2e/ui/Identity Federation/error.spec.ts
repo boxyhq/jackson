@@ -93,7 +93,8 @@ test('SAML Federated app + Wrong ACS url', async ({ baseURL, page, portal, samlF
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(page.getByText("SSO error: Assertion Consumer Service URL doesn't match.")).toBeVisible();
+  await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
+
   errorMessages.push("Assertion Consumer Service URL doesn't match.");
   await portal.doCredentialsLogin();
   await portal.isLoggedIn();
@@ -131,7 +132,7 @@ test('SAML Federated app + inactive SSO connection', async ({
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
-  errorMessages.push(GENERIC_ERR_STRING);
+  errorMessages.push('SSO connection is deactivated.');
   await portal.doCredentialsLogin();
   await portal.isLoggedIn();
 
@@ -204,7 +205,7 @@ test('OIDC Federated app + inactive SSO connection', async ({
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
-  errorMessages.push(GENERIC_ERR_STRING);
+  errorMessages.push('SSO connection is deactivated.');
   await portal.doCredentialsLogin();
   await portal.isLoggedIn();
 
