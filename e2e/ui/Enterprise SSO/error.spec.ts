@@ -73,7 +73,7 @@ test('OAuth2 wrapper + SAML provider + inactive connection', async ({ ssoPage, p
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
-  errorMessages.push(GENERIC_ERR_STRING);
+  errorMessages.push('SSO connection is deactivated.');
 });
 
 test('OAuth2 wrapper + OIDC provider + wrong redirectUrl', async ({ ssoPage, page, baseURL }, testInfo) => {
@@ -117,7 +117,7 @@ test('OAuth2 wrapper + OIDC provider + inactive connection', async ({ ssoPage, p
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
   await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
-  errorMessages.push(GENERIC_ERR_STRING);
+  errorMessages.push('SSO connection is deactivated.');
 });
 
 test('SSO Tracer inspect', async ({ page }) => {
