@@ -107,6 +107,8 @@ export class SSOPage {
     }
     // submit the form
     await this.saveConnection.click();
+    // check if the added connection appears in the connection list
+    await expect(this.page.getByText(ssoName)).toBeVisible();
     this.connections = [...this.connections, ssoName];
   }
 
