@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (!token) {
+      logger.error('Userinfo error: token not found in request');
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
@@ -30,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(profile);
   } catch (err: any) {
-    logger.error(err, 'userinfo error');
+    logger.error(err, 'Userinfo error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).json({ message });
