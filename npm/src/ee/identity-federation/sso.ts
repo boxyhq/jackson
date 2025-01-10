@@ -11,7 +11,7 @@ import type {
   SSOTrace,
   JacksonOptionWithRequiredLogger,
 } from '../../typings';
-import { getErrorMessage, isConnectionActive } from '../../controller/utils';
+import { GENERIC_ERR_STRING, getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
 const isSAMLConnection = (connection: SAMLSSORecord | OIDCSSORecord): connection is SAMLSSORecord => {
@@ -79,7 +79,7 @@ export class SSO {
 
       // Verify the request if it is signed
       if (publicKey && !saml.hasValidSignature(decodedRequest, publicKey, null)) {
-        throw new JacksonError('Invalid SAML Request signature.', 400);
+        throw new JacksonError(GENERIC_ERR_STRING, 400, 'Invalid SAML Request signature.');
       }
 
       app = await this.app.getByEntityId(entityId);
@@ -89,7 +89,7 @@ export class SSO {
       context.acsUrl = acsUrl;
 
       if (app.acsUrl !== acsUrl) {
-        throw new JacksonError("Assertion Consumer Service URL doesn't match.", 400);
+        throw new JacksonError(GENERIC_ERR_STRING, 400, "Assertion Consumer Service URL doesn't match.");
       }
 
       const response = await this.ssoHandler.resolveConnection({
@@ -120,13 +120,17 @@ export class SSO {
       }
 
       if (!connection) {
-        throw new JacksonError('No SSO connection found.', 404);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'No SSO connection found.');
       }
 
       context.clientID = connection.clientID;
 
       if (!isConnectionActive(connection)) {
-        throw new JacksonError('SSO connection is deactivated. Please contact your administrator.', 403);
+        throw new JacksonError(
+          GENERIC_ERR_STRING,
+          403,
+          'SSO connection is deactivated. Please contact your administrator.'
+        );
       }
 
       const requestParams = {
