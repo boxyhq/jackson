@@ -421,6 +421,7 @@ export class OAuthController implements IOAuthController {
         });
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        this.opts.logger.error(`authorize error: ${error_description} `);
         metrics.increment('oauthAuthorizeError', {
           protocol,
           login_type,
@@ -504,6 +505,7 @@ export class OAuthController implements IOAuthController {
         }).href;
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
+        this.opts.logger.error(`authorize error: ${error_description}`);
         metrics.increment('oauthAuthorizeError', {
           protocol,
           login_type,
@@ -844,6 +846,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: unknown) {
       metrics.increment('oAuthResponseError', { protocol, login_type });
       const error_description = getErrorMessage(err);
+      this.opts.logger.error(`samlResponse error: ${error_description}`);
       // Trace the error
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
@@ -1022,6 +1025,7 @@ export class OAuthController implements IOAuthController {
     } catch (err: any) {
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
+      this.opts.logger.error(`oidcResponse error: ${error_message}`);
       metrics.increment('oAuthResponseError', { protocol, login_type });
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
@@ -1281,7 +1285,7 @@ export class OAuthController implements IOAuthController {
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
         if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
-          throw new JacksonError('JWT signing keys are not loaded', 500);
+          throw new JacksonError(GENERIC_ERR_STRING, 500, 'JWT signing keys are not loaded');
         }
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
