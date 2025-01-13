@@ -25,7 +25,7 @@ export function initLogger(logFile?: string, logLevel?: string): Logger {
   }
 
   return pino({
-    level: logLevel || 'warn',
+    level: logLevel || 'info',
     timestamp: () => `,"time":"${new Date().toISOString()}"`,
     transport: isDevelopment
       ? {
