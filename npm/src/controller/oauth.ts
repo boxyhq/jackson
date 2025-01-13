@@ -304,7 +304,7 @@ export class OAuthController implements IOAuthController {
       if (isMissingJWTKeysForOIDCFlow) {
         error = 'server_error';
         internalError =
-          'OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded';
+          'Authorize error: OAuth server not configured correctly for openid flow, check if JWT signing keys are loaded';
         error_description = GENERIC_ERR_STRING;
         this.opts.logger.error(internalError);
       }
@@ -321,7 +321,7 @@ export class OAuthController implements IOAuthController {
 
       if (!connectionIsSAML && !connectionIsOIDC) {
         error = 'server_error';
-        internalError = 'Connection appears to be misconfigured';
+        internalError = 'Authorize error: Connection appears to be misconfigured';
         error_description = GENERIC_ERR_STRING;
         this.opts.logger.error(internalError);
       }
@@ -376,7 +376,7 @@ export class OAuthController implements IOAuthController {
           post = true;
         } else {
           // This code here is kept for backward compatibility. We now have validation while adding the SSO connection to ensure binding is present.
-          internalError = 'SAML binding could not be retrieved';
+          internalError = 'Authorize error: SAML binding could not be retrieved';
           const error_description = GENERIC_ERR_STRING;
           this.opts.logger.error(internalError);
 
