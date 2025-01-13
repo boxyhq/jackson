@@ -126,11 +126,7 @@ export class SSO {
       context.clientID = connection.clientID;
 
       if (!isConnectionActive(connection)) {
-        throw new JacksonError(
-          GENERIC_ERR_STRING,
-          403,
-          'SSO connection is deactivated. Please contact your administrator.'
-        );
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'SSO connection is deactivated.');
       }
 
       const requestParams = {
