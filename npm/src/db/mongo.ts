@@ -1,5 +1,13 @@
 import { Collection, Db, MongoClient, Sort, UpdateOptions } from 'mongodb';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Encrypted,
+  Index,
+  Records,
+  RequiredLogger,
+  SortOrder,
+} from '../typings';
 import * as dbutils from './utils';
 
 type _Document = {
@@ -15,9 +23,11 @@ class Mongo implements DatabaseDriver {
   private client!: MongoClient;
   private collection!: Collection;
   private db!: Db;
+  private logger: RequiredLogger;
 
-  constructor(options: DatabaseOption) {
+  constructor(options: DatabaseOption, logger: RequiredLogger) {
     this.options = options;
+    this.logger = logger;
   }
 
   async init(): Promise<Mongo> {
@@ -26,7 +36,7 @@ class Mongo implements DatabaseDriver {
       this.client = new MongoClient(dbUrl);
       await this.client.connect();
     } catch (err) {
-      console.error(`error connecting to engine: ${this.options.engine}, db: ${err}`);
+      this.logger.error(`error connecting to engine: ${this.options.engine}, db: ${err}`);
       throw err;
     }
 
@@ -44,7 +54,7 @@ class Mongo implements DatabaseDriver {
         }
         break;
       } catch (err) {
-        console.error(
+        this.logger.error(
           `error in index namespace execution for db engine: ${this.options.engine},  err: ${err}`
         );
         await dbutils.sleep(1000);
@@ -211,7 +221,7 @@ class Mongo implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption): Promise<Mongo> => {
-    return await new Mongo(options).init();
+  new: async (options: { db: DatabaseOption; logger: RequiredLogger }): Promise<Mongo> => {
+    return await new Mongo(options.db, options.logger).init();
   },
 };

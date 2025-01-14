@@ -1,5 +1,5 @@
 import { test as baseTest, expect, request } from '@playwright/test';
-import { ADMIN_PORTAL_PRODUCT, Portal, SSOPage } from 'e2e/support/fixtures';
+import { ADMIN_PORTAL_PRODUCT, GENERIC_ERR_STRING, Portal, SSOPage } from 'e2e/support/fixtures';
 
 type MyFixtures = {
   ssoPage: SSOPage;
@@ -72,10 +72,8 @@ test('OAuth2 wrapper + SAML provider + inactive connection', async ({ ssoPage, p
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(
-    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
-  ).toBeVisible();
-  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
+  errorMessages.push('SSO connection is deactivated.');
 });
 
 test('OAuth2 wrapper + OIDC provider + wrong redirectUrl', async ({ ssoPage, page, baseURL }, testInfo) => {
@@ -118,10 +116,8 @@ test('OAuth2 wrapper + OIDC provider + inactive connection', async ({ ssoPage, p
   // Wait for browser to redirect to error page
   await page.waitForURL((url) => url.origin === baseURL && url.pathname === '/error');
   // Assert error text
-  await expect(
-    page.getByText('SSO error: SSO connection is deactivated. Please contact your administrator.')
-  ).toBeVisible();
-  errorMessages.push('SSO connection is deactivated. Please contact your administrator.');
+  await expect(page.getByText(`SSO error: ${GENERIC_ERR_STRING}`)).toBeVisible();
+  errorMessages.push('SSO connection is deactivated.');
 });
 
 test('SSO Tracer inspect', async ({ page }) => {

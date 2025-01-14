@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
+import { logger } from '@lib/logger';
 
 type SAMLRequest = {
   SAMLRequest: string;
@@ -28,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
     }
   } catch (err: any) {
-    console.error('authorize error:', err);
+    logger.error(err, 'SAML Federation authorize error');
     const { message, statusCode = 500 } = err;
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');

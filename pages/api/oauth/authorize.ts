@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { OAuthReq } from '@boxyhq/saml-jackson';
 import { setErrorCookie } from '@lib/utils';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -17,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
     if (redirect_url) {
       if (error) {
-        console.error(`authorize error: ${error}`);
+        logger.error(`Authorize error: ${error}`);
       }
       res.redirect(302, redirect_url);
     } else {
@@ -25,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.send(authorize_form);
     }
   } catch (err: any) {
-    console.error('authorize error: ', err);
+    logger.error(err, 'Authorize error');
     const { message, statusCode = 500 } = err;
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });

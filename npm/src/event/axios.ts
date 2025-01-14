@@ -1,35 +1,39 @@
 import axios from 'axios';
+import type { RequiredLogger } from '../typings';
 
 const retry = 3;
 const retryDelay = 3000;
-const axiosInstance = axios.create();
 
-// Axios interceptors to handle the Webhook retries
-axiosInstance.interceptors.response.use(undefined, (err: any) => {
-  const config = err.config;
+export const createAxiosInstance = (logger: RequiredLogger) => {
+  const axiosInstance = axios.create();
 
-  if (!config) {
-    return Promise.reject(err);
-  }
+  // Axios interceptors to handle the Webhook retries
+  axiosInstance.interceptors.response.use(undefined, (err: any) => {
+    const config = err.config;
 
-  config.__retryCount = config.__retryCount || 0;
+    if (!config) {
+      return Promise.reject(err);
+    }
 
-  if (config.__retryCount >= retry) {
-    return Promise.reject(err);
-  }
+    config.__retryCount = config.__retryCount || 0;
 
-  config.__retryCount += 1;
+    if (config.__retryCount >= retry) {
+      return Promise.reject(err);
+    }
 
-  const backoff = new Promise(function (resolve) {
-    setTimeout(function () {
-      resolve(1);
-    }, retryDelay);
+    config.__retryCount += 1;
+
+    const backoff = new Promise(function (resolve) {
+      setTimeout(function () {
+        resolve(1);
+      }, retryDelay);
+    });
+
+    return backoff.then(function () {
+      logger.info(`Retrying sending webhook event to ${config.url}... Attempt ${config.__retryCount}`);
+      return axiosInstance(config);
+    });
   });
 
-  return backoff.then(function () {
-    console.info(`Retrying sending webhook event to ${config.url}... Attempt ${config.__retryCount}`);
-    return axiosInstance(config);
-  });
-});
-
-export default axiosInstance;
+  return axiosInstance;
+};

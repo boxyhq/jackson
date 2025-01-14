@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { extractAuthToken } from '@lib/auth';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -21,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (!token) {
+      logger.error('Userinfo error: token not found in request');
       res.status(401).json({ message: 'Unauthorized' });
       return;
     }
@@ -29,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(profile);
   } catch (err: any) {
-    console.error('userinfo error:', err);
+    logger.error(err, 'Userinfo error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).json({ message });

@@ -7,8 +7,8 @@ import type {
   DirectorySyncEvent,
   IWebhookEventsLogger,
   IDirectoryConfig,
-  JacksonOption,
   IEventProcessor,
+  JacksonOptionWithRequiredLogger,
 } from '../typings';
 import { sendPayloadToWebhook } from '../event/webhook';
 import { transformEventPayload } from './scim/transform';
@@ -26,7 +26,7 @@ interface Payload {
 }
 
 interface EventCallbackParams {
-  opts: JacksonOption;
+  opts: JacksonOptionWithRequiredLogger;
   directories: IDirectoryConfig;
   eventProcessor: IEventProcessor;
   webhookLogs: IWebhookEventsLogger;
@@ -57,12 +57,12 @@ export const handleEventCallback = async ({
     const { data: directory, error } = await directories.get(directoryId);
 
     if (error) {
-      console.error(`Error fetching directory ${directoryId}: ${error.message}`);
+      opts.logger.error(`Error fetching directory ${directoryId}: ${error.message}`);
       throw new JacksonError(error.message, error.code);
     }
 
     if (!directory.webhook.endpoint || !directory.webhook.secret) {
-      console.error(`Webhook not configured for directory ${directoryId}. Skipping ...`);
+      opts.logger.error(`Webhook not configured for directory ${directoryId}. Skipping ...`);
       return;
     }
 
@@ -77,7 +77,7 @@ export const handleEventCallback = async ({
 
     try {
       // Send the event to the webhook (synchronously)
-      await sendPayloadToWebhook(directory.webhook, event, opts.dsync?.debugWebhooks);
+      await sendPayloadToWebhook(directory.webhook, event, opts.dsync?.debugWebhooks, opts.logger);
     } catch (err: any) {
       status = err.response ? err.response.status : 500;
     }

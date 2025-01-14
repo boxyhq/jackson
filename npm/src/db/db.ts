@@ -6,6 +6,7 @@ import {
   EncryptionKey,
   Index,
   Records,
+  RequiredLogger,
   SortOrder,
   Storable,
 } from '../typings';
@@ -131,22 +132,23 @@ class DB implements DatabaseDriver {
   }
 }
 
-const _new = async (options: DatabaseOption | DatabaseDriverOption) => {
-  const encryptionKey = options.encryptionKey
-    ? options.encryptionKey.length === 32
-      ? Buffer.from(options.encryptionKey, 'latin1')
-      : Buffer.from(options.encryptionKey, 'base64')
+const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger: RequiredLogger }) => {
+  const dbOpts = options.db;
+  const encryptionKey = dbOpts.encryptionKey
+    ? dbOpts.encryptionKey.length === 32
+      ? Buffer.from(dbOpts.encryptionKey, 'latin1')
+      : Buffer.from(dbOpts.encryptionKey, 'base64')
     : null;
 
-  if ('driver' in options) {
-    return new DB(options.driver, encryptionKey);
+  if ('driver' in dbOpts) {
+    return new DB(dbOpts.driver, encryptionKey);
   }
 
-  switch (options.engine) {
+  switch (dbOpts.engine) {
     case 'redis':
       return new DB(await redis.new(options), encryptionKey);
     case 'sql':
-      switch (options.type) {
+      switch (dbOpts.type) {
         case 'mssql':
           return new DB(
             await sql.new(options, {
@@ -201,14 +203,17 @@ const _new = async (options: DatabaseOption | DatabaseDriverOption) => {
     case 'dynamodb':
       return new DB(await dynamodb.new(options), encryptionKey);
     default:
-      throw new Error('unsupported db engine: ' + options.engine);
+      throw new Error('unsupported db engine: ' + dbOpts.engine);
   }
 };
 
 const g = global as any;
 
 export default {
-  new: async (options: DatabaseOption | DatabaseDriverOption, noCache = false) => {
+  new: async (
+    options: { db: DatabaseOption | DatabaseDriverOption; logger: RequiredLogger },
+    noCache = false
+  ) => {
     if (g.__jacksonDb && !noCache) {
       return g.__jacksonDb;
     }

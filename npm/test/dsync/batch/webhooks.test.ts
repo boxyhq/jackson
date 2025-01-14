@@ -5,7 +5,9 @@ import users from '../data/users';
 import requests from '../data/user-requests';
 import { jacksonOptions } from '../../utils';
 import { IDirectorySyncController, Directory } from '../../../src/typings';
-import axiosInstance from '../../../src/event/axios';
+import { createAxiosInstance } from '../../../src/event/axios';
+
+const axiosInstance = createAxiosInstance(console);
 
 let directorySync: IDirectorySyncController;
 

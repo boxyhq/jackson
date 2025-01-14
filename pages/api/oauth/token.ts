@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { cors } from '@lib/middleware';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -17,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(result);
   } catch (err: any) {
-    console.error('token error:', err);
+    logger.error(err, 'Token error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);

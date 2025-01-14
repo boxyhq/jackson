@@ -1,4 +1,5 @@
 import jackson from '@lib/jackson';
+import { logger } from '@lib/logger';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -25,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.send(logoutForm);
     }
   } catch (err: any) {
+    logger.error(err, 'error in creating SAML SLO request');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);

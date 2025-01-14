@@ -1,4 +1,4 @@
-import type { JacksonOption, IEventController, DB } from '../typings';
+import type { IEventController, DB, JacksonOptionWithRequiredLogger } from '../typings';
 import { DirectoryConfig } from './scim/DirectoryConfig';
 import { DirectoryUsers } from './scim/DirectoryUsers';
 import { DirectoryGroups } from './scim/DirectoryGroups';
@@ -14,7 +14,11 @@ import { eventLockKey, eventLockTTL, googleLockKey, handleEventCallback } from '
 import { EventProcessor } from './batch-events/queue';
 import { CronLock } from '../cron/lock';
 
-const directorySync = async (params: { db: DB; opts: JacksonOption; eventController: IEventController }) => {
+const directorySync = async (params: {
+  db: DB;
+  opts: JacksonOptionWithRequiredLogger;
+  eventController: IEventController;
+}) => {
   const { db, opts, eventController } = params;
 
   const users = new Users({ db });
@@ -42,8 +46,8 @@ const directorySync = async (params: { db: DB; opts: JacksonOption; eventControl
   // Batch send events
   const eventStore = db.store(storeNamespacePrefix.dsync.events);
   const lockStore = db.store(storeNamespacePrefix.dsync.lock, eventLockTTL);
-  const eventLock = new CronLock({ key: eventLockKey, lockStore });
-  const googleLock = new CronLock({ key: googleLockKey, lockStore });
+  const eventLock = new CronLock({ key: eventLockKey, lockStore, opts });
+  const googleLock = new CronLock({ key: googleLockKey, lockStore, opts });
   const eventProcessor = new EventProcessor({
     opts,
     eventStore,

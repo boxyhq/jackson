@@ -47,6 +47,7 @@ import {
   iv,
   clientCode,
   clientToken,
+  GENERIC_ERR_STRING,
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
@@ -218,7 +219,7 @@ tap.test('authorize()', async (t) => {
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
-      t.equal(message, 'IdP connection not found.', 'got expected error message');
+      t.equal(message, GENERIC_ERR_STRING, 'got expected error message');
       t.equal(statusCode, 403, 'got expected status code');
     }
   });
@@ -325,11 +326,7 @@ tap.test('samlResponse()', async (t) => {
       t.fail('Expecting JacksonError.');
     } catch (err) {
       const { message, statusCode } = err as JacksonError;
-      t.equal(
-        message,
-        'IdP (Identity Provider) flow has been disabled. Please head to your Service Provider to login.',
-        'got expected error message'
-      );
+      t.equal(message, GENERIC_ERR_STRING, 'got expected error message');
 
       t.equal(statusCode, 403, 'got expected status code');
     }

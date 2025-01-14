@@ -4,7 +4,7 @@ import * as https from 'https';
 import { JacksonError } from '../error';
 import { URL } from 'url';
 import { SSOTrace, SSOTracesInstance } from '../../typings';
-import { dynamicImport } from '../utils';
+import { dynamicImport, GENERIC_ERR_STRING } from '../utils';
 
 const createCustomFetch = (ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] }) => {
   return async (url: RequestInfo, options: RequestInit): Promise<Response> => {
@@ -107,5 +107,9 @@ export const oidcClientConfig = async ({
     }
     return config;
   }
-  throw new JacksonError('Neither "discoveryUrl" nor "metadata" set for the OIDC provider', 500);
+  throw new JacksonError(
+    GENERIC_ERR_STRING,
+    500,
+    'Neither "discoveryUrl" nor "metadata" set for the OIDC provider'
+  );
 };

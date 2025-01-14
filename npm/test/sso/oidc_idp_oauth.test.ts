@@ -1,7 +1,12 @@
 import tap from 'tap';
 import * as utils from '../../src/controller/utils';
 import { IConnectionAPIController, IOAuthController, OAuthReq, Profile } from '../../src/typings';
-import { authz_request_oidc_provider, oidc_response, oidc_response_with_error } from './fixture';
+import {
+  authz_request_oidc_provider,
+  GENERIC_ERR_STRING,
+  oidc_response,
+  oidc_response_with_error,
+} from './fixture';
 import { JacksonError } from '../../src/controller/error';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import path from 'path';
@@ -181,7 +186,7 @@ tap.test('[OIDCProvider]', async (t) => {
     t.match(response_params.get('error'), 'server_error', 'got server_error when `oidcPath` is not set');
     t.match(
       response_params.get('error_description'),
-      'OpenID response handler path (oidcPath) is not set',
+      GENERIC_ERR_STRING,
       'matched error_description when `oidcPath` is not set'
     );
     t.match(

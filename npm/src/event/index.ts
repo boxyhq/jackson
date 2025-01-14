@@ -1,6 +1,5 @@
 import type {
   Directory,
-  JacksonOption,
   SAMLSSORecord,
   EventType,
   SSOConnectionEventType,
@@ -8,6 +7,7 @@ import type {
   Webhook,
   EventPayloadSchema,
   OIDCSSORecord,
+  JacksonOptionWithRequiredLogger,
 } from '../typings';
 import { sendPayloadToWebhook } from './webhook';
 import {
@@ -17,12 +17,14 @@ import {
 } from './utils';
 
 export default class Event {
-  private webhook: JacksonOption['webhook'];
-  private dsync: JacksonOption['dsync'];
+  private webhook: JacksonOptionWithRequiredLogger['webhook'];
+  private dsync: JacksonOptionWithRequiredLogger['dsync'];
+  private logger: JacksonOptionWithRequiredLogger['logger'];
 
-  constructor({ opts }: { opts: JacksonOption }) {
+  constructor({ opts }: { opts: JacksonOptionWithRequiredLogger }) {
     this.webhook = opts.webhook;
     this.dsync = opts.dsync;
+    this.logger = opts.logger;
   }
 
   async notify<T extends EventType>(
@@ -62,6 +64,6 @@ export default class Event {
       return;
     }
 
-    return await sendPayloadToWebhook(webhook, payload, this.dsync?.debugWebhooks);
+    return await sendPayloadToWebhook(webhook, payload, this.dsync?.debugWebhooks, this.logger);
   }
 }

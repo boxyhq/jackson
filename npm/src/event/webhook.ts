@@ -1,6 +1,6 @@
-import type { EventPayloadSchema, Webhook } from '../typings';
+import type { EventPayloadSchema, RequiredLogger, Webhook } from '../typings';
 import crypto from 'crypto';
-import axios from './axios';
+import { createAxiosInstance } from './axios';
 
 export const createSignatureString = (secret: string, payload: any) => {
   if (!secret) {
@@ -20,13 +20,16 @@ export const createSignatureString = (secret: string, payload: any) => {
 export const sendPayloadToWebhook = async (
   webhook: Webhook,
   payload: EventPayloadSchema | EventPayloadSchema[],
-  debugWebhooks: boolean | undefined
+  debugWebhooks: boolean | undefined,
+  logger: RequiredLogger
 ) => {
   if (debugWebhooks) {
-    console.log('Sending payload to webhook:', JSON.stringify(payload, null, 2));
+    logger.info('Sending payload to webhook:', JSON.stringify(payload, null, 2));
   }
 
-  return await axios.post(webhook.endpoint, payload, {
+  const axiosInstance = createAxiosInstance(logger);
+
+  return await axiosInstance.post(webhook.endpoint, payload, {
     headers: {
       'Content-Type': 'application/json',
       'BoxyHQ-Signature': createSignatureString(webhook.secret, payload),

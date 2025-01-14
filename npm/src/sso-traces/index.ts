@@ -1,4 +1,4 @@
-import { GetByProductParams, Records, Storable, JacksonOption } from '../typings';
+import { GetByProductParams, Records, Storable, JacksonOptionWithRequiredLogger } from '../typings';
 import { generateMnemonic } from '@boxyhq/error-code-mnemonic';
 import { IndexNames } from '../controller/utils';
 import { keyFromParts } from '../db/utils';
@@ -57,7 +57,7 @@ const SSO_TRACES_REDACT_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
  */
 class SSOTraces {
   tracesStore: Storable;
-  opts: JacksonOption;
+  opts: JacksonOptionWithRequiredLogger;
 
   constructor({ tracesStore, opts }) {
     this.tracesStore = tracesStore;
@@ -111,7 +111,7 @@ class SSOTraces {
       await this.tracesStore.put(traceId, traceValue, ...indices);
       return traceId;
     } catch (err: unknown) {
-      console.error(`Failed to save trace`, err);
+      this.opts.logger.error(`Failed to save trace`, err);
     }
   }
 

@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import jackson from '@lib/jackson';
 import { setErrorCookie } from '@lib/utils';
 import { OIDCAuthzResponsePayload } from '@boxyhq/saml-jackson';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -18,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (redirect_url) {
       if (error) {
-        console.error(`Error processing OIDC IdP response: ${error}`);
+        logger.error(`Error processing OIDC IdP response: ${error}`);
       }
       res.redirect(302, redirect_url);
     }
@@ -29,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } catch (err: any) {
     const { message, statusCode = 500 } = err;
-    console.error('Error processing OIDC IdP response:', err);
+    logger.error(err, 'Error processing OIDC IdP response');
     // set error in cookie redirect to error page
     setErrorCookie(res, { message, statusCode }, { path: '/error' });
     res.redirect(302, '/error');

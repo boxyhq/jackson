@@ -235,7 +235,7 @@ if (process.env.DYNAMODB_URL) {
 tap.before(async () => {
   for (const idx in dbs) {
     const opts = dbs[idx];
-    const db = await DB.new(opts, true);
+    const db = await DB.new({ db: opts, logger: console }, true);
     dbObjs[opts.engine! + (opts.type ? opts.type : '')] = db;
 
     const randomSession = Date.now();
