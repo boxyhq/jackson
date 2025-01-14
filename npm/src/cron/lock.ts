@@ -51,7 +51,7 @@ export class CronLock {
 
       return true;
     } catch (e: any) {
-      this.opts.logger.error(`Error acquiring lock for ${instanceKey}: ${e}`);
+      this.opts.logger.error(`Error acquiring lock for ${instanceKey}`, e);
       return false;
     }
   }
@@ -70,7 +70,7 @@ export class CronLock {
 
       await this.add();
     } catch (e: any) {
-      this.opts.logger.error(`Error renewing lock for ${instanceKey}: ${e}`);
+      this.opts.logger.error(`Error renewing lock for ${instanceKey}`, e);
     }
   }
 
