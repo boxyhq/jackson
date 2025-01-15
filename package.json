@@ -103,14 +103,14 @@
     "@playwright/test": "1.49.1",
     "@types/cors": "2.8.17",
     "@types/micromatch": "4.0.9",
-    "@types/node": "22.10.5",
+    "@types/node": "22.10.6",
     "@types/prismjs": "1.26.5",
-    "@types/react": "19.0.3",
+    "@types/react": "19.0.7",
     "@typescript-eslint/eslint-plugin": "8.20.0",
     "@typescript-eslint/parser": "8.20.0",
     "autoprefixer": "10.4.20",
     "env-cmd": "10.1.0",
-    "eslint": "9.17.0",
+    "eslint": "9.18.0",
     "eslint-config-next": "15.1.4",
     "eslint-config-prettier": "10.0.1",
     "eslint-plugin-i18next": "6.1.1",
@@ -123,7 +123,7 @@
     "tailwindcss": "3.4.17",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.7.2"
+    "typescript": "5.7.3"
   },
   "overrides": {
     "typeorm": {
