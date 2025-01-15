@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import saml from '@boxyhq/saml20';
 
 /* eslint-disable no-undef */
 
@@ -363,6 +364,9 @@ export default function loadTest() {
   getSAMLFederationApp();
   getSAMLFederationAppByProduct();
   deleteSAMLFederationApp();
+  // benchmark SAML response path
+  createSSOConnectionViaRawMetadata();
+  processSAMLResponse();
   sleep(1);
 }
 
@@ -898,4 +902,28 @@ function deleteSAMLFederationApp() {
       `DELETE request failed for deleteSAMLFederationApp ID: ${samlFederationAppId}. Status: ${response.status}, Response: ${JSON.stringify(response)}`
     );
   }
+}
+
+function processSAMLResponse() {
+  const email = 'jackson@example.com';
+  const userId = createHash('sha256').update(email).digest('hex');
+  const userName = email.split('@')[0];
+  const user = {
+    id: userId,
+    email,
+    firstName: userName,
+    lastName: userName,
+  };
+  const randomSAMLResponse = saml.createSAMLResponse({
+    issuer: 'https://saml.example.com/entityid',
+    audience: 'https://saml.boxyhq.com',
+    acsUrl: 'http://localhost:5225/api/oauth/saml',
+    requestId: '_' + crypto.randomBytes(10).toString('hex'),
+    claims: {
+      email,
+      raw: user,
+    },
+    privateKey: config.privateKey,
+    publicKey: config.publicKey,
+  });
 }
