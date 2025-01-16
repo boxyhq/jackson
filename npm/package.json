@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.726.1",
-    "@aws-sdk/credential-providers": "3.726.1",
+    "@aws-sdk/credential-providers": "3.729.0",
     "@aws-sdk/util-dynamodb": "3.726.1",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.9",
