@@ -7,7 +7,7 @@ export const identityProviders = [
     stepCount: 3,
   },
   {
-    name: 'Azure SAML SSO',
+    name: 'Entra ID SAML SSO',
     id: 'azure',
     stepCount: 4,
   },
