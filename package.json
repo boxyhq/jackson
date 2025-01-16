@@ -127,7 +127,8 @@
   },
   "overrides": {
     "typeorm": {
-      "mssql": "11.0.0"
+      "mssql": "11.0.0",
+      "mongodb": ">=6.12.0"
     }
   },
   "engines": {
