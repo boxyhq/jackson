@@ -22,4 +22,4 @@ patches:
 
 images:
   - name: boxyhq/jackson
-    newTag: 1.33.1
+    newTag: 1.36.0
