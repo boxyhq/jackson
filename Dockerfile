@@ -60,7 +60,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/migrate.sh ./migrate.sh
 COPY npm npm
 RUN chmod +x migrate.sh
 # mongodb peer dependency would be automatically installed for migrate-mongo
-RUN npm install -g --omit=dev ts-node migrate-mongo typeorm reflect-metadata mssql mysql2 pg
+RUN npm install -g ts-node migrate-mongo typeorm reflect-metadata mssql mysql2 pg
 USER nextjs
 
 EXPOSE 5225
