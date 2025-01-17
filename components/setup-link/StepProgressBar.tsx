@@ -5,7 +5,7 @@ const StepProgressBar = ({ currentStep, totalSteps, steps }) => {
     <div className='w-full flex flex-col gap-2 mt-4 mb-6'>
       <div className='flex flex-col gap-4'>
         {Array.from({ length: totalSteps }, (_, index) => (
-          <div key={index} className='flex items-center gap-4'>
+          <div key={index} className='flex items-center gap-4 p-2'>
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0
                 ${
