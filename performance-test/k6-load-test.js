@@ -1,4 +1,3 @@
-import saml from '@boxyhq/saml20';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
@@ -93,7 +92,7 @@ function generateUpdateSSOPayload() {
   };
 }
 
-function generateSetUpLinkPayload() {
+function generateSetupLinkPayload() {
   const { tenant, product } = vuContext[__VU];
   const redirectUrl = ['http://localhost:3000'];
   const defaultRedirectUrl = 'http://localhost:3000/default';
@@ -155,13 +154,13 @@ export default function loadTest() {
   updateSSOConnection();
   getSSOConnectionByProduct();
   deleteSSOConnection();
-  createSetUpLink();
-  getSetUpLink();
-  deleteSetUpLink();
-  createDSyncSetUpLink();
-  getDSyncSetUpLink();
-  getDSyncSetUpLinkByProduct();
-  deleteDSyncSetUpLink();
+  createSetupLink();
+  getSetupLink();
+  deleteSetupLink();
+  createDSyncSetupLink();
+  getDSyncSetupLink();
+  getDSyncSetupLinkByProduct();
+  deleteDSyncSetupLink();
   createDirectory();
   getDirectoryByTenantAndProduct();
   getDirectoryById();
@@ -298,8 +297,8 @@ function deleteSSOConnection() {
 
 //SetUp Links | Single Sign On
 
-function createSetUpLink() {
-  const payload = generateSetUpLinkPayload();
+function createSetupLink() {
+  const payload = generateSetupLinkPayload();
 
   const response = http.post(`${API_V1}/sso/setuplinks`, JSON.stringify(payload), {
     headers: manageHeaders,
@@ -317,11 +316,11 @@ function createSetUpLink() {
   }
 }
 
-function getSetUpLink() {
+function getSetupLink() {
   const { tenant, product } = vuContext[__VU];
   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.get(`${BASE_URL}/sso/setuplinks?tenant=${tenant}&product=${product}`, {
+  const response = http.get(`${API_V1}/sso/setuplinks?tenant=${tenant}&product=${product}`, {
     headers: manageHeaders,
   });
 
@@ -335,11 +334,11 @@ function getSetUpLink() {
   }
 }
 
-function deleteSetUpLink() {
+function deleteSetupLink() {
   const { tenant, product } = vuContext[__VU];
   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.del(`${BASE_URL}/sso/setuplinks??product=${product}&tenant=${tenant}`, null, {
+  const response = http.del(`${API_V1}/sso/setuplinks?product=${product}&tenant=${tenant}`, null, {
     headers: manageHeaders,
   });
 
@@ -355,10 +354,10 @@ function deleteSetUpLink() {
 
 //SetUp Links | Directory Sync
 
-function createDSyncSetUpLink() {
+function createDSyncSetupLink() {
   const payload = generateDSyncSetUpLinkPayload();
 
-  const response = http.post(`${BASE_URL}/dsync/setuplinks`, JSON.stringify(payload), {
+  const response = http.post(`${API_V1}/dsync/setuplinks`, JSON.stringify(payload), {
     headers: manageHeaders,
   });
 
@@ -374,11 +373,11 @@ function createDSyncSetUpLink() {
   }
 }
 
-function getDSyncSetUpLink() {
+function getDSyncSetupLink() {
   const { tenant, product } = vuContext[__VU];
   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.get(`${BASE_URL}/dsync/setuplinks?tenant=${tenant}&product=${product}`, {
+  const response = http.get(`${API_V1}/dsync/setuplinks?tenant=${tenant}&product=${product}`, {
     headers: manageHeaders,
   });
 
@@ -392,11 +391,11 @@ function getDSyncSetUpLink() {
   }
 }
 
-function getDSyncSetUpLinkByProduct() {
+function getDSyncSetupLinkByProduct() {
   const { product } = vuContext[__VU];
   console.log(`GET Request Params - Product: ${product}`);
 
-  const response = http.get(`${BASE_URL}/dsync/setuplinks/product?product=${product}`, {
+  const response = http.get(`${API_V1}/dsync/setuplinks/product?product=${product}`, {
     headers: manageHeaders,
   });
 
@@ -410,11 +409,11 @@ function getDSyncSetUpLinkByProduct() {
   }
 }
 
-function deleteDSyncSetUpLink() {
+function deleteDSyncSetupLink() {
   const { tenant, product } = vuContext[__VU];
   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.del(`${BASE_URL}/dsync/setuplinks?tenant=${tenant}&product=${product}`, null, {
+  const response = http.del(`${API_V1}/dsync/setuplinks?tenant=${tenant}&product=${product}`, null, {
     headers: manageHeaders,
   });
 
@@ -433,7 +432,7 @@ function deleteDSyncSetUpLink() {
 function createDirectory() {
   const payload = generateDirectoryPayload();
 
-  const response = http.post(`${BASE_URL}/dsync`, JSON.stringify(payload), {
+  const response = http.post(`${API_V1}/dsync`, JSON.stringify(payload), {
     headers: manageHeaders,
   });
 
@@ -462,7 +461,7 @@ function getDirectoryByTenantAndProduct() {
   const { tenant, product } = vuContext[__VU]; // Retrieve per-VU context
   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.get(`${BASE_URL}/dsync?tenant=${tenant}&product=${product}`, {
+  const response = http.get(`${API_V1}/dsync?tenant=${tenant}&product=${product}`, {
     headers: manageHeaders,
   });
 
@@ -484,7 +483,7 @@ function getDirectoryById() {
     return;
   }
 
-  const response = http.get(`${BASE_URL}/dsync/${directoryId}`, {
+  const response = http.get(`${API_V1}/dsync/${directoryId}`, {
     headers: manageHeaders,
   });
 
@@ -505,7 +504,7 @@ function getDirectoryById() {
 function getDirectoryByProduct() {
   const { product } = vuContext[__VU]; // Retrieve product from context
 
-  const response = http.get(`${BASE_URL}/dsync/product?product=${product}`, {
+  const response = http.get(`${API_V1}/dsync/product?product=${product}`, {
     headers: manageHeaders,
   });
 
@@ -537,7 +536,7 @@ function updateDirectory() {
     name: updatedDirectoryName,
   });
 
-  const response = http.patch(`${BASE_URL}/dsync/${directoryId}`, payload, {
+  const response = http.patch(`${API_V1}/dsync/${directoryId}`, payload, {
     headers: manageHeaders,
   });
 
@@ -563,7 +562,7 @@ function deleteDirectory() {
     return;
   }
 
-  const response = http.del(`${BASE_URL}/dsync/${directoryId}`, null, {
+  const response = http.del(`${API_V1}/dsync/${directoryId}`, null, {
     headers: manageHeaders,
   });
 
@@ -586,7 +585,7 @@ function deleteDirectory() {
 function createSAMLFederationApp() {
   const payload = generateSAMLFederationAppPayload();
 
-  const response = http.post(`${BASE_URL}/identity-federation`, JSON.stringify(payload), {
+  const response = http.post(`${API_V1}/identity-federation`, JSON.stringify(payload), {
     headers: manageHeaders,
   });
 
