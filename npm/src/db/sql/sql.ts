@@ -2,7 +2,15 @@
 
 require('reflect-metadata');
 
-import { DatabaseDriver, DatabaseOption, Index, Encrypted, Records, SortOrder } from '../../typings';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Index,
+  Encrypted,
+  Records,
+  SortOrder,
+  RequiredLogger,
+} from '../../typings';
 import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
@@ -20,8 +28,11 @@ class Sql implements DatabaseDriver {
   private JacksonIndex;
   private JacksonTTL;
 
-  constructor(options: DatabaseOption) {
+  private logger: RequiredLogger;
+
+  constructor(options: DatabaseOption, logger: RequiredLogger) {
     this.options = options;
+    this.logger = logger;
   }
 
   async init({ JacksonStore, JacksonIndex, JacksonTTL }): Promise<Sql> {
@@ -74,7 +85,7 @@ class Sql implements DatabaseDriver {
 
         break;
       } catch (err) {
-        console.error(`error connecting to engine: ${this.options.engine}, type: ${sqlType} db: ${err}`);
+        this.logger.error(`error connecting to engine: ${this.options.engine}, type: ${sqlType} db: ${err}`);
         await dbutils.sleep(1000);
         continue;
       }
@@ -374,7 +385,7 @@ class Sql implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption, entities): Promise<Sql> => {
-    return await new Sql(options).init(entities);
+  new: async (options: { db: DatabaseOption; logger: RequiredLogger }, entities): Promise<Sql> => {
+    return await new Sql(options.db, options.logger).init(entities);
   },
 };

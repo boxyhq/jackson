@@ -18,6 +18,8 @@ import type {
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
 
+export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
+
 export const dynamicImport = async <ReturnType>(packageName: string): Promise<ReturnType> =>
   new Function(`return import('${packageName}')`)();
 
@@ -80,6 +82,9 @@ export function getErrorMessage(error: unknown) {
     return error.message + ' ' + error.inner.message;
   }
   if (error instanceof Error) {
+    if (error instanceof JacksonError) {
+      return error.internalError ?? error.message;
+    }
     return error.message;
   }
   return String(error);

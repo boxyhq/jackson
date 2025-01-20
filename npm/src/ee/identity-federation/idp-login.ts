@@ -1,9 +1,9 @@
 import { JacksonError } from '../../controller/error';
 import { SSOHandler } from '../../controller/sso-handler';
-import { getErrorMessage, isConnectionActive } from '../../controller/utils';
+import { GENERIC_ERR_STRING, getErrorMessage, isConnectionActive } from '../../controller/utils';
 import {
   IdentityFederationApp,
-  JacksonOption,
+  JacksonOptionWithRequiredLogger,
   OIDCIdPInitiatedReq,
   OIDCSSORecord,
   SSOTrace,
@@ -16,7 +16,7 @@ export class IdPLogin {
   private ssoHandler: SSOHandler;
   private ssoTraces: SSOTracesInstance;
   private app: App;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
   constructor({ app, ssoHandler, ssoTraces, opts }) {
     this.app = app;
@@ -55,8 +55,9 @@ export class IdPLogin {
 
       if (fedApp.type !== 'saml') {
         throw new JacksonError(
-          'Third party login from an OIDC provider is only supported with SAML Federation',
-          400
+          GENERIC_ERR_STRING,
+          403,
+          'Third party login from an OIDC provider is only supported with SAML Federation'
         );
       }
 
@@ -77,7 +78,7 @@ export class IdPLogin {
       }
 
       if (!connection) {
-        throw new JacksonError('IdP connection not found.', 404);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'IdP connection not found.');
       }
 
       context.clientID = connection.clientID;
@@ -86,7 +87,7 @@ export class IdPLogin {
       context.entityId = fedApp.entityId;
 
       if (!isConnectionActive(connection)) {
-        throw new JacksonError('OIDC connection is deactivated. Please contact your administrator.', 403);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, 'OIDC connection is deactivated.');
       }
 
       const requestParams = {

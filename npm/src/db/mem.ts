@@ -215,7 +215,7 @@ class Mem implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption) => {
-    return await new Mem(options).init();
+  new: async (options: { db: DatabaseOption }) => {
+    return await new Mem(options.db).init();
   },
 };

@@ -1,13 +1,23 @@
 import * as redis from 'redis';
-import { DatabaseDriver, DatabaseOption, Encrypted, Index, Records, SortOrder } from '../typings';
+import {
+  DatabaseDriver,
+  DatabaseOption,
+  Encrypted,
+  Index,
+  Records,
+  RequiredLogger,
+  SortOrder,
+} from '../typings';
 import * as dbutils from './utils';
 
 class Redis implements DatabaseDriver {
   private options: DatabaseOption;
   private client!: any;
+  private logger: RequiredLogger;
 
-  constructor(options: DatabaseOption) {
+  constructor(options: DatabaseOption, logger: RequiredLogger) {
     this.options = options;
+    this.logger = logger;
   }
 
   async init(): Promise<Redis> {
@@ -18,7 +28,7 @@ class Redis implements DatabaseDriver {
     }
 
     this.client = redis.createClient(opts);
-    this.client.on('error', (err: any) => console.info('Redis Client Error', err));
+    this.client.on('error', (err: any) => this.logger.info('Redis Client Error', err));
 
     await this.client.connect();
 
@@ -220,7 +230,7 @@ class Redis implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption): Promise<Redis> => {
-    return await new Redis(options).init();
+  new: async (options: { db: DatabaseOption; logger: RequiredLogger }): Promise<Redis> => {
+    return await new Redis(options.db, options.logger).init();
   },
 };

@@ -5,18 +5,18 @@ import { deflateRaw } from 'zlib';
 import type { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 
 import type {
-  JacksonOption,
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
   IdentityFederationApp,
   SSOTracesInstance,
   SSOTrace,
+  JacksonOptionWithRequiredLogger,
 } from '../typings';
 import { getDefaultCertificate } from '../saml/x509';
 import * as dbutils from '../db/utils';
 import { JacksonError } from './error';
-import { dynamicImport, IndexNames } from './utils';
+import { dynamicImport, GENERIC_ERR_STRING, IndexNames } from './utils';
 import { relayStatePrefix } from './utils';
 import * as redirect from './oauth/redirect';
 import * as allowed from './oauth/allowed';
@@ -27,7 +27,7 @@ const deflateRawAsync = promisify(deflateRaw);
 export class SSOHandler {
   private connection: Storable;
   private session: Storable;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
   constructor({
     connection,
@@ -36,7 +36,7 @@ export class SSOHandler {
   }: {
     connection: Storable;
     session: Storable;
-    opts: JacksonOption;
+    opts: JacksonOptionWithRequiredLogger;
   }) {
     this.connection = connection;
     this.session = session;
@@ -92,7 +92,7 @@ export class SSOHandler {
       const connection = await this.connection.get(idp_hint);
 
       if (!connection) {
-        throw new JacksonError(noSSOConnectionErrMessage, 404);
+        throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
       }
 
       return { connection };
@@ -127,7 +127,7 @@ export class SSOHandler {
     }
 
     if (!connections || connections.length === 0) {
-      throw new JacksonError(noSSOConnectionErrMessage, 404);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
     }
 
     // Third party login from an oidcProvider, here we match the connection from the iss param
@@ -157,7 +157,7 @@ export class SSOHandler {
         }
       }
       // No match found for iss
-      throw new JacksonError(noSSOConnectionErrMessage, 404);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, noSSOConnectionErrMessage);
     }
 
     // If more than one, redirect to the connection selection page
@@ -189,14 +189,21 @@ export class SSOHandler {
             authFlow,
           });
 
-          const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
-            {
-              name: 'SAMLResponse',
-              value: originalParams.SAMLResponse,
-            },
-          ]);
-
-          return { postForm };
+          try {
+            const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
+              {
+                name: 'SAMLResponse',
+                value: originalParams.SAMLResponse,
+              },
+            ]);
+            return { postForm };
+          } catch (err: any) {
+            throw new JacksonError(
+              GENERIC_ERR_STRING,
+              403,
+              `SAML IdP initiated flow error creating app select form: ${err.message}`
+            );
+          }
         }
       }
     }
@@ -214,68 +221,72 @@ export class SSOHandler {
     requestParams: Record<string, any>;
     mappings: IdentityFederationApp['mappings'];
   }) {
-    // We have a connection now, so we can create the SAML request
-    const certificate = await getDefaultCertificate();
+    try {
+      // We have a connection now, so we can create the SAML request
+      const certificate = await getDefaultCertificate();
 
-    const { sso } = connection.idpMetadata;
+      const { sso } = connection.idpMetadata;
 
-    let ssoUrl;
-    let post = false;
+      let ssoUrl;
+      let post = false;
 
-    if ('redirectUrl' in sso) {
-      ssoUrl = sso.redirectUrl;
-    } else if ('postUrl' in sso) {
-      ssoUrl = sso.postUrl;
-      post = true;
-    }
+      if ('redirectUrl' in sso) {
+        ssoUrl = sso.redirectUrl;
+      } else if ('postUrl' in sso) {
+        ssoUrl = sso.postUrl;
+        post = true;
+      }
 
-    const samlRequest = saml.request({
-      ssoUrl,
-      entityID: `${this.opts.samlAudience}`,
-      callbackUrl: this.opts.externalUrl + this.opts.samlPath,
-      signingKey: certificate.privateKey,
-      publicKey: certificate.publicKey,
-      forceAuthn: !!connection.forceAuthn,
-      identifierFormat: connection.identifierFormat
-        ? connection.identifierFormat
-        : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-    });
-
-    const relayState = await this.createSession({
-      requestId: samlRequest.id,
-      requested: {
-        ...requestParams,
-        client_id: connection.clientID,
-      },
-      mappings,
-    });
-
-    let redirectUrl;
-    let authorizeForm;
-
-    // Decide whether to use HTTP Redirect or HTTP POST binding
-    if (!post) {
-      redirectUrl = redirect.success(ssoUrl, {
-        RelayState: relayState,
-        SAMLRequest: Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64'),
+      const samlRequest = saml.request({
+        ssoUrl,
+        entityID: `${this.opts.samlAudience}`,
+        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+        signingKey: certificate.privateKey,
+        publicKey: certificate.publicKey,
+        forceAuthn: !!connection.forceAuthn,
+        identifierFormat: connection.identifierFormat
+          ? connection.identifierFormat
+          : 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
       });
-    } else {
-      authorizeForm = saml.createPostForm(ssoUrl, [
-        {
-          name: 'RelayState',
-          value: relayState,
-        },
-        {
-          name: 'SAMLRequest',
-          value: Buffer.from(samlRequest.request).toString('base64'),
-        },
-      ]);
-    }
 
-    return {
-      redirect_url: redirectUrl,
-      authorize_form: authorizeForm,
-    };
+      const relayState = await this.createSession({
+        requestId: samlRequest.id,
+        requested: {
+          ...requestParams,
+          client_id: connection.clientID,
+        },
+        mappings,
+      });
+
+      let redirectUrl;
+      let authorizeForm;
+
+      // Decide whether to use HTTP Redirect or HTTP POST binding
+      if (!post) {
+        redirectUrl = redirect.success(ssoUrl, {
+          RelayState: relayState,
+          SAMLRequest: Buffer.from(await deflateRawAsync(samlRequest.request)).toString('base64'),
+        });
+      } else {
+        authorizeForm = saml.createPostForm(ssoUrl, [
+          {
+            name: 'RelayState',
+            value: relayState,
+          },
+          {
+            name: 'SAMLRequest',
+            value: Buffer.from(samlRequest.request).toString('base64'),
+          },
+        ]);
+      }
+
+      return {
+        redirect_url: redirectUrl,
+        authorize_form: authorizeForm,
+      };
+    } catch (err: any) {
+      throw new JacksonError(GENERIC_ERR_STRING, 400, `Error creating SAML request: ${err.message}`);
+    }
   }
 
   async createOIDCRequest({
@@ -290,7 +301,7 @@ export class SSOHandler {
     ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] };
   }) {
     if (!this.opts.oidcPath) {
-      throw new JacksonError('OpenID response handler path (oidcPath) is not set', 400);
+      throw new JacksonError(GENERIC_ERR_STRING, 400, 'OpenID response handler path (oidcPath) is not set');
     }
 
     const { discoveryUrl, metadata, clientId, clientSecret } = connection.oidcProvider;
@@ -335,8 +346,7 @@ export class SSOHandler {
         authorize_form: null,
       };
     } catch (err: any) {
-      console.error(err);
-      throw new JacksonError(`Unable to complete OIDC request. - ${err.message}`, 400);
+      throw new JacksonError(GENERIC_ERR_STRING, 400, `Error creating OIDC request: ${err.message}`);
     }
   }
 
@@ -386,10 +396,9 @@ export class SSOHandler {
       const responseForm = saml.createPostForm(session.requested.acsUrl, params);
 
       return { responseForm };
-    } catch (err) {
-      console.error('Error creating SAML response:', err);
+    } catch (err: any) {
       // TODO: Instead send saml response with status code
-      throw new JacksonError('Unable to validate SAML Response.', 403);
+      throw new JacksonError(GENERIC_ERR_STRING, 403, `Error creating SAML Response: ${err.message}`);
     }
   };
 

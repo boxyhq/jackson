@@ -7,8 +7,9 @@ import { default as groupRequest } from './data/group-requests';
 import { getFakeDirectory } from './data/directories';
 import { jacksonOptions } from '../utils';
 import sinon from 'sinon';
-import axios from '../../src/event/axios';
+import * as axiosModule from '../../src/event/axios';
 import { createSignatureString } from '../../src/event/webhook';
+import { AxiosInstance } from 'axios';
 
 let directorySync: IDirectorySyncController;
 let directory: Directory;
@@ -122,9 +123,13 @@ tap.test('Webhook Events /', async (t) => {
     });
 
     t.test('Should send user related events', async (t) => {
-      const mock = sinon.mock(axios);
+      // Mock the entire module's createAxiosInstance function
+      const postSpy = sinon.spy();
+      const axiosInstanceStub = {
+        post: postSpy,
+      } as unknown as AxiosInstance;
 
-      mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+      sinon.stub(axiosModule, 'createAxiosInstance').returns(axiosInstanceStub);
 
       // Create the user
       const { data: createdUser } = await directorySync.requests.handle(
@@ -141,8 +146,12 @@ tap.test('Webhook Events /', async (t) => {
         usersRequest.deleteById(directory, createdUser.id)
       );
 
-      mock.verify();
-      mock.restore();
+      // Verify the post was called three times
+      t.equal(postSpy.callCount, 3);
+      t.ok(postSpy.calledWith(webhook.endpoint));
+
+      // Restore the stub
+      sinon.restore();
 
       const { data: logs } = await directorySync.webhookLogs.getAll();
 
@@ -171,9 +180,13 @@ tap.test('Webhook Events /', async (t) => {
     });
 
     t.test('Should send group related events', async (t) => {
-      const mock = sinon.mock(axios);
+      // Mock the entire module's createAxiosInstance function
+      const postSpy = sinon.spy();
+      const axiosInstanceStub = {
+        post: postSpy,
+      } as unknown as AxiosInstance;
 
-      mock.expects('post').thrice().withArgs(webhook.endpoint).throws();
+      sinon.stub(axiosModule, 'createAxiosInstance').returns(axiosInstanceStub);
 
       // Create the group
       const { data: createdGroup } = await directorySync.requests.handle(
@@ -190,8 +203,12 @@ tap.test('Webhook Events /', async (t) => {
         groupRequest.deleteById(directory, createdGroup.id)
       );
 
-      mock.verify();
-      mock.restore();
+      // Verify the post was called three times
+      t.equal(postSpy.callCount, 3);
+      t.ok(postSpy.calledWith(webhook.endpoint));
+
+      // Restore the stub
+      sinon.restore();
 
       const { data: logs } = await directorySync.webhookLogs.getAll();
 
@@ -219,9 +236,12 @@ tap.test('Webhook Events /', async (t) => {
   });
 
   t.test('Should send group membership related events', async (t) => {
-    const mock = sinon.mock(axios);
+    const postSpy = sinon.spy();
+    const axiosInstanceStub = {
+      post: postSpy,
+    } as unknown as AxiosInstance;
 
-    mock.expects('post').exactly(4).withArgs(webhook.endpoint).throws();
+    sinon.stub(axiosModule, 'createAxiosInstance').returns(axiosInstanceStub);
 
     // Create the user
     const { data: createdUser } = await directorySync.requests.handle(
@@ -248,8 +268,12 @@ tap.test('Webhook Events /', async (t) => {
       )
     );
 
-    mock.verify();
-    mock.restore();
+    // Verify the post was called three times
+    t.equal(postSpy.callCount, 4);
+    t.ok(postSpy.calledWith(webhook.endpoint));
+
+    // Restore the stub
+    sinon.restore();
 
     const { data: logs } = await directorySync.webhookLogs.getAll();
 

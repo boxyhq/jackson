@@ -4,9 +4,9 @@ import type {
   IUsers,
   IGroups,
   IRequestHandler,
-  JacksonOption,
   EventCallback,
   CronLock,
+  JacksonOptionWithRequiredLogger,
 } from '../../typings';
 import { SyncUsers } from './syncUsers';
 import { SyncGroups } from './syncGroups';
@@ -15,7 +15,7 @@ import { SyncGroupMembers } from './syncGroupMembers';
 interface SyncParams {
   userController: IUsers;
   groupController: IGroups;
-  opts: JacksonOption;
+  opts: JacksonOptionWithRequiredLogger;
   directories: IDirectoryConfig;
   requestHandler: IRequestHandler;
   eventCallback: EventCallback;
@@ -30,7 +30,7 @@ export class SyncProviders {
   private groupController: IGroups;
   private directories: IDirectoryConfig;
   private requestHandler: IRequestHandler;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
   private cronInterval: number | undefined;
   private eventCallback: EventCallback;
   private eventLock: CronLock;
@@ -62,7 +62,7 @@ export class SyncProviders {
   // Start the sync process
   public async startSync() {
     if (isJobRunning) {
-      console.info('A sync process is already running, skipping.');
+      this.opts.logger.info('A sync process is already running, skipping.');
       return;
     }
 
@@ -79,7 +79,7 @@ export class SyncProviders {
     try {
       const allDirectories = await provider.getDirectories();
 
-      console.info(`Starting the sync process for ${allDirectories.length} directories`);
+      this.opts.logger.info(`Starting the sync process for ${allDirectories.length} directories`);
 
       for (const directory of allDirectories) {
         const params = {
@@ -96,13 +96,13 @@ export class SyncProviders {
         await new SyncGroupMembers(params).sync();
       }
     } catch (e: any) {
-      console.error(' Error processing Google sync:', e);
+      this.opts.logger.error(' Error processing Google sync:', e);
     }
 
     await this.eventLock.release();
 
     const endTime = Date.now();
-    console.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
+    this.opts.logger.info(`Sync process completed in ${(endTime - startTime) / 1000} seconds`);
 
     isJobRunning = false;
 

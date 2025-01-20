@@ -6,9 +6,9 @@ import type {
   DirectorySyncEvent,
   IDirectoryConfig,
   Storable,
-  JacksonOption,
   CronLock,
   IWebhookEventsLogger,
+  JacksonOptionWithRequiredLogger,
 } from '../../typings';
 import { sendPayloadToWebhook } from '../../event/webhook';
 import { isConnectionActive } from '../../controller/utils';
@@ -31,7 +31,7 @@ interface QueuedEvent {
 }
 
 interface DirectoryEventsParams {
-  opts: JacksonOption;
+  opts: JacksonOptionWithRequiredLogger;
   eventStore: Storable;
   eventLock: CronLock;
   directories: IDirectoryConfig;
@@ -44,7 +44,7 @@ let intervalId: NodeJS.Timeout;
 export class EventProcessor {
   private eventStore: Storable;
   private eventLock: CronLock;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
   private directories: IDirectoryConfig;
   private webhookLogs: IWebhookEventsLogger;
   private cronInterval: number | undefined;
@@ -125,19 +125,21 @@ export class EventProcessor {
         const directory = directoryResult.value.data as Directory;
 
         if (!directory) {
-          console.error(`Directory ${directoryId} not found. Deleting the dsync events.`);
+          this.opts.logger.error(`Directory ${directoryId} not found. Deleting the dsync events.`);
           await this.delete(events);
           continue;
         }
 
         if (!isConnectionActive(directory)) {
-          console.error(`Directory ${directoryId} is not active. Deleting the dsync events.`);
+          this.opts.logger.error(`Directory ${directoryId} is not active. Deleting the dsync events.`);
           await this.delete(events);
           continue;
         }
 
         if (!directory.webhook.endpoint || !directory.webhook.secret) {
-          console.error(`Webhook not configured for directory ${directoryId}. Deleting the dsync events.`);
+          this.opts.logger.error(
+            `Webhook not configured for directory ${directoryId}. Deleting the dsync events.`
+          );
           await this.delete(events);
           continue;
         }
@@ -148,7 +150,7 @@ export class EventProcessor {
           if (status === 200) {
             await this.delete(events);
           } else {
-            console.error(`Webhook returned status ${status}. Marking the events as failed.`);
+            this.opts.logger.error(`Webhook returned status ${status}. Marking the events as failed.`);
             await this.markAsFailed(events);
           }
 
@@ -157,7 +159,7 @@ export class EventProcessor {
           const message = `Error sending payload to webhook ${directory.webhook.endpoint}. Marking the events as failed. ${err.message}`;
           const status = err.response?.status || 500;
 
-          console.error(message, err);
+          this.opts.logger.error(message, err);
 
           await this.markAsFailed(events);
           await this.logWebhookEvent(directory, events, status);
@@ -171,7 +173,7 @@ export class EventProcessor {
   // Process the events and send them to the webhooks as a batch
   public async process() {
     if (isJobRunning) {
-      console.info('A batch process is already running, skipping.');
+      this.opts.logger.info('A batch process is already running, skipping.');
       return;
     }
 
@@ -184,7 +186,7 @@ export class EventProcessor {
     try {
       this._process();
     } catch (e: any) {
-      console.error(' Error processing webhooks batch:', e);
+      this.opts.logger.error(' Error processing webhooks batch:', e);
     }
 
     isJobRunning = false;
@@ -224,9 +226,9 @@ export class EventProcessor {
     const payload = events.map(({ event }) => event);
 
     try {
-      return await sendPayloadToWebhook(webhook, payload, this.opts?.dsync?.debugWebhooks);
+      return await sendPayloadToWebhook(webhook, payload, this.opts?.dsync?.debugWebhooks, this.opts.logger);
     } catch (err: any) {
-      console.error(`Error sending payload to webhook: ${err.message}`);
+      this.opts.logger.error(`Error sending payload to webhook: ${err.message}`);
       throw err;
     }
   }
@@ -265,7 +267,7 @@ export class EventProcessor {
   // Send a OpenTelemetry event indicating that all the events in the batch have failed
   private async notifyAllEventsFailed() {
     metrics.increment('dsyncEventsBatchFailed');
-    console.error('All events in the batch have failed. Please check the system.');
+    this.opts.logger.error('All events in the batch have failed. Please check the system.');
   }
 
   public async scheduleWorker() {

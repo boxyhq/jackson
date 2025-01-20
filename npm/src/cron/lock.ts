@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import type { Storable } from '../typings';
+import type { JacksonOptionWithRequiredLogger, Storable } from '../typings';
 import { eventLockTTL } from '../directory-sync/utils';
 
 const lockRenewalInterval = (eventLockTTL / 2) * 1000;
@@ -17,16 +17,19 @@ interface Lock {
 interface LockParams {
   lockStore: Storable;
   key: string;
+  opts: JacksonOptionWithRequiredLogger;
 }
 
 export class CronLock {
   private lockStore: Storable;
   private key: string;
   private intervalId: NodeJS.Timeout | undefined;
+  private opts: JacksonOptionWithRequiredLogger;
 
-  constructor({ key, lockStore }: LockParams) {
+  constructor({ key, lockStore, opts }: LockParams) {
     this.lockStore = lockStore;
     this.key = key;
+    this.opts = opts;
   }
 
   public async acquire() {
@@ -48,7 +51,7 @@ export class CronLock {
 
       return true;
     } catch (e: any) {
-      console.error(`Error acquiring lock for ${instanceKey}: ${e}`);
+      this.opts.logger.error(`Error acquiring lock for ${instanceKey}`, e);
       return false;
     }
   }
@@ -67,7 +70,7 @@ export class CronLock {
 
       await this.add();
     } catch (e: any) {
-      console.error(`Error renewing lock for ${instanceKey}: ${e}`);
+      this.opts.logger.error(`Error renewing lock for ${instanceKey}`, e);
     }
   }
 

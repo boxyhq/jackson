@@ -357,7 +357,7 @@ class DynamoDB implements DatabaseDriver {
 }
 
 export default {
-  new: async (options: DatabaseOption): Promise<DynamoDB> => {
-    return await new DynamoDB(options).init();
+  new: async (options: { db: DatabaseOption }): Promise<DynamoDB> => {
+    return await new DynamoDB(options.db).init();
   },
 };

@@ -1,6 +1,8 @@
 import { type Page, type Locator, expect } from '@playwright/test';
 import { adminPortalSSODefaults } from '@lib/env';
 
+export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
+
 const ADMIN_PORTAL_TENANT = adminPortalSSODefaults.tenant;
 export const ADMIN_PORTAL_PRODUCT = adminPortalSSODefaults.product;
 
@@ -105,6 +107,8 @@ export class SSOPage {
     }
     // submit the form
     await this.saveConnection.click();
+    // check if the added connection appears in the connection list
+    await expect(this.page.getByText(ssoName)).toBeVisible();
     this.connections = [...this.connections, ssoName];
   }
 
