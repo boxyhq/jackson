@@ -57,6 +57,7 @@ const proseClassNames = [
   'prose-img:h-96',
   'prose-img:w-full',
   'prose-table:table',
+  'prose-table:border',
   'prose-a:text-sm',
 ];
 

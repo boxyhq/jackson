@@ -20,12 +20,6 @@ const StepProgressBar = ({ currentStep, totalSteps, steps }) => {
             <span className={`text-sm ${index === currentStep ? 'font-medium' : 'text-gray-600'}`}>
               {steps[index]}
             </span>
-            {index < totalSteps - 1 && (
-              <div
-                className={`absolute h-full w-0.5 top-8 left-4 
-                  ${index < currentStep ? 'bg-primary' : 'bg-gray-200'}`}
-              />
-            )}
           </div>
         ))}
       </div>
