@@ -8,13 +8,7 @@ const StepProgressBar = ({ currentStep, totalSteps, steps }) => {
           <div key={index} className='flex items-center gap-4 p-2'>
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0
-                ${
-                  index < currentStep
-                    ? 'bg-primary text-white'
-                    : index === currentStep
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-200 text-gray-600'
-                }`}>
+                ${index <= currentStep ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'}`}>
               {index + 1}
             </div>
             <span className={`text-sm ${index === currentStep ? 'font-medium' : 'text-gray-600'}`}>
