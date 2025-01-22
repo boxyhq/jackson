@@ -10,7 +10,7 @@ import type {
   AppRequestParams,
   Index,
 } from '../../typings';
-import { fedAppID, clientIDFederatedPrefix } from '../../controller/utils';
+import { fedAppID, clientIDFederatedPrefix, GENERIC_ERR_STRING } from '../../controller/utils';
 import { JacksonError } from '../../controller/error';
 import { getDefaultCertificate } from '../../saml/x509';
 import { IndexNames, validateTenantAndProduct } from '../../controller/utils';
@@ -377,7 +377,11 @@ export class App {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     if (!entityId) {
-      throw new JacksonError('Missing required parameters. Required parameters are: entityId', 400);
+      throw new JacksonError(
+        GENERIC_ERR_STRING,
+        400,
+        'Missing required parameters. Required parameters are: entityId'
+      );
     }
 
     const apps: IdentityFederationApp[] = (
@@ -388,7 +392,7 @@ export class App {
     ).data;
 
     if (!apps || apps.length === 0) {
-      throw new JacksonError('Identity Federation app not found', 404);
+      throw new JacksonError(GENERIC_ERR_STRING, 404, 'Identity Federation app not found');
     }
 
     return apps[0];
