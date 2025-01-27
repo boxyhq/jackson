@@ -1307,9 +1307,11 @@ export class OAuthController implements IOAuthController {
       const tokenVal = {
         ...codeVal.profile,
         requested: codeVal.requested,
+        clientID: codeVal.clientID,
         login_type,
         protocol,
       };
+
       const requestHasNonce = !!codeVal.requested?.nonce;
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
@@ -1430,10 +1432,21 @@ export class OAuthController implements IOAuthController {
 
     const rsp = decrypt(encRsp, tokens[0]);
 
+    const traceContext = {
+      tenant: rsp.requested?.tenant,
+      product: rsp.requested?.product,
+      clientID: rsp.clientID,
+      isIdPFlow: rsp.requested?.isIdPFlow,
+      providerName: rsp.requested?.providerName,
+      acsUrl: rsp.requested?.acsUrl,
+      entityId: rsp.requested?.entityId,
+    };
+
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
       metrics.increment('oauthUserInfoError', { protocol: rsp.protocol, login_type: rsp.login_type });
+      this.ssoTraces.saveTrace({ error: 'Invalid token', context: traceContext as SSOTrace['context'] });
       throw new JacksonError('Invalid token', 403);
     }
 
