@@ -14,6 +14,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
+  SSOTrace,
   SSOTracesInstance as ssoTraces,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
@@ -1196,7 +1197,7 @@ export class OAuthController implements IOAuthController {
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
-
+    let traceContext = {};
     try {
       if (grant_type !== 'authorization_code') {
         throw new JacksonError('Unsupported grant_type', 400);
@@ -1222,6 +1223,22 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Invalid code', 403);
       }
 
+      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+      const isSAMLFederated = !!(codeVal.session && 'samlFederated' in codeVal.session);
+      const isOIDCFederated = !!(codeVal.session && 'oidcFederated' in codeVal.session);
+      traceContext = {
+        tenant: codeVal.requested?.tenant,
+        product: codeVal.requested?.product,
+        clientID: client_id || '',
+        redirectUri: redirect_uri,
+        requestedOIDCFlow,
+        isSAMLFederated,
+        isOIDCFederated,
+        isIdPFlow: codeVal.requested?.isIdPFlow,
+        providerName: codeVal.requested?.providerName,
+        acsUrl: codeVal.requested?.acsUrl,
+        entityId: codeVal.requested?.entityId,
+      };
       protocol = codeVal.requested.protocol || 'saml';
       login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
 
@@ -1293,7 +1310,6 @@ export class OAuthController implements IOAuthController {
         login_type,
         protocol,
       };
-      const requestedOIDCFlow = !!codeVal.requested?.oidc;
       const requestHasNonce = !!codeVal.requested?.nonce;
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
@@ -1347,8 +1363,9 @@ export class OAuthController implements IOAuthController {
       }
 
       return tokenResponse;
-    } catch (err) {
+    } catch (err: any) {
       metrics.increment('oauthTokenError', { protocol, login_type });
+      this.ssoTraces.saveTrace({ error: err.message, context: traceContext as SSOTrace['context'] });
       throw err;
     }
   }
