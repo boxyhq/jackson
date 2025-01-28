@@ -43,9 +43,9 @@
     "coverage-map": "map.js"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.731.1",
-    "@aws-sdk/credential-providers": "3.731.1",
-    "@aws-sdk/util-dynamodb": "3.731.1",
+    "@aws-sdk/client-dynamodb": "3.734.0",
+    "@aws-sdk/credential-providers": "3.734.0",
+    "@aws-sdk/util-dynamodb": "3.734.0",
     "@boxyhq/error-code-mnemonic": "0.1.1",
     "@boxyhq/metrics": "0.2.9",
     "@boxyhq/saml20": "1.7.0",
@@ -71,11 +71,11 @@
   "devDependencies": {
     "@faker-js/faker": "9.4.0",
     "@types/lodash": "4.17.14",
-    "@types/node": "22.10.7",
+    "@types/node": "22.10.10",
     "@types/sinon": "17.0.3",
     "cross-env": "7.0.3",
     "migrate-mongo": "11.0.0",
-    "nock": "13.5.6",
+    "nock": "14.0.0",
     "sinon": "19.0.2",
     "tap": "21.0.1",
     "ts-node": "10.9.2",
