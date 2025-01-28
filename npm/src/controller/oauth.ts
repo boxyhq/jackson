@@ -1224,7 +1224,6 @@ export class OAuthController implements IOAuthController {
       }
 
       const requestedOIDCFlow = !!codeVal.requested?.oidc;
-      const isSAMLFederated = !!(codeVal.session && 'samlFederated' in codeVal.session);
       const isOIDCFederated = !!(codeVal.session && 'oidcFederated' in codeVal.session);
       traceContext = {
         tenant: codeVal.requested?.tenant,
@@ -1232,7 +1231,6 @@ export class OAuthController implements IOAuthController {
         clientID: client_id || '',
         redirectUri: redirect_uri,
         requestedOIDCFlow,
-        isSAMLFederated,
         isOIDCFederated,
         isIdPFlow: codeVal.requested?.isIdPFlow,
         providerName: codeVal.requested?.providerName,
