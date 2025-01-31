@@ -21,6 +21,7 @@ import { InputWithCopyButton } from '@boxyhq/internal-ui';
 import PreviousButton from '@components/setup-link-instructions/PreviousButton';
 import CreateSSOConnection from '@components/setup-link-instructions/CreateSSOConnection';
 import SelectIdentityProviders from '@components/setup-link-instructions/SelectIdentityProviders';
+import StepProgressBar from '@components/setup-link/StepProgressBar';
 
 type NewConnectionProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -118,28 +119,61 @@ const NewConnection = ({
     heading = t('select_identity_provider');
   }
 
+  const getStepLabels = (provider) => {
+    if (!provider) return [];
+    return provider.steps;
+  };
+
   return (
     <>
-      <div className='flex space-y-4 flex-col pb-6'>
-        <div className='flex justify-between items-center'>
-          <h1 className='text-xl font-noraml'>{heading}</h1>
-          {source && (
-            <Link className='btn btn-xs h-0' href={linkSelectIdp}>
-              <ArrowsRightLeftIcon className='w-5 h-5' />
-              {t('change_identity_provider')}
-            </Link>
+      <div className='flex flex-row gap-8 w-full'>
+        <div className='w-64 py-6'>
+          {source ? (
+            <>
+              {idp && (
+                <StepProgressBar
+                  currentStep={parseInt(step as string) - 1}
+                  totalSteps={findIdp(idp)?.stepCount || 1}
+                  steps={getStepLabels(findIdp(idp))}
+                />
+              )}
+            </>
+          ) : (
+            <StepProgressBar
+              currentStep={0}
+              totalSteps={2}
+              steps={['Select Provider', 'Create Application']}
+            />
           )}
         </div>
-        {source && <progress className='progress progress-primary w-full' value={progress} max={100} />}
-      </div>
 
-      <article className={`${proseClassNames.join(' ')} max-w-4xl`}>
-        {source ? (
-          <MDXRemote {...source} components={components} scope={scope} />
-        ) : (
-          <SelectIdentityProviders />
-        )}
-      </article>
+        <div className='flex-1'>
+          <div className='flex flex-col space-y-4 pb-6'>
+            <div className='flex justify-between items-center'>
+              <h1 className='text-xl font-normal'>{heading}</h1>
+              {source && (
+                <Link className='btn btn-xs h-0' href={linkSelectIdp}>
+                  <ArrowsRightLeftIcon className='w-5 h-5' />
+                  {t('change_identity_provider')}
+                </Link>
+              )}
+            </div>
+            {source && (
+              <>
+                <progress className='progress progress-primary w-full' value={progress} max={100} />
+              </>
+            )}
+          </div>
+
+          <article className={`${proseClassNames.join(' ')} max-w-4xl`}>
+            {source ? (
+              <MDXRemote {...source} components={components} scope={scope} />
+            ) : (
+              <SelectIdentityProviders />
+            )}
+          </article>
+        </div>
+      </div>
     </>
   );
 };

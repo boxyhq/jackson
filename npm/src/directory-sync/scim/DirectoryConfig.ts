@@ -551,7 +551,7 @@ export class DirectoryConfig {
 
   private transform(directory: Directory): Directory {
     if (directory.scim.path) {
-      // Add the flag to ensure SCIM compliance when using Azure AD
+      // Add the flag to ensure SCIM compliance when using Entra ID
       if (directory.type === 'azure-scim-v2') {
         directory.scim.path = `${directory.scim.path}/?aadOptscim062020`;
       }

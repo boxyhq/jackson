@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import packageInfo from '../../package.json';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -16,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       version: packageInfo.version,
     });
   } catch (err: any) {
-    console.error('HealthCheck failed', err);
+    logger.error(err, 'HealthCheck failed');
     const { statusCode = 503 } = err;
     res.status(statusCode).json({});
   }
