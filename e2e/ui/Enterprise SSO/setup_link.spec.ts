@@ -56,8 +56,8 @@ const setupLinkTestsData: {
     testRunner: testOktaSaml,
   },
   {
-    testDescription: 'Admin Portal Enterprise SSO SetupLink using Azure SAML SSO',
-    testTitle: 'should be able to create setup link and sso connection Azure SAML SSO',
+    testDescription: 'Admin Portal Enterprise SSO SetupLink using Entra ID SAML SSO',
+    testTitle: 'should be able to create setup link and sso connection Entra ID SAML SSO',
     testRunner: testAzureSaml,
   },
 ];
@@ -293,7 +293,7 @@ async function testOktaSaml(setupLinkPage: Page) {
 
 async function testAzureSaml(setupLinkPage: Page) {
   // Create SSO connection using Okta SAML  workflow
-  await setupLinkPage.getByRole('button', { name: 'Azure SAML SSO' }).click();
+  await setupLinkPage.getByRole('button', { name: 'Entra ID SAML SSO' }).click();
 
   // check mdx generated content using remart-gfm plugin for step1
   await expect(setupLinkPage.getByRole('heading', { name: 'Step 1: Create Application' })).toBeVisible();

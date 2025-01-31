@@ -32,7 +32,7 @@ export type DirectorySyncEventType =
   | 'group.user_removed';
 
 export enum DirectorySyncProviders {
-  'azure-scim-v2' = 'Azure SCIM v2.0',
+  'azure-scim-v2' = 'Entra ID SCIM v2.0',
   'onelogin-scim-v2' = 'OneLogin SCIM v2.0',
   'okta-scim-v2' = 'Okta SCIM v2.0',
   'jumpcloud-scim-v2' = 'JumpCloud v2.0',

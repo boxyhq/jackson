@@ -106,7 +106,7 @@ class Sql implements DatabaseDriver {
         }
         break;
       } catch (err) {
-        console.error(
+        this.logger.error(
           `error in index namespace execution for engine: ${this.options.engine}, type: ${sqlType} err: ${err}`
         );
         await dbutils.sleep(1000);
@@ -144,7 +144,7 @@ class Sql implements DatabaseDriver {
 
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl! * 1000);
     } else {
-      console.warn(
+      this.logger.warn(
         `Warning: ttl cleanup not enabled in ${sqlType} with engine ${this.options.engine}, set both "ttl" and "cleanupLimit" options to enable it!`
       );
     }
@@ -176,7 +176,7 @@ class Sql implements DatabaseDriver {
         }
       }
     } catch (err) {
-      console.error('Error running indexNamespace:', err);
+      this.logger.error('Error running indexNamespace:', err);
     }
   }
 

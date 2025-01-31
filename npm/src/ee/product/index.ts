@@ -1,12 +1,12 @@
 import { JacksonError } from '../../controller/error';
 import { throwIfInvalidLicense } from '../common/checkLicense';
-import type { Storable, JacksonOption, ProductConfig } from '../../typings';
+import type { Storable, ProductConfig, JacksonOptionWithRequiredLogger } from '../../typings';
 
 export class ProductController {
   private productStore: Storable;
-  private opts: JacksonOption;
+  private opts: JacksonOptionWithRequiredLogger;
 
-  constructor({ productStore, opts }: { productStore: Storable; opts: JacksonOption }) {
+  constructor({ productStore, opts }: { productStore: Storable; opts: JacksonOptionWithRequiredLogger }) {
     this.productStore = productStore;
     this.opts = opts;
   }
@@ -17,7 +17,7 @@ export class ProductController {
     const productConfig = (await this.productStore.get(productId)) as ProductConfig;
 
     // if (!productConfig) {
-    //   console.error(`Product config not found for ${productId}`);
+    //   this.opts.logger.error(`Product config not found for ${productId}`);
     // }
 
     return {

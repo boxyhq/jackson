@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (redirect_url) {
       if (error) {
-        console.error(`Error processing SAML IdP response: ${error}`);
+        logger.error(`Error processing SAML IdP response: ${error}`);
       }
       res.redirect(302, redirect_url);
       return;

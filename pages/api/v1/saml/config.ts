@@ -3,6 +3,7 @@
 import jackson from '@lib/jackson';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { DelConnectionsQuery, GetConfigQuery } from '@boxyhq/saml-jackson';
+import { logger } from '@lib/logger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -19,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw { message: 'Method not allowed', statusCode: 405 };
     }
   } catch (err: any) {
-    console.error('config api error:', err);
+    logger.error(err, 'config api error');
     const { message, statusCode = 500 } = err;
 
     res.status(statusCode).send(message);

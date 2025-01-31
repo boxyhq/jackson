@@ -38,10 +38,10 @@ export const SetupLinkLayout = ({ children }: { children: React.ReactNode }) => 
 
       {setupLink?.primaryColor && <style>{`:root { --p: ${hexToOklch(setupLink.primaryColor)}; }`}</style>}
 
-      <div className='mx-auto max-w-3xl'>
+      <div className='mx-auto p-6'>
         <div className='flex flex-1 flex-col'>
           <div className='top-0 flex h-16 flex-shrink-0 border-b'>
-            <div className='flex flex-shrink-0 items-center gap-4'>
+            <div className='flex flex-shrink-0 items-center gap-4 max-w-3xl'>
               <Link href={`/setup/${token}`}>
                 {setupLink?.logoUrl && (
                   <img src={setupLink.logoUrl} alt={setupLink.companyName || ''} className='max-h-10' />

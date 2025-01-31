@@ -110,7 +110,10 @@ export const controllers = async (
 
   const ssoTraces = new SSOTraces({ tracesStore, opts });
   const eventController = new EventController({ opts: opts as JacksonOptionWithRequiredLogger });
-  const productController = new ProductController({ productStore, opts });
+  const productController = new ProductController({
+    productStore,
+    opts: opts as JacksonOptionWithRequiredLogger,
+  });
 
   const connectionAPIController = new ConnectionAPIController({
     connectionStore,
