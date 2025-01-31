@@ -251,6 +251,7 @@
   "bui-traces-saml-response": "SAML Response",
   "bui-traces-saml-request": "SAML Request",
   "bui-traces-profile": "Profile",
+  "bui-traces-oauth-stage": "OAuth Stage",
   "bui-traces-error-description-from-oidc-idp": "Error Description (from OIDC Provider)",
   "bui-traces-error-uri": "Error URI",
   "bui-traces-id-token-from-oidc-idp": "ID Token (from OIDC Provider)",

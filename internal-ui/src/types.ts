@@ -152,6 +152,7 @@ export interface SSOTrace extends Omit<Trace, 'traceId' | 'timestamp'> {
     stack?: string;
     oidcTokenSet?: { id_token?: string; access_token?: string };
     oidcIdPRequest?: OIDCIdPInitiatedReq;
+    oAuthStage?: 'token_fetch' | 'userinfo_fetch';
   };
 }
 
