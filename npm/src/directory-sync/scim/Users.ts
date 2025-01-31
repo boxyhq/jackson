@@ -4,31 +4,6 @@ import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
 import { indexNames } from './utils';
 
-/**
- * @swagger
- * definitions:
- *   User:
- *      type: object
- *      properties:
- *        id:
- *          type: string
- *          description: User ID
- *        first_name:
- *          type: string
- *          description: First name
- *        last_name:
- *          type: string
- *          description: Last name
- *        email:
- *          type: string
- *          description: Email address
- *        active:
- *          type: boolean
- *          description: Indicates whether the user is active or not
- *        raw:
- *          type: object
- *          description: Raw user attributes from the Identity Provider
- */
 export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -59,28 +34,41 @@ export class Users extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/users/{userId}:
    *   get:
-   *     summary: Get user by id from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - name: userId
-   *         description: User ID
-   *         in: path
-   *         required: true
-   *         type: string
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
-   *     responses:
-   *       200:
-   *         description: Success
+   *     summary: Get user by id from a directory
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if directoryId is provided)
    *         schema:
-   *           $ref: '#/definitions/User'
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: directoryId
+   *         in: query
+   *         description: Directory ID (Optional if tenant/product is provided)
+   *         schema:
+   *           type: string
+   *       - name: userId
+   *         in: path
+   *         description: User ID
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       "200":
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/User"
    */
   public async get(id: string): Promise<Response<User>> {
     try {
@@ -147,36 +135,47 @@ export class Users extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/users:
    *   get:
-   *     summary: Get users from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get users from a directory
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: directoryId
+   *         in: query
+   *         description: Directory ID (Optional if tenant/product is provided)
+   *         schema:
+   *           type: string
+   *       - name: pageOffset
+   *         in: query
+   *         description: Starting point from which the set of records are retrieved
+   *         schema:
+   *           type: string
+   *       - name: pageLimit
+   *         in: query
+   *         description: Number of records to be fetched for the page
+   *         schema:
+   *           type: string
+   *       - name: pageToken
+   *         in: query
+   *         description: Token used for DynamoDB pagination
+   *         schema:
+   *           type: string
    *     responses:
-   *       200:
+   *       "200":
    *         description: Success
-   *         content:
-   *           application/json:
-   *              schema:
-   *                type: object
-   *                properties:
-   *                  data:
-   *                    type: array
-   *                    items:
-   *                      $ref: '#/definitions/User'
-   *                  pageToken:
-   *                    type: string
-   *                    description: token for pagination
+   *         content: {}
    */
   public async getAll({
     pageOffset,
