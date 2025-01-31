@@ -1197,7 +1197,7 @@ export class OAuthController implements IOAuthController {
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
-    let traceContext = {};
+    let traceContext = {} as SSOTrace['context'];
     try {
       if (grant_type !== 'authorization_code') {
         throw new JacksonError('Unsupported grant_type', 400);
@@ -1236,6 +1236,7 @@ export class OAuthController implements IOAuthController {
         providerName: codeVal.requested?.providerName,
         acsUrl: codeVal.requested?.acsUrl,
         entityId: codeVal.requested?.entityId,
+        oAuthStage: 'token_fetch',
       };
       protocol = codeVal.requested.protocol || 'saml';
       login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
@@ -1365,7 +1366,10 @@ export class OAuthController implements IOAuthController {
       return tokenResponse;
     } catch (err: any) {
       metrics.increment('oauthTokenError', { protocol, login_type });
-      this.ssoTraces.saveTrace({ error: err.message, context: traceContext as SSOTrace['context'] });
+      this.ssoTraces.saveTrace({
+        error: err.message,
+        context: traceContext,
+      });
       throw err;
     }
   }
@@ -1430,7 +1434,7 @@ export class OAuthController implements IOAuthController {
 
     const rsp = decrypt(encRsp, tokens[0]);
 
-    const traceContext = {
+    const traceContext: SSOTrace['context'] = {
       tenant: rsp.requested?.tenant,
       product: rsp.requested?.product,
       clientID: rsp.clientID,
@@ -1438,13 +1442,14 @@ export class OAuthController implements IOAuthController {
       providerName: rsp.requested?.providerName,
       acsUrl: rsp.requested?.acsUrl,
       entityId: rsp.requested?.entityId,
+      oAuthStage: 'userinfo_fetch',
     };
 
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
       metrics.increment('oauthUserInfoError', { protocol: rsp.protocol, login_type: rsp.login_type });
-      this.ssoTraces.saveTrace({ error: 'Invalid token', context: traceContext as SSOTrace['context'] });
+      this.ssoTraces.saveTrace({ error: 'Invalid token', context: traceContext });
       throw new JacksonError('Invalid token', 403);
     }
 
