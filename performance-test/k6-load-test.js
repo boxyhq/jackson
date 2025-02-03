@@ -143,18 +143,18 @@ export async function setup() {
   await createSSOConnectionViaRawMetadata();
 }
 
-export async function teardown(data) {
+export async function teardown() {
   await http.asyncRequest('DELETE', `${API_V1}/sso?product=${product}&tenant=${tenant}`, null, {
     headers: { Authorization: manageHeaders['Authorization'] },
   });
 }
 
 export default async function loadTest() {
-  createSSOConnection();
-  getSSOConnection();
-  updateSSOConnection();
-  getSSOConnectionByProduct();
-  deleteSSOConnection();
+  await createSSOConnection();
+  await getSSOConnection();
+  await updateSSOConnection();
+  await getSSOConnectionByProduct();
+  await deleteSSOConnection();
   // createSetupLink();
   // getSetupLink();
   // deleteSetupLink();
@@ -180,10 +180,10 @@ export default async function loadTest() {
 
 //Single Sign On
 
-function createSSOConnection() {
+async function createSSOConnection() {
   const payload = generateSSOPayload();
 
-  const response = http.post(`${API_V1}/sso`, JSON.stringify(payload), {
+  const response = await http.asyncRequest('POST', `${API_V1}/sso`, JSON.stringify(payload), {
     headers: manageHeaders,
   });
 
@@ -209,7 +209,7 @@ function createSSOConnection() {
   }
 }
 
-function updateSSOConnection() {
+async function updateSSOConnection() {
   const { clientID, clientSecret, metadataUrl } = _cache;
 
   if (!tenant || !product || !clientID || !clientSecret || !metadataUrl) {
@@ -219,7 +219,7 @@ function updateSSOConnection() {
 
   const payload = generateUpdateSSOPayload();
 
-  const response = http.patch(`${API_V1}/sso`, JSON.stringify(payload), {
+  const response = await http.asyncRequest('PATCH', `${API_V1}/sso`, JSON.stringify(payload), {
     headers: manageHeaders,
   });
 
@@ -237,11 +237,11 @@ function updateSSOConnection() {
   }
 }
 
-function getSSOConnection() {
-  const { tenant, product } = _cache;
+async function getSSOConnection() {
+  // const { tenant, product } = _cache;
   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.get(`${API_V1}/sso?tenant=${tenant}&product=${product}`, {
+  const response = await http.asyncRequest('GET', `${API_V1}/sso?tenant=${tenant}&product=${product}`, null, {
     headers: manageHeaders,
   });
 
@@ -255,13 +255,18 @@ function getSSOConnection() {
   }
 }
 
-function getSSOConnectionByProduct() {
-  const { product, clientID } = _cache;
-  console.log(`GET Request Params - Product: ${product}, ClinetID: ${clientID}`);
+async function getSSOConnectionByProduct() {
+  const { clientID } = _cache;
+  console.log(`GET Request Params - Product: ${product}, ClientID: ${clientID}`);
 
-  const response = http.get(`${API_V1}/sso?product=${product}&clientID=${clientID}`, {
-    headers: manageHeaders,
-  });
+  const response = await http.asyncRequest(
+    'GET',
+    `${API_V1}/sso?product=${product}&clientID=${clientID}`,
+    null,
+    {
+      headers: manageHeaders,
+    }
+  );
 
   const isSuccessful = check(response, {
     'getSSOConnectionByProduct Response status is 200': (r) => r.status === 200,
@@ -274,7 +279,6 @@ function getSSOConnectionByProduct() {
 }
 
 async function deleteSSOConnection() {
-  const { tenant, product } = _cache;
   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
 
   const response = await http.asyncRequest(
