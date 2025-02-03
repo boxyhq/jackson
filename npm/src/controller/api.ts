@@ -248,7 +248,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                 type: string
    *                 description: The redirect URL to use in the IdP login flow
    *               redirectUrl:
-   *                 type: string
+   *                 type: array
+   *                 items:
+   *                   type: string
    *                 description: JSON encoded array containing a list of allowed redirect URLs
    *               tenant:
    *                 type: string
@@ -305,7 +307,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                 type: string
    *                 description: The redirect URL to use in the IdP login flow
    *               redirectUrl:
-   *                 type: string
+   *                 type: array
+   *                 items:
+   *                   type: string
    *                 description: JSON encoded array containing a list of allowed redirect URLs
    *               tenant:
    *                 type: string
@@ -506,7 +510,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                 type: string
    *                 description: The redirect URL to use in the IdP login flow
    *               redirectUrl:
-   *                 type: string
+   *                 type: array
+   *                 items:
+   *                   type: string
    *                 description: JSON encoded array containing a list of allowed redirect URLs
    *               tenant:
    *                 type: string
