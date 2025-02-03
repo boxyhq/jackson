@@ -4,8 +4,6 @@ import exec from 'k6/execution';
 import { Counter } from 'k6/metrics';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
-/* eslint-disable no-undef */
-
 // Custom metrics
 export const errorCount = new Counter('errors');
 
@@ -88,44 +86,17 @@ function generateUpdateSSOPayload() {
   };
 }
 
-// function generateSetupLinkPayload() {
-//   const redirectUrl = ['http://localhost:3000'];
-//   const defaultRedirectUrl = 'http://localhost:3000/default';
+function generateSetupLinkPayload() {
+  const redirectUrl = ['http://localhost:3000'];
+  const defaultRedirectUrl = 'http://localhost:3000/default';
 
-//   return {
-//     tenant,
-//     product,
-//     redirectUrl,
-//     defaultRedirectUrl,
-//   };
-// }
-
-// function generateDSyncSetUpLinkPayload() {
-//   const name = `DSyncSetUpLink-${randomString(8)}-${tenant}-${product}`;
-//   const expiryDays = Math.floor(Math.random() * 2) + 1;
-//   const webhook_url = `http://localhost:5225/api/${randomString(5)}`;
-//   const webhook_secret = randomString(5);
-
-//   return {
-//     tenant,
-//     product,
-//     name,
-//     expiryDays,
-//     webhook_url,
-//     webhook_secret,
-//   };
-// }
-
-// function generateDirectoryPayload() {
-//   return {
-//     webhook_url: `http://example.com/webhook-${randomString(8)}`,
-//     webhook_secret: randomString(12),
-//     tenant,
-//     product,
-//     name: `Directory-${randomString(5)}`,
-//     type: 'okta-scim-v2',
-//   };
-// }
+  return {
+    tenant,
+    product,
+    redirectUrl,
+    defaultRedirectUrl,
+  };
+}
 
 // function generateSAMLFederationAppPayload() {
 //   return {
@@ -155,9 +126,9 @@ export default async function loadTest() {
   await updateSSOConnection();
   await getSSOConnectionByProduct();
   await deleteSSOConnection();
-  // createSetupLink();
-  // getSetupLink();
-  // deleteSetupLink();
+  createSetupLink();
+  getSetupLink();
+  deleteSetupLink();
   // createDSyncSetupLink();
   // getDSyncSetupLink();
   // getDSyncSetupLinkByProduct();
@@ -185,6 +156,9 @@ async function createSSOConnection() {
 
   const response = await http.asyncRequest('POST', `${API_V1}/sso`, JSON.stringify(payload), {
     headers: manageHeaders,
+    tags: {
+      sso: 'create',
+    },
   });
 
   const isSuccessful = check(response, {
@@ -221,6 +195,9 @@ async function updateSSOConnection() {
 
   const response = await http.asyncRequest('PATCH', `${API_V1}/sso`, JSON.stringify(payload), {
     headers: manageHeaders,
+    tags: {
+      sso: 'update',
+    },
   });
 
   const isSuccessful = check(response, {
@@ -243,6 +220,9 @@ async function getSSOConnection() {
 
   const response = await http.asyncRequest('GET', `${API_V1}/sso?tenant=${tenant}&product=${product}`, null, {
     headers: manageHeaders,
+    tags: {
+      sso: 'get',
+    },
   });
 
   const isSuccessful = check(response, {
@@ -265,6 +245,9 @@ async function getSSOConnectionByProduct() {
     null,
     {
       headers: manageHeaders,
+      tags: {
+        sso: 'getByProduct',
+      },
     }
   );
 
@@ -287,6 +270,9 @@ async function deleteSSOConnection() {
     null,
     {
       headers: { Authorization: manageHeaders['Authorization'] },
+      tags: {
+        sso: 'delete',
+      },
     }
   );
 
@@ -303,135 +289,58 @@ async function deleteSSOConnection() {
 
 //Setup Links | Single Sign On
 
-// function createSetupLink() {
-//   const payload = generateSetupLinkPayload();
+function createSetupLink() {
+  const payload = generateSetupLinkPayload();
 
-//   const response = http.post(`${API_V1}/sso/setuplinks`, JSON.stringify(payload), {
-//     headers: manageHeaders,
-//   });
+  const response = http.post(`${API_V1}/sso/setuplinks`, JSON.stringify(payload), {
+    headers: manageHeaders,
+  });
 
-//   const isSuccessful = check(response, {
-//     'createSetUpLink Response status is 201': (r) => r.status === 201,
-//   });
+  const isSuccessful = check(response, {
+    'createSetUpLink Response status is 201': (r) => r.status === 201,
+  });
 
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(
-//       `SetUpLink creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
+  if (!isSuccessful) {
+    errorCount.add(1);
+    console.error(
+      `SetUpLink creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
+    );
+  }
+}
 
-// function getSetupLink() {
-//   const { tenant, product } = vuContext[__VU];
-//   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
+function getSetupLink() {
+  console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-//   const response = http.get(`${API_V1}/sso/setuplinks?tenant=${tenant}&product=${product}`, {
-//     headers: manageHeaders,
-//   });
+  const response = http.get(`${API_V1}/sso/setuplinks?tenant=${tenant}&product=${product}`, {
+    headers: manageHeaders,
+  });
 
-//   const isSuccessful = check(response, {
-//     'getSetUpLink Response status is 200': (r) => r.status === 200,
-//   });
+  const isSuccessful = check(response, {
+    'getSetUpLink Response status is 200': (r) => r.status === 200,
+  });
 
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`GET request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
+  if (!isSuccessful) {
+    errorCount.add(1);
+    console.error(`GET request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
 
-// function deleteSetupLink() {
-//   const { tenant, product } = vuContext[__VU];
-//   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
+function deleteSetupLink() {
+  console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-//   const response = http.del(`${API_V1}/sso/setuplinks?product=${product}&tenant=${tenant}`, null, {
-//     headers: manageHeaders,
-//   });
+  const response = http.del(`${API_V1}/sso/setuplinks?product=${product}&tenant=${tenant}`, null, {
+    headers: manageHeaders,
+  });
 
-//   const isSuccessful = check(response, {
-//     'deleteSetUpLink Response status is 200': (r) => r.status === 200,
-//   });
+  const isSuccessful = check(response, {
+    'deleteSetUpLink Response status is 200': (r) => r.status === 200,
+  });
 
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`DELETE request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
-
-//Setup Links | Directory Sync
-
-// function createDSyncSetupLink() {
-//   const payload = generateDSyncSetUpLinkPayload();
-
-//   const response = http.post(`${API_V1}/dsync/setuplinks`, JSON.stringify(payload), {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'createDSyncSetUpLink Response status is 201': (r) => r.status === 201,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(
-//       `DSyncSetUpLink creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
-
-// function getDSyncSetupLink() {
-//   const { tenant, product } = vuContext[__VU];
-//   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
-
-//   const response = http.get(`${API_V1}/dsync/setuplinks?tenant=${tenant}&product=${product}`, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'getDSyncSetUpLink Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`GET request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
-
-// function getDSyncSetupLinkByProduct() {
-//   const { product } = vuContext[__VU];
-//   console.log(`GET Request Params - Product: ${product}`);
-
-//   const response = http.get(`${API_V1}/dsync/setuplinks/product?product=${product}`, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'getDSyncLinkByProduct Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`GET request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
-
-// function deleteDSyncSetupLink() {
-//   const { tenant, product } = vuContext[__VU];
-//   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
-
-//   const response = http.del(`${API_V1}/dsync/setuplinks?tenant=${tenant}&product=${product}`, null, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'deleteDSyncSetUpLink Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`DELETE request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
+  if (!isSuccessful) {
+    errorCount.add(1);
+    console.error(`DELETE request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
 
 //Directory Sync
 
@@ -738,6 +647,9 @@ async function createSSOConnectionViaRawMetadata() {
 
   const response = await http.asyncRequest('POST', `${API_V1}/sso`, JSON.stringify(payload), {
     headers: manageHeaders,
+    tags: {
+      sso: 'create_via_raw_metadata',
+    },
   });
 
   const isSuccessful = check(response, {
@@ -779,6 +691,9 @@ async function processSAMLResponse() {
     {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       redirects: 0,
+      tags: {
+        sso: 'process_idp_saml_response',
+      },
     }
   );
 
