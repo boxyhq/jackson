@@ -1144,10 +1144,10 @@ export class OAuthController implements IOAuthController {
    *                 description: Code
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: object
    *               properties:
@@ -1351,10 +1351,10 @@ export class OAuthController implements IOAuthController {
    *     summary: Get profile
    *     operationId: oauth-get-profile
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: object
    *               properties:

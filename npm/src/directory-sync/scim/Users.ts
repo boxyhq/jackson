@@ -35,6 +35,35 @@ export class Users extends Base {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     User:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: User ID
+   *         first_name:
+   *           type: string
+   *           description: First name
+   *         last_name:
+   *           type: string
+   *           description: Last name
+   *         email:
+   *           type: string
+   *           description: Email address
+   *         active:
+   *           type: boolean
+   *           description: Indicates whether the user is active or not
+   *         raw:
+   *           type: object
+   *           properties: {}
+   *           description: Raw user attributes from the Identity Provider
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync/users/{userId}:
    *   get:
    *     tags:
@@ -63,7 +92,7 @@ export class Users extends Base {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -173,9 +202,20 @@ export class Users extends Base {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
-   *         content: {}
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/User'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll({
     pageOffset,

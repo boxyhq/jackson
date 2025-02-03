@@ -43,125 +43,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    * @openapi
    * components:
    *   schemas:
-   *     formData_nameParamPost:
-   *       type: string
-   *       description: Name of connection
-   *     formData_labelParamPost:
-   *       type: string
-   *       description: An internal label to identify the connection
-   *     formData_descriptionParamPost:
-   *       type: string
-   *       description: A short description for the connection not more than 100 characters
-   *     formData_encodedRawMetadataParamPost:
-   *       type: string
-   *       description: Base64 encoding of the XML metadata
-   *     formData_rawMetadataParamPost:
-   *       type: string
-   *       description: Raw XML metadata
-   *     formData_metadataUrlParamPost:
-   *       type: string
-   *       description: URL containing raw XML metadata
-   *     formData_defaultRedirectUrlParamPost:
-   *       type: string
-   *       description: The redirect URL to use in the IdP login flow
-   *     formData_redirectUrlParamPost:
-   *       type: string
-   *       description: JSON encoded array containing a list of allowed redirect URLs
-   *     formData_tenantParamPost:
-   *       type: string
-   *       description: Tenant
-   *     formData_productParamPost:
-   *       type: string
-   *       description: Product
-   *     formData_oidcDiscoveryUrlPost:
-   *       type: string
-   *       description: well-known URL where the OpenID Provider configuration is exposed
-   *     formData_oidcMetadataPost:
-   *       type: string
-   *       description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
-   *     formData_oidcClientIdPost:
-   *       type: string
-   *       description: clientId of the application set up on the OpenID Provider
-   *     formData_oidcClientSecretPost:
-   *       type: string
-   *       description: clientSecret of the application set up on the OpenID Provider
-   *     formData_sortOrder:
-   *       type: number
-   *       description: Indicate the position of the connection in the IdP selection screen
-   *     formData_forceAuthn:
-   *       type: boolean
-   *       description: Require a new authentication instead of reusing an existing session.
-   *     formData_clientIDParamPatch:
-   *       type: string
-   *       description: Client ID for the connection
-   *     formData_clientSecretParamPatch:
-   *       type: string
-   *       description: Client Secret for the connection
-   *     formData_tenantParamPatch:
-   *       type: string
-   *       description: Tenant
-   *     formData_productParamPatch:
-   *       type: string
-   *       description: Product
-   *     formData_nameParamPatch:
-   *       type: string
-   *       description: Name/identifier for the connection
-   *     formData_labelParamPatch:
-   *       type: string
-   *       description: An internal label to identify the connection
-   *     formData_descriptionParamPatch:
-   *       type: string
-   *       description: A short description for the connection not more than 100 characters
-   *     formData_encodedRawMetadataParamPatch:
-   *       type: string
-   *       description: Base64 encoding of the XML metadata
-   *     formData_rawMetadataParamPatch:
-   *       type: string
-   *       description: Raw XML metadata
-   *     formData_metadataUrlParamPatch:
-   *       type: string
-   *       description: URL containing raw XML metadata
-   *     formData_oidcDiscoveryUrlPatch:
-   *       type: string
-   *       description: well-known URL where the OpenID Provider configuration is exposed
-   *     formData_oidcMetadataPatch:
-   *       type: string
-   *       description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
-   *     formData_oidcClientIdPatch:
-   *       type: string
-   *       description: clientId of the application set up on the OpenID Provider
-   *     formData_oidcClientSecretPatch:
-   *       type: string
-   *       description: clientSecret of the application set up on the OpenID Provider
-   *     formData_defaultRedirectUrlParamPatch:
-   *       type: string
-   *       description: The redirect URL to use in the IdP login flow
-   *     formData_redirectUrlParamPatch:
-   *       type: string
-   *       description: JSON encoded array containing a list of allowed redirect URLs
-   *     formData_deactivatedParamPatch:
-   *       type: boolean
-   *       description: Connection status
-   *     formData_sortOrderParamPatch:
-   *       type: number
-   *       description: Indicate the position of the connection in the IdP selection screen
-   *     formData_forceAuthnParamPatch:
-   *       type: boolean
-   *       description: Require a new authentication instead of reusing an existing session.
-   *     formData_webhookUrlParamPost:
-   *       type: string
-   *       description: The URL to send the directory sync events to
-   *     formData_webhookSecretParamPost:
-   *       type: string
-   *       description: The secret to sign the directory sync events
-   *     formData_expiryDaysParamPost:
-   *       type: number
-   *       description: Days in number for the setup link to expire
-   *       default: 3
-   *     formData_regenerateParamPost:
-   *       type: boolean
-   *       description: If passed as true, it will remove the existing setup link and create a new one.
-   *       default: false
    *     Connection:
    *       type: object
    *       properties:
@@ -231,231 +112,11 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
    *     validationErrorsPatch:
    *       description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
-   *     SetupLink:
-   *       type: object
-   *       properties:
-   *         setupID:
-   *           type: string
-   *           description: Setup link ID
-   *         tenant:
-   *           type: string
-   *           description: Tenant
-   *         product:
-   *           type: string
-   *           description: Product
-   *         validTill:
-   *           type: string
-   *           description: Valid till timestamp
-   *         url:
-   *           type: string
-   *           description: Setup link URL
-   *       example:
-   *         data:
-   *           setupID: 0689f76f7b5aa22f00381a124cb4b153fc1a8c08
-   *           tenant: acme
-   *           product: my-app
-   *           service: sso
-   *           validTill: 1689849146690
-   *           url: http://localhost:5225/setup/0b96a483ebfe0af0b561dda35a96647074d944631ff9e070
-   *     SSOTrace:
-   *       type: object
-   *       properties:
-   *         traceId:
-   *           type: string
-   *           description: Trace ID
-   *         error:
-   *           type: string
-   *           description: Error
-   *         timestamp:
-   *           type: string
-   *           description: Timestamp
-   *         context:
-   *           type: object
-   *           properties:
-   *             tenant:
-   *               type: string
-   *               description: Tenant
-   *             product:
-   *               type: string
-   *               description: Product
-   *             clientID:
-   *               type: string
-   *               description: Connection client ID
-   *             issuer:
-   *               type: string
-   *               description: Issuer
-   *             relayState:
-   *               type: string
-   *               description: Relay state
-   *             samlResponse:
-   *               type: string
-   *               description: SAML response
-   *             isSAMLFederated:
-   *               type: boolean
-   *               description: Indicates if SAML is federated
-   *             isOIDCFederated:
-   *               type: boolean
-   *               description: Indicates if OIDC is federated
-   *             isIdPFlow:
-   *               type: boolean
-   *               description: Indicates if request is from IdP
-   *     Directory:
-   *       type: object
-   *       properties:
-   *         id:
-   *           type: string
-   *           description: Directory ID
-   *         name:
-   *           type: string
-   *           description: name
-   *         tenant:
-   *           type: string
-   *           description: Tenant
-   *         product:
-   *           type: string
-   *           description: Product
-   *         type:
-   *           type: string
-   *           description: Directory provider
-   *         deactivated:
-   *           type: boolean
-   *           description: Status
-   *         log_webhook_events:
-   *           type: boolean
-   *           description: If true, webhook requests will be logged
-   *         scim:
-   *           type: object
-   *           properties:
-   *             path:
-   *               type: string
-   *               description: SCIM path
-   *             endpoint:
-   *               type: string
-   *               description: SCIM url
-   *             secret:
-   *               type: string
-   *               description: SCIM secret
-   *         webhook:
-   *           type: object
-   *           properties:
-   *             endpoint:
-   *               type: string
-   *               description: Webhook url
-   *             secret:
-   *               type: string
-   *               description: Webhook secret
-   *     Group:
-   *       type: object
-   *       properties:
-   *         id:
-   *           type: string
-   *           description: Group ID
-   *         name:
-   *           type: string
-   *           description: Group name
-   *         raw:
-   *           type: object
-   *           properties: {}
-   *           description: Raw group attributes from the Identity Provider
-   *     Member:
-   *       type: object
-   *       properties:
-   *         user_id:
-   *           type: string
-   *           description: ID of the user
-   *     User:
-   *       type: object
-   *       properties:
-   *         id:
-   *           type: string
-   *           description: User ID
-   *         first_name:
-   *           type: string
-   *           description: First name
-   *         last_name:
-   *           type: string
-   *           description: Last name
-   *         email:
-   *           type: string
-   *           description: Email address
-   *         active:
-   *           type: boolean
-   *           description: Indicates whether the user is active or not
-   *         raw:
-   *           type: object
-   *           properties: {}
-   *           description: Raw user attributes from the Identity Provider
-   *     Event:
-   *       type: object
-   *       example:
-   *         id: id1
-   *         webhook_endpoint: https://example.com/webhook
-   *         created_at: "2024-03-05T17:06:26.074Z"
-   *         status_code: 200
-   *         delivered: true
-   *         payload:
-   *           directory_id: 58b5cd9dfaa39d47eb8f5f88631f9a629a232016
-   *           event: user.created
-   *           tenant: boxyhq
-   *           product: jackson
-   *           data:
-   *             id: 038e767b-9bc6-4dbd-975e-fbc38a8e7d82
-   *             first_name: Deepak
-   *             last_name: Prabhakara
-   *             email: deepak@boxyhq.com
-   *             active: true
-   *             raw:
-   *               schemas:
-   *                 - urn:ietf:params:scim:schemas:core:2.0:User
-   *               userName: deepak@boxyhq.com
-   *               name:
-   *                 givenName: Deepak
-   *                 familyName: Prabhakara
-   *               emails:
-   *                 - primary: true
-   *                   value: deepak@boxyhq.com
-   *                   type: work
-   *               title: CEO
-   *               displayName: Deepak Prabhakara
-   *               locale: en-US
-   *               externalId: 00u1ldzzogFkXFmvT5d7
-   *               groups: []
-   *               active: true
-   *     IdentityFederationApp:
-   *       type: object
-   *       properties:
-   *         id:
-   *           type: string
-   *           description: id
-   *         name:
-   *           type: string
-   *           description: name
-   *         tenant:
-   *           type: string
-   *           description: Tenant
-   *         product:
-   *           type: string
-   *           description: Product
-   *         acsUrl:
-   *           type: string
-   *           description: ACS URL
-   *         entityId:
-   *           type: string
-   *           description: Entity ID
-   *         logoUrl:
-   *           type: string
-   *           description: Logo URL (optional)
-   *         faviconUrl:
-   *           type: string
-   *           description: Favicon URL (optional)
-   *         primaryColor:
-   *           type: string
-   *           description: Primary color (optional)
    *   responses:
    *     200Get:
    *       description: Success
    *       content:
-   *         "{*}":
+   *         application/json:
    *           schema:
    *             type: array
    *             items:
@@ -468,7 +129,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       content: {}
    *     200GetByProduct:
    *       description: Success
-   *       content: {}
+   *       content:
+   *          application/json:
+   *           schema:
+   *             type: array
+   *             items:
+   *               $ref: "#/components/schemas/Connection"
    *   parameters:
    *     tenantParamGet:
    *       name: tenant
@@ -532,66 +198,17 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *       description: Strategy which can help to filter connections with tenant/product query
    *       schema:
    *         type: string
-   *     setupLinkId:
-   *       name: id
-   *       in: query
-   *       description: Setup link ID
-   *       schema:
-   *         type: string
-   *     idParamGet:
-   *       name: id
-   *       in: query
-   *       description: Setup Link ID
-   *       schema:
-   *         type: string
-   *     tenant:
-   *       name: tenant
-   *       in: query
-   *       description: Tenant (Optional if directoryId is provided)
-   *       schema:
-   *         type: string
-   *     product:
-   *       name: product
-   *       in: query
-   *       description: Product (Optional if directoryId is provided)
-   *       schema:
-   *         type: string
-   *     directoryId:
-   *       name: directoryId
-   *       in: query
-   *       description: Directory ID (Optional if tenant/product is provided)
-   *       schema:
-   *         type: string
-   *     pageOffset:
-   *       name: pageOffset
-   *       in: query
-   *       description: Starting point from which the set of records are retrieved
-   *       schema:
-   *         type: string
-   *     pageLimit:
-   *       name: pageLimit
-   *       in: query
-   *       description: Number of records to be fetched for the page
-   *       schema:
-   *         type: string
-   *     pageToken:
-   *       name: pageToken
-   *       in: query
-   *       description: Token used for DynamoDB pagination
-   *       schema:
-   *         type: string
-   *     groupId:
-   *       name: groupId
-   *       in: path
-   *       description: Group ID
-   *       required: true
-   *       schema:
-   *         type: string
    *   securitySchemes:
    *     apiKey:
    *       type: apiKey
    *       name: Authorization
    *       in: header
+   *
+   */
+
+  /**
+   *
+   * @openapi
    * /api/v1/sso:
    *   post:
    *     tags:
@@ -716,7 +333,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *                 description: Require a new authentication instead of reusing an existing session.
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -726,7 +343,6 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         $ref: "#/components/schemas/validationErrorsPost"
    *       "401":
    *         description: Unauthorized
-   *         content: {}
    */
   public async createSAMLConnection(
     body: SAMLSSOConnectionWithEncodedMetadata | SAMLSSOConnectionWithRawMetadata
@@ -1013,20 +629,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
-   *         description: Success
-   *         content:
-   *           "{*}":
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: "#/components/schemas/Connection"
-   *       "400":
-   *         description: Please provide a `product`.
-   *         content: {}
-   *       "401":
-   *         description: Unauthorized
-   *         content: {}
+   *      '200':
+   *        $ref: '#/components/responses/200Get'
+   *      '400':
+   *        $ref: '#/components/responses/400Get'
+   *      '401':
+   *        $ref: '#/components/responses/401Get'
    */
   public async getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
@@ -1192,15 +800,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       '200':
    *         description: Success
-   *         content: {}
-   *       "400":
+   *       '400':
    *         description: clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.
-   *         content: {}
-   *       "401":
+   *       '401':
    *         description: Unauthorized
-   *         content: {}
    */
   public async deleteConnections(body: DelConnectionsQuery): Promise<void> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
@@ -1303,15 +908,12 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
-   *         description: Success
-   *         content: {}
-   *       "400":
-   *         description: Please provide a `product`.
-   *         content: {}
-   *       "401":
-   *         description: Unauthorized
-   *         content: {}
+   *      '200':
+   *        $ref: '#/components/responses/200GetByProduct'
+   *      '400':
+   *        $ref: '#/components/responses/400Get'
+   *      '401':
+   *        $ref: '#/components/responses/401Get'
    */
   public async getConnectionsByProduct(
     body: GetByProductParams

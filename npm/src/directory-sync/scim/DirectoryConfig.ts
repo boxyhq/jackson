@@ -65,6 +65,95 @@ export class DirectoryConfig {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     Directory:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: Directory ID
+   *         name:
+   *           type: string
+   *           description: name
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         type:
+   *           type: string
+   *           description: Directory provider
+   *         deactivated:
+   *           type: boolean
+   *           description: Status
+   *         log_webhook_events:
+   *           type: boolean
+   *           description: If true, webhook requests will be logged
+   *         scim:
+   *           type: object
+   *           properties:
+   *             path:
+   *               type: string
+   *               description: SCIM path
+   *             endpoint:
+   *               type: string
+   *               description: SCIM url
+   *             secret:
+   *               type: string
+   *               description: SCIM secret
+   *         webhook:
+   *           type: object
+   *           properties:
+   *             endpoint:
+   *               type: string
+   *               description: Webhook url
+   *             secret:
+   *               type: string
+   *               description: Webhook secret
+   *   parameters:
+   *     tenant:
+   *       name: tenant
+   *       in: query
+   *       description: Tenant (Optional if directoryId is provided)
+   *       schema:
+   *         type: string
+   *     product:
+   *       name: product
+   *       in: query
+   *       description: Product (Optional if directoryId is provided)
+   *       schema:
+   *         type: string
+   *     directoryId:
+   *       name: directoryId
+   *       in: query
+   *       description: Directory ID (Optional if tenant/product is provided)
+   *       schema:
+   *         type: string
+   *     pageOffset:
+   *       name: pageOffset
+   *       in: query
+   *       description: Starting point from which the set of records are retrieved
+   *       schema:
+   *         type: string
+   *     pageLimit:
+   *       name: pageLimit
+   *       in: query
+   *       description: Number of records to be fetched for the page
+   *       schema:
+   *         type: string
+   *     pageToken:
+   *       name: pageToken
+   *       in: query
+   *       description: Token used for DynamoDB pagination
+   *       schema:
+   *         type: string
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync:
    *   post:
    *     tags:
@@ -124,7 +213,7 @@ export class DirectoryConfig {
    *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -250,7 +339,7 @@ export class DirectoryConfig {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -350,7 +439,7 @@ export class DirectoryConfig {
    *                 type: string
    *                 description: Google refresh token
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -435,7 +524,7 @@ export class DirectoryConfig {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -509,7 +598,7 @@ export class DirectoryConfig {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content: {}
    */
@@ -600,9 +689,20 @@ export class DirectoryConfig {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       '200':
    *         description: Success
-   *         content: {}
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/Directory'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async filterBy(
     params: FilterByParams = {}

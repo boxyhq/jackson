@@ -61,6 +61,40 @@ export class Groups extends Base {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     Group:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: Group ID
+   *         name:
+   *           type: string
+   *           description: Group name
+   *         raw:
+   *           type: object
+   *           properties: {}
+   *           description: Raw group attributes from the Identity Provider
+   *     Member:
+   *       type: object
+   *       properties:
+   *         user_id:
+   *           type: string
+   *           description: ID of the user
+   *   parameters:
+   *     groupId:
+   *       name: groupId
+   *       in: path
+   *       description: Group ID
+   *       required: true
+   *       schema:
+   *         type: string
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync/groups/{groupId}:
    *   get:
    *     tags:
@@ -89,7 +123,7 @@ export class Groups extends Base {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -238,9 +272,20 @@ export class Groups extends Base {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
-   *         content: {}
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/Group'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getAll(
     params: PaginationParams & {
@@ -315,9 +360,17 @@ export class Groups extends Base {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
-   *         content: {}
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/Member'
    */
   public async getGroupMembers(
     parmas: { groupId: string } & PaginationParams

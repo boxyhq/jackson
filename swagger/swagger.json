@@ -212,8 +212,7 @@
             "$ref": "#/components/schemas/validationErrorsPost"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
           }
         }
       },
@@ -479,25 +478,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "{*}": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Connection"
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/200Get"
           },
           "400": {
-            "description": "Please provide a `product`.",
-            "content": {}
+            "$ref": "#/components/responses/400Get"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "$ref": "#/components/responses/401Get"
           }
         }
       },
@@ -551,16 +538,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {}
+            "description": "Success"
           },
           "400": {
-            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`.",
-            "content": {}
+            "description": "clientSecret mismatch | Please provide `clientID` and `clientSecret` or `tenant` and `product`."
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
           }
         }
       }
@@ -609,16 +593,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {}
+            "$ref": "#/components/responses/200GetByProduct"
           },
           "400": {
-            "description": "Please provide a `product`.",
-            "content": {}
+            "$ref": "#/components/responses/400Get"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "$ref": "#/components/responses/401Get"
           }
         }
       }
@@ -678,7 +659,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
@@ -715,7 +696,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
@@ -916,7 +897,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "object",
                   "example": {
@@ -966,7 +947,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SetupLink"
                 }
@@ -1125,7 +1106,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "object",
                   "example": {
@@ -1175,7 +1156,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SetupLink"
                 }
@@ -1231,7 +1212,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1290,7 +1271,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "{*}": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1377,7 +1358,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SSOTrace"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1724,7 +1723,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Directory"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1843,7 +1860,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1916,7 +1951,21 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Member"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2035,7 +2084,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2099,7 +2166,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2549,7 +2634,25 @@
         "responses": {
           "200": {
             "description": "Success",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/IdentityFederationApp"
+                      }
+                    },
+                    "pageToken": {
+                      "type": "string",
+                      "description": "token for pagination"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2557,164 +2660,6 @@
   },
   "components": {
     "schemas": {
-      "formData_nameParamPost": {
-        "type": "string",
-        "description": "Name of connection"
-      },
-      "formData_labelParamPost": {
-        "type": "string",
-        "description": "An internal label to identify the connection"
-      },
-      "formData_descriptionParamPost": {
-        "type": "string",
-        "description": "A short description for the connection not more than 100 characters"
-      },
-      "formData_encodedRawMetadataParamPost": {
-        "type": "string",
-        "description": "Base64 encoding of the XML metadata"
-      },
-      "formData_rawMetadataParamPost": {
-        "type": "string",
-        "description": "Raw XML metadata"
-      },
-      "formData_metadataUrlParamPost": {
-        "type": "string",
-        "description": "URL containing raw XML metadata"
-      },
-      "formData_defaultRedirectUrlParamPost": {
-        "type": "string",
-        "description": "The redirect URL to use in the IdP login flow"
-      },
-      "formData_redirectUrlParamPost": {
-        "type": "string",
-        "description": "JSON encoded array containing a list of allowed redirect URLs"
-      },
-      "formData_tenantParamPost": {
-        "type": "string",
-        "description": "Tenant"
-      },
-      "formData_productParamPost": {
-        "type": "string",
-        "description": "Product"
-      },
-      "formData_oidcDiscoveryUrlPost": {
-        "type": "string",
-        "description": "well-known URL where the OpenID Provider configuration is exposed"
-      },
-      "formData_oidcMetadataPost": {
-        "type": "string",
-        "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl"
-      },
-      "formData_oidcClientIdPost": {
-        "type": "string",
-        "description": "clientId of the application set up on the OpenID Provider"
-      },
-      "formData_oidcClientSecretPost": {
-        "type": "string",
-        "description": "clientSecret of the application set up on the OpenID Provider"
-      },
-      "formData_sortOrder": {
-        "type": "number",
-        "description": "Indicate the position of the connection in the IdP selection screen"
-      },
-      "formData_forceAuthn": {
-        "type": "boolean",
-        "description": "Require a new authentication instead of reusing an existing session."
-      },
-      "formData_clientIDParamPatch": {
-        "type": "string",
-        "description": "Client ID for the connection"
-      },
-      "formData_clientSecretParamPatch": {
-        "type": "string",
-        "description": "Client Secret for the connection"
-      },
-      "formData_tenantParamPatch": {
-        "type": "string",
-        "description": "Tenant"
-      },
-      "formData_productParamPatch": {
-        "type": "string",
-        "description": "Product"
-      },
-      "formData_nameParamPatch": {
-        "type": "string",
-        "description": "Name/identifier for the connection"
-      },
-      "formData_labelParamPatch": {
-        "type": "string",
-        "description": "An internal label to identify the connection"
-      },
-      "formData_descriptionParamPatch": {
-        "type": "string",
-        "description": "A short description for the connection not more than 100 characters"
-      },
-      "formData_encodedRawMetadataParamPatch": {
-        "type": "string",
-        "description": "Base64 encoding of the XML metadata"
-      },
-      "formData_rawMetadataParamPatch": {
-        "type": "string",
-        "description": "Raw XML metadata"
-      },
-      "formData_metadataUrlParamPatch": {
-        "type": "string",
-        "description": "URL containing raw XML metadata"
-      },
-      "formData_oidcDiscoveryUrlPatch": {
-        "type": "string",
-        "description": "well-known URL where the OpenID Provider configuration is exposed"
-      },
-      "formData_oidcMetadataPatch": {
-        "type": "string",
-        "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl"
-      },
-      "formData_oidcClientIdPatch": {
-        "type": "string",
-        "description": "clientId of the application set up on the OpenID Provider"
-      },
-      "formData_oidcClientSecretPatch": {
-        "type": "string",
-        "description": "clientSecret of the application set up on the OpenID Provider"
-      },
-      "formData_defaultRedirectUrlParamPatch": {
-        "type": "string",
-        "description": "The redirect URL to use in the IdP login flow"
-      },
-      "formData_redirectUrlParamPatch": {
-        "type": "string",
-        "description": "JSON encoded array containing a list of allowed redirect URLs"
-      },
-      "formData_deactivatedParamPatch": {
-        "type": "boolean",
-        "description": "Connection status"
-      },
-      "formData_sortOrderParamPatch": {
-        "type": "number",
-        "description": "Indicate the position of the connection in the IdP selection screen"
-      },
-      "formData_forceAuthnParamPatch": {
-        "type": "boolean",
-        "description": "Require a new authentication instead of reusing an existing session."
-      },
-      "formData_webhookUrlParamPost": {
-        "type": "string",
-        "description": "The URL to send the directory sync events to"
-      },
-      "formData_webhookSecretParamPost": {
-        "type": "string",
-        "description": "The secret to sign the directory sync events"
-      },
-      "formData_expiryDaysParamPost": {
-        "type": "number",
-        "description": "Days in number for the setup link to expire",
-        "default": 3
-      },
-      "formData_regenerateParamPost": {
-        "type": "boolean",
-        "description": "If passed as true, it will remove the existing setup link and create a new one.",
-        "default": false
-      },
       "Connection": {
         "type": "object",
         "properties": {
@@ -3111,7 +3056,7 @@
       "200Get": {
         "description": "Success",
         "content": {
-          "{*}": {
+          "application/json": {
             "schema": {
               "type": "array",
               "items": {
@@ -3131,7 +3076,16 @@
       },
       "200GetByProduct": {
         "description": "Success",
-        "content": {}
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Connection"
+              }
+            }
+          }
+        }
       }
     },
     "parameters": {

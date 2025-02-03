@@ -50,6 +50,52 @@ export class SetupLinkController {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     SetupLink:
+   *       type: object
+   *       properties:
+   *         setupID:
+   *           type: string
+   *           description: Setup link ID
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         validTill:
+   *           type: string
+   *           description: Valid till timestamp
+   *         url:
+   *           type: string
+   *           description: Setup link URL
+   *       example:
+   *         data:
+   *           setupID: 0689f76f7b5aa22f00381a124cb4b153fc1a8c08
+   *           tenant: acme
+   *           product: my-app
+   *           service: sso
+   *           validTill: 1689849146690
+   *           url: http://localhost:5225/setup/0b96a483ebfe0af0b561dda35a96647074d944631ff9e070
+   *   parameters:
+   *     setupLinkId:
+   *       name: id
+   *       in: query
+   *       description: Setup link ID
+   *       schema:
+   *         type: string
+   *     idParamGet:
+   *       name: id
+   *       in: query
+   *       description: Setup Link ID
+   *       schema:
+   *         type: string
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/sso/setuplinks:
    *   post:
    *     tags:
@@ -124,7 +170,7 @@ export class SetupLinkController {
    *                 default: false
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -204,7 +250,7 @@ export class SetupLinkController {
    *                 default: false
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -354,10 +400,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: object
    *               example:
@@ -387,10 +433,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: object
    *               example:
@@ -449,10 +495,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: array
    *               items:
@@ -486,10 +532,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               type: array
    *               items:
@@ -569,10 +615,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               $ref: "#/components/schemas/SetupLink"
    * /api/v1/dsync/setuplinks:
@@ -600,10 +646,10 @@ export class SetupLinkController {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
-   *           "{*}":
+   *           application/json:
    *             schema:
    *               $ref: "#/components/schemas/SetupLink"
    */

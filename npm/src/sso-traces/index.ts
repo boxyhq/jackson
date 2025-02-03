@@ -71,6 +71,55 @@ class SSOTraces {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     SSOTrace:
+   *       type: object
+   *       properties:
+   *         traceId:
+   *           type: string
+   *           description: Trace ID
+   *         error:
+   *           type: string
+   *           description: Error
+   *         timestamp:
+   *           type: string
+   *           description: Timestamp
+   *         context:
+   *           type: object
+   *           properties:
+   *             tenant:
+   *               type: string
+   *               description: Tenant
+   *             product:
+   *               type: string
+   *               description: Product
+   *             clientID:
+   *               type: string
+   *               description: Connection client ID
+   *             issuer:
+   *               type: string
+   *               description: Issuer
+   *             relayState:
+   *               type: string
+   *               description: Relay state
+   *             samlResponse:
+   *               type: string
+   *               description: SAML response
+   *             isSAMLFederated:
+   *               type: boolean
+   *               description: Indicates if SAML is federated
+   *             isOIDCFederated:
+   *               type: boolean
+   *               description: Indicates if OIDC is federated
+   *             isIdPFlow:
+   *               type: boolean
+   *               description: Indicates if request is from IdP
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/sso-traces:
    *   get:
    *     tags:
@@ -84,7 +133,7 @@ class SSOTraces {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -155,9 +204,20 @@ class SSOTraces {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       '200':
    *         description: Success
-   *         content: {}
+   *         content:
+   *           application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  data:
+   *                    type: array
+   *                    items:
+   *                      $ref: '#/components/schemas/SSOTrace'
+   *                  pageToken:
+   *                    type: string
+   *                    description: token for pagination
    */
   public async getTracesByProduct(params: GetByProductParams) {
     const { product, pageOffset, pageLimit, pageToken } = params;

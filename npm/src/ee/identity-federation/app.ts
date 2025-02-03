@@ -36,6 +36,43 @@ export class App {
 
   /**
    * @openapi
+   * components:
+   *   schemas:
+   *     IdentityFederationApp:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: id
+   *         name:
+   *           type: string
+   *           description: name
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         acsUrl:
+   *           type: string
+   *           description: ACS URL
+   *         entityId:
+   *           type: string
+   *           description: Entity ID
+   *         logoUrl:
+   *           type: string
+   *           description: Logo URL (optional)
+   *         faviconUrl:
+   *           type: string
+   *           description: Favicon URL (optional)
+   *         primaryColor:
+   *           type: string
+   *           description: Primary color (optional)
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/identity-federation:
    *   post:
    *     tags:
@@ -153,7 +190,7 @@ export class App {
    *                 description: If creating an OIDC app, provide the redirect URL
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -299,7 +336,7 @@ export class App {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -362,9 +399,20 @@ export class App {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
-   *         description: Success
-   *         content: {}
+   *        200:
+   *          description: Success
+   *          content:
+   *            application/json:
+   *               schema:
+   *                 type: object
+   *                 properties:
+   *                   data:
+   *                     type: array
+   *                     items:
+   *                       $ref: '#/components/schemas/IdentityFederationApp'
+   *                   pageToken:
+   *                     type: string
+   *                     description: token for pagination
    */
   public async getByProduct({ product, pageOffset, pageLimit, pageToken }: GetByProductParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -503,7 +551,7 @@ export class App {
    *                 description: Mapping of attributes from the IdP to SP
    *       required: true
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
@@ -639,7 +687,7 @@ export class App {
    *         schema:
    *           type: string
    *     responses:
-   *       "200":
+   *       200:
    *         description: Success
    *         content:
    *           application/json:
