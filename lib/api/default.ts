@@ -1,3 +1,4 @@
+import { logger } from '@lib/logger';
 import { ApiError } from '../error';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -25,7 +26,7 @@ export const defaultHandler = async (req: NextApiRequest, res: NextApiResponse, 
     const message = err.message || 'Internal Server Error';
     const status = err.statusCode || 500;
 
-    console.error(`${req.method} ${req.url} - ${status} - ${message}`);
+    logger.error(`${req.method} ${req.url} - ${status} - ${message}`);
 
     res.status(status).json({ error: { message } });
   }
