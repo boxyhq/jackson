@@ -96,36 +96,12 @@ export class WebhookEventsLogger extends Base {
    *       - Directory Sync
    *     summary: Get event logs for a directory
    *     parameters:
-   *       - name: directoryId
-   *         in: query
-   *         description: Directory ID (Optional if tenant/product is provided)
-   *         schema:
-   *           type: string
-   *       - name: tenant
-   *         in: query
-   *         description: Tenant (Optional if directoryId is provided)
-   *         schema:
-   *           type: string
-   *       - name: product
-   *         in: query
-   *         description: Product (Optional if directoryId is provided)
-   *         schema:
-   *           type: string
-   *       - name: pageOffset
-   *         in: query
-   *         description: Starting point from which the set of records are retrieved
-   *         schema:
-   *           type: string
-   *       - name: pageLimit
-   *         in: query
-   *         description: Number of records to be fetched for the page
-   *         schema:
-   *           type: string
-   *       - name: pageToken
-   *         in: query
-   *         description: Token used for DynamoDB pagination
-   *         schema:
-   *           type: string
+   *       - $ref: '#/components/parameters/directoryId'
+   *       - $ref: '#/components/parameters/tenant'
+   *       - $ref: '#/components/parameters/product'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success

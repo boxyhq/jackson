@@ -383,21 +383,9 @@ export class App {
    *         required: true
    *         schema:
    *           type: string
-   *       - name: pageOffset
-   *         in: query
-   *         description: Starting point from which the set of records are retrieved
-   *         schema:
-   *           type: string
-   *       - name: pageLimit
-   *         in: query
-   *         description: Number of records to be fetched for the page
-   *         schema:
-   *           type: string
-   *       - name: pageToken
-   *         in: query
-   *         description: Token used for DynamoDB pagination
-   *         schema:
-   *           type: string
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *        200:
    *          description: Success

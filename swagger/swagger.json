@@ -558,37 +558,16 @@
         "operationId": "get-connections-by-product",
         "parameters": [
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/productParamGet"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1175,37 +1154,16 @@
         "operationId": "get-sso-setup-link-by-product",
         "parameters": [
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/productParamGet"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1234,37 +1192,16 @@
         "operationId": "get-dsync-setup-link-by-product",
         "parameters": [
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/productParamGet"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1323,36 +1260,16 @@
         "summary": "Get all traces for a product",
         "parameters": [
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1688,36 +1605,16 @@
         "summary": "Get directory connections by product",
         "parameters": [
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1809,52 +1706,22 @@
         "summary": "Get groups from a directory",
         "parameters": [
           {
-            "name": "tenant",
-            "in": "query",
-            "description": "Tenant (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/tenant"
           },
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "directoryId",
-            "in": "query",
-            "description": "Directory ID (Optional if tenant/product is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/directoryId"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -1891,61 +1758,25 @@
         "summary": "Get list of members in a group",
         "parameters": [
           {
-            "name": "tenant",
-            "in": "query",
-            "description": "Tenant (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/tenant"
           },
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "groupId",
-            "in": "path",
-            "description": "Group ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/groupId"
           },
           {
-            "name": "directoryId",
-            "in": "query",
-            "description": "Directory ID (Optional if tenant/product is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/directoryId"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -2033,52 +1864,22 @@
         "summary": "Get users from a directory",
         "parameters": [
           {
-            "name": "tenant",
-            "in": "query",
-            "description": "Tenant (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/tenant"
           },
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "directoryId",
-            "in": "query",
-            "description": "Directory ID (Optional if tenant/product is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/directoryId"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -2115,52 +1916,22 @@
         "summary": "Get event logs for a directory",
         "parameters": [
           {
-            "name": "directoryId",
-            "in": "query",
-            "description": "Directory ID (Optional if tenant/product is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/directoryId"
           },
           {
-            "name": "tenant",
-            "in": "query",
-            "description": "Tenant (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/tenant"
           },
           {
-            "name": "product",
-            "in": "query",
-            "description": "Product (Optional if directoryId is provided)",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/product"
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {
@@ -2607,28 +2378,13 @@
             }
           },
           {
-            "name": "pageOffset",
-            "in": "query",
-            "description": "Starting point from which the set of records are retrieved",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageOffset"
           },
           {
-            "name": "pageLimit",
-            "in": "query",
-            "description": "Number of records to be fetched for the page",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageLimit"
           },
           {
-            "name": "pageToken",
-            "in": "query",
-            "description": "Token used for DynamoDB pagination",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/pageToken"
           }
         ],
         "responses": {

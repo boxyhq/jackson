@@ -473,27 +473,10 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     operationId: get-sso-setup-link-by-product
    *     parameters:
-   *       - name: product
-   *         in: query
-   *         description: Product
-   *         required: true
-   *         schema:
-   *           type: string
-   *       - name: pageOffset
-   *         in: query
-   *         description: Starting point from which the set of records are retrieved
-   *         schema:
-   *           type: string
-   *       - name: pageLimit
-   *         in: query
-   *         description: Number of records to be fetched for the page
-   *         schema:
-   *           type: string
-   *       - name: pageToken
-   *         in: query
-   *         description: Token used for DynamoDB pagination
-   *         schema:
-   *           type: string
+   *       - $ref: '#/components/parameters/productParamGet'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
@@ -510,27 +493,10 @@ export class SetupLinkController {
    *     summary: Get the Setup Links by product
    *     operationId: get-dsync-setup-link-by-product
    *     parameters:
-   *       - name: product
-   *         in: query
-   *         description: Product
-   *         required: true
-   *         schema:
-   *           type: string
-   *       - name: pageOffset
-   *         in: query
-   *         description: Starting point from which the set of records are retrieved
-   *         schema:
-   *           type: string
-   *       - name: pageLimit
-   *         in: query
-   *         description: Number of records to be fetched for the page
-   *         schema:
-   *           type: string
-   *       - name: pageToken
-   *         in: query
-   *         description: Token used for DynamoDB pagination
-   *         schema:
-   *           type: string
+   *       - $ref: '#/components/parameters/productParamGet'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
