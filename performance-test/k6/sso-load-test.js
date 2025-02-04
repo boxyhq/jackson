@@ -126,9 +126,9 @@ export default async function loadTest() {
   await updateSSOConnection();
   await getSSOConnectionByProduct();
   await deleteSSOConnection();
-  createSetupLink();
-  getSetupLink();
-  deleteSetupLink();
+  await createSetupLink();
+  await getSetupLink();
+  await deleteSetupLink();
   // createDSyncSetupLink();
   // getDSyncSetupLink();
   // getDSyncSetupLinkByProduct();
@@ -289,15 +289,18 @@ async function deleteSSOConnection() {
 
 //Setup Links | Single Sign On
 
-function createSetupLink() {
+async function createSetupLink() {
   const payload = generateSetupLinkPayload();
 
-  const response = http.post(`${API_V1}/sso/setuplinks`, JSON.stringify(payload), {
+  const response = await http.asyncRequest('POST', `${API_V1}/sso/setuplinks`, JSON.stringify(payload), {
     headers: manageHeaders,
+    tags: {
+      sso: 'create_setup_link',
+    },
   });
 
   const isSuccessful = check(response, {
-    'createSetUpLink Response status is 201': (r) => r.status === 201,
+    'createSetupLink Response status is 201': (r) => r.status === 201,
   });
 
   if (!isSuccessful) {
@@ -308,12 +311,20 @@ function createSetupLink() {
   }
 }
 
-function getSetupLink() {
+async function getSetupLink() {
   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.get(`${API_V1}/sso/setuplinks?tenant=${tenant}&product=${product}`, {
-    headers: manageHeaders,
-  });
+  const response = await http.asyncRequest(
+    'GET',
+    `${API_V1}/sso/setuplinks?tenant=${tenant}&product=${product}`,
+    null,
+    {
+      headers: manageHeaders,
+      tags: {
+        sso: 'get_setup_link',
+      },
+    }
+  );
 
   const isSuccessful = check(response, {
     'getSetUpLink Response status is 200': (r) => r.status === 200,
@@ -325,12 +336,20 @@ function getSetupLink() {
   }
 }
 
-function deleteSetupLink() {
+async function deleteSetupLink() {
   console.log(`DELETE Request Params - Tenant: ${tenant}, Product: ${product}`);
 
-  const response = http.del(`${API_V1}/sso/setuplinks?product=${product}&tenant=${tenant}`, null, {
-    headers: manageHeaders,
-  });
+  const response = await http.asyncRequest(
+    'DELETE',
+    `${API_V1}/sso/setuplinks?product=${product}&tenant=${tenant}`,
+    null,
+    {
+      headers: manageHeaders,
+      tags: {
+        sso: 'delete_setup_link',
+      },
+    }
+  );
 
   const isSuccessful = check(response, {
     'deleteSetUpLink Response status is 200': (r) => r.status === 200,
@@ -341,159 +360,6 @@ function deleteSetupLink() {
     console.error(`DELETE request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
   }
 }
-
-//Directory Sync
-
-// function createDirectory() {
-//   const payload = generateDirectoryPayload();
-
-//   const response = http.post(`${API_V1}/dsync`, JSON.stringify(payload), {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'CreateDirectory Response status is 201': (r) => r.status === 201,
-//   });
-
-//   const result = response.json();
-
-//   // Check if result and data are defined before accessing id
-//   if (result && result.data && result.data.id) {
-//     vuContext[__VU].directoryId = result.data.id;
-//   } else {
-//     console.error('Directory ID not found in response:', JSON.stringify(result));
-//   }
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(
-//       `Directory creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
-
-// function getDirectoryByTenantAndProduct() {
-//   const { tenant, product } = vuContext[__VU]; // Retrieve per-VU context
-//   console.log(`GET Request Params - Tenant: ${tenant}, Product: ${product}`);
-
-//   const response = http.get(`${API_V1}/dsync?tenant=${tenant}&product=${product}`, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'getDirectoryByTenantAndProduct Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(`GET request failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
-
-// function getDirectoryById() {
-//   const { directoryId } = vuContext[__VU]; // Retrieve directory ID from context
-
-//   if (!directoryId) {
-//     console.error('Directory ID not found for this VU.');
-//     return;
-//   }
-
-//   const response = http.get(`${API_V1}/dsync/${directoryId}`, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'getDirectoryById Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(
-//       `GET request failed for Directory ID: ${directoryId}. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   } else {
-//     console.log(`Directory successfully retrieved by ID: ${directoryId}`);
-//   }
-// }
-
-// function getDirectoryByProduct() {
-//   const { product } = vuContext[__VU]; // Retrieve product from context
-
-//   const response = http.get(`${API_V1}/dsync/product?product=${product}`, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'getDirectoryByProduct Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (!isSuccessful) {
-//     errorCount.add(1);
-//     console.error(
-//       `GET request failed for Product: ${product}. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   } else {
-//     console.log(`Directory successfully retrieved by Product: ${product}`);
-//   }
-// }
-
-// function updateDirectory() {
-//   const { directoryId } = vuContext[__VU];
-
-//   if (!directoryId) {
-//     console.error('Directory ID not found for this VU.');
-//     return;
-//   }
-
-//   const updatedDirectoryName = `Directory-${randomString(10)}`;
-
-//   const payload = JSON.stringify({
-//     name: updatedDirectoryName,
-//   });
-
-//   const response = http.patch(`${API_V1}/dsync/${directoryId}`, payload, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'updateDirectoryName Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (isSuccessful) {
-//     console.log(`Directory name successfully updated to: ${updatedDirectoryName}`);
-//   } else {
-//     errorCount.add(1);
-//     console.error(
-//       `PATCH request failed for Directory ID: ${directoryId}. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
-
-// function deleteDirectory() {
-//   const { directoryId } = vuContext[__VU];
-
-//   if (!directoryId) {
-//     console.error('Directory ID not found for this VU.');
-//     return;
-//   }
-
-//   const response = http.del(`${API_V1}/dsync/${directoryId}`, null, {
-//     headers: manageHeaders,
-//   });
-
-//   const isSuccessful = check(response, {
-//     'deleteDirectory Response status is 200': (r) => r.status === 200,
-//   });
-
-//   if (isSuccessful) {
-//     console.log(`Directory successfully deleted. ID: ${directoryId}`);
-//   } else {
-//     errorCount.add(1);
-//     console.error(
-//       `DELETE request failed for Directory ID: ${directoryId}. Status: ${response.status}, Response: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
 
 //SAML Federation App
 
