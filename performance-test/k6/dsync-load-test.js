@@ -91,7 +91,7 @@ function createDSyncSetupLink() {
   });
 
   const isSuccessful = check(response, {
-    'createDSyncSetUpLink Response status is 201': (r) => r.status === 201,
+    'createDSyncSetupLink Response status is 201': (r) => r.status === 201,
   });
 
   if (!isSuccessful) {
@@ -110,7 +110,7 @@ function getDSyncSetupLink() {
   });
 
   const isSuccessful = check(response, {
-    'getDSyncSetUpLink Response status is 200': (r) => r.status === 200,
+    'getDSyncSetupLink Response status is 200': (r) => r.status === 200,
   });
 
   if (!isSuccessful) {
@@ -144,7 +144,7 @@ function deleteDSyncSetupLink() {
   });
 
   const isSuccessful = check(response, {
-    'deleteDSyncSetUpLink Response status is 200': (r) => r.status === 200,
+    'deleteDSyncSetupLink Response status is 200': (r) => r.status === 200,
   });
 
   if (!isSuccessful) {
