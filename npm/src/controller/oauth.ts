@@ -14,6 +14,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
+  SSOTrace,
   SSOTracesInstance as ssoTraces,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
@@ -357,6 +358,7 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
+    let providerName;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
@@ -365,7 +367,8 @@ export class OAuthController implements IOAuthController {
     let samlReq, internalError;
     if (connectionIsSAML) {
       try {
-        const { sso } = (connection as SAMLSSORecord).idpMetadata;
+        const { sso, provider } = (connection as SAMLSSORecord).idpMetadata;
+        providerName = provider;
 
         if ('redirectUrl' in sso) {
           // HTTP Redirect binding
@@ -394,6 +397,7 @@ export class OAuthController implements IOAuthController {
               requestedOIDCFlow,
               isOIDCFederated,
               redirectUri: redirect_uri,
+              providerName: provider,
             },
           });
           return {
@@ -454,7 +458,9 @@ export class OAuthController implements IOAuthController {
     let oidcCodeVerifier: string | undefined;
     let oidcNonce: string | undefined;
     if (connectionIsOIDC) {
-      const { discoveryUrl, metadata, clientId, clientSecret } = (connection as OIDCSSORecord).oidcProvider;
+      const { discoveryUrl, metadata, clientId, clientSecret, provider } = (connection as OIDCSSORecord)
+        .oidcProvider;
+      providerName = provider;
       const { ssoTraces } = this;
       try {
         if (!this.opts.oidcPath) {
@@ -479,6 +485,7 @@ export class OAuthController implements IOAuthController {
               requestedOIDCFlow,
               isOIDCFederated,
               redirectUri: redirect_uri,
+              providerName: provider,
             },
           },
         });
@@ -520,6 +527,7 @@ export class OAuthController implements IOAuthController {
             requestedOIDCFlow,
             isOIDCFederated,
             redirectUri: redirect_uri,
+            providerName,
           },
         });
 
@@ -537,7 +545,7 @@ export class OAuthController implements IOAuthController {
     }
     // Session persistence happens here
     try {
-      const requested = { client_id, state, redirect_uri, protocol, login_type } as Record<
+      const requested = { client_id, state, redirect_uri, protocol, login_type, providerName } as Record<
         string,
         string | boolean | string[]
       >;
@@ -639,6 +647,7 @@ export class OAuthController implements IOAuthController {
           isOIDCFederated,
           redirectUri: redirect_uri,
           samlRequest: samlReq?.request || '',
+          providerName,
         },
       });
       return {
@@ -1078,7 +1087,12 @@ export class OAuthController implements IOAuthController {
     const code = crypto.randomBytes(20).toString('hex');
 
     const requested = isIdPFlow
-      ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
+      ? {
+          isIdPFlow: true,
+          tenant: connection.tenant,
+          product: connection.product,
+          providerName: (connection as SAMLSSORecord).idpMetadata.provider,
+        }
       : session
         ? session.requested
         : null;
@@ -1184,7 +1198,7 @@ export class OAuthController implements IOAuthController {
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
-
+    let traceContext = {} as SSOTrace['context'];
     try {
       if (grant_type !== 'authorization_code') {
         throw new JacksonError('Unsupported grant_type', 400);
@@ -1210,6 +1224,21 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Invalid code', 403);
       }
 
+      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+      const isOIDCFederated = !!(codeVal.session && 'oidcFederated' in codeVal.session);
+      traceContext = {
+        tenant: codeVal.requested?.tenant,
+        product: codeVal.requested?.product,
+        clientID: client_id || '',
+        redirectUri: redirect_uri,
+        requestedOIDCFlow,
+        isOIDCFederated,
+        isIdPFlow: codeVal.requested?.isIdPFlow,
+        providerName: codeVal.requested?.providerName,
+        acsUrl: codeVal.requested?.acsUrl,
+        entityId: codeVal.requested?.entityId,
+        oAuthStage: 'token_fetch',
+      };
       protocol = codeVal.requested.protocol || 'saml';
       login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
 
@@ -1278,10 +1307,11 @@ export class OAuthController implements IOAuthController {
       const tokenVal = {
         ...codeVal.profile,
         requested: codeVal.requested,
+        clientID: codeVal.clientID,
         login_type,
         protocol,
       };
-      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+
       const requestHasNonce = !!codeVal.requested?.nonce;
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
@@ -1335,8 +1365,12 @@ export class OAuthController implements IOAuthController {
       }
 
       return tokenResponse;
-    } catch (err) {
+    } catch (err: any) {
       metrics.increment('oauthTokenError', { protocol, login_type });
+      this.ssoTraces.saveTrace({
+        error: err.message,
+        context: traceContext,
+      });
       throw err;
     }
   }
@@ -1401,10 +1435,22 @@ export class OAuthController implements IOAuthController {
 
     const rsp = decrypt(encRsp, tokens[0]);
 
+    const traceContext: SSOTrace['context'] = {
+      tenant: rsp.requested?.tenant,
+      product: rsp.requested?.product,
+      clientID: rsp.clientID,
+      isIdPFlow: rsp.requested?.isIdPFlow,
+      providerName: rsp.requested?.providerName,
+      acsUrl: rsp.requested?.acsUrl,
+      entityId: rsp.requested?.entityId,
+      oAuthStage: 'userinfo_fetch',
+    };
+
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
       metrics.increment('oauthUserInfoError', { protocol: rsp.protocol, login_type: rsp.login_type });
+      this.ssoTraces.saveTrace({ error: 'Invalid token', context: traceContext });
       throw new JacksonError('Invalid token', 403);
     }
 

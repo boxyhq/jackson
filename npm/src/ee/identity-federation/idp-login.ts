@@ -82,7 +82,7 @@ export class IdPLogin {
       }
 
       context.clientID = connection.clientID;
-      context.providerName = connection?.oidcProvider.friendlyProviderName || '';
+      context.providerName = connection?.oidcProvider.provider || '';
       context.acsUrl = fedApp.acsUrl;
       context.entityId = fedApp.entityId;
 
