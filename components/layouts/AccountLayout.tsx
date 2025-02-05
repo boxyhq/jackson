@@ -41,13 +41,13 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       </Head>
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} branding={branding} />
       <div className='flex flex-1 flex-col md:pl-64'>
-        <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
+        <div className='sticky top-0 z-10 flex h-16 shrink-0 border-b bg-white'>
           <button
             onClick={() => {
               setIsOpen(!isOpen);
             }}
             type='button'
-            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset md:hidden'>
+            className='border-r border-gray-200 px-4 text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset md:hidden'>
             <span className='sr-only'>{t('open_sidebar')}</span>
             <svg
               className='h-6 w-6'

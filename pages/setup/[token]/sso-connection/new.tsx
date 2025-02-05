@@ -53,7 +53,7 @@ const proseClassNames = [
   'prose-h2:text-slate-700',
   'prose-h2:font-semibold',
   'prose-p:text-base',
-  'prose-img:rounded',
+  'prose-img:rounded-sm',
   'prose-img:h-96',
   'prose-img:w-full',
   'prose-table:table',

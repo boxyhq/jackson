@@ -43,7 +43,7 @@ const EditConnection = ({ connection, setupLinkToken, isSettingsView = false }: 
             {t('edit_sso_connection')}
           </h2>
         </div>
-        <div className='min-w-[28rem] rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+        <div className='min-w-[28rem] rounded-sm border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
           {connectionIsSAML && (
             <EditSAMLConnection
               displayHeader={false}

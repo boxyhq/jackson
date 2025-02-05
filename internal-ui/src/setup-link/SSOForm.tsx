@@ -138,7 +138,7 @@ export const SSOForm = ({
               <textarea
                 name='redirectUrl'
                 placeholder='http://localhost:3366'
-                className='textarea-bordered textarea whitespace-pre rounded'
+                className='textarea-bordered textarea whitespace-pre rounded-sm'
                 required
                 onChange={formik.handleChange}
                 value={formik.values.redirectUrl}

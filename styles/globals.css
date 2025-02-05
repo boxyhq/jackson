@@ -1,75 +1,131 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  /* name: 'boxyhq'; */
+  name: 'light';
+  default: true;
+  --color-primary: oklch(72.93% 0.1326 173.32);
+  /* --color-secondary: '#303846';
+  --color-accent: '#570DF8';
+  --color-neutral: '#3D4451';
+  --color-base-100: '#FFFFFF';
+  --color-info: '#3ABFF8';
+  --color-success: '#36D399';
+  --color-warning: '#FBBD23';
+  --color-error: '#F87272'; */
 
-:root {
-  color-scheme: dark light;
+  /* --color-base-100: oklch(98% 0.02 240);
+  --color-base-200: oklch(95% 0.03 240);
+  --color-base-300: oklch(92% 0.04 240);
+  --color-base-content: oklch(20% 0.05 240);
+  --color-primary: oklch(55% 0.3 240);
+  --color-primary-content: oklch(98% 0.01 240);
+  --color-secondary: oklch(70% 0.25 200);
+  --color-secondary-content: oklch(98% 0.01 200);
+  --color-accent: oklch(65% 0.25 160);
+  --color-accent-content: oklch(98% 0.01 160);
+  --color-neutral: oklch(50% 0.05 240);
+  --color-neutral-content: oklch(98% 0.01 240);
+  --color-info: oklch(70% 0.2 220);
+  --color-info-content: oklch(98% 0.01 220);
+  --color-success: oklch(65% 0.25 140);
+  --color-success-content: oklch(98% 0.01 140);
+  --color-warning: oklch(80% 0.25 80);
+  --color-warning-content: oklch(20% 0.05 80);
+  --color-error: oklch(65% 0.3 30);
+  --color-error-content: oklch(98% 0.01 30); */
 }
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
+/* @config '../tailwind.config.js'; */
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@utility btn {
+  @apply min-h-8 h-10 rounded-sm normal-case;
 }
 
-* {
-  box-sizing: border-box;
+@utility btn-primary {
+  @apply text-white;
+
+  &:focus-visible {
+    @apply outline-primary;
+  }
+}
+
+@utility btn-error {
+  @apply text-white;
+
+  &:focus-visible {
+    @apply outline-error;
+  }
+}
+
+@utility modal-box {
+  @apply rounded-sm;
+}
+
+@utility card {
+  @apply rounded-sm;
+}
+
+@layer utilities {
+  :root {
+    color-scheme: dark light;
+  }
+
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      Segoe UI,
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      Fira Sans,
+      Droid Sans,
+      Helvetica Neue,
+      sans-serif;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
 @layer base {
   input:not([type='radio']):not([type='checkbox']) {
-    @apply rounded !important;
+    @apply rounded-sm!;
   }
 }
 
 @layer components {
   #__next {
     @apply h-full;
-  }
-
-  .btn {
-    @apply min-h-8 h-10 rounded normal-case;
-  }
-
-  .btn-primary {
-    @apply text-white;
-  }
-
-  .btn-primary:focus-visible {
-    @apply outline-primary;
-  }
-
-  .btn-error {
-    @apply text-white;
-  }
-
-  .btn-error:focus-visible {
-    @apply outline-error;
-  }
-
-  .modal-box {
-    @apply rounded;
-  }
-
-  .card {
-    @apply rounded;
   }
 }
 
@@ -135,7 +191,7 @@ span.react-datepicker__navigation-icon {
 }
 
 .react-tagsinput {
-  @apply input input-bordered;
+  /* @apply input input-bordered; */
   border-radius: 0.25rem !important;
 }
 

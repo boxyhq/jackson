@@ -39,7 +39,7 @@ export default function ChooseIdPConnection({
 
   return (
     <div className='mx-auto my-28 w-[500px]'>
-      <div className='mx-5 flex flex-col space-y-10 rounded border border-gray-300 p-10'>
+      <div className='mx-5 flex flex-col space-y-10 rounded-sm border border-gray-300 p-10'>
         <Head>
           <title>{`${title} - ${branding.companyName}`}</title>
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
@@ -81,7 +81,7 @@ const IdpSelector = ({ connections }: { connections: Connection[] }) => {
       <ul className='flex flex-col space-y-5'>
         {connections.map((connection) => {
           return (
-            <li key={connection.clientID} className='rounded bg-gray-100'>
+            <li key={connection.clientID} className='rounded-sm bg-gray-100'>
               <button
                 type='button'
                 className='w-full'
@@ -154,7 +154,7 @@ const AppSelector = ({
         <ul className='flex flex-col space-y-5'>
           {connections.map((connection) => {
             return (
-              <li key={connection.clientID} className='rounded bg-gray-100'>
+              <li key={connection.clientID} className='rounded-sm bg-gray-100'>
                 <div className='flex items-center gap-2 px-3 py-3'>
                   <input
                     type='radio'
