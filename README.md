@@ -96,7 +96,7 @@ Create a `.env` from the existing `.env.example` file in the root of the project
 cp .env.example .env
 ```
 
-> **Environment variable documentation:** Have a look at https://boxyhq.com/docs/jackson/deploy/env-variables for all of the available environment variables.
+> **Environment variable documentation:** Have a look at <https://boxyhq.com/docs/jackson/deploy/env-variables> for all of the available environment variables.
 
 #### Database
 
@@ -105,6 +105,8 @@ For the rest of the setup, we will use a PostgreSQL database. The easiest way to
 > For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma website](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
 
 #### Start the development server
+
+Instead of running it locally you could also run `docker compose up` and run a specific version of Jackson. For running it locally continue to follow the instructions below.
 
 Now that we have our database running we can start the development server. But before we do, we need a way to log into the admin portal.
 
