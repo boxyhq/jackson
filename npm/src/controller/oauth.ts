@@ -1103,63 +1103,64 @@ export class OAuthController implements IOAuthController {
   }
 
   /**
-   * @swagger
+   * @openapi
    *
    * /oauth/token:
    *   post:
-   *     summary: Code exchange
-   *     operationId: oauth-code-exchange
    *     tags:
    *       - OAuth
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - name: grant_type
-   *         in: formData
-   *         type: string
-   *         description: Grant type should be 'authorization_code'
-   *         default: authorization_code
-   *         required: true
-   *       - name: client_id
-   *         in: formData
-   *         type: string
-   *         description: Use the client_id returned by the SAML connection API
-   *         required: true
-   *       - name: client_secret
-   *         in: formData
-   *         type: string
-   *         description: Use the client_secret returned by the SAML connection API
-   *         required: true
-   *       - name: code_verifier
-   *         in: formData
-   *         type: string
-   *         description: code_verifier against the code_challenge in the authz request (relevant to PKCE flow)
-   *       - name: redirect_uri
-   *         in: formData
-   *         type: string
-   *         description: Redirect URI
-   *         required: true
-   *       - name: code
-   *         in: formData
-   *         type: string
-   *         description: Code
-   *         required: true
+   *     summary: Code exchange
+   *     operationId: oauth-code-exchange
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - client_id
+   *               - client_secret
+   *               - code
+   *               - grant_type
+   *               - redirect_uri
+   *             type: object
+   *             properties:
+   *               grant_type:
+   *                 type: string
+   *                 description: Grant type should be 'authorization_code'
+   *                 default: authorization_code
+   *               client_id:
+   *                 type: string
+   *                 description: Use the client_id returned by the SAML connection API
+   *               client_secret:
+   *                 type: string
+   *                 description: Use the client_secret returned by the SAML connection API
+   *               code_verifier:
+   *                 type: string
+   *                 description: code_verifier against the code_challenge in the authz request (relevant to PKCE flow)
+   *               redirect_uri:
+   *                 type: string
+   *                 description: Redirect URI
+   *               code:
+   *                 type: string
+   *                 description: Code
+   *       required: true
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
-   *         schema:
-   *           type: object
-   *           properties:
-   *             access_token:
-   *               type: string
-   *             token_type:
-   *               type: string
-   *             expires_in:
-   *               type: string
-   *           example:
-   *             access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
-   *             token_type: bearer
-   *             expires_in: 300
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 access_token:
+   *                   type: string
+   *                 token_type:
+   *                   type: string
+   *                 expires_in:
+   *                   type: string
+   *               example:
+   *                 access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+   *                 token_type: bearer
+   *                 expires_in: "300"
    */
   public async token(body: OAuthTokenReq, authHeader?: string | null): Promise<OAuthTokenRes> {
     let basic_client_id: string | undefined;
@@ -1341,51 +1342,51 @@ export class OAuthController implements IOAuthController {
   }
 
   /**
-   * @swagger
+   * @openapi
    *
    * /oauth/userinfo:
    *   get:
-   *     summary: Get profile
-   *     operationId: oauth-get-profile
    *     tags:
    *       - OAuth
+   *     summary: Get profile
+   *     operationId: oauth-get-profile
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
-   *         schema:
-   *           type: object
-   *           properties:
-   *             id:
-   *               type: string
-   *             email:
-   *               type: string
-   *             firstName:
-   *               type: string
-   *             lastName:
-   *               type: string
-   *             roles:
-   *               type: array
-   *               items:
-   *                 type: string
-   *             groups:
-   *               type: array
-   *               items:
-   *                 type: string
-   *             raw:
+   *         content:
+   *           application/json:
+   *             schema:
    *               type: object
-   *             requested:
-   *               type: object
-   *           example:
-   *             id: 32b5af58fdf
-   *             email: jackson@coolstartup.com
-   *             firstName: SAML
-   *             lastName: Jackson
-   *             raw: {
-   *
-   *             }
-   *             requested: {
-   *
-   *             }
+   *               properties:
+   *                 id:
+   *                   type: string
+   *                 email:
+   *                   type: string
+   *                 firstName:
+   *                   type: string
+   *                 lastName:
+   *                   type: string
+   *                 roles:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                 groups:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                 raw:
+   *                   type: object
+   *                   properties: {}
+   *                 requested:
+   *                   type: object
+   *                   properties: {}
+   *               example:
+   *                 id: 32b5af58fdf
+   *                 email: jackson@coolstartup.com
+   *                 firstName: SAML
+   *                 lastName: Jackson
+   *                 raw: {}
+   *                 requested: {}
    */
   public async userInfo(token: string): Promise<Profile> {
     const tokens = token.split('.');

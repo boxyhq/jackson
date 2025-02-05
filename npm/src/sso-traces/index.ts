@@ -9,52 +9,6 @@ const INTERVAL_1_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const INTERVAL_1_DAY_MS = 24 * 60 * 60 * 1000;
 const SSO_TRACES_REDACT_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
 
-/**
- * @swagger
- * definitions:
- *   SSOTrace:
- *      type: object
- *      properties:
- *        traceId:
- *          type: string
- *          description: Trace ID
- *        error:
- *          type: string
- *          description: Error
- *        timestamp:
- *          type: string
- *          description: Timestamp
- *        context:
- *          type: object
- *          properties:
- *            tenant:
- *              type: string
- *              description: Tenant
- *            product:
- *              type: string
- *              description: Product
- *            clientID:
- *              type: string
- *              description: Connection client ID
- *            issuer:
- *              type: string
- *              description: Issuer
- *            relayState:
- *              type: string
- *              description: Relay state
- *            samlResponse:
- *              type: string
- *              description: SAML response
- *            isSAMLFederated:
- *              type: boolean
- *              description: Indicates if SAML is federated
- *            isOIDCFederated:
- *              type: boolean
- *              description: Indicates if OIDC is federated
- *            isIdPFlow:
- *              type: boolean
- *              description: Indicates if request is from IdP
- */
 class SSOTraces {
   tracesStore: Storable;
   opts: JacksonOptionWithRequiredLogger;
@@ -116,25 +70,75 @@ class SSOTraces {
   }
 
   /**
-   * @swagger
+   * @openapi
+   * components:
+   *   schemas:
+   *     SSOTrace:
+   *       type: object
+   *       properties:
+   *         traceId:
+   *           type: string
+   *           description: Trace ID
+   *         error:
+   *           type: string
+   *           description: Error
+   *         timestamp:
+   *           type: string
+   *           description: Timestamp
+   *         context:
+   *           type: object
+   *           properties:
+   *             tenant:
+   *               type: string
+   *               description: Tenant
+   *             product:
+   *               type: string
+   *               description: Product
+   *             clientID:
+   *               type: string
+   *               description: Connection client ID
+   *             issuer:
+   *               type: string
+   *               description: Issuer
+   *             relayState:
+   *               type: string
+   *               description: Relay state
+   *             samlResponse:
+   *               type: string
+   *               description: SAML response
+   *             isSAMLFederated:
+   *               type: boolean
+   *               description: Indicates if SAML is federated
+   *             isOIDCFederated:
+   *               type: boolean
+   *               description: Indicates if OIDC is federated
+   *             isIdPFlow:
+   *               type: boolean
+   *               description: Indicates if request is from IdP
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/sso-traces:
    *   get:
+   *     tags:
+   *       - SSO Traces
    *     summary: Get trace by ID
    *     parameters:
    *       - name: id
-   *         description: Trace ID
    *         in: query
+   *         description: Trace ID
    *         required: true
-   *         type: string
-   *     tags:
-   *       - SSO Traces
-   *     produces:
-   *       - application/json
-   *     responses:
-   *       '200':
-   *         description: Success
    *         schema:
-   *           $ref: '#/definitions/SSOTrace'
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/SSOTrace"
    */
   public async getByTraceId(traceId: string) {
     return (await this.tracesStore.get(traceId)) as Trace;
@@ -172,19 +176,17 @@ class SSOTraces {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/sso-traces/product:
    *   get:
-   *     summary: Get all traces for a product
-   *     parameters:
-   *      - $ref: '#/parameters/product'
-   *      - $ref: '#/parameters/pageOffset'
-   *      - $ref: '#/parameters/pageLimit'
-   *      - $ref: '#/parameters/pageToken'
    *     tags:
    *       - SSO Traces
-   *     produces:
-   *       - application/json
+   *     summary: Get all traces for a product
+   *     parameters:
+   *      - $ref: '#/components/parameters/product'
+   *      - $ref: '#/components/parameters/pageOffset'
+   *      - $ref: '#/components/parameters/pageLimit'
+   *      - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       '200':
    *         description: Success
@@ -196,7 +198,7 @@ class SSOTraces {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/SSOTrace'
+   *                      $ref: '#/components/schemas/SSOTrace'
    *                  pageToken:
    *                    type: string
    *                    description: token for pagination

@@ -17,16 +17,6 @@ module.exports = {
       url: 'https://github.com/boxyhq/jackson/blob/main/LICENSE',
     },
   },
-  host: 'localhost:5225',
-  basePath: '/',
-  schemes: ['http', 'https'],
-  securityDefinitions: {
-    apiKey: {
-      type: 'apiKey',
-      in: 'header',
-      name: 'Authorization',
-    },
-  },
   security: [
     {
       apiKey: [],

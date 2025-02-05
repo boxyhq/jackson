@@ -40,157 +40,312 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   /**
-   * @swagger
-   * definitions:
-   *    Connection:
-   *      type: object
-   *      example:
-   *          {
-   *            "idpMetadata": {
-   *              "sso": {
-   *                "postUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml",
-   *                "redirectUrl": "https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml"
-   *              },
-   *              "entityID": "http://www.okta.com/xxxxxxxxxxxxx",
-   *              "thumbprint": "Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad",
-   *              "loginType": "idp",
-   *              "provider": "okta.com"
-   *            },
-   *            "defaultRedirectUrl": "https://hoppscotch.io/",
-   *            "redirectUrl": ["https://hoppscotch.io/"],
-   *            "tenant": "hoppscotch.io",
-   *            "product": "API Engine",
-   *            "name": "Hoppscotch-SP",
-   *            "description": "SP for hoppscotch.io",
-   *            "clientID": "Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk",
-   *            "clientSecret": "00e3e11a3426f97d8000000738300009130cd45419c5943",
-   *            "deactivated": false
-   *          }
-   *    validationErrorsPost:
-   *      description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   * @openapi
+   * components:
+   *   schemas:
+   *     Connection:
+   *       type: object
+   *       properties:
+   *         clientID:
+   *           type: string
+   *           description: Connection clientID
+   *         clientSecret:
+   *           type: string
+   *           description: Connection clientSecret
+   *         name:
+   *           type: string
+   *           description: Connection name
+   *         label:
+   *           type: string
+   *           description: Connection label
+   *         description:
+   *           type: string
+   *           description: Connection description
+   *         redirectUrl:
+   *           type: array
+   *           items:
+   *             type: string
+   *           description: A list of allowed redirect URLs
+   *         defaultRedirectUrl:
+   *           type: string
+   *           description: The redirect URL to use in the IdP login flow
+   *         tenant:
+   *           type: string
+   *           description: Connection tenant
+   *         product:
+   *           type: string
+   *           description: Connection product
+   *         idpMetadata:
+   *           type: object
+   *           properties: {}
+   *           description: SAML IdP metadata
+   *         oidcProvider:
+   *           type: object
+   *           properties: {}
+   *           description: OIDC IdP metadata
+   *         deactivated:
+   *           type: boolean
+   *           description: Connection status
+   *         sortOrder:
+   *           type: number
+   *           description: Connection sort order
+   *       example:
+   *         idpMetadata:
+   *           sso:
+   *             postUrl: https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml
+   *             redirectUrl: https://dev-20901260.okta.com/app/dev-20901260_jacksonnext_1/xxxxxxxxxxxsso/saml
+   *           entityID: http://www.okta.com/xxxxxxxxxxxxx
+   *           thumbprint: Eo+eUi3UM3XIMkFFtdVK3yJ5vO9f7YZdasdasdad
+   *           loginType: idp
+   *           provider: okta.com
+   *         defaultRedirectUrl: https://hoppscotch.io/
+   *         redirectUrl:
+   *           - https://hoppscotch.io/
+   *         tenant: hoppscotch.io
+   *         product: API Engine
+   *         name: Hoppscotch-SP
+   *         description: SP for hoppscotch.io
+   *         clientID: Xq8AJt3yYAxmXizsCWmUBDRiVP1iTC8Y/otnvFIMitk
+   *         clientSecret: 00e3e11a3426f97d8000000738300009130cd45419c5943
+   *         deactivated: false
+   *     validationErrorsPost:
+   *       description: Please provide rawMetadata or encodedRawMetadata | Please provide a defaultRedirectUrl | Please provide redirectUrl | redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Please provide tenant | Please provide product | Please provide a friendly name | Description should not exceed 100 characters | Strategy&#58; xxxx not supported | Please provide the clientId from OpenID Provider | Please provide the clientSecret from OpenID Provider | Please provide the discoveryUrl for the OpenID Provider
+   *     validationErrorsPatch:
+   *       description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
+   *   responses:
+   *     200Get:
+   *       description: Success
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: array
+   *             items:
+   *               $ref: "#/components/schemas/Connection"
+   *     400Get:
+   *       description: Please provide a `product`.
+   *       content: {}
+   *     401Get:
+   *       description: Unauthorized
+   *       content: {}
+   *     200GetByProduct:
+   *       description: Success
+   *       content:
+   *          application/json:
+   *           schema:
+   *             type: array
+   *             items:
+   *               $ref: "#/components/schemas/Connection"
+   *   parameters:
+   *     tenantParamGet:
+   *       name: tenant
+   *       in: query
+   *       description: Tenant
+   *       required: true
+   *       schema:
+   *         type: string
+   *     productParamGet:
+   *       name: product
+   *       in: query
+   *       description: Product
+   *       required: true
+   *       schema:
+   *         type: string
+   *     clientIDParamGet:
+   *       name: clientID
+   *       in: query
+   *       description: Client ID (Optional if tenant/product provided)
+   *       schema:
+   *         type: string
+   *     strategyParamGet:
+   *       name: strategy
+   *       in: query
+   *       description: Strategy which can help to filter connections with tenant/product query
+   *       schema:
+   *         type: string
+   *     sortParamGet:
+   *       name: sort
+   *       in: query
+   *       description: If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used.
+   *       schema:
+   *         type: string
+   *     clientIDDel:
+   *       name: clientID
+   *       in: query
+   *       description: Client ID (Optional if tenant/product provided)
+   *       schema:
+   *         type: string
+   *     clientSecretDel:
+   *       name: clientSecret
+   *       in: query
+   *       description: Client Secret (Optional if tenant/product provided)
+   *       schema:
+   *         type: string
+   *     tenantDel:
+   *       name: tenant
+   *       in: query
+   *       description: Tenant (Optional if clientID/Secret provided)
+   *       schema:
+   *         type: string
+   *     productDel:
+   *       name: product
+   *       in: query
+   *       description: Product (Optional if clientID/Secret provided)
+   *       schema:
+   *         type: string
+   *     strategyDel:
+   *       name: strategy
+   *       in: query
+   *       description: Strategy which can help to filter connections with tenant/product query
+   *       schema:
+   *         type: string
+   *   securitySchemes:
+   *     apiKey:
+   *       type: apiKey
+   *       name: Authorization
+   *       in: header
    *
-   * parameters:
-   *   nameParamPost:
-   *     name: name
-   *     description: Name/identifier for the connection
-   *     type: string
-   *     in: formData
-   *   labelParamPost:
-   *     name: label
-   *     description: An internal label to identify the connection
-   *     type: string
-   *     in: formData
-   *   descriptionParamPost:
-   *     name: description
-   *     description: A short description for the connection not more than 100 characters
-   *     type: string
-   *     in: formData
-   *   encodedRawMetadataParamPost:
-   *     name: encodedRawMetadata
-   *     description: Base64 encoding of the XML metadata
-   *     in: formData
-   *     type: string
-   *   rawMetadataParamPost:
-   *     name: rawMetadata
-   *     description: Raw XML metadata
-   *     in: formData
-   *     type: string
-   *   metadataUrlParamPost:
-   *     name: metadataUrl
-   *     description: URL containing raw XML metadata
-   *     in: formData
-   *     type: string
-   *   defaultRedirectUrlParamPost:
-   *     name: defaultRedirectUrl
-   *     description: The redirect URL to use in the IdP login flow
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   redirectUrlParamPost:
-   *     name: redirectUrl
-   *     description: JSON encoded array containing a list of allowed redirect URLs
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   tenantParamPost:
-   *     name: tenant
-   *     description: Tenant
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   productParamPost:
-   *     name: product
-   *     description: Product
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   oidcDiscoveryUrlPost:
-   *     name: oidcDiscoveryUrl
-   *     description: well-known URL where the OpenID Provider configuration is exposed
-   *     in: formData
-   *     type: string
-   *   oidcMetadataPost:
-   *     name: oidcMetadata
-   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
-   *     in: formData
-   *     type: string
-   *   oidcClientIdPost:
-   *     name: oidcClientId
-   *     description: clientId of the application set up on the OpenID Provider
-   *     in: formData
-   *     type: string
-   *   oidcClientSecretPost:
-   *     name: oidcClientSecret
-   *     description: clientSecret of the application set up on the OpenID Provider
-   *     in: formData
-   *     type: string
-   *   sortOrder:
-   *    name: sortOrder
-   *    description: Indicate the position of the connection in the IdP selection screen
-   *    in: formData
-   *    type: number
-   *    required: false
-   *   forceAuthn:
-   *     name: forceAuthn
-   *     description: Require a new authentication instead of reusing an existing session.
-   *     in: formData
-   *     type: boolean
-   *     required: false
+   */
+
+  /**
+   *
+   * @openapi
    * /api/v1/sso:
    *   post:
+   *     tags:
+   *       - Single Sign-On
    *     summary: Create SSO connection
    *     operationId: create-sso-connection
-   *     tags: [Single Sign-On]
-   *     produces:
-   *      - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
-   *     parameters:
-   *      - $ref: '#/parameters/nameParamPost'
-   *      - $ref: '#/parameters/labelParamPost'
-   *      - $ref: '#/parameters/descriptionParamPost'
-   *      - $ref: '#/parameters/encodedRawMetadataParamPost'
-   *      - $ref: '#/parameters/rawMetadataParamPost'
-   *      - $ref: '#/parameters/metadataUrlParamPost'
-   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
-   *      - $ref: '#/parameters/redirectUrlParamPost'
-   *      - $ref: '#/parameters/tenantParamPost'
-   *      - $ref: '#/parameters/productParamPost'
-   *      - $ref: '#/parameters/oidcDiscoveryUrlPost'
-   *      - $ref: '#/parameters/oidcMetadataPost'
-   *      - $ref: '#/parameters/oidcClientIdPost'
-   *      - $ref: '#/parameters/oidcClientSecretPost'
-   *      - $ref: '#/parameters/sortOrder'
-   *      - $ref: '#/parameters/forceAuthn'
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - defaultRedirectUrl
+   *               - product
+   *               - redirectUrl
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               label:
+   *                 type: string
+   *                 description: An internal label to identify the connection
+   *               description:
+   *                 type: string
+   *                 description: A short description for the connection not more than 100 characters
+   *               encodedRawMetadata:
+   *                 type: string
+   *                 description: Base64 encoding of the XML metadata
+   *               rawMetadata:
+   *                 type: string
+   *                 description: Raw XML metadata
+   *               metadataUrl:
+   *                 type: string
+   *                 description: URL containing raw XML metadata
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               oidcDiscoveryUrl:
+   *                 type: string
+   *                 description: well-known URL where the OpenID Provider configuration is exposed
+   *               oidcMetadata:
+   *                 type: string
+   *                 description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *               oidcClientId:
+   *                 type: string
+   *                 description: clientId of the application set up on the OpenID Provider
+   *               oidcClientSecret:
+   *                 type: string
+   *                 description: clientSecret of the application set up on the OpenID Provider
+   *               sortOrder:
+   *                 type: number
+   *                 description: Indicate the position of the connection in the IdP selection screen
+   *               forceAuthn:
+   *                 type: boolean
+   *                 description: Require a new authentication instead of reusing an existing session.
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - defaultRedirectUrl
+   *               - product
+   *               - redirectUrl
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               label:
+   *                 type: string
+   *                 description: An internal label to identify the connection
+   *               description:
+   *                 type: string
+   *                 description: A short description for the connection not more than 100 characters
+   *               encodedRawMetadata:
+   *                 type: string
+   *                 description: Base64 encoding of the XML metadata
+   *               rawMetadata:
+   *                 type: string
+   *                 description: Raw XML metadata
+   *               metadataUrl:
+   *                 type: string
+   *                 description: URL containing raw XML metadata
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               oidcDiscoveryUrl:
+   *                 type: string
+   *                 description: well-known URL where the OpenID Provider configuration is exposed
+   *               oidcMetadata:
+   *                 type: string
+   *                 description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *               oidcClientId:
+   *                 type: string
+   *                 description: clientId of the application set up on the OpenID Provider
+   *               oidcClientSecret:
+   *                 type: string
+   *                 description: clientSecret of the application set up on the OpenID Provider
+   *               sortOrder:
+   *                 type: number
+   *                 description: Indicate the position of the connection in the IdP selection screen
+   *               forceAuthn:
+   *                 type: boolean
+   *                 description: Require a new authentication instead of reusing an existing session.
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           $ref: '#/definitions/Connection'
-   *       400:
-   *           $ref: '#/definitions/validationErrorsPost'
-   *       401:
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Connection"
+   *       "400":
+   *         $ref: "#/components/schemas/validationErrorsPost"
+   *       "401":
    *         description: Unauthorized
    */
   public async createSAMLConnection(
@@ -229,150 +384,164 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   /**
-   * @swagger
-   * definitions:
-   *   validationErrorsPatch:
-   *     description: Please provide clientID | Please provide clientSecret | clientSecret mismatch | Tenant/Product config mismatch with IdP metadata | Description should not exceed 100 characters| redirectUrl is invalid | Exceeded maximum number of allowed redirect urls | defaultRedirectUrl is invalid | Tenant/Product config mismatch with OIDC Provider metadata
-   * parameters:
-   *   clientIDParamPatch:
-   *     name: clientID
-   *     description: Client ID for the connection
-   *     type: string
-   *     in: formData
-   *     required: true
-   *   clientSecretParamPatch:
-   *     name: clientSecret
-   *     description: Client Secret for the connection
-   *     type: string
-   *     in: formData
-   *     required: true
-   *   tenantParamPatch:
-   *     name: tenant
-   *     description: Tenant
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   productParamPatch:
-   *     name: product
-   *     description: Product
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   nameParamPatch:
-   *     name: name
-   *     description: Name/identifier for the connection
-   *     type: string
-   *     in: formData
-   *   labelParamPatch:
-   *     name: label
-   *     description: An internal label to identify the connection
-   *     type: string
-   *     in: formData
-   *   descriptionParamPatch:
-   *     name: description
-   *     description: A short description for the connection not more than 100 characters
-   *     type: string
-   *     in: formData
-   *   encodedRawMetadataParamPatch:
-   *     name: encodedRawMetadata
-   *     description: Base64 encoding of the XML metadata
-   *     in: formData
-   *     type: string
-   *   rawMetadataParamPatch:
-   *     name: rawMetadata
-   *     description: Raw XML metadata
-   *     in: formData
-   *     type: string
-   *   metadataUrlParamPatch:
-   *     name: metadataUrl
-   *     description: URL containing raw XML metadata
-   *     in: formData
-   *     type: string
-   *   oidcDiscoveryUrlPatch:
-   *     name: oidcDiscoveryUrl
-   *     description: well-known URL where the OpenID Provider configuration is exposed
-   *     in: formData
-   *     type: string
-   *   oidcMetadataPatch:
-   *     name: oidcMetadata
-   *     description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
-   *     in: formData
-   *     type: string
-   *   oidcClientIdPatch:
-   *     name: oidcClientId
-   *     description: clientId of the application set up on the OpenID Provider
-   *     in: formData
-   *     type: string
-   *   oidcClientSecretPatch:
-   *     name: oidcClientSecret
-   *     description: clientSecret of the application set up on the OpenID Provider
-   *     in: formData
-   *     type: string
-   *   defaultRedirectUrlParamPatch:
-   *     name: defaultRedirectUrl
-   *     description: The redirect URL to use in the IdP login flow
-   *     in: formData
-   *     type: string
-   *   redirectUrlParamPatch:
-   *     name: redirectUrl
-   *     description: JSON encoded array containing a list of allowed redirect URLs
-   *     in: formData
-   *     type: string
-   *   deactivatedParamPatch:
-   *     name: deactivated
-   *     description: Connection status
-   *     in: formData
-   *     required: false
-   *     type: boolean
-   *   sortOrderParamPatch:
-   *     name: sortOrder
-   *     description: Indicate the position of the connection in the IdP selection screen
-   *     in: formData
-   *     type: number
-   *     required: false
-   *   forceAuthnParamPatch:
-   *     name: forceAuthn
-   *     description: Require a new authentication instead of reusing an existing session.
-   *     in: formData
-   *     type: boolean
-   *     required: false
+   * @openapi
    * /api/v1/sso:
    *   patch:
+   *     tags:
+   *       - Single Sign-On
    *     summary: Update SSO Connection
    *     operationId: update-sso-connection
-   *     tags: [Single Sign-On]
-   *     consumes:
-   *       - application/json
-   *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - $ref: '#/parameters/clientIDParamPatch'
-   *       - $ref: '#/parameters/clientSecretParamPatch'
-   *       - $ref: '#/parameters/nameParamPatch'
-   *       - $ref: '#/parameters/labelParamPatch'
-   *       - $ref: '#/parameters/descriptionParamPatch'
-   *       - $ref: '#/parameters/encodedRawMetadataParamPatch'
-   *       - $ref: '#/parameters/rawMetadataParamPatch'
-   *       - $ref: '#/parameters/metadataUrlParamPatch'
-   *       - $ref: '#/parameters/oidcDiscoveryUrlPatch'
-   *       - $ref: '#/parameters/oidcMetadataPatch'
-   *       - $ref: '#/parameters/oidcClientIdPatch'
-   *       - $ref: '#/parameters/oidcClientSecretPatch'
-   *       - $ref: '#/parameters/defaultRedirectUrlParamPatch'
-   *       - $ref: '#/parameters/redirectUrlParamPatch'
-   *       - $ref: '#/parameters/tenantParamPatch'
-   *       - $ref: '#/parameters/productParamPatch'
-   *       - $ref: '#/parameters/deactivatedParamPatch'
-   *       - $ref: '#/parameters/sortOrderParamPatch'
-   *       - $ref: '#/parameters/forceAuthnParamPatch'
+   *     requestBody:
+   *       content:
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - clientID
+   *               - clientSecret
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               clientID:
+   *                 type: string
+   *                 description: Client ID for the connection
+   *               clientSecret:
+   *                 type: string
+   *                 description: Client Secret for the connection
+   *               name:
+   *                 type: string
+   *                 description: Name/identifier for the connection
+   *               label:
+   *                 type: string
+   *                 description: An internal label to identify the connection
+   *               description:
+   *                 type: string
+   *                 description: A short description for the connection not more than 100 characters
+   *               encodedRawMetadata:
+   *                 type: string
+   *                 description: Base64 encoding of the XML metadata
+   *               rawMetadata:
+   *                 type: string
+   *                 description: Raw XML metadata
+   *               metadataUrl:
+   *                 type: string
+   *                 description: URL containing raw XML metadata
+   *               oidcDiscoveryUrl:
+   *                 type: string
+   *                 description: well-known URL where the OpenID Provider configuration is exposed
+   *               oidcMetadata:
+   *                 type: string
+   *                 description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *               oidcClientId:
+   *                 type: string
+   *                 description: clientId of the application set up on the OpenID Provider
+   *               oidcClientSecret:
+   *                 type: string
+   *                 description: clientSecret of the application set up on the OpenID Provider
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               deactivated:
+   *                 type: boolean
+   *                 description: Connection status
+   *               sortOrder:
+   *                 type: number
+   *                 description: Indicate the position of the connection in the IdP selection screen
+   *               forceAuthn:
+   *                 type: boolean
+   *                 description: Require a new authentication instead of reusing an existing session.
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - clientID
+   *               - clientSecret
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               clientID:
+   *                 type: string
+   *                 description: Client ID for the connection
+   *               clientSecret:
+   *                 type: string
+   *                 description: Client Secret for the connection
+   *               name:
+   *                 type: string
+   *                 description: Name/identifier for the connection
+   *               label:
+   *                 type: string
+   *                 description: An internal label to identify the connection
+   *               description:
+   *                 type: string
+   *                 description: A short description for the connection not more than 100 characters
+   *               encodedRawMetadata:
+   *                 type: string
+   *                 description: Base64 encoding of the XML metadata
+   *               rawMetadata:
+   *                 type: string
+   *                 description: Raw XML metadata
+   *               metadataUrl:
+   *                 type: string
+   *                 description: URL containing raw XML metadata
+   *               oidcDiscoveryUrl:
+   *                 type: string
+   *                 description: well-known URL where the OpenID Provider configuration is exposed
+   *               oidcMetadata:
+   *                 type: string
+   *                 description: metadata (JSON) for the OpenID Provider in the absence of discoveryUrl
+   *               oidcClientId:
+   *                 type: string
+   *                 description: clientId of the application set up on the OpenID Provider
+   *               oidcClientSecret:
+   *                 type: string
+   *                 description: clientSecret of the application set up on the OpenID Provider
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               deactivated:
+   *                 type: boolean
+   *                 description: Connection status
+   *               sortOrder:
+   *                 type: number
+   *                 description: Indicate the position of the connection in the IdP selection screen
+   *               forceAuthn:
+   *                 type: boolean
+   *                 description: Require a new authentication instead of reusing an existing session.
+   *       required: true
    *     responses:
-   *       204:
+   *       "204":
    *         description: Success
-   *       400:
-   *         $ref: '#/definitions/validationErrorsPatch'
-   *       401:
+   *         content: {}
+   *       "400":
+   *         $ref: "#/components/schemas/validationErrorsPatch"
+   *       "401":
    *         description: Unauthorized
-   *       500:
+   *         content: {}
+   *       "500":
    *         description: Please set OpenID response handler path (oidcPath) on Jackson
+   *         content: {}
    */
   public async updateSAMLConnection(body: UpdateSAMLConnectionParams): Promise<void> {
     const connection = await samlConnection.update(
@@ -430,105 +599,48 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *  tenantParamGet:
-   *     in: query
-   *     name: tenant
-   *     type: string
-   *     description: Tenant (Optional if clientID provided)
-   *  productParamGet:
-   *     in: query
-   *     name: product
-   *     type: string
-   *     description: Product (Optional if clientID provided)
-   *  clientIDParamGet:
-   *     in: query
-   *     name: clientID
-   *     type: string
-   *     description: Client ID (Optional if tenant/product provided)
-   *  strategyParamGet:
-   *     in: query
-   *     name: strategy
-   *     type: string
-   *     description: Strategy which can help to filter connections with tenant/product query
-   *  sortParamGet:
-   *     in: query
-   *     name: sort
-   *     type: string
-   *     description: If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used.
-   * definitions:
-   *   Connection:
-   *      type: object
-   *      properties:
-   *        clientID:
-   *          type: string
-   *          description: Connection clientID
-   *        clientSecret:
-   *          type: string
-   *          description: Connection clientSecret
-   *        name:
-   *          type: string
-   *          description: Connection name
-   *        label:
-   *          type: string
-   *          description: Connection label
-   *        description:
-   *          type: string
-   *          description: Connection description
-   *        redirectUrl:
-   *          type: string
-   *          description: A list of allowed redirect URLs
-   *        defaultRedirectUrl:
-   *          type: string
-   *          description: The redirect URL to use in the IdP login flow
-   *        tenant:
-   *          type: string
-   *          description: Connection tenant
-   *        product:
-   *          type: string
-   *          description: Connection product
-   *        idpMetadata:
-   *          type: object
-   *          description: SAML IdP metadata
-   *        oidcProvider:
-   *          type: object
-   *          description: OIDC IdP metadata
-   *        deactivated:
-   *          type: boolean
-   *          description: Connection status
-   *        sortOrder:
-   *          type: number
-   *          description: Connection sort order
-   * responses:
-   *   '200Get':
-   *     description: Success
-   *     schema:
-   *       type: array
-   *       items:
-   *         $ref: '#/definitions/Connection'
-   *   '400Get':
-   *     description: Please provide `clientID` or `tenant` and `product`.
-   *   '401Get':
-   *     description: Unauthorized
+   * @openapi
    * /api/v1/sso:
    *   get:
+   *     tags:
+   *       - Single Sign-On
    *     summary: Get SSO Connections
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/clientIDParamGet'
-   *       - $ref: '#/parameters/strategyParamGet'
-   *       - $ref: '#/parameters/sortParamGet'
    *     operationId: get-connections
-   *     tags: [Single Sign-On]
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: clientID
+   *         in: query
+   *         description: Client ID (Optional if tenant/product provided)
+   *         schema:
+   *           type: string
+   *       - name: strategy
+   *         in: query
+   *         description: Strategy which can help to filter connections with tenant/product query
+   *         schema:
+   *           type: string
+   *       - name: sort
+   *         in: query
+   *         description: If present, the connections will be sorted by `sortOrder`. It won't consider if pagination is used.
+   *         schema:
+   *           type: string
    *     responses:
    *      '200':
-   *        $ref: '#/responses/200Get'
+   *        $ref: '#/components/responses/200Get'
    *      '400':
-   *        $ref: '#/responses/400Get'
+   *        $ref: '#/components/responses/400Get'
    *      '401':
-   *        $ref: '#/responses/401Get'
+   *        $ref: '#/components/responses/401Get'
    */
   public async getConnections(body: GetConnectionsQuery): Promise<Array<SAMLSSORecord | OIDCSSORecord>> {
     const clientID = 'clientID' in body ? body.clientID : undefined;
@@ -660,44 +772,39 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *   clientIDDel:
-   *     name: clientID
-   *     in: query
-   *     type: string
-   *     description: Client ID (Optional if tenant/product provided)
-   *   clientSecretDel:
-   *     name: clientSecret
-   *     in: query
-   *     type: string
-   *     description: Client Secret (Optional if tenant/product provided)
-   *   tenantDel:
-   *     name: tenant
-   *     in: query
-   *     type: string
-   *     description: Tenant (Optional if clientID/Secret provided)
-   *   productDel:
-   *     name: product
-   *     in: query
-   *     type: string
-   *     description: Product (Optional if clientID/Secret provided)
-   *   strategyDel:
-   *     name: strategy
-   *     in: query
-   *     type: string
-   *     description: Strategy which can help to filter connections with tenant/product query
+   * @openapi
    * /api/v1/sso:
    *   delete:
-   *     parameters:
-   *      - $ref: '#/parameters/clientIDDel'
-   *      - $ref: '#/parameters/clientSecretDel'
-   *      - $ref: '#/parameters/tenantDel'
-   *      - $ref: '#/parameters/productDel'
-   *      - $ref: '#/parameters/strategyDel'
+   *     tags:
+   *       - Single Sign-On
    *     summary: Delete SSO Connections
    *     operationId: delete-sso-connection
-   *     tags: [Single Sign-On]
+   *     parameters:
+   *       - name: clientID
+   *         in: query
+   *         description: Client ID (Optional if tenant/product provided)
+   *         schema:
+   *           type: string
+   *       - name: clientSecret
+   *         in: query
+   *         description: Client Secret (Optional if tenant/product provided)
+   *         schema:
+   *           type: string
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if clientID/Secret provided)
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if clientID/Secret provided)
+   *         schema:
+   *           type: string
+   *       - name: strategy
+   *         in: query
+   *         description: Strategy which can help to filter connections with tenant/product query
+   *         schema:
+   *           type: string
    *     responses:
    *       '200':
    *         description: Success
@@ -777,84 +884,25 @@ export class ConnectionAPIController implements IConnectionAPIController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *  productParamGet:
-   *     in: query
-   *     name: product
-   *     type: string
-   *     description: Product
-   *     required: true
-   * definitions:
-   *   Connection:
-   *      type: object
-   *      properties:
-   *        clientID:
-   *          type: string
-   *          description: Connection clientID
-   *        clientSecret:
-   *          type: string
-   *          description: Connection clientSecret
-   *        name:
-   *          type: string
-   *          description: Connection name
-   *        description:
-   *          type: string
-   *          description: Connection description
-   *        redirectUrl:
-   *          type: string
-   *          description: A list of allowed redirect URLs
-   *        defaultRedirectUrl:
-   *          type: string
-   *          description: The redirect URL to use in the IdP login flow
-   *        tenant:
-   *          type: string
-   *          description: Connection tenant
-   *        product:
-   *          type: string
-   *          description: Connection product
-   *        idpMetadata:
-   *          type: object
-   *          description: SAML IdP metadata
-   *        oidcProvider:
-   *          type: object
-   *          description: OIDC IdP metadata
-   * responses:
-   *   '200GetByProduct':
-   *     description: Success
-   *     content:
-   *      application/json:
-   *         schema:
-   *           type: object
-   *           properties:
-   *             data:
-   *               type: array
-   *               items:
-   *                 $ref: '#/definitions/Connection'
-   *             pageToken:
-   *               type: string
-   *               description: token for pagination
-   *   '400Get':
-   *     description: Please provide a `product`.
-   *   '401Get':
-   *     description: Unauthorized
+   * @openapi
    * /api/v1/sso/product:
    *   get:
+   *     tags:
+   *       - Single Sign-On
    *     summary: Get SSO Connections by product
-   *     parameters:
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-connections-by-product
-   *     tags: [Single Sign-On]
+   *     parameters:
+   *       - $ref: '#/components/parameters/productParamGet'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *      '200':
-   *        $ref: '#/responses/200GetByProduct'
+   *        $ref: '#/components/responses/200GetByProduct'
    *      '400':
-   *        $ref: '#/responses/400Get'
+   *        $ref: '#/components/responses/400Get'
    *      '401':
-   *        $ref: '#/responses/401Get'
+   *        $ref: '#/components/responses/401Get'
    */
   public async getConnectionsByProduct(
     body: GetByProductParams

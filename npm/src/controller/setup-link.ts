@@ -39,28 +39,6 @@ const calculateExpiryTimestamp = (expiryDays: number): number => {
   return currentTimestamp + expiryDays * 24 * 60 * 60 * 1000;
 };
 
-/**
- * @swagger
- * definitions:
- *   SetupLink:
- *      type: object
- *      properties:
- *        setupID:
- *          type: string
- *          description: Setup link ID
- *        tenant:
- *          type: string
- *          description: Tenant
- *        product:
- *          type: string
- *          description: Product
- *        validTill:
- *          type: string
- *          description: Valid till timestamp
- *        url:
- *          type: string
- *          description: Setup link URL
- */
 export class SetupLinkController {
   setupLinkStore: Storable;
   opts: JacksonOption;
@@ -71,124 +49,213 @@ export class SetupLinkController {
   }
 
   /**
-   * @swagger
-   * definitions:
-   *    SetupLink:
-   *      type: object
-   *      example:
-   *        {
-   *        	"data": {
-   *        		"setupID": "0689f76f7b5aa22f00381a124cb4b153fc1a8c08",
-   *        		"tenant": "acme",
-   *        		"product": "my-app",
-   *        		"service": "sso",
-   *        		"validTill": 1689849146690,
-   *        		"url": "http://localhost:5225/setup/0b96a483ebfe0af0b561dda35a96647074d944631ff9e070"
-   *        	}
-   *        }
-   * parameters:
-   *   tenantParamPost:
-   *     name: tenant
-   *     description: Tenant
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   productParamPost:
-   *     name: product
-   *     description: Product
-   *     in: formData
-   *     required: true
-   *     type: string
-   *   defaultRedirectUrlParamPost:
-   *     name: defaultRedirectUrl
-   *     description: The redirect URL to use in the IdP login flow
-   *     in: formData
-   *     type: string
-   *     required: true
-   *   redirectUrlParamPost:
-   *     name: redirectUrl
-   *     description: JSON encoded array containing a list of allowed redirect URLs
-   *     in: formData
-   *     type: string
-   *     required: true
-   *   webhookUrlParamPost:
-   *     name: webhook_url
-   *     description: The URL to send the directory sync events to
-   *     in: formData
-   *     type: string
-   *     required: true
-   *   webhookSecretParamPost:
-   *     name: webhook_secret
-   *     description: The secret to sign the directory sync events
-   *     in: formData
-   *     type: string
-   *     required: true
-   *   nameParamPost:
-   *     name: name
-   *     description: Name of connection
-   *     in: formData
-   *     type: string
-   *     required: false
-   *   expiryDaysParamPost:
-   *     name: expiryDays
-   *     description: Days in number for the setup link to expire
-   *     default: 3
-   *     in: formData
-   *     type: number
-   *     required: false
-   *   regenerateParamPost:
-   *     name: regenerate
-   *     description: If passed as true, it will remove the existing setup link and create a new one.
-   *     in: formData
-   *     default: false
-   *     type: boolean
-   *     required: false
+   * @openapi
+   * components:
+   *   schemas:
+   *     SetupLink:
+   *       type: object
+   *       properties:
+   *         setupID:
+   *           type: string
+   *           description: Setup link ID
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         validTill:
+   *           type: string
+   *           description: Valid till timestamp
+   *         url:
+   *           type: string
+   *           description: Setup link URL
+   *       example:
+   *         data:
+   *           setupID: 0689f76f7b5aa22f00381a124cb4b153fc1a8c08
+   *           tenant: acme
+   *           product: my-app
+   *           service: sso
+   *           validTill: 1689849146690
+   *           url: http://localhost:5225/setup/0b96a483ebfe0af0b561dda35a96647074d944631ff9e070
+   *   parameters:
+   *     setupLinkId:
+   *       name: id
+   *       in: query
+   *       description: Setup link ID
+   *       schema:
+   *         type: string
+   *     idParamGet:
+   *       name: id
+   *       in: query
+   *       description: Setup Link ID
+   *       schema:
+   *         type: string
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/sso/setuplinks:
    *   post:
-   *    summary: Create a Setup Link
-   *    operationId: create-sso-setup-link
-   *    tags: [Setup Links | Single Sign On]
-   *    produces:
-   *      - application/json
-   *    consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
-   *    parameters:
-   *      - $ref: '#/parameters/nameParamPost'
-   *      - $ref: '#/parameters/tenantParamPost'
-   *      - $ref: '#/parameters/productParamPost'
-   *      - $ref: '#/parameters/defaultRedirectUrlParamPost'
-   *      - $ref: '#/parameters/redirectUrlParamPost'
-   *      - $ref: '#/parameters/expiryDaysParamPost'
-   *      - $ref: '#/parameters/regenerateParamPost'
-   *    responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
+   *     tags:
+   *       - Setup Links | Single Sign On
+   *     summary: Create a Setup Link
+   *     operationId: create-sso-setup-link
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - defaultRedirectUrl
+   *               - product
+   *               - redirectUrl
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               expiryDays:
+   *                 type: number
+   *                 description: Days in number for the setup link to expire
+   *                 default: 3
+   *               regenerate:
+   *                 type: boolean
+   *                 description: If passed as true, it will remove the existing setup link and create a new one.
+   *                 default: false
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - defaultRedirectUrl
+   *               - product
+   *               - redirectUrl
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               defaultRedirectUrl:
+   *                 type: string
+   *                 description: The redirect URL to use in the IdP login flow
+   *               redirectUrl:
+   *                 type: string
+   *                 description: JSON encoded array containing a list of allowed redirect URLs
+   *               expiryDays:
+   *                 type: number
+   *                 description: Days in number for the setup link to expire
+   *                 default: 3
+   *               regenerate:
+   *                 type: boolean
+   *                 description: If passed as true, it will remove the existing setup link and create a new one.
+   *                 default: false
+   *       required: true
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/SetupLink"
    * /api/v1/dsync/setuplinks:
    *   post:
-   *    summary: Create a Setup Link
-   *    operationId: create-dsync-setup-link
-   *    tags: [Setup Links | Directory Sync]
-   *    produces:
-   *      - application/json
-   *    consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
-   *    parameters:
-   *      - $ref: '#/parameters/nameParamPost'
-   *      - $ref: '#/parameters/tenantParamPost'
-   *      - $ref: '#/parameters/productParamPost'
-   *      - $ref: '#/parameters/webhookUrlParamPost'
-   *      - $ref: '#/parameters/webhookSecretParamPost'
-   *      - $ref: '#/parameters/expiryDaysParamPost'
-   *      - $ref: '#/parameters/regenerateParamPost'
-   *    responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
+   *     tags:
+   *       - Setup Links | Directory Sync
+   *     summary: Create a Setup Link
+   *     operationId: create-dsync-setup-link
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - product
+   *               - tenant
+   *               - webhook_secret
+   *               - webhook_url
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               webhook_url:
+   *                 type: string
+   *                 description: The URL to send the directory sync events to
+   *               webhook_secret:
+   *                 type: string
+   *                 description: The secret to sign the directory sync events
+   *               expiryDays:
+   *                 type: number
+   *                 description: Days in number for the setup link to expire
+   *                 default: 3
+   *               regenerate:
+   *                 type: boolean
+   *                 description: If passed as true, it will remove the existing setup link and create a new one.
+   *                 default: false
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - product
+   *               - tenant
+   *               - webhook_secret
+   *               - webhook_url
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of connection
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               webhook_url:
+   *                 type: string
+   *                 description: The URL to send the directory sync events to
+   *               webhook_secret:
+   *                 type: string
+   *                 description: The secret to sign the directory sync events
+   *               expiryDays:
+   *                 type: number
+   *                 description: Days in number for the setup link to expire
+   *                 default: 3
+   *               regenerate:
+   *                 type: boolean
+   *                 description: If passed as true, it will remove the existing setup link and create a new one.
+   *                 default: false
+   *       required: true
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/SetupLink"
    */
   async create(body: SetupLinkCreatePayload): Promise<SetupLink> {
     const { name, tenant, product, service, expiryDays, regenerate } = body;
@@ -307,50 +374,73 @@ export class SetupLinkController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *   setupLinkId:
-   *     name: id
-   *     description: Setup link ID
-   *     in: query
-   *     required: false
-   *     type: string
+   * @openapi
    * /api/v1/sso/setuplinks:
    *   delete:
+   *     tags:
+   *       - Setup Links | Single Sign On
    *     summary: Delete the Setup Link
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/setupLinkId'
    *     operationId: delete-sso-setup-link
-   *     tags: [Setup Links | Single Sign On]
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: id
+   *         in: query
+   *         description: Setup link ID
+   *         schema:
+   *           type: string
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: object
-   *          example:
-   *           {
-   *             data: {}
-   *           }
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               example:
+   *                 data: {}
    * /api/v1/dsync/setuplinks:
    *   delete:
+   *     tags:
+   *       - Setup Links | Directory Sync
    *     summary: Delete the Setup Link
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/setupLinkId'
    *     operationId: delete-dsync-setup-link
-   *     tags: [Setup Links | Directory Sync]
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: id
+   *         in: query
+   *         description: Setup link ID
+   *         schema:
+   *           type: string
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: object
-   *          example:
-   *           {
-   *             data: {}
-   *           }
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               example:
+   *                 data: {}
    */
   async remove(params: RemoveSetupLinkParams) {
     if ('id' in params) {
@@ -375,54 +465,47 @@ export class SetupLinkController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *   tenantParamGet:
-   *     name: tenant
-   *     description: Tenant
-   *     in: query
-   *     required: true
-   *     type: string
-   *   productParamGet:
-   *     name: product
-   *     description: Product
-   *     in: query
-   *     required: true
-   *     type: string
+   * @openapi
    * /api/v1/sso/setuplinks/product:
    *   get:
+   *     tags:
+   *       - Setup Links | Single Sign On
    *     summary: Get the Setup Links by product
-   *     parameters:
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-sso-setup-link-by-product
-   *     tags: [Setup Links | Single Sign On]
+   *     parameters:
+   *       - $ref: '#/components/parameters/productParamGet'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/SetupLink'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: "#/components/schemas/SetupLink"
    * /api/v1/dsync/setuplinks/product:
    *   get:
+   *     tags:
+   *       - Setup Links | Directory Sync
    *     summary: Get the Setup Links by product
-   *     parameters:
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     operationId: get-dsync-setup-link-by-product
-   *     tags: [Setup Links | Directory Sync]
+   *     parameters:
+   *       - $ref: '#/components/parameters/productParamGet'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/SetupLink'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: "#/components/schemas/SetupLink"
    */
   async filterBy(params: FilterByParams): Promise<{ data: SetupLink[]; pageToken?: string }> {
     const { tenant, product, service, pageOffset, pageLimit, pageToken } = params;
@@ -472,42 +555,69 @@ export class SetupLinkController {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *   idParamGet:
-   *     name: id
-   *     description: Setup Link ID
-   *     in: query
-   *     required: false
-   *     type: string
+   * @openapi
    * /api/v1/sso/setuplinks:
    *   get:
+   *     tags:
+   *       - Setup Links | Single Sign On
    *     summary: Get the Setup Link
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/idParamGet'
    *     operationId: get-sso-setup-link
-   *     tags: [Setup Links | Single Sign On]
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: id
+   *         in: query
+   *         description: Setup Link ID
+   *         schema:
+   *           type: string
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/SetupLink"
    * /api/v1/dsync/setuplinks:
    *   get:
+   *     tags:
+   *       - Setup Links | Directory Sync
    *     summary: Get the Setup Link
-   *     parameters:
-   *       - $ref: '#/parameters/tenantParamGet'
-   *       - $ref: '#/parameters/productParamGet'
-   *       - $ref: '#/parameters/idParamGet'
    *     operationId: get-dsync-setup-link
-   *     tags: [Setup Links | Directory Sync]
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         required: true
+   *         schema:
+   *           type: string
+   *       - name: id
+   *         in: query
+   *         description: Setup Link ID
+   *         schema:
+   *           type: string
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/SetupLink'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/SetupLink"
    */
   async get(id: string): Promise<SetupLink> {
     if (!id) {
