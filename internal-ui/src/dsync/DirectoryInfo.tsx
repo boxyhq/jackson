@@ -60,7 +60,7 @@ export const DirectoryInfo = ({
         </div>
       )}
       {!hideInfo && (
-        <div className={`rounded border ${hideTabs ? 'mt-5' : ''}`}>
+        <div className={`rounded-sm border ${hideTabs ? 'mt-5' : ''}`}>
           <dl className='divide-y'>
             {!excludeFields.includes('id') && (
               <div className='px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6'>
@@ -120,7 +120,7 @@ export const DirectoryInfo = ({
         </div>
       )}
       {directory.scim.endpoint && directory.scim.secret && (
-        <div className='mt-4 space-y-4 rounded border p-6'>
+        <div className='mt-4 space-y-4 rounded-sm border p-6'>
           <div className='form-control'>
             <InputWithCopyButton
               text={directory.scim.endpoint as string}

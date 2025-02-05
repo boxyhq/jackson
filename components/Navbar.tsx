@@ -19,7 +19,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
             <div>
               <button
                 type='button'
-                className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary uppercase text-cyan-50 focus:outline-none'
+                className='flex h-8 w-8 items-center justify-center rounded-full bg-secondary uppercase text-cyan-50 focus:outline-hidden'
                 aria-expanded='false'
                 aria-haspopup='true'
                 data-testid='user-avatar'
@@ -34,7 +34,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
           {session && (
             <div
               className={classNames(
-                'absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
+                'absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden',
                 { hidden: !isOpen }
               )}
               role='menu'

@@ -16,7 +16,7 @@ export const Alert = ({
   className?: string;
 }) => {
   return (
-    <div role='alert' className={`rounded alert ${className} ${variants[variant]}`}>
+    <div role='alert' className={`rounded-sm alert ${className} ${variants[variant]}`}>
       <span>{children}</span>
     </div>
   );

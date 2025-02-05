@@ -144,7 +144,7 @@ const LinkCard = ({
   buttonText: string;
 }) => {
   return (
-    <div className='rounded border p-4 hover:border-gray-400'>
+    <div className='rounded-sm border p-4 hover:border-gray-400'>
       <div className='flex items-center justify-between'>
         <div className='space-y-2'>
           <h3 className='font-bold'>{title}</h3>

@@ -40,8 +40,8 @@ export default function Error() {
     <div className='flex h-screen'>
       <div className='m-auto'>
         <section className='bg-white dark:bg-gray-900'>
-          <div className='mx-auto max-w-screen-xl py-8 px-4 lg:py-16 lg:px-6'>
-            <div className='mx-auto max-w-screen-sm text-center'>
+          <div className='mx-auto max-w-(--breakpoint-xl) py-8 px-4 lg:py-16 lg:px-6'>
+            <div className='mx-auto max-w-(--breakpoint-sm) text-center'>
               <h1 className='mb-4 text-7xl font-extrabold tracking-tight text-primary lg:text-9xl'>
                 {error.statusCode}
               </h1>

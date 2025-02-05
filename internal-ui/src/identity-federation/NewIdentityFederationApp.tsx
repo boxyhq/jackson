@@ -82,7 +82,7 @@ export const NewIdentityFederationApp = ({
     <>
       <PageHeader title={t('bui-fs-create-app')} />
       <form onSubmit={formik.handleSubmit} method='POST'>
-        <Card className='p-6 rounded space-y-3'>
+        <Card className='p-6 rounded-sm space-y-3'>
           <div className='mb-4 flex items-center'>
             <div className='mr-2 py-3'>{t('bui-fs-select-app-type')}:</div>
             <div className='flex w-52'>
@@ -194,7 +194,7 @@ export const NewIdentityFederationApp = ({
                 <span className='label-text-alt'>
                   <div className='flex items-center gap-1'>
                     <span
-                      className='cursor-pointer border-stone-600 border p-1 rounded'
+                      className='cursor-pointer border-stone-600 border p-1 rounded-sm'
                       onClick={generateEntityId}>
                       {t('bui-fs-generate-sp-entity-id')}
                     </span>

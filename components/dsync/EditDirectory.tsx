@@ -23,7 +23,7 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
       <div className='flex items-center justify-between'>
         <h2 className='mb-5 mt-5 font-bold text-gray-700 md:text-xl'>{t('edit_directory')}</h2>
       </div>
-      <div className='rounded border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+      <div className='rounded-sm border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
         <EditDSync
           displayHeader={false}
           urls={{

@@ -21,7 +21,7 @@ export const Toaster = () => {
           if (!toast) return null;
 
           return (
-            <Alert key={`toast-${index}`} status={toast.status} className='rounded py-3'>
+            <Alert key={`toast-${index}`} status={toast.status} className='rounded-sm py-3'>
               <h3>{toast.text}</h3>
               <Button
                 color='ghost'

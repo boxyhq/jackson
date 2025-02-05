@@ -162,7 +162,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
                   setIsOpen(!isOpen);
                 }}
                 type='button'
-                className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'>
+                className='ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white'>
                 <span className='sr-only'>{t('close_sidebar')}</span>
                 <svg
                   className='h-6 w-6 text-white'
@@ -176,21 +176,21 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
                 </svg>
               </button>
             </div>
-            <div className='flex flex-shrink-0 items-center px-4'>
+            <div className='flex shrink-0 items-center px-4'>
               <BrandingLink t={t} branding={branding}></BrandingLink>
             </div>
             <div className='mt-5 h-0 flex-1 overflow-y-auto'>
               <MenuItems menus={menus} />
             </div>
           </div>
-          <div className='w-14 flex-shrink-0' aria-hidden='true'></div>
+          <div className='w-14 shrink-0' aria-hidden='true'></div>
         </div>
       </div>
 
       {/* Sidebar for desktop */}
       <div className='hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col'>
-        <div className='flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
-          <div className='flex flex-shrink-0 items-center px-4'>
+        <div className='flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5'>
+          <div className='flex shrink-0 items-center px-4'>
             <BrandingLink t={t} branding={branding}></BrandingLink>
           </div>
           <div className='mt-5 flex flex-1 flex-col'>
@@ -239,7 +239,7 @@ const ItemLink = (props: MenuItem) => {
         'group mx-2 flex items-center rounded-md py-2 px-2 text-sm text-gray-900',
         active ? 'bg-gray-100 font-bold' : 'font-medium hover:bg-gray-100 hover:text-gray-900'
       )}>
-      {props.icon && <props.icon className='mr-2 h-6 w-6 flex-shrink-0' aria-hidden='true' />}
+      {props.icon && <props.icon className='mr-2 h-6 w-6 shrink-0' aria-hidden='true' />}
       {text}
     </Link>
   );

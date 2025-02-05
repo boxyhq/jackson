@@ -110,7 +110,7 @@ const AttributeRow = ({
           </div>
         </div>
         <select
-          className='select select-bordered join-item select-sm rounded w-40'
+          className='select select-bordered join-item select-sm rounded-sm w-40'
           onChange={(e) => {
             onMappingChange({
               key: attributeMapping.key,
