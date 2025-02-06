@@ -4,31 +4,6 @@ import { Base } from './Base';
 import { keyFromParts } from '../../db/utils';
 import { indexNames } from './utils';
 
-/**
- * @swagger
- * definitions:
- *   User:
- *      type: object
- *      properties:
- *        id:
- *          type: string
- *          description: User ID
- *        first_name:
- *          type: string
- *          description: First name
- *        last_name:
- *          type: string
- *          description: Last name
- *        email:
- *          type: string
- *          description: Email address
- *        active:
- *          type: boolean
- *          description: Indicates whether the user is active or not
- *        raw:
- *          type: object
- *          description: Raw user attributes from the Identity Provider
- */
 export class Users extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -59,28 +34,70 @@ export class Users extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
+   * components:
+   *   schemas:
+   *     User:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: User ID
+   *         first_name:
+   *           type: string
+   *           description: First name
+   *         last_name:
+   *           type: string
+   *           description: Last name
+   *         email:
+   *           type: string
+   *           description: Email address
+   *         active:
+   *           type: boolean
+   *           description: Indicates whether the user is active or not
+   *         raw:
+   *           type: object
+   *           properties: {}
+   *           description: Raw user attributes from the Identity Provider
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync/users/{userId}:
    *   get:
-   *     summary: Get user by id from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - name: userId
-   *         description: User ID
-   *         in: path
-   *         required: true
-   *         type: string
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get user by id from a directory
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: directoryId
+   *         in: query
+   *         description: Directory ID (Optional if tenant/product is provided)
+   *         schema:
+   *           type: string
+   *       - name: userId
+   *         in: path
+   *         description: User ID
+   *         required: true
+   *         schema:
+   *           type: string
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           $ref: '#/definitions/User'
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/User"
    */
   public async get(id: string): Promise<Response<User>> {
     try {
@@ -147,21 +164,19 @@ export class Users extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/users:
    *   get:
-   *     summary: Get users from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get users from a directory
+   *     parameters:
+   *       - $ref: '#/components/parameters/tenant'
+   *       - $ref: '#/components/parameters/product'
+   *       - $ref: '#/components/parameters/directoryId'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
@@ -173,7 +188,7 @@ export class Users extends Base {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/User'
+   *                      $ref: '#/components/schemas/User'
    *                  pageToken:
    *                    type: string
    *                    description: token for pagination

@@ -108,6 +108,22 @@ export const SSOTraceInfo = ({ urls }: { urls: { getTraces: string } }) => {
 
         {trace.context.acsUrl && <ListItem term={t('bui-shared-acs-url')} value={trace.context.acsUrl} />}
 
+        {trace.context.oAuthStage && (
+          <ListItem
+            term={t('bui-traces-oauth-stage')}
+            value={
+              <Badge
+                key={trace.context.oAuthStage}
+                color='secondary'
+                size='md'
+                className='font-mono uppercase text-white last-of-type:ml-2'
+                aria-label={t('bui-traces-sp-protocol')!}>
+                {trace.context.oAuthStage}
+              </Badge>
+            }
+          />
+        )}
+
         {trace.context.entityId && (
           <ListItem term={t('bui-traces-entity-id')} value={trace.context.entityId} />
         )}

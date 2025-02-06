@@ -29,125 +29,175 @@ export class App {
   protected store: Storable;
   private opts: JacksonOption;
 
-  /**
-   * @swagger
-   * definitions:
-   *   IdentityFederationApp:
-   *      type: object
-   *      properties:
-   *        id:
-   *          type: string
-   *          description: id
-   *        name:
-   *          type: string
-   *          description: name
-   *        tenant:
-   *          type: string
-   *          description: Tenant
-   *        product:
-   *          type: string
-   *          description: Product
-   *        acsUrl:
-   *          type: string
-   *          description: ACS URL
-   *        entityId:
-   *          type: string
-   *          description: Entity ID
-   *        logoUrl:
-   *          type: string
-   *          description: Logo URL (optional)
-   *        faviconUrl:
-   *          type: string
-   *          description: Favicon URL (optional)
-   *        primaryColor:
-   *          type: string
-   *          description: Primary color (optional)
-   */
-
   constructor({ store, opts }: { store: Storable; opts: JacksonOption }) {
     this.store = store;
     this.opts = opts;
   }
 
   /**
-   * @swagger
+   * @openapi
+   * components:
+   *   schemas:
+   *     IdentityFederationApp:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: id
+   *         name:
+   *           type: string
+   *           description: name
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         acsUrl:
+   *           type: string
+   *           description: ACS URL
+   *         entityId:
+   *           type: string
+   *           description: Entity ID
+   *         logoUrl:
+   *           type: string
+   *           description: Logo URL (optional)
+   *         faviconUrl:
+   *           type: string
+   *           description: Favicon URL (optional)
+   *         primaryColor:
+   *           type: string
+   *           description: Primary color (optional)
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/identity-federation:
    *   post:
+   *     tags:
+   *       - Identity Federation
    *     summary: Create an Identity Federation app
-   *     parameters:
-   *       - name: name
-   *         description: Name
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: acsUrl
-   *         description: ACS URL
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: entityId
-   *         description: Entity ID
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: logoUrl
-   *         description: Logo URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: faviconUrl
-   *         description: Favicon URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: primaryColor
-   *         description: Primary color
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *         in: formData
-   *         required: false
-   *         type: array
-   *       - name: mappings
-   *         description: Mapping of attributes from the IdP to SP
-   *         in: formData
-   *         required: false
-   *         type: array
-   *       - name: type
-   *         description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
-   *         in: formData
-   *         required: false
-   *         type: array
-   *       - name: redirectUrl
-   *         description: If creating an OIDC app, provide the redirect URL
-   *         in: formData
-   *         required: false
-   *         type: array
-   *     tags: [Identity Federation]
-   *     produces:
-   *      - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - acsUrl
+   *               - entityId
+   *               - name
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               acsUrl:
+   *                 type: string
+   *                 description: ACS URL
+   *               entityId:
+   *                 type: string
+   *                 description: Entity ID
+   *               logoUrl:
+   *                 type: string
+   *                 description: Logo URL
+   *               faviconUrl:
+   *                 type: string
+   *                 description: Favicon URL
+   *               primaryColor:
+   *                 type: string
+   *                 description: Primary color
+   *               tenants:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
+   *               mappings:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of attributes from the IdP to SP
+   *               type:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: If creating an OIDC app, provide the redirect URL
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - acsUrl
+   *               - entityId
+   *               - name
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               acsUrl:
+   *                 type: string
+   *                 description: ACS URL
+   *               entityId:
+   *                 type: string
+   *                 description: Entity ID
+   *               logoUrl:
+   *                 type: string
+   *                 description: Logo URL
+   *               faviconUrl:
+   *                 type: string
+   *                 description: Favicon URL
+   *               primaryColor:
+   *                 type: string
+   *                 description: Primary color
+   *               tenants:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
+   *               mappings:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of attributes from the IdP to SP
+   *               type:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
+   *               redirectUrl:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: If creating an OIDC app, provide the redirect URL
+   *       required: true
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/IdentityFederationApp'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: "#/components/schemas/IdentityFederationApp"
    */
   public async create({
     name,
@@ -262,35 +312,36 @@ export class App {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/identity-federation:
    *   get:
+   *     tags:
+   *       - Identity Federation
    *     summary: Get an Identity Federation app
    *     parameters:
    *       - name: id
+   *         in: query
    *         description: App ID
-   *         in: query
    *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: query
-   *         required: false
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: query
-   *         required: false
-   *         type: string
-   *     tags:
-   *       - Identity Federation
-   *     produces:
-   *       - application/json
-   *     responses:
-   *       '200':
-   *         description: Success
    *         schema:
-   *           $ref: '#/definitions/IdentityFederationApp'
+   *           type: string
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/IdentityFederationApp"
    */
   public async get(params: AppRequestParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -319,23 +370,22 @@ export class App {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/identity-federation/product:
    *   get:
+   *     tags:
+   *       - Identity Federation
    *     summary: Get Identity Federation apps by product
    *     parameters:
    *       - name: product
-   *         description: Product
    *         in: query
+   *         description: Product
    *         required: true
-   *         type: string
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
-   *     tags:
-   *       - Identity Federation
-   *     produces:
-   *       - application/json
+   *         schema:
+   *           type: string
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *        200:
    *          description: Success
@@ -347,7 +397,7 @@ export class App {
    *                   data:
    *                     type: array
    *                     items:
-   *                       $ref: '#/definitions/IdentityFederationApp'
+   *                       $ref: '#/components/schemas/IdentityFederationApp'
    *                   pageToken:
    *                     type: string
    *                     description: token for pagination
@@ -399,73 +449,102 @@ export class App {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/identity-federation:
    *   patch:
-   *     summary: Update an Identity Federation app
-   *     parameters:
-   *       - name: id
-   *         description: App ID
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: name
-   *         description: Name
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: acsUrl
-   *         description: ACS URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: logoUrl
-   *         description: Logo URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: faviconUrl
-   *         description: Favicon URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: primaryColor
-   *         description: Primary color
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: tenants
-   *         description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *         in: formData
-   *         required: false
-   *         type: array
-   *       - name: mappings
-   *         description: Mapping of attributes from the IdP to SP
-   *         in: formData
-   *         required: false
-   *         type: array
    *     tags:
    *       - Identity Federation
-   *     produces:
-   *       - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
+   *     summary: Update an Identity Federation app
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - id
+   *             type: object
+   *             properties:
+   *               id:
+   *                 type: string
+   *                 description: App ID
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               acsUrl:
+   *                 type: string
+   *                 description: ACS URL
+   *               logoUrl:
+   *                 type: string
+   *                 description: Logo URL
+   *               faviconUrl:
+   *                 type: string
+   *                 description: Favicon URL
+   *               primaryColor:
+   *                 type: string
+   *                 description: Primary color
+   *               tenants:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
+   *               mappings:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of attributes from the IdP to SP
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - id
+   *             type: object
+   *             properties:
+   *               id:
+   *                 type: string
+   *                 description: App ID
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               acsUrl:
+   *                 type: string
+   *                 description: ACS URL
+   *               logoUrl:
+   *                 type: string
+   *                 description: Logo URL
+   *               faviconUrl:
+   *                 type: string
+   *                 description: Favicon URL
+   *               primaryColor:
+   *                 type: string
+   *                 description: Primary color
+   *               tenants:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
+   *               mappings:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: Mapping of attributes from the IdP to SP
+   *       required: true
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
-   *         schema:
-   *           $ref: '#/definitions/IdentityFederationApp'
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/IdentityFederationApp"
    */
   public async update(params: Partial<IdentityFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -572,35 +651,36 @@ export class App {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/identity-federation:
    *   delete:
+   *     tags:
+   *       - Identity Federation
    *     summary: Delete an Identity Federation app
    *     parameters:
    *       - name: id
+   *         in: query
    *         description: App ID
-   *         in: query
    *         required: true
-   *         type: string
-   *       - name: tenant
-   *         description: Tenant
-   *         in: query
-   *         required: false
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: query
-   *         required: false
-   *         type: string
-   *     tags:
-   *       - Identity Federation
-   *     produces:
-   *       - application/json
-   *     responses:
-   *       '200':
-   *         description: Success
    *         schema:
-   *           $ref: '#/definitions/IdentityFederationApp'
+   *           type: string
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/IdentityFederationApp"
    */
   public async delete(params: AppRequestParams): Promise<void> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);

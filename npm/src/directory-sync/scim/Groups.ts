@@ -20,51 +20,6 @@ interface CreateGroupParams {
   id?: string;
 }
 
-/**
- * @swagger
- * parameters:
- *   groupId:
- *     name: groupId
- *     description: Group ID
- *     in: path
- *     required: true
- *     type: string
- *   tenant:
- *     name: tenant
- *     description: Tenant (Optional if directoryId is provided)
- *     in: query
- *     required: false
- *     type: string
- *   product:
- *     name: product
- *     in: query
- *     description: Product (Optional if directoryId is provided)
- *     required: false
- *     type: string
- *   directoryId:
- *     name: directoryId
- *     description: Directory ID (Optional if tenant/product is provided)
- *     in: query
- *     required: false
- *     type: string
- */
-
-/**
- * @swagger
- * definitions:
- *   Group:
- *      type: object
- *      properties:
- *        id:
- *          type: string
- *          description: Group ID
- *        name:
- *          type: string
- *          description: Group name
- *        raw:
- *          type: object
- *          description: Raw group attributes from the Identity Provider
- */
 export class Groups extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -105,24 +60,75 @@ export class Groups extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
+   * components:
+   *   schemas:
+   *     Group:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: Group ID
+   *         name:
+   *           type: string
+   *           description: Group name
+   *         raw:
+   *           type: object
+   *           properties: {}
+   *           description: Raw group attributes from the Identity Provider
+   *     Member:
+   *       type: object
+   *       properties:
+   *         user_id:
+   *           type: string
+   *           description: ID of the user
+   *   parameters:
+   *     groupId:
+   *       name: groupId
+   *       in: path
+   *       description: Group ID
+   *       required: true
+   *       schema:
+   *         type: string
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync/groups/{groupId}:
    *   get:
-   *     summary: Get group by id from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/groupId'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get group by id from a directory
+   *     parameters:
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: directoryId
+   *         in: query
+   *         description: Directory ID (Optional if tenant/product is provided)
+   *         schema:
+   *           type: string
+   *       - name: groupId
+   *         in: path
+   *         description: Group ID
+   *         required: true
+   *         schema:
+   *           type: string
    *     responses:
    *       200:
    *         description: Success
-   *         schema:
-   *           $ref: '#/definitions/Group'
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Group"
    */
   public async get(id: string): Promise<Response<Group>> {
     try {
@@ -228,21 +234,19 @@ export class Groups extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/groups:
    *   get:
-   *     summary: Get groups from a directory
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get groups from a directory
+   *     parameters:
+   *       - $ref: '#/components/parameters/tenant'
+   *       - $ref: '#/components/parameters/product'
+   *       - $ref: '#/components/parameters/directoryId'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
@@ -254,7 +258,7 @@ export class Groups extends Base {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/Group'
+   *                      $ref: '#/components/schemas/Group'
    *                  pageToken:
    *                    type: string
    *                    description: token for pagination
@@ -288,29 +292,20 @@ export class Groups extends Base {
   }
 
   /**
-   * @swagger
-   * definitions:
-   *   Member:
-   *      type: object
-   *      properties:
-   *        user_id:
-   *          type: string
-   *          description: ID of the user
+   * @openapi
    * /api/v1/dsync/groups/{groupId}/members:
    *   get:
-   *     summary: Get list of members in a group
-   *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/groupId'
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get list of members in a group
+   *     parameters:
+   *       - $ref: '#/components/parameters/tenant'
+   *       - $ref: '#/components/parameters/product'
+   *       - $ref: '#/components/parameters/groupId'
+   *       - $ref: '#/components/parameters/directoryId'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
@@ -322,7 +317,7 @@ export class Groups extends Base {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/Member'
+   *                      $ref: '#/components/schemas/Member'
    */
   public async getGroupMembers(
     parmas: { groupId: string } & PaginationParams

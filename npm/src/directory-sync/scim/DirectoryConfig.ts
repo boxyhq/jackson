@@ -40,55 +40,6 @@ interface FilterByParams extends PaginationParams {
   provider?: DirectoryType;
 }
 
-/**
- * @swagger
- * definitions:
- *   Directory:
- *      type: object
- *      properties:
- *        id:
- *          type: string
- *          description: Directory ID
- *        name:
- *          type: string
- *          description: name
- *        tenant:
- *          type: string
- *          description: Tenant
- *        product:
- *          type: string
- *          description: Product
- *        type:
- *          type: string
- *          description: Directory provider
- *        deactivated:
- *          type: boolean
- *          description: Status
- *        log_webhook_events:
- *          type: boolean
- *          description: If true, webhook requests will be logged
- *        scim:
- *         type: object
- *         properties:
- *           path:
- *              type: string
- *              description: SCIM path
- *           endpoint:
- *              type: string
- *              description: SCIM url
- *           secret:
- *              type: string
- *              description: SCIM secret
- *        webhook:
- *         type: object
- *         properties:
- *           endpoint:
- *              type: string
- *              description: Webhook url
- *           secret:
- *              type: string
- *              description: Webhook secret
- */
 export class DirectoryConfig {
   private _store: Storable | null = null;
   private opts: JacksonOption;
@@ -113,93 +64,161 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
-   * parameters:
-   *   tenant:
-   *     name: tenant
-   *     description: Tenant
-   *     in: query
-   *     required: true
-   *     type: string
-   *   product:
-   *     name: product
-   *     description: Product
-   *     in: query
-   *     required: true
-   *     type: string
-   *   directoryId:
-   *     name: directoryId
-   *     description: Directory ID
-   *     in: query
-   *     required: false
-   *     type: string
-   *   pageOffset:
-   *     name: pageOffset
-   *     description: Starting point from which the set of records are retrieved
-   *     in: query
-   *     required: false
-   *     type: string
-   *   pageLimit:
-   *     name: pageLimit
-   *     description: Number of records to be fetched for the page
-   *     in: query
-   *     required: false
-   *     type: string
-   *   pageToken:
-   *     name: pageToken
-   *     description: Token used for DynamoDB pagination
-   *     in: query
-   *     required: false
-   *     type: string
+   * @openapi
+   * components:
+   *   schemas:
+   *     Directory:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: Directory ID
+   *         name:
+   *           type: string
+   *           description: name
+   *         tenant:
+   *           type: string
+   *           description: Tenant
+   *         product:
+   *           type: string
+   *           description: Product
+   *         type:
+   *           type: string
+   *           description: Directory provider
+   *         deactivated:
+   *           type: boolean
+   *           description: Status
+   *         log_webhook_events:
+   *           type: boolean
+   *           description: If true, webhook requests will be logged
+   *         scim:
+   *           type: object
+   *           properties:
+   *             path:
+   *               type: string
+   *               description: SCIM path
+   *             endpoint:
+   *               type: string
+   *               description: SCIM url
+   *             secret:
+   *               type: string
+   *               description: SCIM secret
+   *         webhook:
+   *           type: object
+   *           properties:
+   *             endpoint:
+   *               type: string
+   *               description: Webhook url
+   *             secret:
+   *               type: string
+   *               description: Webhook secret
+   *   parameters:
+   *     tenant:
+   *       name: tenant
+   *       in: query
+   *       description: Tenant (Optional if directoryId is provided)
+   *       schema:
+   *         type: string
+   *     product:
+   *       name: product
+   *       in: query
+   *       description: Product (Optional if directoryId is provided)
+   *       schema:
+   *         type: string
+   *     directoryId:
+   *       name: directoryId
+   *       in: query
+   *       description: Directory ID (Optional if tenant/product is provided)
+   *       schema:
+   *         type: string
+   *     pageOffset:
+   *       name: pageOffset
+   *       in: query
+   *       description: Starting point from which the set of records are retrieved
+   *       schema:
+   *         type: string
+   *     pageLimit:
+   *       name: pageLimit
+   *       in: query
+   *       description: Number of records to be fetched for the page
+   *       schema:
+   *         type: string
+   *     pageToken:
+   *       name: pageToken
+   *       in: query
+   *       description: Token used for DynamoDB pagination
+   *       schema:
+   *         type: string
+   *
    */
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync:
    *   post:
+   *     tags:
+   *       - Directory Sync
    *     summary: Create a directory connection
-   *     parameters:
-   *       - name: tenant
-   *         description: Tenant
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: product
-   *         description: Product
-   *         in: formData
-   *         required: true
-   *         type: string
-   *       - name: name
-   *         description: Name
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: webhook_url
-   *         description: Webhook URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: webhook_secret
-   *         description: Webhook secret
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: type
-   *         description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
-   *         in: formData
-   *         required: false
-   *         type: string
-   *     tags: [Directory Sync]
-   *     produces:
-   *      - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               webhook_url:
+   *                 type: string
+   *                 description: Webhook URL
+   *               webhook_secret:
+   *                 type: string
+   *                 description: Webhook secret
+   *               type:
+   *                 type: string
+   *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
+   *         application/json:
+   *           schema:
+   *             required:
+   *               - product
+   *               - tenant
+   *             type: object
+   *             properties:
+   *               tenant:
+   *                 type: string
+   *                 description: Tenant
+   *               product:
+   *                 type: string
+   *                 description: Product
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               webhook_url:
+   *                 type: string
+   *                 description: Webhook URL
+   *               webhook_secret:
+   *                 type: string
+   *                 description: Webhook secret
+   *               type:
+   *                 type: string
+   *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
+   *       required: true
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/Directory'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Directory"
    */
   public async create(params: {
     name?: string;
@@ -306,25 +325,26 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/{directoryId}:
    *   get:
+   *     tags:
+   *       - Directory Sync
    *     summary: Get a directory connection by id
    *     parameters:
    *       - name: directoryId
-   *         description: Directory ID
    *         in: path
+   *         description: Directory ID
    *         required: true
-   *         type: string
-   *     tags:
-   *       - Directory Sync
-   *     produces:
-   *       - application/json
-   *     responses:
-   *       '200':
-   *         description: Success
    *         schema:
-   *           $ref: '#/definitions/Directory'
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Directory"
    */
   public async get(id: string): Promise<Response<Directory>> {
     metrics.increment('getDsyncConnections');
@@ -347,67 +367,84 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/{directoryId}:
    *   patch:
+   *     tags:
+   *       - Directory Sync
    *     summary: Update a directory connection
    *     parameters:
    *       - name: directoryId
-   *         description: Directory ID
    *         in: path
+   *         description: Directory ID
    *         required: true
-   *         type: string
-   *       - name: name
-   *         description: Name
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: webhook_url
-   *         description: Webhook URL
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: webhook_secret
-   *         description: Webhook secret
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: log_webhook_events
-   *         description: If true, webhook requests will be logged
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: deactivated
-   *         description: If true, the directory connection will be deactivated
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: google_domain
-   *         description: Google domain
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: google_access_token
-   *         description: Google access token
-   *         in: formData
-   *         required: false
-   *         type: string
-   *       - name: google_refresh_token
-   *         description: Google refresh token
-   *         in: formData
-   *         required: false
-   *         type: string
-   *     tags: [Directory Sync]
-   *     produces:
-   *      - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               webhook_url:
+   *                 type: string
+   *                 description: Webhook URL
+   *               webhook_secret:
+   *                 type: string
+   *                 description: Webhook secret
+   *               log_webhook_events:
+   *                 type: string
+   *                 description: If true, webhook requests will be logged
+   *               deactivated:
+   *                 type: string
+   *                 description: If true, the directory connection will be deactivated
+   *               google_domain:
+   *                 type: string
+   *                 description: Google domain
+   *               google_access_token:
+   *                 type: string
+   *                 description: Google access token
+   *               google_refresh_token:
+   *                 type: string
+   *                 description: Google refresh token
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name
+   *               webhook_url:
+   *                 type: string
+   *                 description: Webhook URL
+   *               webhook_secret:
+   *                 type: string
+   *                 description: Webhook secret
+   *               log_webhook_events:
+   *                 type: string
+   *                 description: If true, webhook requests will be logged
+   *               deactivated:
+   *                 type: string
+   *                 description: If true, the directory connection will be deactivated
+   *               google_domain:
+   *                 type: string
+   *                 description: Google domain
+   *               google_access_token:
+   *                 type: string
+   *                 description: Google access token
+   *               google_refresh_token:
+   *                 type: string
+   *                 description: Google refresh token
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          $ref:  '#/definitions/Directory'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Directory"
    */
   public async update(
     id: string,
@@ -469,26 +506,32 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync:
    *   get:
+   *     tags:
+   *       - Directory Sync
    *     summary: Get a directory connection by tenant and product
    *     parameters:
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *     tags: [Directory Sync]
-   *     produces:
-   *      - application/json
-   *     consumes:
-   *      - application/x-www-form-urlencoded
-   *      - application/json
+   *       - name: tenant
+   *         in: query
+   *         description: Tenant (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
+   *       - name: product
+   *         in: query
+   *         description: Product (Optional if directoryId is provided)
+   *         schema:
+   *           type: string
    *     responses:
-   *      200:
-   *        description: Success
-   *        schema:
-   *          type: array
-   *          items:
-   *            $ref:  '#/definitions/Directory'
+   *       200:
+   *         description: Success
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: "#/components/schemas/Directory"
    */
   public async getByTenantAndProduct(tenant: string, product: string): Promise<Response<Directory[]>> {
     metrics.increment('getDsyncConnections');
@@ -541,23 +584,23 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/{directoryId}:
    *   delete:
+   *     tags:
+   *       - Directory Sync
    *     summary: Delete a directory connection by id
    *     parameters:
    *       - name: directoryId
-   *         description: Directory ID
    *         in: path
+   *         description: Directory ID
    *         required: true
-   *         type: string
-   *     tags:
-   *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *         schema:
+   *           type: string
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
+   *         content: {}
    */
   public async delete(id: string): Promise<Response<null>> {
     metrics.increment('deleteDsyncConnections');
@@ -618,19 +661,17 @@ export class DirectoryConfig {
   }
 
   /**
-   * @swagger
+   * @openapi
    * /api/v1/dsync/product:
    *   get:
-   *     summary: Get directory connections by product
-   *     parameters:
-   *      - $ref: '#/parameters/product'
-   *      - $ref: '#/parameters/pageOffset'
-   *      - $ref: '#/parameters/pageLimit'
-   *      - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get directory connections by product
+   *     parameters:
+   *      - $ref: '#/components/parameters/product'
+   *      - $ref: '#/components/parameters/pageOffset'
+   *      - $ref: '#/components/parameters/pageLimit'
+   *      - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       '200':
    *         description: Success
@@ -642,7 +683,7 @@ export class DirectoryConfig {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/Directory'
+   *                      $ref: '#/components/schemas/Directory'
    *                  pageToken:
    *                    type: string
    *                    description: token for pagination

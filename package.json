@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.37.0",
+  "version": "1.37.1",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -97,7 +97,7 @@
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.0",
     "sharp": "0.33.5",
-    "swr": "2.3.0"
+    "swr": "2.3.1"
   },
   "devDependencies": {
     "@playwright/test": "1.50.1",

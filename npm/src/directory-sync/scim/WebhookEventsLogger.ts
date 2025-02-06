@@ -16,55 +16,6 @@ type GetAllParams = PaginationParams & {
   directoryId?: string;
 };
 
-/**
- * @swagger
- * definitions:
- *    Event:
- *      type: object
- *      example:
- *        {
- *           "id": "id1",
- *           "webhook_endpoint": "https://example.com/webhook",
- *           "created_at": "2024-03-05T17:06:26.074Z",
- *           "status_code": 200,
- *           "delivered": true,
- *           "payload": {
- *             "directory_id": "58b5cd9dfaa39d47eb8f5f88631f9a629a232016",
- *             "event": "user.created",
- *             "tenant": "boxyhq",
- *             "product": "jackson",
- *             "data": {
- *               "id": "038e767b-9bc6-4dbd-975e-fbc38a8e7d82",
- *               "first_name": "Deepak",
- *               "last_name": "Prabhakara",
- *               "email": "deepak@boxyhq.com",
- *               "active": true,
- *               "raw": {
- *                 "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
- *                 "userName": "deepak@boxyhq.com",
- *                 "name": {
- *                   "givenName": "Deepak",
- *                   "familyName": "Prabhakara"
- *                 },
- *                 "emails": [
- *                   {
- *                    "primary": true,
- *                     "value": "deepak@boxyhq.com",
- *                     "type": "work"
- *                   }
- *                ],
- *                 "title": "CEO",
- *                 "displayName": "Deepak Prabhakara",
- *                 "locale": "en-US",
- *                 "externalId": "00u1ldzzogFkXFmvT5d7",
- *                 "groups": [],
- *                 "active": true,
- *                 "id": "038e767b-9bc6-4dbd-975e-fbc38a8e7d82"
- *               }
- *             }
- *           }
- *        }
- */
 export class WebhookEventsLogger extends Base {
   constructor({ db }: { db: DatabaseStore }) {
     super({ db });
@@ -95,21 +46,62 @@ export class WebhookEventsLogger extends Base {
   }
 
   /**
-   * @swagger
+   * @openapi
+   * components:
+   *   schemas:
+   *     Event:
+   *       type: object
+   *       example:
+   *         id: id1
+   *         webhook_endpoint: https://example.com/webhook
+   *         created_at: "2024-03-05T17:06:26.074Z"
+   *         status_code: 200
+   *         delivered: true
+   *         payload:
+   *           directory_id: 58b5cd9dfaa39d47eb8f5f88631f9a629a232016
+   *           event: user.created
+   *           tenant: boxyhq
+   *           product: jackson
+   *           data:
+   *             id: 038e767b-9bc6-4dbd-975e-fbc38a8e7d82
+   *             first_name: Deepak
+   *             last_name: Prabhakara
+   *             email: deepak@boxyhq.com
+   *             active: true
+   *             raw:
+   *               schemas:
+   *                 - urn:ietf:params:scim:schemas:core:2.0:User
+   *               userName: deepak@boxyhq.com
+   *               name:
+   *                 givenName: Deepak
+   *                 familyName: Prabhakara
+   *               emails:
+   *                 - primary: true
+   *                   value: deepak@boxyhq.com
+   *                   type: work
+   *               title: CEO
+   *               displayName: Deepak Prabhakara
+   *               locale: en-US
+   *               externalId: 00u1ldzzogFkXFmvT5d7
+   *               groups: []
+   *               active: true
+   *
+   */
+
+  /**
+   * @openapi
    * /api/v1/dsync/events:
    *   get:
-   *     summary: Get event logs for a directory
-   *     parameters:
-   *       - $ref: '#/parameters/directoryId'
-   *       - $ref: '#/parameters/tenant'
-   *       - $ref: '#/parameters/product'
-   *       - $ref: '#/parameters/pageOffset'
-   *       - $ref: '#/parameters/pageLimit'
-   *       - $ref: '#/parameters/pageToken'
    *     tags:
    *       - Directory Sync
-   *     produces:
-   *       - application/json
+   *     summary: Get event logs for a directory
+   *     parameters:
+   *       - $ref: '#/components/parameters/directoryId'
+   *       - $ref: '#/components/parameters/tenant'
+   *       - $ref: '#/components/parameters/product'
+   *       - $ref: '#/components/parameters/pageOffset'
+   *       - $ref: '#/components/parameters/pageLimit'
+   *       - $ref: '#/components/parameters/pageToken'
    *     responses:
    *       200:
    *         description: Success
@@ -121,7 +113,7 @@ export class WebhookEventsLogger extends Base {
    *                  data:
    *                    type: array
    *                    items:
-   *                      $ref: '#/definitions/Event'
+   *                      $ref: '#/components/schemas/Event'
    *                  pageToken:
    *                    type: string
    *                    description: token for pagination

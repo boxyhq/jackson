@@ -14,6 +14,7 @@ import type {
   Storable,
   SAMLSSORecord,
   OIDCSSORecord,
+  SSOTrace,
   SSOTracesInstance as ssoTraces,
   OAuthErrorHandlerParams,
   OIDCAuthzResponsePayload,
@@ -357,6 +358,7 @@ export class OAuthController implements IOAuthController {
     // Connection retrieved: Handover to IdP starts here
     let ssoUrl;
     let post = false;
+    let providerName;
 
     // Init sessionId
     const sessionId = crypto.randomBytes(16).toString('hex');
@@ -365,7 +367,8 @@ export class OAuthController implements IOAuthController {
     let samlReq, internalError;
     if (connectionIsSAML) {
       try {
-        const { sso } = (connection as SAMLSSORecord).idpMetadata;
+        const { sso, provider } = (connection as SAMLSSORecord).idpMetadata;
+        providerName = provider;
 
         if ('redirectUrl' in sso) {
           // HTTP Redirect binding
@@ -394,6 +397,7 @@ export class OAuthController implements IOAuthController {
               requestedOIDCFlow,
               isOIDCFederated,
               redirectUri: redirect_uri,
+              providerName: provider,
             },
           });
           return {
@@ -454,7 +458,9 @@ export class OAuthController implements IOAuthController {
     let oidcCodeVerifier: string | undefined;
     let oidcNonce: string | undefined;
     if (connectionIsOIDC) {
-      const { discoveryUrl, metadata, clientId, clientSecret } = (connection as OIDCSSORecord).oidcProvider;
+      const { discoveryUrl, metadata, clientId, clientSecret, provider } = (connection as OIDCSSORecord)
+        .oidcProvider;
+      providerName = provider;
       const { ssoTraces } = this;
       try {
         if (!this.opts.oidcPath) {
@@ -479,6 +485,7 @@ export class OAuthController implements IOAuthController {
               requestedOIDCFlow,
               isOIDCFederated,
               redirectUri: redirect_uri,
+              providerName: provider,
             },
           },
         });
@@ -520,6 +527,7 @@ export class OAuthController implements IOAuthController {
             requestedOIDCFlow,
             isOIDCFederated,
             redirectUri: redirect_uri,
+            providerName,
           },
         });
 
@@ -537,7 +545,7 @@ export class OAuthController implements IOAuthController {
     }
     // Session persistence happens here
     try {
-      const requested = { client_id, state, redirect_uri, protocol, login_type } as Record<
+      const requested = { client_id, state, redirect_uri, protocol, login_type, providerName } as Record<
         string,
         string | boolean | string[]
       >;
@@ -639,6 +647,7 @@ export class OAuthController implements IOAuthController {
           isOIDCFederated,
           redirectUri: redirect_uri,
           samlRequest: samlReq?.request || '',
+          providerName,
         },
       });
       return {
@@ -1078,7 +1087,12 @@ export class OAuthController implements IOAuthController {
     const code = crypto.randomBytes(20).toString('hex');
 
     const requested = isIdPFlow
-      ? { isIdPFlow: true, tenant: connection.tenant, product: connection.product }
+      ? {
+          isIdPFlow: true,
+          tenant: connection.tenant,
+          product: connection.product,
+          providerName: (connection as SAMLSSORecord).idpMetadata.provider,
+        }
       : session
         ? session.requested
         : null;
@@ -1103,63 +1117,64 @@ export class OAuthController implements IOAuthController {
   }
 
   /**
-   * @swagger
+   * @openapi
    *
    * /oauth/token:
    *   post:
-   *     summary: Code exchange
-   *     operationId: oauth-code-exchange
    *     tags:
    *       - OAuth
-   *     consumes:
-   *       - application/x-www-form-urlencoded
-   *     parameters:
-   *       - name: grant_type
-   *         in: formData
-   *         type: string
-   *         description: Grant type should be 'authorization_code'
-   *         default: authorization_code
-   *         required: true
-   *       - name: client_id
-   *         in: formData
-   *         type: string
-   *         description: Use the client_id returned by the SAML connection API
-   *         required: true
-   *       - name: client_secret
-   *         in: formData
-   *         type: string
-   *         description: Use the client_secret returned by the SAML connection API
-   *         required: true
-   *       - name: code_verifier
-   *         in: formData
-   *         type: string
-   *         description: code_verifier against the code_challenge in the authz request (relevant to PKCE flow)
-   *       - name: redirect_uri
-   *         in: formData
-   *         type: string
-   *         description: Redirect URI
-   *         required: true
-   *       - name: code
-   *         in: formData
-   *         type: string
-   *         description: Code
-   *         required: true
+   *     summary: Code exchange
+   *     operationId: oauth-code-exchange
+   *     requestBody:
+   *       content:
+   *         application/x-www-form-urlencoded:
+   *           schema:
+   *             required:
+   *               - client_id
+   *               - client_secret
+   *               - code
+   *               - grant_type
+   *               - redirect_uri
+   *             type: object
+   *             properties:
+   *               grant_type:
+   *                 type: string
+   *                 description: Grant type should be 'authorization_code'
+   *                 default: authorization_code
+   *               client_id:
+   *                 type: string
+   *                 description: Use the client_id returned by the SAML connection API
+   *               client_secret:
+   *                 type: string
+   *                 description: Use the client_secret returned by the SAML connection API
+   *               code_verifier:
+   *                 type: string
+   *                 description: code_verifier against the code_challenge in the authz request (relevant to PKCE flow)
+   *               redirect_uri:
+   *                 type: string
+   *                 description: Redirect URI
+   *               code:
+   *                 type: string
+   *                 description: Code
+   *       required: true
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
-   *         schema:
-   *           type: object
-   *           properties:
-   *             access_token:
-   *               type: string
-   *             token_type:
-   *               type: string
-   *             expires_in:
-   *               type: string
-   *           example:
-   *             access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
-   *             token_type: bearer
-   *             expires_in: 300
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 access_token:
+   *                   type: string
+   *                 token_type:
+   *                   type: string
+   *                 expires_in:
+   *                   type: string
+   *               example:
+   *                 access_token: 8958e13053832b5af58fdf2ee83f35f5d013dc74
+   *                 token_type: bearer
+   *                 expires_in: "300"
    */
   public async token(body: OAuthTokenReq, authHeader?: string | null): Promise<OAuthTokenRes> {
     let basic_client_id: string | undefined;
@@ -1183,7 +1198,7 @@ export class OAuthController implements IOAuthController {
     const code_verifier = 'code_verifier' in body ? body.code_verifier : undefined;
 
     metrics.increment('oauthToken');
-
+    let traceContext = {} as SSOTrace['context'];
     try {
       if (grant_type !== 'authorization_code') {
         throw new JacksonError('Unsupported grant_type', 400);
@@ -1209,6 +1224,21 @@ export class OAuthController implements IOAuthController {
         throw new JacksonError('Invalid code', 403);
       }
 
+      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+      const isOIDCFederated = !!(codeVal.session && 'oidcFederated' in codeVal.session);
+      traceContext = {
+        tenant: codeVal.requested?.tenant,
+        product: codeVal.requested?.product,
+        clientID: client_id || '',
+        redirectUri: redirect_uri,
+        requestedOIDCFlow,
+        isOIDCFederated,
+        isIdPFlow: codeVal.requested?.isIdPFlow,
+        providerName: codeVal.requested?.providerName,
+        acsUrl: codeVal.requested?.acsUrl,
+        entityId: codeVal.requested?.entityId,
+        oAuthStage: 'token_fetch',
+      };
       protocol = codeVal.requested.protocol || 'saml';
       login_type = codeVal.isIdPFlow ? 'idp-initiated' : 'sp-initiated';
 
@@ -1277,10 +1307,11 @@ export class OAuthController implements IOAuthController {
       const tokenVal = {
         ...codeVal.profile,
         requested: codeVal.requested,
+        clientID: codeVal.clientID,
         login_type,
         protocol,
       };
-      const requestedOIDCFlow = !!codeVal.requested?.oidc;
+
       const requestHasNonce = !!codeVal.requested?.nonce;
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
@@ -1334,58 +1365,62 @@ export class OAuthController implements IOAuthController {
       }
 
       return tokenResponse;
-    } catch (err) {
+    } catch (err: any) {
       metrics.increment('oauthTokenError', { protocol, login_type });
+      this.ssoTraces.saveTrace({
+        error: err.message,
+        context: traceContext,
+      });
       throw err;
     }
   }
 
   /**
-   * @swagger
+   * @openapi
    *
    * /oauth/userinfo:
    *   get:
-   *     summary: Get profile
-   *     operationId: oauth-get-profile
    *     tags:
    *       - OAuth
+   *     summary: Get profile
+   *     operationId: oauth-get-profile
    *     responses:
-   *       '200':
+   *       200:
    *         description: Success
-   *         schema:
-   *           type: object
-   *           properties:
-   *             id:
-   *               type: string
-   *             email:
-   *               type: string
-   *             firstName:
-   *               type: string
-   *             lastName:
-   *               type: string
-   *             roles:
-   *               type: array
-   *               items:
-   *                 type: string
-   *             groups:
-   *               type: array
-   *               items:
-   *                 type: string
-   *             raw:
+   *         content:
+   *           application/json:
+   *             schema:
    *               type: object
-   *             requested:
-   *               type: object
-   *           example:
-   *             id: 32b5af58fdf
-   *             email: jackson@coolstartup.com
-   *             firstName: SAML
-   *             lastName: Jackson
-   *             raw: {
-   *
-   *             }
-   *             requested: {
-   *
-   *             }
+   *               properties:
+   *                 id:
+   *                   type: string
+   *                 email:
+   *                   type: string
+   *                 firstName:
+   *                   type: string
+   *                 lastName:
+   *                   type: string
+   *                 roles:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                 groups:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                 raw:
+   *                   type: object
+   *                   properties: {}
+   *                 requested:
+   *                   type: object
+   *                   properties: {}
+   *               example:
+   *                 id: 32b5af58fdf
+   *                 email: jackson@coolstartup.com
+   *                 firstName: SAML
+   *                 lastName: Jackson
+   *                 raw: {}
+   *                 requested: {}
    */
   public async userInfo(token: string): Promise<Profile> {
     const tokens = token.split('.');
@@ -1400,10 +1435,22 @@ export class OAuthController implements IOAuthController {
 
     const rsp = decrypt(encRsp, tokens[0]);
 
+    const traceContext: SSOTrace['context'] = {
+      tenant: rsp.requested?.tenant,
+      product: rsp.requested?.product,
+      clientID: rsp.clientID,
+      isIdPFlow: rsp.requested?.isIdPFlow,
+      providerName: rsp.requested?.providerName,
+      acsUrl: rsp.requested?.acsUrl,
+      entityId: rsp.requested?.entityId,
+      oAuthStage: 'userinfo_fetch',
+    };
+
     metrics.increment('oauthUserInfo');
 
     if (!rsp || !rsp.claims) {
       metrics.increment('oauthUserInfoError', { protocol: rsp.protocol, login_type: rsp.login_type });
+      this.ssoTraces.saveTrace({ error: 'Invalid token', context: traceContext });
       throw new JacksonError('Invalid token', 403);
     }
 
