@@ -113,20 +113,20 @@ export async function teardown({ directoryId }) {
 export default async function loadTest({ scim }) {
   // Users
   await createUser({ scim });
-  //   await getUser();
-  //   await listUsers();
-  //   await updateUser();
-  //   await replaceUser();
-  //   await deleteUser();
+  await getUser({ scim });
+  await listUsers({ scim });
+  await updateUser({ scim });
+  await replaceUser({ scim });
+  await deleteUser({ scim });
 
-  //   // Groups
-  //   await createGroup();
-  //   await getGroup();
-  //   await listGroups();
-  //   await updateGroup();
-  //   await addUserToGroup();
-  //   await removeUserFromGroup();
-  //   await deleteGroup();
+  // Groups
+  // await createGroup();
+  // await getGroup();
+  // await listGroups();
+  // await updateGroup();
+  // await addUserToGroup();
+  // await removeUserFromGroup();
+  // await deleteGroup();
 
   sleep(1);
 }
@@ -155,7 +155,132 @@ async function createUser({ scim }) {
   }
 }
 
-// Add other user operation functions here: getUser(), listUsers(), updateUser(), replaceUser(), deleteUser()
+async function getUser({ scim }) {
+  const response = await http.asyncRequest('GET', `${scim.endpoint}/Users/${_cache.userId}`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'getUser Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`User retrieved successfully: ${responseData.userName}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Get user failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function listUsers({ scim }) {
+  const response = await http.asyncRequest('GET', `${scim.endpoint}/Users`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'listUsers Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`Users listed successfully. Total users: ${responseData.totalResults}`);
+  } else {
+    errorCount.add(1);
+    console.error(`List users failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function updateUser({ scim }) {
+  const payload = {
+    Operations: [
+      {
+        op: 'replace',
+        value: {
+          active: false,
+          name: { givenName: 'Updated', familyName: 'User' },
+        },
+      },
+    ],
+  };
+
+  const response = await http.asyncRequest(
+    'PATCH',
+    `${scim.endpoint}/Users/${_cache.userId}`,
+    JSON.stringify(payload),
+    {
+      headers: {
+        Authorization: `Bearer ${scim.secret}`,
+      },
+    }
+  );
+
+  const isSuccessful = check(response, {
+    'updateUser Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`User updated successfully: ${responseData.userName}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Update user failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function replaceUser({ scim }) {
+  const payload = {
+    ...generateUserPayload(),
+    name: { givenName: 'Replaced', familyName: 'User' },
+    active: true,
+  };
+
+  const response = await http.asyncRequest(
+    'PUT',
+    `${scim.endpoint}/Users/${_cache.userId}`,
+    JSON.stringify(payload),
+    {
+      headers: {
+        Authorization: `Bearer ${scim.secret}`,
+      },
+    }
+  );
+
+  const isSuccessful = check(response, {
+    'replaceUser Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`User replaced successfully: ${responseData.userName}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Replace user failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function deleteUser({ scim }) {
+  const response = await http.asyncRequest('DELETE', `${scim.endpoint}/Users/${_cache.userId}`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'deleteUser Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    console.log(`User deleted successfully: ${_cache.userId}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Delete user failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
 
 // Group Operations
 // async function createGroup() {
