@@ -1,5 +1,6 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
+import exec from 'k6/execution';
 import { Counter } from 'k6/metrics';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
@@ -28,15 +29,11 @@ export const options = {
 
 const BASE_URL = 'http://localhost:5225';
 const API_V1 = `${BASE_URL}/api/v1`;
-const SCIM_V2 = `${BASE_URL}/scim/v2.0`;
 
 const manageHeaders = {
   Authorization: 'Api-Key secret',
   'Content-Type': 'application/json',
 };
-
-const tenant = `tenant-${randomString(8)}`;
-const product = `product-${randomString(8)}`;
 
 const _cache = {};
 
@@ -76,8 +73,8 @@ export async function setup() {
   // For example: Create initial directory
 
   const directoryPayload = {
-    tenant: 'api-boxyhq',
-    product: 'api-saml-jackson',
+    tenant: 'performance-test-boxyhq',
+    product: 'scim-saml-jackson',
     name: 'load-test-scim',
     type: 'okta-scim-v2',
     webhook_url: '',
@@ -89,31 +86,33 @@ export async function setup() {
   });
 
   const isSuccessful = check(response, {
-    'Directory creation Response status is 200': (r) => r.status === 200,
+    'Directory creation Response status is 201': (r) => r.status === 201,
   });
 
   if (isSuccessful) {
-    const responseData = response.json();
+    const { data } = response.json();
 
-    console.log(
-      `SCIM Directory created successfully for tenant: ${responseData.tenant}, product: ${responseData.product}`
-    );
+    console.log(`SCIM Directory created successfully for tenant: ${data.tenant}, product: ${data.product}`);
+    return { directoryId: data.id, scim: data.scim };
   } else {
     errorCount.add(1);
     console.error(
-      `SSO Connection creation failed Status: ${response.status}, Response: ${JSON.stringify(response)}`
+      `SCIM directory creation failed Status: ${response.status}, Response: ${JSON.stringify(response)}`
     );
-    exec.test.abort('createSSOConnectionViaRawMetadata status code was *not* 200');
+    exec.test.abort('create directory connection status code was *not* 200');
   }
 }
 
-export async function teardown() {
-  // Cleanup operations if needed
+export async function teardown({ directoryId }) {
+  // Delete directory
+  await http.asyncRequest('DELETE', `${API_V1}/dsync/${directoryId}`, null, {
+    headers: { Authorization: manageHeaders['Authorization'] },
+  });
 }
 
-export default async function loadTest() {
+export default async function loadTest({ scim }) {
   // Users
-  await createUser();
+  await createUser({ scim });
   //   await getUser();
   //   await listUsers();
   //   await updateUser();
@@ -133,13 +132,12 @@ export default async function loadTest() {
 }
 
 // User Operations
-async function createUser() {
+async function createUser({ scim }) {
   const payload = generateUserPayload();
 
-  const response = await http.asyncRequest('POST', `${SCIM_V2}/Users`, JSON.stringify(payload), {
-    headers: manageHeaders,
-    tags: {
-      scim: 'create_user',
+  const response = await http.asyncRequest('POST', `${scim.endpoint}/Users`, JSON.stringify(payload), {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
     },
   });
 
@@ -160,29 +158,29 @@ async function createUser() {
 // Add other user operation functions here: getUser(), listUsers(), updateUser(), replaceUser(), deleteUser()
 
 // Group Operations
-async function createGroup() {
-  const payload = generateGroupPayload();
+// async function createGroup() {
+//   const payload = generateGroupPayload();
 
-  const response = await http.asyncRequest('POST', `${SCIM_V2}/Groups`, JSON.stringify(payload), {
-    headers: manageHeaders,
-    tags: {
-      scim: 'create_group',
-    },
-  });
+//   const response = await http.asyncRequest('POST', `${SCIM_V2}/Groups`, JSON.stringify(payload), {
+//     headers: manageHeaders,
+//     tags: {
+//       scim: 'create_group',
+//     },
+//   });
 
-  const isSuccessful = check(response, {
-    'createGroup Response status is 201': (r) => r.status === 201,
-  });
+//   const isSuccessful = check(response, {
+//     'createGroup Response status is 201': (r) => r.status === 201,
+//   });
 
-  if (isSuccessful) {
-    const responseData = JSON.parse(response.body);
-    _cache.groupId = responseData.id;
-    console.log(`Group created successfully with ID: ${responseData.id}`);
-  } else {
-    errorCount.add(1);
-    console.error(`Group creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-  }
-}
+//   if (isSuccessful) {
+//     const responseData = JSON.parse(response.body);
+//     _cache.groupId = responseData.id;
+//     console.log(`Group created successfully with ID: ${responseData.id}`);
+//   } else {
+//     errorCount.add(1);
+//     console.error(`Group creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+//   }
+// }
 
 // Add other group operation functions here: getGroup(), listGroups(), updateGroup(),
 // addUserToGroup(), removeUserFromGroup(), deleteGroup()
