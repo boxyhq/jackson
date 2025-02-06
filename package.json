@@ -83,7 +83,7 @@
     "micromatch": "4.0.8",
     "next": "15.1.6",
     "next-auth": "4.24.11",
-    "next-i18next": "15.4.1",
+    "next-i18next": "15.4.2",
     "next-mdx-remote": "5.0.0",
     "nodemailer": "6.10.0",
     "pino": "9.6.0",
