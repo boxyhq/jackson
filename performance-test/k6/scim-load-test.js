@@ -117,16 +117,18 @@ export default async function loadTest({ scim }) {
   await listUsers({ scim });
   await updateUser({ scim });
   await replaceUser({ scim });
-  await deleteUser({ scim });
 
   // Groups
-  // await createGroup();
-  // await getGroup();
-  // await listGroups();
-  // await updateGroup();
-  // await addUserToGroup();
-  // await removeUserFromGroup();
-  // await deleteGroup();
+  await createGroup({ scim });
+  await getGroup({ scim });
+  await listGroups({ scim });
+  await updateGroup({ scim });
+  await addUserToGroup({ scim });
+  await removeUserFromGroup({ scim });
+  await deleteGroup({ scim });
+
+  // Finally delete the user
+  await deleteUser({ scim });
 
   sleep(1);
 }
@@ -283,29 +285,199 @@ async function deleteUser({ scim }) {
 }
 
 // Group Operations
-// async function createGroup() {
-//   const payload = generateGroupPayload();
+async function createGroup({ scim }) {
+  const payload = generateGroupPayload();
 
-//   const response = await http.asyncRequest('POST', `${SCIM_V2}/Groups`, JSON.stringify(payload), {
-//     headers: manageHeaders,
-//     tags: {
-//       scim: 'create_group',
-//     },
-//   });
+  const response = await http.asyncRequest('POST', `${scim.endpoint}/Groups`, JSON.stringify(payload), {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
 
-//   const isSuccessful = check(response, {
-//     'createGroup Response status is 201': (r) => r.status === 201,
-//   });
+  const isSuccessful = check(response, {
+    'createGroup Response status is 201': (r) => r.status === 201,
+  });
 
-//   if (isSuccessful) {
-//     const responseData = JSON.parse(response.body);
-//     _cache.groupId = responseData.id;
-//     console.log(`Group created successfully with ID: ${responseData.id}`);
-//   } else {
-//     errorCount.add(1);
-//     console.error(`Group creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
-//   }
-// }
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    _cache.groupId = responseData.id;
+    console.log(`Group created successfully with ID: ${responseData.id}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Group creation failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
 
-// Add other group operation functions here: getGroup(), listGroups(), updateGroup(),
-// addUserToGroup(), removeUserFromGroup(), deleteGroup()
+async function getGroup({ scim }) {
+  const response = await http.asyncRequest('GET', `${scim.endpoint}/Groups/${_cache.groupId}`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'getGroup Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`Group retrieved successfully: ${responseData.displayName}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Get group failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function listGroups({ scim }) {
+  const response = await http.asyncRequest('GET', `${scim.endpoint}/Groups`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'listGroups Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`Groups listed successfully. Total groups: ${responseData.totalResults}`);
+  } else {
+    errorCount.add(1);
+    console.error(`List groups failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function updateGroup({ scim }) {
+  const payload = {
+    schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+    Operations: [
+      {
+        op: 'replace',
+        value: {
+          displayName: 'Updated Group Name',
+        },
+      },
+    ],
+  };
+
+  const response = await http.asyncRequest(
+    'PATCH',
+    `${scim.endpoint}/Groups/${_cache.groupId}`,
+    JSON.stringify(payload),
+    {
+      headers: {
+        Authorization: `Bearer ${scim.secret}`,
+      },
+    }
+  );
+
+  const isSuccessful = check(response, {
+    'updateGroup Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    const responseData = JSON.parse(response.body);
+    console.log(`Group updated successfully: ${responseData.displayName}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Update group failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
+
+async function addUserToGroup({ scim }) {
+  const payload = {
+    schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+    Operations: [
+      {
+        op: 'add',
+        path: 'members',
+        value: [
+          {
+            value: _cache.userId,
+            display: _cache.userName,
+          },
+        ],
+      },
+    ],
+  };
+
+  const response = await http.asyncRequest(
+    'PATCH',
+    `${scim.endpoint}/Groups/${_cache.groupId}`,
+    JSON.stringify(payload),
+    {
+      headers: {
+        Authorization: `Bearer ${scim.secret}`,
+      },
+    }
+  );
+
+  const isSuccessful = check(response, {
+    'addUserToGroup Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    console.log(`User ${_cache.userId} added to group ${_cache.groupId} successfully`);
+  } else {
+    errorCount.add(1);
+    console.error(
+      `Add user to group failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
+    );
+  }
+}
+
+async function removeUserFromGroup({ scim }) {
+  const payload = {
+    schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+    Operations: [
+      {
+        op: 'remove',
+        path: `members[value eq "${_cache.userId}"]`,
+      },
+    ],
+  };
+
+  const response = await http.asyncRequest(
+    'PATCH',
+    `${scim.endpoint}/Groups/${_cache.groupId}`,
+    JSON.stringify(payload),
+    {
+      headers: {
+        Authorization: `Bearer ${scim.secret}`,
+      },
+    }
+  );
+
+  const isSuccessful = check(response, {
+    'removeUserFromGroup Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    console.log(`User ${_cache.userId} removed from group ${_cache.groupId} successfully`);
+  } else {
+    errorCount.add(1);
+    console.error(
+      `Remove user from group failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`
+    );
+  }
+}
+
+async function deleteGroup({ scim }) {
+  const response = await http.asyncRequest('DELETE', `${scim.endpoint}/Groups/${_cache.groupId}`, null, {
+    headers: {
+      Authorization: `Bearer ${scim.secret}`,
+    },
+  });
+
+  const isSuccessful = check(response, {
+    'deleteGroup Response status is 200': (r) => r.status === 200,
+  });
+
+  if (isSuccessful) {
+    console.log(`Group deleted successfully: ${_cache.groupId}`);
+  } else {
+    errorCount.add(1);
+    console.error(`Delete group failed. Status: ${response.status}, Response: ${JSON.stringify(response)}`);
+  }
+}
