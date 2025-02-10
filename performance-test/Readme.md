@@ -4,6 +4,14 @@
 2. for run: cd performance-test/k6
 3. run command: k6 run <test-file>.js
 
+# Test results (ran on Macbook M1 Pro)
+
+## Test Environment
+
+- Hardware: Apple MacBook Pro (M1, 2021)
+- Processor: Apple M1 Pro
+- Memory: 16GB
+
 ## SSO APIs Load Test Results
 
      ✓ createSSOConnection
