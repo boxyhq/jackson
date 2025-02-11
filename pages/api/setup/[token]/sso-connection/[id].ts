@@ -39,7 +39,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: a
 
   const connection = connections[0];
 
-  if (connection.tenant !== setupLink.tenant || connection.tenant !== setupLink.product) {
+  if (connection.tenant !== setupLink.tenant || connection.product !== setupLink.product) {
     res.status(400).json({ error: { message: 'Tenant/product mismatch' } });
   }
 
