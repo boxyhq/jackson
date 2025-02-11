@@ -95,7 +95,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink
   const { tenant, product } = connections[0];
 
   if (tenant !== setupLink.tenant || product !== setupLink.product) {
-    throw { message: 'Tenant/product mismatch', statusCode: 400 };
+    throw { message: 'Tenant/Product mismatch', statusCode: 400 };
   }
 
   await connectionAPIController.deleteConnections({ clientID, clientSecret });
@@ -130,7 +130,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink:
   const { tenant, product, clientSecret } = connections[0];
 
   if (tenant !== setupLink.tenant || product !== setupLink.product) {
-    throw { message: 'Tenant/product mismatch', statusCode: 400 };
+    throw { message: 'Tenant/Product mismatch', statusCode: 400 };
   }
 
   const body = {
