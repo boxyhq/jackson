@@ -54,9 +54,7 @@ export class GoogleProvider implements IDirectoryProvider {
     }
 
     return directories.filter((directory) => {
-      return (
-        directory.google_access_token && directory.google_refresh_token && directory.google_domain !== ''
-      );
+      return directory.google_access_token && directory.google_refresh_token;
     });
   }
 

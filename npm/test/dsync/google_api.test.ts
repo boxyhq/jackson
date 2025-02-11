@@ -12,7 +12,6 @@ const directoryPayload = {
   product: 'saml-jackson-google',
   name: 'Google Directory',
   type: 'google' as DirectoryType,
-  google_domain: 'boxyhq.com',
   google_access_token: 'access_token',
   google_refresh_token: 'refresh_token',
 };

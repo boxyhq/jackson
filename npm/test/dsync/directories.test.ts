@@ -391,13 +391,11 @@ tap.test('directories.', async (t) => {
     const { data: directoryUpdated } = await directorySync.directories.update(directory.id, {
       google_access_token: 'access_token',
       google_refresh_token: 'refresh_token',
-      google_domain: 'acme.com',
     });
 
     t.ok(directoryUpdated);
     t.match(directoryUpdated?.google_access_token, 'access_token');
     t.match(directoryUpdated?.google_refresh_token, 'refresh_token');
-    t.match(directoryUpdated?.google_domain, 'acme.com');
 
     // Check that the directory was updated
     const { data: directoryFetched } = await directorySync.directories.get(directory.id);
@@ -405,7 +403,6 @@ tap.test('directories.', async (t) => {
     t.ok(directoryFetched);
     t.match(directoryFetched?.google_access_token, 'access_token');
     t.match(directoryFetched?.google_refresh_token, 'refresh_token');
-    t.match(directoryFetched?.google_domain, 'acme.com');
   });
 
   t.test('Fetch all connections for a product', async (t) => {
