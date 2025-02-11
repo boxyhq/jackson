@@ -38,7 +38,6 @@ const EditDirectory = ({ directoryId, setupLinkToken }: { directoryId: string; s
                   'product',
                   'log_webhook_events',
                   'tenant',
-                  'google_domain',
                   'type',
                   'webhook_url',
                   'webhook_secret',

@@ -227,7 +227,6 @@ export class DirectoryConfig {
     webhook_url?: string;
     webhook_secret?: string;
     type?: DirectoryType;
-    google_domain?: string;
     google_access_token?: string;
     google_refresh_token?: string;
   }): Promise<Response<Directory>> {
@@ -241,7 +240,6 @@ export class DirectoryConfig {
         webhook_url,
         webhook_secret,
         type = 'generic-scim-v2',
-        google_domain,
         google_access_token,
         google_refresh_token,
       } = params;
@@ -287,7 +285,6 @@ export class DirectoryConfig {
       if (type === 'google') {
         directory = {
           ...directory,
-          google_domain: google_domain || '',
           google_access_token: google_access_token || '',
           google_refresh_token: google_refresh_token || '',
         };
@@ -401,9 +398,6 @@ export class DirectoryConfig {
    *               deactivated:
    *                 type: string
    *                 description: If true, the directory connection will be deactivated
-   *               google_domain:
-   *                 type: string
-   *                 description: Google domain
    *               google_access_token:
    *                 type: string
    *                 description: Google access token
@@ -429,9 +423,6 @@ export class DirectoryConfig {
    *               deactivated:
    *                 type: string
    *                 description: If true, the directory connection will be deactivated
-   *               google_domain:
-   *                 type: string
-   *                 description: Google domain
    *               google_access_token:
    *                 type: string
    *                 description: Google access token
@@ -468,7 +459,6 @@ export class DirectoryConfig {
         'log_webhook_events',
         'webhook',
         'deactivated',
-        'google_domain',
         'google_access_token',
         'google_refresh_token',
       ];

@@ -32,13 +32,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: SetupLink) => {
   const { directorySyncController } = await jackson();
 
-  const { type, google_domain } = req.body;
+  const { type } = req.body;
 
   await validateDevelopmentModeLimits(setupLink.product, 'dsync');
 
   const directory = {
     type,
-    google_domain,
     name: setupLink.name,
     tenant: setupLink.tenant,
     product: setupLink.product,
