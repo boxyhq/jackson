@@ -96,11 +96,20 @@ const counters = {
       counterOptions: { description: 'Indicate that a batch of dsync events failed' },
     });
   },
-  idFedGetAuthorizeUrl: () => {
+  idFedAuthorize: (counterAttributes: CounterOperationParams['counterAttributes']) => {
     incrementCounter({
       meter: METER,
-      name: 'jackson.idfed.get_authorize_url',
-      counterOptions: { description: 'Number of saml federated authorize requests' },
+      name: 'jackson.idfed.authorize',
+      counterOptions: { description: 'Number of identity federation authorize requests' },
+      counterAttributes,
+    });
+  },
+  idFedAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.authorize.error',
+      counterOptions: { description: 'Number of errors in identity federation authorize requests' },
+      counterAttributes,
     });
   },
 };

@@ -56,7 +56,10 @@ export class SSO {
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
-    metrics.increment('idFedGetAuthorizeUrl');
+    const protocol = 'saml-federation';
+    const login_type = 'sp-initiated';
+
+    metrics.increment('idFedAuthorize', { protocol, login_type });
 
     const isPostBinding = samlBinding === 'HTTP-POST';
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
@@ -143,6 +146,7 @@ export class SSO {
           });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('idFedAuthorizeError', { protocol, login_type });
 
       this.ssoTraces.saveTrace({ error: error_description, context });
 
