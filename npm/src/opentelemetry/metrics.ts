@@ -96,6 +96,13 @@ const counters = {
       counterOptions: { description: 'Indicate that a batch of dsync events failed' },
     });
   },
+  idFedGetAuthorizeUrl: () => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.get_authorize_url',
+      counterOptions: { description: 'Number of saml federated authorize requests' },
+    });
+  },
 };
 
 const increment = (
