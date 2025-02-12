@@ -678,6 +678,8 @@ export class OAuthController implements IOAuthController {
 
     try {
       isIdPFlow = !RelayState.startsWith(relayStatePrefix);
+      login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
+      metrics.increment('oauthResponse', { protocol: 'saml', login_type });
       rawResponse = Buffer.from(SAMLResponse, 'base64').toString();
       issuer = saml.parseIssuer(rawResponse);
 
@@ -690,7 +692,6 @@ export class OAuthController implements IOAuthController {
         );
       }
 
-      login_type = isIdPFlow ? 'idp-initiated' : 'sp-initiated';
       if (isIdPFlow) {
         protocol = 'saml';
       }
@@ -800,8 +801,12 @@ export class OAuthController implements IOAuthController {
       }
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
+      metrics.increment('idFedResponse', { protocol, login_type });
     } catch (err: unknown) {
-      metrics.increment('oAuthResponseError', { protocol, login_type });
+      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idFedResponseError' : 'oAuthResponseError', {
+        protocol,
+        login_type,
+      });
       // Save the error trace
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
@@ -852,7 +857,10 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
-      metrics.increment('oAuthResponseError', { protocol, login_type });
+      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idFedResponseError' : 'oAuthResponseError', {
+        protocol,
+        login_type,
+      });
       const error_description = getErrorMessage(err);
       this.opts.logger.error(`SAMLResponse error: ${error_description}`);
       // Trace the error
