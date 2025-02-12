@@ -213,9 +213,8 @@ export class OAuthController implements IOAuthController {
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
             isOIDCFederated = true;
             protocol = 'oidc-federation';
-            fedApp = await this.idFedApp.get({
-              id: client_id.replace(clientIDFederatedPrefix, ''),
-            });
+            metrics.increment('idFedAuthorize', { protocol, login_type });
+            fedApp = await this.idFedApp.get({ id: client_id.replace(clientIDFederatedPrefix, '') });
 
             const response = await this.ssoHandler.resolveConnection({
               tenant: fedApp.tenant,
@@ -275,7 +274,7 @@ export class OAuthController implements IOAuthController {
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-      metrics.increment('oauthAuthorizeError', {
+      metrics.increment(isOIDCFederated ? 'idFedAuthorizeError' : 'oauthAuthorizeError', {
         protocol,
         login_type,
       });
