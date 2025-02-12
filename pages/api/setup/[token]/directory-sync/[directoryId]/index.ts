@@ -8,15 +8,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query as { token: string };
 
   try {
-    await setupLinkController.getByToken(token);
+    const setupLink = await setupLinkController.getByToken(token);
 
     switch (method) {
       case 'PATCH':
-        return await handlePATCH(req, res);
+        return await handlePATCH(req, res, setupLink);
       case 'GET':
-        return await handleGET(req, res);
+        return await handleGET(req, res, setupLink);
       case 'DELETE':
-        return await handleDELETE(req, res);
+        return await handleDELETE(req, res, setupLink);
       default:
         res.setHeader('Allow', 'PATCH, GET, DELETE');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -29,11 +29,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Update a directory configuration
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { directorySyncController } = await jackson();
 
   const { directoryId } = req.query as { directoryId: string };
   const { deactivated } = req.body;
+
+  const { data: directory } = await directorySyncController.directories.get(directoryId);
+
+  if (directory?.tenant !== setupLink.tenant || directory?.product !== setupLink.product) {
+    res.status(400).json({ error: { message: 'Tenant/Product mismatch' } });
+  }
 
   const { data, error } = await directorySyncController.directories.update(directoryId, { deactivated });
 
@@ -47,12 +53,16 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Get a directory configuration
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { directorySyncController } = await jackson();
 
   const { directoryId } = req.query as { directoryId: string };
 
   const { data, error } = await directorySyncController.directories.get(directoryId);
+
+  if (data?.tenant !== setupLink.tenant || data?.product !== setupLink.product) {
+    res.status(400).json({ error: { message: 'Tenant/Product mismatch' } });
+  }
 
   if (data) {
     res.json({
@@ -74,10 +84,16 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Delete a directory configuration
-const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { directorySyncController } = await jackson();
 
   const { directoryId } = req.query as { directoryId: string };
+
+  const { data: directory } = await directorySyncController.directories.get(directoryId);
+
+  if (directory?.tenant !== setupLink.tenant || directory?.product !== setupLink.product) {
+    res.status(400).json({ error: { message: 'Tenant/Product mismatch' } });
+  }
 
   const { error } = await directorySyncController.directories.delete(directoryId);
 

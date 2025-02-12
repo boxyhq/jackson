@@ -8,11 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query as { token: string };
 
   try {
-    await setupLinkController.getByToken(token);
+    const setupLink = await setupLinkController.getByToken(token);
 
     switch (method) {
       case 'GET':
-        return await handleGET(req, res);
+        return await handleGET(req, res, setupLink);
       default:
         res.setHeader('Allow', 'GET');
         res.status(405).json({ error: { message: `Method ${method} Not Allowed` } });
@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { connectionAPIController } = await jackson();
 
   const { id } = req.query as { id: string };
@@ -38,6 +38,10 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const connection = connections[0];
+
+  if (connection.tenant !== setupLink.tenant || connection.product !== setupLink.product) {
+    res.status(400).json({ error: { message: 'Tenant/Product mismatch' } });
+  }
 
   res.json([
     {

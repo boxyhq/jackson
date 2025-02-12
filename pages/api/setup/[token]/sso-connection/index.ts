@@ -4,20 +4,28 @@ import { oidcMetadataParse, strategyChecker } from '@lib/utils';
 import { validateDevelopmentModeLimits } from '@lib/development-mode';
 import { defaultHandler } from '@lib/api';
 
+const withSetupLink = (
+  handler: (req: NextApiRequest, res: NextApiResponse, setupLink: any) => Promise<void>
+) => {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    const { token } = req.query as { token: string };
+    const { setupLinkController } = await jackson();
+    const setupLink = await setupLinkController.getByToken(token);
+    return handler(req, res, setupLink);
+  };
+};
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
-    GET: handleGET,
-    POST: handlePOST,
-    PATCH: handlePATCH,
-    DELETE: handleDELETE,
+    GET: withSetupLink(handleGET),
+    POST: withSetupLink(handlePOST),
+    PATCH: withSetupLink(handlePATCH),
+    DELETE: withSetupLink(handleDELETE),
   });
 };
 
-const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { token } = req.query as { token: string };
-  const { connectionAPIController, setupLinkController } = await jackson();
-
-  const setupLink = await setupLinkController.getByToken(token);
+const handleGET = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
+  const { connectionAPIController } = await jackson();
 
   const connections = await connectionAPIController.getConnections({
     tenant: setupLink.tenant,
@@ -52,11 +60,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   res.json(_connections);
 };
 
-const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { token } = req.query as { token: string };
-  const { connectionAPIController, setupLinkController } = await jackson();
-
-  const setupLink = await setupLinkController.getByToken(token);
+const handlePOST = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
+  const { connectionAPIController } = await jackson();
 
   const body = {
     ...req.body,
@@ -78,17 +83,27 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(201).json({ data: null });
 };
 
-const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { connectionAPIController } = await jackson();
 
   const { clientID, clientSecret } = req.query as { clientID: string; clientSecret: string };
+
+  const connections = await connectionAPIController.getConnections({
+    clientID,
+  });
+
+  const { tenant, product } = connections[0];
+
+  if (tenant !== setupLink.tenant || product !== setupLink.product) {
+    throw { message: 'Tenant/Product mismatch', statusCode: 400 };
+  }
 
   await connectionAPIController.deleteConnections({ clientID, clientSecret });
 
   res.json({ data: null });
 };
 
-const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlePATCH = async (req: NextApiRequest, res: NextApiResponse, setupLink: any) => {
   const { connectionAPIController } = await jackson();
 
   const {
@@ -113,6 +128,10 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { isSAML, isOIDC } = strategyChecker(req);
   const { tenant, product, clientSecret } = connections[0];
+
+  if (tenant !== setupLink.tenant || product !== setupLink.product) {
+    throw { message: 'Tenant/Product mismatch', statusCode: 400 };
+  }
 
   const body = {
     tenant,
