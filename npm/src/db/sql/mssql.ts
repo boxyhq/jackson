@@ -9,7 +9,7 @@ export const parseURL = (url?: string): any => {
 
   const parts = url.split('://');
 
-  if (parts.length != 2) {
+  if (parts.length !== 2) {
     throw new Error('Invalid connection string');
   }
 

@@ -265,7 +265,7 @@ export class DirectoryGroups {
     }
 
     // Validate the request
-    if (directory.scim.secret != apiSecret) {
+    if (directory.scim.secret !== apiSecret) {
       return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 

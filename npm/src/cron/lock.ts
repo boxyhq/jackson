@@ -64,7 +64,7 @@ export class CronLock {
         return;
       }
 
-      if (lock.key != instanceKey) {
+      if (lock.key !== instanceKey) {
         return;
       }
 
@@ -98,7 +98,7 @@ export class CronLock {
       return;
     }
 
-    if (lock.key != instanceKey) {
+    if (lock.key !== instanceKey) {
       return;
     }
 

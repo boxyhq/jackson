@@ -101,5 +101,5 @@ export const getDefaultCertificate = async (): Promise<{ publicKey: string; priv
 const isCertificateExpired = async (publicKey: string) => {
   const { validTo } = new crypto.X509Certificate(publicKey);
 
-  return !(validTo != 'Bad time value' && new Date(validTo) > new Date());
+  return !(validTo !== 'Bad time value' && new Date(validTo) > new Date());
 };
