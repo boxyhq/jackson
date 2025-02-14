@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import type {
   Directory,
   DirectorySyncResponse,
@@ -212,7 +213,7 @@ export class DirectoryUsers {
     }
 
     // Validate the request
-    if (directory.scim.secret != apiSecret) {
+    if (!crypto.timingSafeEqual(Buffer.from(directory.scim.secret), Buffer.from(apiSecret || ''))) {
       return this.respondWithError({ code: 401, message: 'Unauthorized' });
     }
 
