@@ -71,7 +71,7 @@
   "devDependencies": {
     "@faker-js/faker": "9.5.0",
     "@types/lodash": "4.17.15",
-    "@types/node": "22.13.2",
+    "@types/node": "22.13.4",
     "@types/sinon": "17.0.3",
     "cross-env": "7.0.3",
     "migrate-mongo": "12.1.3",
