@@ -59,7 +59,7 @@ export class SSO {
     const protocol = 'saml-federation';
     const login_type = 'sp-initiated';
 
-    metrics.increment('idFedAuthorize', { protocol, login_type });
+    metrics.increment('idfedAuthorize', { protocol, login_type });
 
     const isPostBinding = samlBinding === 'HTTP-POST';
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
@@ -146,7 +146,7 @@ export class SSO {
           });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-      metrics.increment('idFedAuthorizeError', { protocol, login_type });
+      metrics.increment('idfedAuthorizeError', { protocol, login_type });
 
       this.ssoTraces.saveTrace({ error: error_description, context });
 
