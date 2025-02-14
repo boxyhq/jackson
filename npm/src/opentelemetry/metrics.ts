@@ -41,7 +41,7 @@ const counters = {
       counterOptions: { description: 'Number of oauth response requests' },
       counterAttributes,
     }),
-  oAuthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+  oauthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.response.error',
@@ -103,7 +103,7 @@ const counters = {
       counterOptions: { description: 'Indicate that a batch of dsync events failed' },
     });
   },
-  idFedAuthorize: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+  idfedAuthorize: (counterAttributes: CounterOperationParams['counterAttributes']) => {
     incrementCounter({
       meter: METER,
       name: 'jackson.idfed.authorize',
@@ -111,7 +111,7 @@ const counters = {
       counterAttributes,
     });
   },
-  idFedAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+  idfedAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
     incrementCounter({
       meter: METER,
       name: 'jackson.idfed.authorize.error',
@@ -119,7 +119,7 @@ const counters = {
       counterAttributes,
     });
   },
-  idFedResponse: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+  idfedResponse: (counterAttributes: CounterOperationParams['counterAttributes']) => {
     incrementCounter({
       meter: METER,
       name: 'jackson.idfed.response',
@@ -127,7 +127,7 @@ const counters = {
       counterAttributes,
     });
   },
-  idFedResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+  idfedResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
     incrementCounter({
       meter: METER,
       name: 'jackson.idfed.response.error',

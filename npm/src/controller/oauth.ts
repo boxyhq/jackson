@@ -213,7 +213,7 @@ export class OAuthController implements IOAuthController {
           if (client_id.startsWith(`${clientIDFederatedPrefix}${clientIDOIDCPrefix}`)) {
             isOIDCFederated = true;
             protocol = 'oidc-federation';
-            metrics.increment('idFedAuthorize', { protocol, login_type });
+            metrics.increment('idfedAuthorize', { protocol, login_type });
             fedApp = await this.idFedApp.get({ id: client_id.replace(clientIDFederatedPrefix, '') });
 
             const response = await this.ssoHandler.resolveConnection({
@@ -274,7 +274,7 @@ export class OAuthController implements IOAuthController {
       }
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-      metrics.increment(isOIDCFederated ? 'idFedAuthorizeError' : 'oauthAuthorizeError', {
+      metrics.increment(isOIDCFederated ? 'idfedAuthorizeError' : 'oauthAuthorizeError', {
         protocol,
         login_type,
       });
@@ -722,6 +722,12 @@ export class OAuthController implements IOAuthController {
       isOIDCFederated = session && 'oidcFederated' in session;
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
       protocol = isOIDCFederated ? 'oidc-federation' : isSAMLFederated ? 'saml-federation' : 'saml';
+      if (protocol !== 'saml') {
+        metrics.increment('idfedResponse', {
+          protocol,
+          login_type,
+        });
+      }
       // IdP initiated SSO flow
       if (isIdPFlow) {
         const response = await this.ssoHandler.resolveConnection({
@@ -801,9 +807,8 @@ export class OAuthController implements IOAuthController {
       }
 
       redirect_uri = ((session && session.redirect_uri) as string) || connection.defaultRedirectUrl;
-      metrics.increment('idFedResponse', { protocol, login_type });
     } catch (err: unknown) {
-      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idFedResponseError' : 'oAuthResponseError', {
+      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idfedResponseError' : 'oauthResponseError', {
         protocol,
         login_type,
       });
@@ -857,7 +862,7 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri, params) };
     } catch (err: unknown) {
-      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idFedResponseError' : 'oAuthResponseError', {
+      metrics.increment(isOIDCFederated || isSAMLFederated ? 'idfedResponseError' : 'oauthResponseError', {
         protocol,
         login_type,
       });
@@ -917,6 +922,7 @@ export class OAuthController implements IOAuthController {
 
     let RelayState = callbackParams.state || '';
     try {
+      metrics.increment('oauthResponse', { protocol: 'oidc', login_type });
       if (!RelayState) {
         throw new JacksonError('State from original request is missing.', 403);
       }
@@ -931,7 +937,9 @@ export class OAuthController implements IOAuthController {
       isOIDCFederated = session && 'oidcFederated' in session;
 
       protocol = isOIDCFederated ? 'oidc-federation' : isSAMLFederated ? 'saml-federation' : 'oidc';
-
+      if (protocol !== 'oidc') {
+        metrics.increment('idfedResponse', { protocol, login_type });
+      }
       oidcConnection = await this.connectionStore.get(session.id);
 
       if (!oidcConnection) {
@@ -955,7 +963,10 @@ export class OAuthController implements IOAuthController {
         }
       }
     } catch (err) {
-      metrics.increment('oAuthResponseError', { protocol, login_type });
+      metrics.increment(protocol === 'oidc' ? 'oauthResponseError' : 'idfedResponseError', {
+        protocol,
+        login_type,
+      });
       await this.ssoTraces.saveTrace({
         error: getErrorMessage(err),
         context: {
@@ -1039,10 +1050,13 @@ export class OAuthController implements IOAuthController {
 
       return { redirect_url: redirect.success(redirect_uri!, params) };
     } catch (err: any) {
+      metrics.increment(protocol === 'oidc' ? 'oauthResponseError' : 'idfedResponseError', {
+        protocol,
+        login_type,
+      });
       const { error, error_description, error_uri, session_state, scope, stack } = err;
       const error_message = error_description || getErrorMessage(err);
       this.opts.logger.error(`OIDCResponse error: ${error_message}`);
-      metrics.increment('oAuthResponseError', { protocol, login_type });
       const traceId = await this.ssoTraces.saveTrace({
         error: error_message,
         context: {
