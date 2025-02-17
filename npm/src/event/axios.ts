@@ -5,7 +5,11 @@ const retry = 3;
 const retryDelay = 3000;
 
 export const createAxiosInstance = (logger: RequiredLogger) => {
-  const axiosInstance = axios.create();
+  const axiosInstance = axios.create({
+    maxContentLength: 1000000,
+    maxBodyLength: 1000000,
+    timeout: 20000,
+  });
 
   // Axios interceptors to handle the Webhook retries
   axiosInstance.interceptors.response.use(undefined, (err: any) => {
