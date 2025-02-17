@@ -267,10 +267,7 @@ export class DirectoryGroups {
 
     // Validate the request
     try {
-      if (
-        !apiSecret ||
-        !crypto.timingSafeEqual(Buffer.from(directory.scim.secret), Buffer.from(apiSecret || ''))
-      ) {
+      if (!crypto.timingSafeEqual(Buffer.from(directory.scim.secret), Buffer.from(apiSecret || ''))) {
         return this.respondWithError({ code: 401, message: 'Unauthorized' });
       }
     } catch {
