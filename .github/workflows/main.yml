@@ -438,7 +438,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
         package: [npm, internal-ui]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
