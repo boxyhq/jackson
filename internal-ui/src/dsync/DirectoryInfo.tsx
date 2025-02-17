@@ -36,7 +36,7 @@ export const DirectoryInfo = ({
 
   const authorizedGoogle =
     directory?.google_authorized || (directory?.google_access_token && directory?.google_refresh_token);
-  const hideInfo = excludeFields.length === 4 && directory.type != 'google';
+  const hideInfo = excludeFields.length === 4 && directory.type !== 'google';
 
   return (
     <>
