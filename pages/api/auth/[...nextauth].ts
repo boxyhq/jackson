@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import Adapter from '@lib/nextAuthAdapter';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
@@ -109,8 +110,14 @@ export default NextAuth({
         // Find the admin credentials that match the email and password
         const adminCredentialsMatch = adminCredentials.split(',').find((credential) => {
           const [adminEmail, adminPassword] = credential.split(':');
-
-          return adminEmail === email && adminPassword === password;
+          try {
+            return (
+              crypto.timingSafeEqual(Buffer.from(adminEmail), Buffer.from(email)) &&
+              crypto.timingSafeEqual(Buffer.from(adminPassword), Buffer.from(password))
+            );
+          } catch {
+            return false;
+          }
         });
 
         // No match found
