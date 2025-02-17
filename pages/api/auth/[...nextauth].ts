@@ -110,11 +110,14 @@ export default NextAuth({
         // Find the admin credentials that match the email and password
         const adminCredentialsMatch = adminCredentials.split(',').find((credential) => {
           const [adminEmail, adminPassword] = credential.split(':');
-
-          return (
-            crypto.timingSafeEqual(Buffer.from(adminEmail), Buffer.from(email)) &&
-            crypto.timingSafeEqual(Buffer.from(adminPassword), Buffer.from(password))
-          );
+          try {
+            return (
+              crypto.timingSafeEqual(Buffer.from(adminEmail), Buffer.from(email)) &&
+              crypto.timingSafeEqual(Buffer.from(adminPassword), Buffer.from(password))
+            );
+          } catch {
+            return false;
+          }
         });
 
         // No match found
