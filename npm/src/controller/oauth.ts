@@ -545,10 +545,15 @@ export class OAuthController implements IOAuthController {
     }
     // Session persistence happens here
     try {
-      const requested = { client_id, state, redirect_uri, protocol, login_type, providerName } as Record<
-        string,
-        string | boolean | string[]
-      >;
+      const requested = {
+        client_id,
+        state,
+        redirect_uri,
+        protocol,
+        login_type,
+        providerName,
+        login_hint,
+      } as Record<string, string | boolean | string[]>;
       if (requestedTenant) {
         requested.tenant = requestedTenant;
       }
