@@ -457,6 +457,8 @@ export class OAuthController implements IOAuthController {
     // OIDC Connection: Issuer discovery, openid-client init and extraction of authorization endpoint happens here
     let oidcCodeVerifier: string | undefined;
     let oidcNonce: string | undefined;
+    const paramsToForward = this.opts.openid?.forwardOIDCParams ? oidcParams : {};
+
     if (connectionIsOIDC) {
       const { discoveryUrl, metadata, clientId, clientSecret, provider } = (connection as OIDCSSORecord)
         .oidcProvider;
@@ -495,7 +497,6 @@ export class OAuthController implements IOAuthController {
         const standardScopes = this.opts.openid?.requestProfileScope
           ? ['openid', 'email', 'profile']
           : ['openid', 'email'];
-        const paramsToForward = this.opts.openid?.forwardOIDCParams ? oidcParams : {};
         if (login_hint) {
           paramsToForward.login_hint = login_hint;
         }
@@ -561,6 +562,9 @@ export class OAuthController implements IOAuthController {
         if (fedApp) {
           requested.idp_hint = connection.clientID;
         }
+      }
+      if (paramsToForward.login_hint) {
+        requested.login_hint = paramsToForward.login_hint as string;
       }
       if (requestedOIDCFlow) {
         requested.oidc = true;
