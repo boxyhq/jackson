@@ -9,6 +9,7 @@ import {
   SSOTrace,
   SSOTracesInstance,
 } from '../../typings';
+import * as metrics from '../../opentelemetry/metrics';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 import { App } from './app';
 
@@ -30,6 +31,10 @@ export class IdPLogin {
     body: OIDCIdPInitiatedReq & { fedAppId: string }
   ): Promise<{ redirect_url: string }> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
+    const protocol = 'saml-federation';
+    const login_type = 'idp-initiated';
+
+    metrics.increment('idfedAuthorize', { protocol, login_type });
 
     let connection: OIDCSSORecord | undefined;
     let fedApp: IdentityFederationApp | undefined;
@@ -110,7 +115,7 @@ export class IdPLogin {
       });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-
+      metrics.increment('idfedAuthorizeError', { protocol, login_type });
       this.ssoTraces.saveTrace({
         error: error_description,
         context,

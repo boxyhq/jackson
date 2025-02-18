@@ -34,7 +34,14 @@ const counters = {
       counterOptions: { description: 'Number of errors in oauth authorize requests' },
       counterAttributes,
     }),
-  oAuthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+  oauthResponse: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.oauth.response',
+      counterOptions: { description: 'Number of oauth response requests' },
+      counterAttributes,
+    }),
+  oauthResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) =>
     incrementCounter({
       meter: METER,
       name: 'jackson.oauth.response.error',
@@ -94,6 +101,38 @@ const counters = {
       meter: METER,
       name: 'jackson.dsync.events_batch.failed',
       counterOptions: { description: 'Indicate that a batch of dsync events failed' },
+    });
+  },
+  idfedAuthorize: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.authorize',
+      counterOptions: { description: 'Number of identity federation authorize requests' },
+      counterAttributes,
+    });
+  },
+  idfedAuthorizeError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.authorize.error',
+      counterOptions: { description: 'Number of errors in identity federation authorize requests' },
+      counterAttributes,
+    });
+  },
+  idfedResponse: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.response',
+      counterOptions: { description: 'Number of identity federation response requests' },
+      counterAttributes,
+    });
+  },
+  idfedResponseError: (counterAttributes: CounterOperationParams['counterAttributes']) => {
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.idfed.response.error',
+      counterOptions: { description: 'Number of errors in identity federation response requests' },
+      counterAttributes,
     });
   },
 };

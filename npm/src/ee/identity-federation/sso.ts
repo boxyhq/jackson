@@ -11,6 +11,7 @@ import type {
   SSOTrace,
   JacksonOptionWithRequiredLogger,
 } from '../../typings';
+import * as metrics from '../../opentelemetry/metrics';
 import { GENERIC_ERR_STRING, getErrorMessage, isConnectionActive } from '../../controller/utils';
 import { throwIfInvalidLicense } from '../common/checkLicense';
 
@@ -55,14 +56,16 @@ export class SSO {
   }) => {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
+    const protocol = 'saml-federation';
+    const login_type = 'sp-initiated';
+
+    metrics.increment('idfedAuthorize', { protocol, login_type });
+
     const isPostBinding = samlBinding === 'HTTP-POST';
     let connection: SAMLSSORecord | OIDCSSORecord | undefined;
     let app: IdentityFederationApp | undefined;
     let id, acsUrl, entityId, publicKey, providerName, decodedRequest;
-    const context = {
-      isSAMLFederated: true,
-      relayState,
-    } as unknown as SSOTrace['context'];
+    const context = { isSAMLFederated: true, relayState } as unknown as SSOTrace['context'];
 
     try {
       decodedRequest = await saml.decodeBase64(request, !isPostBinding);
@@ -98,20 +101,13 @@ export class SSO {
         idp_hint,
         authFlow: 'saml',
         idFedAppId: app.id,
-        originalParams: {
-          RelayState: relayState,
-          SAMLRequest: request,
-          samlBinding,
-        },
+        originalParams: { RelayState: relayState, SAMLRequest: request, samlBinding },
         tenants: app.tenants,
       });
 
       // If there is a redirect URL, then we need to redirect to that URL
       if ('redirectUrl' in response) {
-        return {
-          redirect_url: response.redirectUrl,
-          authorize_form: null,
-        };
+        return { redirect_url: response.redirectUrl, authorize_form: null };
       }
 
       // If there is a connection, use that connection
@@ -141,27 +137,18 @@ export class SSO {
       };
 
       return isSAMLConnection(connection)
-        ? await this.ssoHandler.createSAMLRequest({
-            connection,
-            requestParams,
-            mappings: app.mappings,
-          })
+        ? await this.ssoHandler.createSAMLRequest({ connection, requestParams, mappings: app.mappings })
         : await this.ssoHandler.createOIDCRequest({
             connection,
             requestParams,
             mappings: app.mappings,
-            ssoTraces: {
-              instance: this.ssoTraces,
-              context,
-            },
+            ssoTraces: { instance: this.ssoTraces, context },
           });
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
+      metrics.increment('idfedAuthorizeError', { protocol, login_type });
 
-      this.ssoTraces.saveTrace({
-        error: error_description,
-        context,
-      });
+      this.ssoTraces.saveTrace({ error: error_description, context });
 
       throw err;
     }
