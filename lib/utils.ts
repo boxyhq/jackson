@@ -21,7 +21,7 @@ export const validateEmailWithACL = (email: string) => {
  */
 export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { path?: string } = {}) => {
   const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-  let cookieContents = 'jackson_error' + '=' + stringValue;
+  let cookieContents = 'jackson_error' + '=' + encodeURIComponent(stringValue);
   if (options.path) {
     cookieContents += '; Path=' + options.path;
   }
