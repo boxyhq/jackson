@@ -59,10 +59,7 @@ function encrypt(val: any) {
   const genKey = crypto.randomBytes(32);
   const hexKey = genKey.toString('hex');
   const encVal = encrypter.encrypt(JSON.stringify(val), genKey);
-  return {
-    hexKey,
-    encVal,
-  };
+  return { hexKey, encVal };
 }
 
 function decrypt(res: Encrypted, encryptionKey: string) {
@@ -93,11 +90,7 @@ export class OAuthController implements IOAuthController {
     this.opts = opts;
     this.idFedApp = idFedApp;
 
-    this.ssoHandler = new SSOHandler({
-      connection: connectionStore,
-      session: sessionStore,
-      opts,
-    });
+    this.ssoHandler = new SSOHandler({ connection: connectionStore, session: sessionStore, opts });
   }
 
   public async authorize(
@@ -157,9 +150,7 @@ export class OAuthController implements IOAuthController {
         });
 
         if ('redirectUrl' in response) {
-          return {
-            redirect_url: response.redirectUrl,
-          };
+          return { redirect_url: response.redirectUrl };
         }
 
         if ('connection' in response) {
@@ -199,9 +190,7 @@ export class OAuthController implements IOAuthController {
           });
 
           if ('redirectUrl' in response) {
-            return {
-              redirect_url: response.redirectUrl,
-            };
+            return { redirect_url: response.redirectUrl };
           }
 
           if ('connection' in response) {
@@ -228,9 +217,7 @@ export class OAuthController implements IOAuthController {
             });
 
             if ('redirectUrl' in response) {
-              return {
-                redirect_url: response.redirectUrl,
-              };
+              return { redirect_url: response.redirectUrl };
             }
 
             if ('connection' in response) {
@@ -326,10 +313,7 @@ export class OAuthController implements IOAuthController {
         this.opts.logger.error(internalError);
       }
 
-      metrics.increment('oauthAuthorizeError', {
-        protocol,
-        login_type,
-      });
+      metrics.increment('oauthAuthorizeError', { protocol, login_type });
 
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
@@ -382,10 +366,7 @@ export class OAuthController implements IOAuthController {
           const error_description = GENERIC_ERR_STRING;
           this.opts.logger.error(internalError);
 
-          metrics.increment('oauthAuthorizeError', {
-            protocol,
-            login_type,
-          });
+          metrics.increment('oauthAuthorizeError', { protocol, login_type });
           // Save the error trace
           const traceId = await this.ssoTraces.saveTrace({
             error: internalError ?? error_description,
@@ -414,7 +395,7 @@ export class OAuthController implements IOAuthController {
         samlReq = saml.request({
           ssoUrl,
           entityID: this.opts.samlAudience!,
-          callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+          callbackUrl: connection.acsUrlOverride ? connection.acsUrlOverride : (this.opts.acsUrl as string),
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
           forceAuthn: forceAuthn === 'true' ? true : !!(connection as SAMLSSORecord).forceAuthn,
@@ -425,10 +406,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         this.opts.logger.error(`Authorize error: ${error_description} `);
-        metrics.increment('oauthAuthorizeError', {
-          protocol,
-          login_type,
-        });
+        metrics.increment('oauthAuthorizeError', { protocol, login_type });
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -512,10 +490,7 @@ export class OAuthController implements IOAuthController {
       } catch (err: unknown) {
         const error_description = getErrorMessage(err);
         this.opts.logger.error(`Authorize error: ${error_description}`);
-        metrics.increment('oauthAuthorizeError', {
-          protocol,
-          login_type,
-        });
+        metrics.increment('oauthAuthorizeError', { protocol, login_type });
         // Save the error trace
         const traceId = await this.ssoTraces.saveTrace({
           error: error_description,
@@ -595,10 +570,7 @@ export class OAuthController implements IOAuthController {
       await this.sessionStore.put(
         sessionId,
         connectionIsSAML
-          ? {
-              ...sessionObj,
-              id: samlReq?.id,
-            }
+          ? { ...sessionObj, id: samlReq?.id }
           : { ...sessionObj, id: connection.clientID, oidcCodeVerifier, oidcNonce }
       );
       // Redirect to IdP
@@ -615,20 +587,11 @@ export class OAuthController implements IOAuthController {
         } else {
           // HTTP POST binding
           authorizeForm = saml.createPostForm(ssoUrl, [
-            {
-              name: 'RelayState',
-              value: relayState,
-            },
-            {
-              name: 'SAMLRequest',
-              value: Buffer.from(samlReq.request).toString('base64'),
-            },
+            { name: 'RelayState', value: relayState },
+            { name: 'SAMLRequest', value: Buffer.from(samlReq.request).toString('base64') },
           ]);
         }
-        return {
-          redirect_url: redirectUrl,
-          authorize_form: authorizeForm,
-        };
+        return { redirect_url: redirectUrl, authorize_form: authorizeForm };
       }
       if (connectionIsOIDC) {
         return { redirect_url: ssoUrl };
@@ -636,10 +599,7 @@ export class OAuthController implements IOAuthController {
       throw 'Connection appears to be misconfigured';
     } catch (err: unknown) {
       const error_description = getErrorMessage(err);
-      metrics.increment('oauthAuthorizeError', {
-        protocol,
-        login_type,
-      });
+      metrics.increment('oauthAuthorizeError', { protocol, login_type });
       // Save the error trace
       const traceId = await this.ssoTraces.saveTrace({
         error: error_description,
@@ -707,10 +667,7 @@ export class OAuthController implements IOAuthController {
       }
 
       const connections: SAMLSSORecord[] = (
-        await this.connectionStore.getByIndex({
-          name: IndexNames.EntityID,
-          value: issuer,
-        })
+        await this.connectionStore.getByIndex({ name: IndexNames.EntityID, value: issuer })
       ).data;
 
       if (!connections || connections.length === 0) {
@@ -728,10 +685,7 @@ export class OAuthController implements IOAuthController {
       const isSPFlow = !isIdPFlow && !isSAMLFederated;
       protocol = isOIDCFederated ? 'oidc-federation' : isSAMLFederated ? 'saml-federation' : 'saml';
       if (protocol !== 'saml') {
-        metrics.increment('idfedResponse', {
-          protocol,
-          login_type,
-        });
+        metrics.increment('idfedResponse', { protocol, login_type });
       }
       // IdP initiated SSO flow
       if (isIdPFlow) {
@@ -739,16 +693,12 @@ export class OAuthController implements IOAuthController {
           idp_hint,
           authFlow: 'idp-initiated',
           entityId: issuer,
-          originalParams: {
-            SAMLResponse,
-          },
+          originalParams: { SAMLResponse },
         });
 
         // Redirect to the product selection page
         if ('postForm' in response) {
-          return {
-            app_select_form: response.postForm,
-          };
+          return { app_select_form: response.postForm };
         }
 
         // Found a connection
@@ -796,10 +746,7 @@ export class OAuthController implements IOAuthController {
 
       const { privateKey } = await getDefaultCertificate();
 
-      validateOpts = {
-        audience: `${this.opts.samlAudience}`,
-        privateKey,
-      };
+      validateOpts = { audience: `${this.opts.samlAudience}`, privateKey };
 
       if (connection.idpMetadata.publicKey) {
         validateOpts.publicKey = connection.idpMetadata.publicKey;
@@ -855,9 +802,7 @@ export class OAuthController implements IOAuthController {
 
       const code = await this._buildAuthorizationCode(connection, profile, session, isIdPFlow);
 
-      const params = {
-        code,
-      };
+      const params = { code };
 
       if (session && session.state) {
         params['state'] = session.state;
@@ -1043,9 +988,7 @@ export class OAuthController implements IOAuthController {
 
       const code = await this._buildAuthorizationCode(oidcConnection, profile, session, false);
 
-      const params = {
-        code,
-      };
+      const params = { code };
 
       if (session && session.state) {
         params['state'] = session.state;
@@ -1402,10 +1345,7 @@ export class OAuthController implements IOAuthController {
       return tokenResponse;
     } catch (err: any) {
       metrics.increment('oauthTokenError', { protocol, login_type });
-      this.ssoTraces.saveTrace({
-        error: err.message,
-        context: traceContext,
-      });
+      this.ssoTraces.saveTrace({ error: err.message, context: traceContext });
       throw err;
     }
   }
@@ -1489,9 +1429,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
-    return {
-      ...rsp.claims,
-      requested: rsp.requested,
-    };
+    return { ...rsp.claims, requested: rsp.requested };
   }
 }
