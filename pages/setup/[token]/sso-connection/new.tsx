@@ -184,6 +184,7 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
   const { idp, step, token } = query as { idp: string; step: string; token: string };
 
   // Validate IDP and step
+  let stepNumber;
   if (idp) {
     const provider = identityProviders.find((p) => p.id === idp);
     if (!provider) {
@@ -195,7 +196,8 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
     }
 
     if (step) {
-      const stepNumber = parseInt(step);
+      stepNumber = parseInt(step, 10);
+
       if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > provider.stepCount) {
         return {
           redirect: {
@@ -214,11 +216,11 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
 
   let mdxSource: MDXRemoteSerializeResult<Record<string, unknown>> | null = null;
 
-  // Read the MDX file based on the idp and step
-  if (idp && step) {
+  // Read the MDX file based on the idp and stepNumber
+  if (idp && stepNumber) {
     try {
       const mdxDirectory = path.join(process.cwd(), `components/setup-link-instructions/${idp}`);
-      const source = fs.readFileSync(`${mdxDirectory}/${step}.mdx`, 'utf8');
+      const source = fs.readFileSync(`${mdxDirectory}/${stepNumber}.mdx`, 'utf8');
       mdxSource = await serialize(source, { mdxOptions: { remarkPlugins: [remarkGfm] } });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err: any) {
