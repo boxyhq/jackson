@@ -183,6 +183,29 @@ export async function getServerSideProps({ locale, query }: GetServerSidePropsCo
 
   const { idp, step, token } = query as { idp: string; step: string; token: string };
 
+  // Validate IDP and step
+  if (idp) {
+    const provider = identityProviders.find((p) => p.id === idp);
+    if (!provider) {
+      return {
+        redirect: {
+          destination: `/setup/${token}/sso-connection/new`,
+        },
+      };
+    }
+
+    if (step) {
+      const stepNumber = parseInt(step);
+      if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > provider.stepCount) {
+        return {
+          redirect: {
+            destination: `/setup/${token}/sso-connection/new`,
+          },
+        };
+      }
+    }
+  }
+
   const { tenant, product } = await setupLinkController.getByToken(token);
   const idpEntityId = connectionAPIController.getIDPEntityID({
     tenant,
