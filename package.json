@@ -46,7 +46,7 @@
     "prepare:npm": "cd npm && npm install --legacy-peer-deps",
     "prepare:internal-ui": "cd internal-ui && npm install --legacy-peer-deps",
     "pretest:e2e": "env-cmd -f .env.test.local ts-node --logError e2e/support/pretest.ts",
-    "test:e2e": "env-cmd -f .env.test.local playwright test",
+    "test:e2e": "env-cmd -f .env.test.local playwright test -x",
     "test": "cd npm && npm run test",
     "postinstall": "npm run prebuild",
     "prebuild": "ts-node --logError prebuild.ts",
