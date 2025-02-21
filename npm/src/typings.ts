@@ -468,6 +468,7 @@ export interface JacksonOption {
     };
     requestProfileScope?: boolean; // defaults to true
     forwardOIDCParams?: boolean; // defaults to false
+    subjectPrefix?: boolean; // defaults to false
   };
   certs?: {
     publicKey: string;
