@@ -1338,6 +1338,15 @@ export class OAuthController implements IOAuthController {
         protocol,
       };
 
+      let subject = codeVal.profile.claims.id;
+      if (this.opts.openid?.subjectPrefix) {
+        subject =
+          codeVal.requested?.tenant + ':' + codeVal.requested?.product + ':' + codeVal.profile.claims.id;
+        if (subject.length > 255) {
+          subject = crypto.createHash('sha512').update(subject).digest('hex');
+        }
+      }
+
       const requestHasNonce = !!codeVal.requested?.nonce;
       if (requestedOIDCFlow) {
         const { jwtSigningKeys, jwsAlg } = this.opts.openid ?? {};
@@ -1347,7 +1356,7 @@ export class OAuthController implements IOAuthController {
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
           ...claims,
-          id: codeVal.profile.claims.id,
+          id: subject,
           email: codeVal.profile.claims.email,
           firstName: codeVal.profile.claims.firstName,
           lastName: codeVal.profile.claims.lastName,
@@ -1360,12 +1369,12 @@ export class OAuthController implements IOAuthController {
           .setProtectedHeader({ alg: jwsAlg!, kid })
           .setIssuedAt()
           .setIssuer(this.opts.externalUrl)
-          .setSubject(codeVal.profile.claims.id)
+          .setSubject(subject)
           .setAudience(tokenVal.requested.client_id)
           .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
           .sign(signingKey);
         tokenVal.id_token = id_token;
-        tokenVal.claims.sub = codeVal.profile.claims.id;
+        tokenVal.claims.sub = subject;
       }
 
       const { hexKey, encVal } = encrypt(tokenVal);
