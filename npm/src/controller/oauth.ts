@@ -1356,7 +1356,7 @@ export class OAuthController implements IOAuthController {
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
           ...claims,
-          id: codeVal.profile.claims.id,
+          id: subject,
           email: codeVal.profile.claims.email,
           firstName: codeVal.profile.claims.firstName,
           lastName: codeVal.profile.claims.lastName,
@@ -1369,7 +1369,7 @@ export class OAuthController implements IOAuthController {
           .setProtectedHeader({ alg: jwsAlg!, kid })
           .setIssuedAt()
           .setIssuer(this.opts.externalUrl)
-          .setSubject(codeVal.profile.claims.id)
+          .setSubject(subject)
           .setAudience(tokenVal.requested.client_id)
           .setExpirationTime(`${this.opts.db.ttl}s`) //  identity token only really needs to be valid long enough for it to be verified by the client application.
           .sign(signingKey);
