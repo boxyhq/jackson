@@ -99,7 +99,7 @@ export const createRandomSecret = async (length: number) => {
     .replace(/=/g, '');
 };
 
-export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.KeyLike> {
+export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.CryptoKey> {
   const pkcs8 = Buffer.from(key, 'base64').toString('ascii');
   const privateKey = await jose.importPKCS8(pkcs8, alg);
   return privateKey;
@@ -112,13 +112,13 @@ export function isJWSKeyPairLoaded(jwsKeyPair: { private: string; public: string
   return true;
 }
 
-export const importJWTPublicKey = async (key: string, jwsAlg: string): Promise<jose.KeyLike> => {
+export const importJWTPublicKey = async (key: string, jwsAlg: string): Promise<jose.CryptoKey> => {
   const spki = Buffer.from(key, 'base64').toString('ascii');
   const publicKey = await jose.importSPKI(spki, jwsAlg);
   return publicKey;
 };
 
-export const exportPublicKeyJWK = async (key: jose.KeyLike): Promise<jose.JWK> => {
+export const exportPublicKeyJWK = async (key: jose.CryptoKey): Promise<jose.JWK> => {
   const publicJWK = await jose.exportJWK(key);
   return publicJWK;
 };
