@@ -75,19 +75,14 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     loginType?: string;
     provider: string | 'Unknown';
     friendlyProviderName: string | null;
-    slo: {
-      postUrl?: string;
-      redirectUrl?: string;
-    };
-    sso: {
-      postUrl?: string;
-      redirectUrl?: string;
-    };
+    slo: { postUrl?: string; redirectUrl?: string };
+    sso: { postUrl?: string; redirectUrl?: string };
     thumbprint?: string;
     publicKey?: string;
     validTo?: string;
   };
   deactivated?: boolean;
+  acsUrlOverride?: string;
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -102,24 +97,16 @@ export interface OIDCSSORecord extends SSOConnection {
     clientSecret: string;
   };
   deactivated?: boolean;
+  acsUrlOverride?: string;
 }
 
 export type ConnectionType = 'saml' | 'oidc';
 
-type ClientIDQuery = {
-  clientID: string;
-};
+type ClientIDQuery = { clientID: string };
 
-type TenantQuery = {
-  tenant: string;
-  product: string;
-  strategy?: ConnectionType;
-};
+type TenantQuery = { tenant: string; product: string; strategy?: ConnectionType };
 
-type TenantProduct = {
-  tenant: string;
-  product: string;
-};
+type TenantProduct = { tenant: string; product: string };
 
 export type GetConnectionsQuery =
   | ClientIDQuery
@@ -216,9 +203,7 @@ export interface IAdminController {
 }
 
 export interface IHealthCheckController {
-  status(): Promise<{
-    status: number;
-  }>;
+  status(): Promise<{ status: number }>;
   init(): Promise<void>;
 }
 
@@ -241,9 +226,7 @@ export interface IOidcDiscoveryController {
     code_challenge_methods_supported: Array<string>;
   };
 
-  jwks(): Promise<{
-    keys: JWK[];
-  }>;
+  jwks(): Promise<{ keys: JWK[] }>;
 }
 
 export interface OAuthReqBody {
@@ -298,11 +281,7 @@ export type OAuthReq =
   | OAuthReqBodyWithAccessType
   | OAuthReqBodyWithResource;
 
-export type OIDCIdPInitiatedReq = {
-  iss: string;
-  login_hint?: string;
-  target_link_uri?: string;
-};
+export type OIDCIdPInitiatedReq = { iss: string; login_hint?: string; target_link_uri?: string };
 
 export interface SAMLResponsePayload {
   SAMLResponse: string;
@@ -432,11 +411,7 @@ export interface DatabaseOption {
   encryptionKey?: string;
   pageLimit?: number;
   ssl?: any;
-  dynamodb?: {
-    region?: string;
-    readCapacityUnits?: number;
-    writeCapacityUnits?: number;
-  };
+  dynamodb?: { region?: string; readCapacityUnits?: number; writeCapacityUnits?: number };
   manualMigration?: boolean;
 }
 
@@ -452,6 +427,7 @@ export interface DatabaseDriverOption {
 export interface JacksonOption {
   externalUrl: string;
   samlPath: string;
+  acsUrl?: string;
   oidcPath?: string;
   samlAudience?: string;
   preLoadedConnection?: string;
@@ -462,28 +438,16 @@ export interface JacksonOption {
   scimPath?: string;
   openid?: {
     jwsAlg?: string;
-    jwtSigningKeys?: {
-      private: string;
-      public: string;
-    };
+    jwtSigningKeys?: { private: string; public: string };
     requestProfileScope?: boolean; // defaults to true
     forwardOIDCParams?: boolean; // defaults to false
     subjectPrefix?: boolean; // defaults to false
   };
-  certs?: {
-    publicKey: string;
-    privateKey: string;
-  };
+  certs?: { publicKey: string; privateKey: string };
   boxyhqLicenseKey?: string;
-  retraced?: {
-    host?: string;
-    adminToken?: string;
-  };
+  retraced?: { host?: string; adminToken?: string };
   noAnalytics?: boolean;
-  terminus?: {
-    host?: string;
-    adminToken?: string;
-  };
+  terminus?: { host?: string; adminToken?: string };
   webhook?: Webhook;
   dsync?: {
     webhookBatchSize?: number;
@@ -505,10 +469,7 @@ export interface JacksonOption {
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
 
-  ory?: {
-    projectId: string | undefined;
-    sdkToken: string | undefined;
-  };
+  ory?: { projectId: string | undefined; sdkToken: string | undefined };
   ssoTraces?: SSOTracesOption;
   logger?: {
     info?: (msg: string, err?: any) => void;
@@ -525,14 +486,8 @@ export interface SLORequestParams {
 }
 
 interface Metadata {
-  sso: {
-    postUrl?: string;
-    redirectUrl: string;
-  };
-  slo: {
-    redirectUrl?: string;
-    postUrl?: string;
-  };
+  sso: { postUrl?: string; redirectUrl: string };
+  slo: { redirectUrl?: string; postUrl?: string };
   entityID: string;
   thumbprint: string;
   loginType: 'idp' | 'sp';
@@ -621,9 +576,7 @@ export type SetupLinkCreatePayload =
 export type SetupLinkService = 'sso' | 'dsync';
 
 // Admin Portal settings
-export type AdminPortalSettings = {
-  branding: AdminPortalBranding;
-};
+export type AdminPortalSettings = { branding: AdminPortalBranding };
 
 // Admin Portal branding options
 export type AdminPortalBranding = {
@@ -633,10 +586,7 @@ export type AdminPortalBranding = {
   companyName: string | null;
 };
 
-export type Webhook = {
-  endpoint: string;
-  secret: string;
-};
+export type Webhook = { endpoint: string; secret: string };
 
 export type GetByProductParams = {
   product: string;
@@ -672,6 +622,4 @@ export type RequiredLogger = {
   warn: (msg: string, err?: any) => void;
 };
 
-export type JacksonOptionWithRequiredLogger = Omit<JacksonOption, 'logger'> & {
-  logger: RequiredLogger;
-};
+export type JacksonOptionWithRequiredLogger = Omit<JacksonOption, 'logger'> & { logger: RequiredLogger };
