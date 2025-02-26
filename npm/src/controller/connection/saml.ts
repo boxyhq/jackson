@@ -75,6 +75,7 @@ const saml = {
       description,
       metadataUrl,
       identifierFormat,
+      acsUrlOverride,
     } = body;
     const forceAuthn = body.forceAuthn == 'true' || body.forceAuthn == true;
 
@@ -106,6 +107,7 @@ const saml = {
       identifierFormat,
       metadataUrl,
       sortOrder: parseInt(body.sortOrder as any),
+      acsUrlOverride,
     };
 
     let metadata = rawMetadata as string;

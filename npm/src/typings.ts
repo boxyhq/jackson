@@ -32,6 +32,7 @@ export interface SSOConnection {
   description?: string;
   ory?: OryConfig;
   sortOrder?: number | null;
+  acsUrlOverride?: string;
 }
 
 export interface SAMLSSOConnection extends SSOConnection {
@@ -82,7 +83,6 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     validTo?: string;
   };
   deactivated?: boolean;
-  acsUrlOverride?: string;
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -97,7 +97,6 @@ export interface OIDCSSORecord extends SSOConnection {
     clientSecret: string;
   };
   deactivated?: boolean;
-  acsUrlOverride?: string;
 }
 
 export type ConnectionType = 'saml' | 'oidc';
