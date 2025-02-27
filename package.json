@@ -113,7 +113,7 @@
     "env-cmd": "10.1.0",
     "eslint": "9.20.1",
     "eslint-config-next": "15.1.7",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.0.2",
     "eslint-plugin-i18next": "6.1.1",
     "jose": "6.0.7",
     "postcss": "8.5.3",
