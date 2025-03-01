@@ -11,12 +11,12 @@ const oidcPath = '/api/oauth/oidc';
 const idpDiscoveryPath = '/idp/select';
 const googleDSyncAuthorizePath = '/api/scim/oauth/authorize';
 const googleDSyncCallbackPath = '/api/scim/oauth/callback';
-const acsUrl = process.env.ACS_URL || '';
 
 const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
+const acsUrl = process.env.ACS_URL || externalUrl + samlPath;
 
 let ssl;
 if (process.env.DB_SSL === 'true') {
