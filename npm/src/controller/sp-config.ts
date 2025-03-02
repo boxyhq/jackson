@@ -8,7 +8,7 @@ export class SPSSOConfig {
   constructor(private opts: JacksonOption) {}
 
   private get acsUrl(): string {
-    return `${this.opts.externalUrl}${this.opts.samlPath}`;
+    return this.opts.acsUrl as string;
   }
 
   private get entityId(): string {
