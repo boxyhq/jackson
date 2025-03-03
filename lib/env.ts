@@ -16,12 +16,11 @@ const hostUrl = process.env.HOST_URL || 'localhost';
 const hostPort = Number(process.env.PORT || '5225');
 const externalUrl = process.env.EXTERNAL_URL || 'http://' + hostUrl + ':' + hostPort;
 const apiKeys = (process.env.JACKSON_API_KEYS || '').split(',');
+const acsUrl = process.env.ACS_URL || externalUrl + samlPath;
 
 let ssl;
 if (process.env.DB_SSL === 'true') {
-  ssl = {
-    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
-  };
+  ssl = { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false' };
 }
 
 // Retraced
@@ -72,6 +71,7 @@ export const boxyhqHosted = process.env.BOXYHQ_HOSTED === '1';
 const jacksonOptions: JacksonOption = {
   externalUrl,
   samlPath,
+  acsUrl,
   oidcPath,
   idpDiscoveryPath,
   samlAudience: process.env.SAML_AUDIENCE,
@@ -89,10 +89,7 @@ const jacksonOptions: JacksonOption = {
     forwardOIDCParams: process.env.OPENID_REQUEST_FORWARD_PARAMS === 'true' ? true : false,
     subjectPrefix: process.env.OPENID_SUBJECT_PREFIX === 'true' ? true : false,
   },
-  certs: {
-    publicKey: process.env.PUBLIC_KEY || '',
-    privateKey: process.env.PRIVATE_KEY || '',
-  },
+  certs: { publicKey: process.env.PUBLIC_KEY || '', privateKey: process.env.PRIVATE_KEY || '' },
   boxyhqLicenseKey: process.env.BOXYHQ_LICENSE_KEY,
   retraced,
   noAnalytics:
@@ -101,10 +98,7 @@ const jacksonOptions: JacksonOption = {
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
   terminus,
-  webhook: {
-    endpoint: process.env.WEBHOOK_URL || '',
-    secret: process.env.WEBHOOK_SECRET || '',
-  },
+  webhook: { endpoint: process.env.WEBHOOK_URL || '', secret: process.env.WEBHOOK_SECRET || '' },
   dsync: {
     webhookBatchSize: process.env.DSYNC_WEBHOOK_BATCH_SIZE
       ? Number(process.env.DSYNC_WEBHOOK_BATCH_SIZE)
@@ -127,10 +121,7 @@ const jacksonOptions: JacksonOption = {
   },
   setupLinkExpiryDays,
   boxyhqHosted,
-  ory: {
-    projectId: process.env.ENTERPRISE_ORY_PROJECT_ID,
-    sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN,
-  },
+  ory: { projectId: process.env.ENTERPRISE_ORY_PROJECT_ID, sdkToken: process.env.ENTERPRISE_ORY_SDK_TOKEN },
   ssoTraces,
 };
 
@@ -141,10 +132,7 @@ const adminPortalSSODefaults = {
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
-const loggerOptions = {
-  file: process.env.LOG_FILE,
-  level: process.env.LOG_LEVEL,
-};
+const loggerOptions = { file: process.env.LOG_FILE, level: process.env.LOG_LEVEL };
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };

@@ -60,15 +60,7 @@ export class SSOHandler {
     tenants?: string[]; // Only used for SAML IdP initiated flow
     ssoTraces?: { instance: SSOTracesInstance; context: SSOTrace['context'] };
   }): Promise<
-    | {
-        connection: SAMLSSORecord | OIDCSSORecord;
-      }
-    | {
-        redirectUrl: string;
-      }
-    | {
-        postForm: string;
-      }
+    { connection: SAMLSSORecord | OIDCSSORecord } | { redirectUrl: string } | { postForm: string }
   > {
     const {
       authFlow,
@@ -118,10 +110,7 @@ export class SSOHandler {
 
       connections = result.data;
     } else if (entityId) {
-      const result = await this.connection.getByIndex({
-        name: IndexNames.EntityID,
-        value: entityId,
-      });
+      const result = await this.connection.getByIndex({ name: IndexNames.EntityID, value: entityId });
 
       connections = result.data;
     }
@@ -166,12 +155,7 @@ export class SSOHandler {
 
       // SP initiated flow
       if (['oauth', 'saml'].includes(authFlow)) {
-        const qps = {
-          authFlow: 'sp-initiated',
-          idFedAppId,
-          fedType,
-          ...originalParams,
-        };
+        const qps = { authFlow: 'sp-initiated', idFedAppId, fedType, ...originalParams };
         if (tenant && product && fedType !== 'oidc') {
           qps['tenant'] = tenant;
           qps['product'] = product;
@@ -184,17 +168,11 @@ export class SSOHandler {
       // IdP initiated flow
       if (authFlow === 'idp-initiated') {
         if (entityId) {
-          const params = new URLSearchParams({
-            entityId,
-            authFlow,
-          });
+          const params = new URLSearchParams({ entityId, authFlow });
 
           try {
             const postForm = saml.createPostForm(`${this.opts.idpDiscoveryPath}?${params}`, [
-              {
-                name: 'SAMLResponse',
-                value: originalParams.SAMLResponse,
-              },
+              { name: 'SAMLResponse', value: originalParams.SAMLResponse },
             ]);
             return { postForm };
           } catch (err: any) {
@@ -240,7 +218,7 @@ export class SSOHandler {
       const samlRequest = saml.request({
         ssoUrl,
         entityID: `${this.opts.samlAudience}`,
-        callbackUrl: this.opts.externalUrl + this.opts.samlPath,
+        callbackUrl: connection.acsUrlOverride ? connection.acsUrlOverride : (this.opts.acsUrl as string),
         signingKey: certificate.privateKey,
         publicKey: certificate.publicKey,
         forceAuthn: !!connection.forceAuthn,
@@ -251,10 +229,7 @@ export class SSOHandler {
 
       const relayState = await this.createSession({
         requestId: samlRequest.id,
-        requested: {
-          ...requestParams,
-          client_id: connection.clientID,
-        },
+        requested: { ...requestParams, client_id: connection.clientID },
         mappings,
       });
 
@@ -269,21 +244,12 @@ export class SSOHandler {
         });
       } else {
         authorizeForm = saml.createPostForm(ssoUrl, [
-          {
-            name: 'RelayState',
-            value: relayState,
-          },
-          {
-            name: 'SAMLRequest',
-            value: Buffer.from(samlRequest.request).toString('base64'),
-          },
+          { name: 'RelayState', value: relayState },
+          { name: 'SAMLRequest', value: Buffer.from(samlRequest.request).toString('base64') },
         ]);
       }
 
-      return {
-        redirect_url: redirectUrl,
-        authorize_form: authorizeForm,
-      };
+      return { redirect_url: redirectUrl, authorize_form: authorizeForm };
     } catch (err: any) {
       throw new JacksonError(GENERIC_ERR_STRING, 400, `Error creating SAML request: ${err.message}`);
     }
@@ -341,10 +307,7 @@ export class SSOHandler {
         redirect_uri: this.opts.externalUrl + this.opts.oidcPath,
       }).href;
 
-      return {
-        redirect_url: ssoUrl,
-        authorize_form: null,
-      };
+      return { redirect_url: ssoUrl, authorize_form: null };
     } catch (err: any) {
       throw new JacksonError(GENERIC_ERR_STRING, 400, `Error creating OIDC request: ${err.message}`);
     }
@@ -382,16 +345,10 @@ export class SSOHandler {
       const params: { name: string; value: string }[] = [];
 
       if (session.requested.relayState) {
-        params.push({
-          name: 'RelayState',
-          value: session.requested.relayState,
-        });
+        params.push({ name: 'RelayState', value: session.requested.relayState });
       }
 
-      params.push({
-        name: 'SAMLResponse',
-        value: Buffer.from(responseSigned).toString('base64'),
-      });
+      params.push({ name: 'SAMLResponse', value: Buffer.from(responseSigned).toString('base64') });
 
       const responseForm = saml.createPostForm(session.requested.acsUrl, params);
 
@@ -418,12 +375,7 @@ export class SSOHandler {
   }) => {
     const sessionId = crypto.randomBytes(16).toString('hex');
 
-    const session = {
-      id: requestId,
-      requested,
-      samlFederated: true,
-      mappings,
-    };
+    const session = { id: requestId, requested, samlFederated: true, mappings };
 
     if (oidcCodeVerifier) {
       session['oidcCodeVerifier'] = oidcCodeVerifier;

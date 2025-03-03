@@ -10,7 +10,7 @@ import micromatch from 'micromatch';
 import nextI18NextConfig from '../next-i18next.config.js';
 
 import { AccountLayout, SetupLinkLayout } from '@components/layouts';
-import '@boxyhq/react-ui/dist/style.css';
+import '@boxyhq/react-ui/dist/react-ui.css';
 import '../styles/globals.css';
 import { BUIProvider } from '@boxyhq/internal-ui';
 
@@ -78,9 +78,7 @@ export default appWithTranslation<never>(MyApp, nextI18NextConfig);
 
 export type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
-  pageProps: {
-    session?: Session;
-  };
+  pageProps: { session?: Session };
 };
 
 export type NextPageWithLayout<P = Record<string, unknown>> = NextPage<P> & {
