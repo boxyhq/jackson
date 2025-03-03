@@ -24,7 +24,7 @@ export type SAMLSSOConnectionEventData = Pick<
   'name' | 'description' | 'clientID' | 'clientSecret'
 > & {
   provider: string;
-  friendlyProviderName: string;
+  friendlyProviderName: string | null;
 };
 
 export type OIDCSSOConnectionEventData = Pick<
