@@ -83,7 +83,6 @@ export interface SAMLSSORecord extends SAMLSSOConnection {
     validTo?: string;
   };
   deactivated?: boolean;
-  acsUrlOverride?: string;
 }
 
 export interface OIDCSSORecord extends SSOConnection {
@@ -98,7 +97,6 @@ export interface OIDCSSORecord extends SSOConnection {
     clientSecret: string;
   };
   deactivated?: boolean;
-  acsUrlOverride?: string;
 }
 
 export type ConnectionType = 'saml' | 'oidc';
@@ -140,6 +138,7 @@ export type UpdateSAMLConnectionParams = UpdateConnectionParams & {
   rawMetadata?: string;
   forceAuthn?: boolean;
   identifierFormat?: string;
+  acsUrlOverride?: string;
 };
 
 export type UpdateOIDCConnectionParams = UpdateConnectionParams & {
