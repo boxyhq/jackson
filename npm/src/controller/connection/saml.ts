@@ -221,7 +221,6 @@ const saml = {
       description,
       forceAuthn,
       metadataUrl,
-      acsUrlOverride,
       ...clientInfo
     } = body;
 
@@ -308,7 +307,6 @@ const saml = {
       defaultRedirectUrl: defaultRedirectUrl ? defaultRedirectUrl : _savedConnection.defaultRedirectUrl,
       redirectUrl: redirectUrlList ? redirectUrlList : _savedConnection.redirectUrl,
       forceAuthn: typeof forceAuthn === 'boolean' ? forceAuthn : _savedConnection.forceAuthn,
-      acsUrlOverride: acsUrlOverride ? acsUrlOverride : _savedConnection.acsUrlOverride,
     };
 
     if ('sortOrder' in body) {
@@ -321,6 +319,10 @@ const saml = {
 
     if ('identifierFormat' in body) {
       record['identifierFormat'] = body.identifierFormat;
+    }
+
+    if ('acsUrlOverride' in body) {
+      record['acsUrlOverride'] = body.acsUrlOverride;
     }
 
     const oryRes = await oryController.updateConnection(
