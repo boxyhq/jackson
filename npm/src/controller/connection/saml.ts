@@ -321,6 +321,10 @@ const saml = {
       record['identifierFormat'] = body.identifierFormat;
     }
 
+    if ('acsUrlOverride' in body) {
+      record['acsUrlOverride'] = body.acsUrlOverride;
+    }
+
     const oryRes = await oryController.updateConnection(
       {
         sdkToken: undefined,
