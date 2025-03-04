@@ -92,6 +92,7 @@ tap.test('should send sso.deactivated event', async () => {
   });
 
   const connectionUpdated = connections[0] as SAMLSSORecord;
+  connectionUpdated.acsUrlOverride = connection.acsUrlOverride;
 
   const payload: EventPayloadSchema = {
     event: eventType,
@@ -137,6 +138,7 @@ tap.test('should send sso.activated event', async () => {
   });
 
   const connectionUpdated = connections[0] as SAMLSSORecord;
+  connectionUpdated.acsUrlOverride = connection.acsUrlOverride;
 
   const payload: EventPayloadSchema = {
     event: eventType,
