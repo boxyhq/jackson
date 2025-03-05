@@ -89,6 +89,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *         sortOrder:
    *           type: number
    *           description: Connection sort order
+   *         acsUrlOverride:
+   *           type: string
+   *           description: URL to override the set ACS URL per connection basis
    *       example:
    *         idpMetadata:
    *           sso:
@@ -273,6 +276,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               sortOrder:
    *                 type: number
    *                 description: Indicate the position of the connection in the IdP selection screen
+   *               acsUrlOverride:
+   *                 type: string
+   *                 description: URL to override the set ACS URL per connection basis
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
@@ -332,6 +338,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               sortOrder:
    *                 type: number
    *                 description: Indicate the position of the connection in the IdP selection screen
+   *               acsUrlOverride:
+   *                 type: string
+   *                 description: URL to override the set ACS URL per connection basis
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
@@ -458,6 +467,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               sortOrder:
    *                 type: number
    *                 description: Indicate the position of the connection in the IdP selection screen
+   *               acsUrlOverride:
+   *                 type: string
+   *                 description: URL to override the set ACS URL per connection basis
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
@@ -526,6 +538,9 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               sortOrder:
    *                 type: number
    *                 description: Indicate the position of the connection in the IdP selection screen
+   *               acsUrlOverride:
+   *                 type: string
+   *                 description: URL to override the set ACS URL per connection basis
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
