@@ -1,4 +1,4 @@
-import { incrementCounter, type CounterOperationParams } from '@boxyhq/metrics';
+import { incrementCounter, observeGauge, type CounterOperationParams } from '@boxyhq/metrics';
 
 const METER = 'jackson';
 
@@ -137,6 +137,41 @@ const counters = {
   },
 };
 
+const gauges = {
+  dbMaxConnections: (val, gaugeAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.max',
+      val,
+      gaugeOptions: { description: 'Total number of db connections' },
+      gaugeAttributes,
+    }),
+  dbTotalConnections: (val, gaugeAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.total',
+      val,
+      gaugeOptions: { description: 'Total number of db connections' },
+      gaugeAttributes,
+    }),
+  dbIdleConnections: (val, gaugeAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.idle',
+      val,
+      gaugeOptions: { description: 'Number of idle db connections' },
+      gaugeAttributes,
+    }),
+  dbWaitingConnections: (val, gaugeAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.waiting',
+      val,
+      gaugeOptions: { description: 'Number of idle db connections' },
+      gaugeAttributes,
+    }),
+};
+
 const increment = (
   action: keyof typeof counters,
   counterAttributes?: CounterOperationParams['counterAttributes']
@@ -147,4 +182,15 @@ const increment = (
   }
 };
 
-export { increment };
+const gauge = (
+  action: keyof typeof gauges,
+  val,
+  gaugeAttributes?: CounterOperationParams['counterAttributes']
+) => {
+  const gaugeRegister = gauges[action];
+  if (typeof gaugeRegister === 'function') {
+    gaugeRegister(val, gaugeAttributes);
+  }
+};
+
+export { increment, gauge };

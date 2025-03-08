@@ -17,6 +17,7 @@ import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
 import dynamodb from './dynamoDb';
+import * as metrics from '../opentelemetry/metrics';
 
 import { JacksonStore } from './sql/entity/JacksonStore';
 import { JacksonIndex } from './sql/entity/JacksonIndex';
@@ -38,6 +39,8 @@ import { JacksonStore as JacksonStoreMariaDB } from './sql/mariadb/entity/Jackso
 import { JacksonIndex as JacksonIndexMariaDB } from './sql/mariadb/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLMariaDB } from './sql/mariadb/entity/JacksonTTL';
 
+const STATS_INTERVAL = 30 * 1000;
+
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey));
@@ -52,6 +55,24 @@ class DB implements DatabaseDriver {
   constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
+
+    setInterval(async () => {
+      const stats = this.getStats();
+      if (stats.applicationName) {
+        if (stats.max) {
+          metrics.gauge('dbMaxConnections', stats.max, { applicationName: stats.applicationName });
+        }
+        if (stats.total) {
+          metrics.gauge('dbTotalConnections', stats.total, { applicationName: stats.applicationName });
+        }
+        if (stats.idle) {
+          metrics.gauge('dbIdleConnections', stats.idle, { applicationName: stats.applicationName });
+        }
+        if (stats.waiting) {
+          metrics.gauge('dbWaitingConnections', stats.waiting, { applicationName: stats.applicationName });
+        }
+      }
+    }, STATS_INTERVAL);
   }
 
   async get(namespace: string, key: string): Promise<unknown> {
@@ -125,6 +146,10 @@ class DB implements DatabaseDriver {
 
   async close(): Promise<void> {
     await this.db.close();
+  }
+
+  getStats(): Record<string, number> {
+    return this.db.getStats();
   }
 
   store(namespace: string, ttl = 0): Storable {
