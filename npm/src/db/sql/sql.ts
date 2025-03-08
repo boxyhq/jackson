@@ -50,6 +50,7 @@ class Sql implements DatabaseDriver {
           synchronize,
           logging: ['error'],
           entities: [JacksonStore, JacksonIndex, JacksonTTL],
+          applicationName: 'jackson',
         };
 
         if (sqlType === 'mssql') {
@@ -381,6 +382,24 @@ class Sql implements DatabaseDriver {
 
   async close(): Promise<void> {
     await this.dataSource.destroy();
+  }
+
+  getStats(): Record<string, number> {
+    try {
+      const mc = (this.dataSource.driver as any).master;
+
+      return {
+        max: mc.options.max,
+        total: mc._clients.length,
+        idle: mc._idle.length,
+        waiting: mc._pendingQueue.length,
+        applicationName: mc.options.application_name,
+      };
+    } catch (err) {
+      this.logger.error(`error getting db stats: ${err}`);
+
+      return {};
+    }
   }
 }
 

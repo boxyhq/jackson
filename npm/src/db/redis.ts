@@ -227,6 +227,11 @@ class Redis implements DatabaseDriver {
   async close(): Promise<void> {
     await this.client.quit();
   }
+
+  getStats(): Record<string, number> {
+    // no-op
+    return {};
+  }
 }
 
 export default {

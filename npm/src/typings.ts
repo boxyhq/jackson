@@ -363,6 +363,7 @@ export interface DatabaseDriver {
   getCount?(namespace: string, idx?: Index): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
   close(): Promise<void>;
+  getStats(): Record<string, number>;
 }
 
 export interface Storable {

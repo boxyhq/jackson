@@ -38,6 +38,8 @@ import { JacksonStore as JacksonStoreMariaDB } from './sql/mariadb/entity/Jackso
 import { JacksonIndex as JacksonIndexMariaDB } from './sql/mariadb/entity/JacksonIndex';
 import { JacksonTTL as JacksonTTLMariaDB } from './sql/mariadb/entity/JacksonTTL';
 
+const STATS_INTERVAL = 30 * 1000;
+
 const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
   if (res.iv && res.tag) {
     return JSON.parse(encrypter.decrypt(res.value, res.iv, res.tag, encryptionKey));
@@ -52,6 +54,10 @@ class DB implements DatabaseDriver {
   constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
     this.db = db;
     this.encryptionKey = encryptionKey;
+
+    setInterval(async () => {
+      const stats = this.getStats();
+    }, STATS_INTERVAL);
   }
 
   async get(namespace: string, key: string): Promise<unknown> {
@@ -125,6 +131,10 @@ class DB implements DatabaseDriver {
 
   async close(): Promise<void> {
     await this.db.close();
+  }
+
+  getStats(): Record<string, number> {
+    return this.db.getStats();
   }
 
   store(namespace: string, ttl = 0): Storable {

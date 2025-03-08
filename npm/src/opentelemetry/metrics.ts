@@ -1,4 +1,4 @@
-import { incrementCounter, type CounterOperationParams } from '@boxyhq/metrics';
+import { incrementCounter, observeGauge, type CounterOperationParams } from '@boxyhq/metrics';
 
 const METER = 'jackson';
 
@@ -135,6 +135,34 @@ const counters = {
       counterAttributes,
     });
   },
+  dbMaxConnections: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.max',
+      counterOptions: { description: 'Total number of db connections' },
+      counterAttributes,
+    }),
+  dbTotalConnections: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    observeGauge({
+      meter: METER,
+      name: 'jackson.db.connections.total',
+      counterOptions: { description: 'Total number of db connections' },
+      counterAttributes,
+    }),
+  dbIdleConnections: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.db.connections.idle',
+      counterOptions: { description: 'Number of idle db connections' },
+      counterAttributes,
+    }),
+  dbWaitingConnections: (counterAttributes: CounterOperationParams['counterAttributes']) =>
+    incrementCounter({
+      meter: METER,
+      name: 'jackson.db.connections.waiting',
+      counterOptions: { description: 'Number of idle db connections' },
+      counterAttributes,
+    }),
 };
 
 const increment = (

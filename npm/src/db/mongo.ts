@@ -218,6 +218,11 @@ class Mongo implements DatabaseDriver {
   async close(): Promise<void> {
     await this.client.close();
   }
+
+  getStats(): Record<string, number> {
+    // no-op
+    return {};
+  }
 }
 
 export default {
