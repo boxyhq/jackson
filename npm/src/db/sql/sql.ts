@@ -385,21 +385,15 @@ class Sql implements DatabaseDriver {
   }
 
   getStats(): Record<string, number> {
-    try {
-      const mc = (this.dataSource.driver as any).master;
+    const mc = (this.dataSource.driver as any).master;
 
-      return {
-        max: mc.options.max,
-        total: mc._clients.length,
-        idle: mc._idle.length,
-        waiting: mc._pendingQueue.length,
-        applicationName: mc.options.application_name,
-      };
-    } catch (err) {
-      this.logger.error(`error getting db stats: ${err}`);
-
-      return {};
-    }
+    return {
+      max: mc.options.max,
+      total: mc._clients.length,
+      idle: mc._idle.length,
+      waiting: mc._pendingQueue.length,
+      applicationName: mc.options.application_name,
+    };
   }
 }
 

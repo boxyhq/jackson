@@ -52,25 +52,29 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
 class DB implements DatabaseDriver {
   private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
-  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey) {
+  constructor(db: DatabaseDriver, encryptionKey: EncryptionKey, logger: RequiredLogger) {
     this.db = db;
     this.encryptionKey = encryptionKey;
 
     setInterval(async () => {
-      const stats = this.getStats();
-      if (stats.applicationName) {
-        if (stats.max) {
-          metrics.gauge('dbMaxConnections', stats.max, { applicationName: stats.applicationName });
+      try {
+        const stats = this.getStats();
+        if (stats.applicationName) {
+          if (stats.max >= 0) {
+            metrics.gauge('dbMaxConnections', stats.max, { applicationName: stats.applicationName });
+          }
+          if (stats.total >= 0) {
+            metrics.gauge('dbTotalConnections', stats.total, { applicationName: stats.applicationName });
+          }
+          if (stats.idle >= 0) {
+            metrics.gauge('dbIdleConnections', stats.idle, { applicationName: stats.applicationName });
+          }
+          if (stats.waiting >= 0) {
+            metrics.gauge('dbWaitingConnections', stats.waiting, { applicationName: stats.applicationName });
+          }
         }
-        if (stats.total) {
-          metrics.gauge('dbTotalConnections', stats.total, { applicationName: stats.applicationName });
-        }
-        if (stats.idle) {
-          metrics.gauge('dbIdleConnections', stats.idle, { applicationName: stats.applicationName });
-        }
-        if (stats.waiting) {
-          metrics.gauge('dbWaitingConnections', stats.waiting, { applicationName: stats.applicationName });
-        }
+      } catch (err) {
+        logger.error(`error getting db stats: ${err}`);
       }
     }, STATS_INTERVAL);
   }
@@ -166,12 +170,12 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
     : null;
 
   if ('driver' in dbOpts) {
-    return new DB(dbOpts.driver, encryptionKey);
+    return new DB(dbOpts.driver, encryptionKey, options.logger);
   }
 
   switch (dbOpts.engine) {
     case 'redis':
-      return new DB(await redis.new(options), encryptionKey);
+      return new DB(await redis.new(options), encryptionKey, options.logger);
     case 'sql':
       switch (dbOpts.type) {
         case 'mssql':
@@ -181,7 +185,8 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
               JacksonIndex: JacksonIndexMSSQL,
               JacksonTTL: JacksonTTLMSSQL,
             }),
-            encryptionKey
+            encryptionKey,
+            options.logger
           );
         case 'mariadb':
         case 'mysql':
@@ -191,7 +196,8 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
               JacksonIndex: JacksonIndexMariaDB,
               JacksonTTL: JacksonTTLMariaDB,
             }),
-            encryptionKey
+            encryptionKey,
+            options.logger
           );
         case 'sqlite':
           return new DB(
@@ -200,7 +206,8 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
               JacksonIndex: JacksonIndexSQLITE,
               JacksonTTL: JacksonTTLSQLITE,
             }),
-            encryptionKey
+            encryptionKey,
+            options.logger
           );
         default:
           return new DB(
@@ -209,7 +216,8 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
               JacksonIndex,
               JacksonTTL,
             }),
-            encryptionKey
+            encryptionKey,
+            options.logger
           );
       }
     case 'planetscale':
@@ -219,14 +227,15 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
           JacksonIndex: JacksonIndexPlanetscale,
           JacksonTTL: JacksonTTLPlanetscale,
         }),
-        encryptionKey
+        encryptionKey,
+        options.logger
       );
     case 'mongo':
-      return new DB(await mongo.new(options), encryptionKey);
+      return new DB(await mongo.new(options), encryptionKey, options.logger);
     case 'mem':
-      return new DB(await mem.new(options), encryptionKey);
+      return new DB(await mem.new(options), encryptionKey, options.logger);
     case 'dynamodb':
-      return new DB(await dynamodb.new(options), encryptionKey);
+      return new DB(await dynamodb.new(options), encryptionKey, options.logger);
     default:
       throw new Error('unsupported db engine: ' + dbOpts.engine);
   }
