@@ -53,7 +53,7 @@ const postgresDbConfig = <DatabaseOption>{
 
 const cockroachDbConfig = <DatabaseOption>{
   engine: 'sql',
-  url: 'postgresql://root@localhost:26257/postgres?sslmode=disable',
+  url: 'cockroachdb://root@localhost:26257/postgres?sslmode=disable',
   type: 'cockroachdb',
   ttl: 1,
   cleanupLimit: 10,

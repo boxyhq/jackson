@@ -354,6 +354,11 @@ class DynamoDB implements DatabaseDriver {
   async close(): Promise<void> {
     await this.client.destroy();
   }
+
+  getStats(): Record<string, number> {
+    // no-op
+    return {};
+  }
 }
 
 export default {

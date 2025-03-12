@@ -212,6 +212,11 @@ class Mem implements DatabaseDriver {
   async close(): Promise<void> {
     // no-op
   }
+
+  getStats(): Record<string, number> {
+    // no-op
+    return {};
+  }
 }
 
 export default {

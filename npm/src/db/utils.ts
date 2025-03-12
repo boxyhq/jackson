@@ -1,6 +1,39 @@
 import Ripemd160 from 'ripemd160';
 import { Index } from '../typings';
 
+export const parsePGOptions = (url: string) => {
+  const parsedUrl = new URL(url);
+
+  const queryParams: Record<string, any> = {};
+  parsedUrl.searchParams.forEach((value, key) => {
+    if (key.startsWith('pool_')) {
+      key = key.replace('pool_', '');
+    }
+    if (key === 'max_conn_lifetime') {
+      queryParams['maxLifetimeSeconds'] = parseDurationSeconds(value);
+    } else if (key === 'application_name') {
+      queryParams['applicationName'] = value;
+    } else {
+      queryParams[key] = parseInt(value, 10);
+    }
+  });
+
+  return queryParams;
+};
+
+const parseDurationSeconds = (duration: string): number => {
+  const durationRegex = /(\d+)([smhd])/g;
+  const units: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 };
+  let totalSeconds = 0;
+  let match;
+  while ((match = durationRegex.exec(duration)) !== null) {
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+    totalSeconds += value * (units[unit] || 0);
+  }
+  return totalSeconds;
+};
+
 export const key = (namespace: string, k: string): string => {
   return namespace + ':' + k;
 };
