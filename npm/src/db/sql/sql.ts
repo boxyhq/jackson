@@ -14,6 +14,7 @@ import {
 import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
+import { parsePGOptions } from '../utils';
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
@@ -76,6 +77,18 @@ class Sql implements DatabaseDriver {
             ...baseOpts,
           });
         } else {
+          if (this.options.type === 'postgres' || this.options.type === 'cockroachdb') {
+            const pgOpts = parsePGOptions(this.options.url!);
+            if (pgOpts.application_name) {
+              baseOpts.applicationName = pgOpts.application_name;
+            }
+            (baseOpts as any).extra = {
+              max: pgOpts.max_conns,
+              maxLifetimeSeconds: pgOpts.maxLifetimeSeconds,
+              connectionTimeoutMillis: pgOpts.connect_timeout * 1000,
+            };
+          }
+
           this.dataSource = new DataSource(<DataSourceOptions>{
             url: this.options.url,
             ssl: this.options.ssl,
