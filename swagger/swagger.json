@@ -115,7 +115,11 @@
                   },
                   "acsUrlOverride": {
                     "type": "string",
-                    "description": "URL to override the set ACS URL per connection basis"
+                    "description": "Override the global ACS URL on a per connection basis"
+                  },
+                  "samlAudienceOverride": {
+                    "type": "string",
+                    "description": "Override the global SAML Audience on a per connection basis"
                   },
                   "forceAuthn": {
                     "type": "boolean",
@@ -199,7 +203,11 @@
                   },
                   "acsUrlOverride": {
                     "type": "string",
-                    "description": "URL to override the set ACS URL per connection basis"
+                    "description": "Override the global ACS URL on a per connection basis"
+                  },
+                  "samlAudienceOverride": {
+                    "type": "string",
+                    "description": "Override the global SAML Audience on a per connection basis"
                   },
                   "forceAuthn": {
                     "type": "boolean",
@@ -325,7 +333,11 @@
                   },
                   "acsUrlOverride": {
                     "type": "string",
-                    "description": "URL to override the set ACS URL per connection basis"
+                    "description": "Override the global ACS URL on a per connection basis"
+                  },
+                  "samlAudienceOverride": {
+                    "type": "string",
+                    "description": "Override the global SAML Audience on a per connection basis"
                   },
                   "forceAuthn": {
                     "type": "boolean",
@@ -421,7 +433,11 @@
                   },
                   "acsUrlOverride": {
                     "type": "string",
-                    "description": "URL to override the set ACS URL per connection basis"
+                    "description": "Override the global ACS URL on a per connection basis"
+                  },
+                  "samlAudienceOverride": {
+                    "type": "string",
+                    "description": "Override the global SAML Audience on a per connection basis"
                   },
                   "forceAuthn": {
                     "type": "boolean",
@@ -2495,7 +2511,11 @@
           },
           "acsUrlOverride": {
             "type": "string",
-            "description": "URL to override the set ACS URL per connection basis"
+            "description": "Override the global ACS URL on a per connection basis"
+          },
+          "samlAudienceOverride": {
+            "type": "string",
+            "description": "Override the global SAML Audience on a per connection basis"
           }
         },
         "example": {

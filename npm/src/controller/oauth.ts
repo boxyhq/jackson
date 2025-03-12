@@ -393,7 +393,9 @@ export class OAuthController implements IOAuthController {
 
         samlReq = saml.request({
           ssoUrl,
-          entityID: this.opts.samlAudience!,
+          entityID: connection.samlAudienceOverride
+            ? connection.samlAudienceOverride
+            : this.opts.samlAudience!,
           callbackUrl: connection.acsUrlOverride ? connection.acsUrlOverride : (this.opts.acsUrl as string),
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
