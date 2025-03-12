@@ -366,6 +366,7 @@ export interface DatabaseDriver {
 }
 
 export interface Storable {
+  [x: string]: any;
   getAll(
     pageOffset?: number,
     pageLimit?: number,

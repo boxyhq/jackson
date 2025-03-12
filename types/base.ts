@@ -6,3 +6,5 @@ export interface ApiError extends Error {
 }
 
 export type PaginateApiParams = { pageOffset: number; pageLimit: number } & { pageToken?: string };
+
+export type AUTH_PROVIDER = 'saml' | 'email' | 'credentials' | 'idp-initiated';
