@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import * as jose from 'jose';
 import saml from '@boxyhq/saml20';
 import type { Configuration, authorizationCodeGrant } from 'openid-client';
 import * as dbutils from '../db/utils';
@@ -17,6 +16,7 @@ import type {
 } from '../typings';
 import { JacksonError } from './error';
 import * as redirect from './oauth/redirect';
+import type { JWK, CryptoKey } from 'jose';
 
 export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
 
@@ -99,7 +99,8 @@ export const createRandomSecret = async (length: number) => {
     .replace(/=/g, '');
 };
 
-export async function loadJWSPrivateKey(key: string, alg: string): Promise<jose.CryptoKey> {
+export async function loadJWSPrivateKey(key: string, alg: string): Promise<CryptoKey> {
+  const jose = (await dynamicImport('jose')) as typeof import('jose');
   const pkcs8 = Buffer.from(key, 'base64').toString('ascii');
   const privateKey = await jose.importPKCS8(pkcs8, alg);
   return privateKey;
@@ -112,18 +113,21 @@ export function isJWSKeyPairLoaded(jwsKeyPair: { private: string; public: string
   return true;
 }
 
-export const importJWTPublicKey = async (key: string, jwsAlg: string): Promise<jose.CryptoKey> => {
+export const importJWTPublicKey = async (key: string, jwsAlg: string): Promise<CryptoKey> => {
+  const jose = (await dynamicImport('jose')) as typeof import('jose');
   const spki = Buffer.from(key, 'base64').toString('ascii');
   const publicKey = await jose.importSPKI(spki, jwsAlg);
   return publicKey;
 };
 
-export const exportPublicKeyJWK = async (key: jose.CryptoKey): Promise<jose.JWK> => {
+export const exportPublicKeyJWK = async (key: CryptoKey): Promise<JWK> => {
+  const jose = (await dynamicImport('jose')) as typeof import('jose');
   const publicJWK = await jose.exportJWK(key);
   return publicJWK;
 };
 
-export const generateJwkThumbprint = async (jwk: jose.JWK): Promise<string> => {
+export const generateJwkThumbprint = async (jwk: JWK): Promise<string> => {
+  const jose = (await dynamicImport('jose')) as typeof import('jose');
   const thumbprint = await jose.calculateJwkThumbprint(jwk);
   return thumbprint;
 };

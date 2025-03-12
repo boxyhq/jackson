@@ -13,7 +13,6 @@ import sinon from 'sinon';
 import tap from 'tap';
 import { JacksonError } from '../../src/controller/error';
 import saml from '@boxyhq/saml20';
-import * as jose from 'jose';
 import {
   authz_request_normal,
   authz_request_with_forceauthn,
@@ -51,12 +50,13 @@ import {
 } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
 import boxyhq from './data/metadata/boxyhq';
+import type { GenerateKeyPairResult } from 'jose';
 
 let connectionAPIController: IConnectionAPIController;
 let oauthController: IOAuthController;
 let idpEnabledConnectionAPIController: IConnectionAPIController; //idp initiated saml flow enabled
 let idpEnabledOAuthController: IOAuthController;
-let keyPair: jose.GenerateKeyPairResult;
+let keyPair: GenerateKeyPairResult;
 
 const metadataPath = path.join(__dirname, '/data/metadata');
 
@@ -122,6 +122,7 @@ function stubRandomBytesAll() {
 
 tap.before(async () => {
   const client = await import('openid-client');
+  const jose = await import('jose');
   code_verifier = client.randomPKCECodeVerifier();
   code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
 
@@ -386,6 +387,7 @@ tap.test('samlResponse()', async (t) => {
 });
 
 tap.test('token()', async (t) => {
+  const jose = await import('jose');
   t.test('Should throw an error if `grant_type` is not `authorization_code`', async (t) => {
     const body = {
       grant_type: 'authorization_code_1',
