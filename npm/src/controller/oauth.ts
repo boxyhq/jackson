@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import * as jose from 'jose';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
@@ -1149,6 +1148,7 @@ export class OAuthController implements IOAuthController {
     let basic_client_id: string | undefined;
     let basic_client_secret: string | undefined;
     let protocol, login_type;
+    const jose = (await dynamicImport('jose')) as typeof import('jose');
     try {
       if (authHeader) {
         // Authorization: Basic {Base64(<client_id>:<client_secret>)}
