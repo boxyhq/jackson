@@ -385,6 +385,10 @@ class Sql implements DatabaseDriver {
   }
 
   getStats(): Record<string, number> {
+    if (this.options.type !== 'postgres' && this.options.type !== 'cockroachdb') {
+      return {};
+    }
+
     const mc = (this.dataSource.driver as any).master;
 
     return {
