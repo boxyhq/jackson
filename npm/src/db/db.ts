@@ -61,16 +61,16 @@ class DB implements DatabaseDriver {
         const stats = this.getStats();
         if (stats.applicationName) {
           if (stats.max >= 0) {
-            metrics.gauge('dbMaxConnections', stats.max, { applicationName: stats.applicationName });
+            metrics.gauge('dbMaxConnections', stats.max, { db_name: stats.applicationName });
           }
           if (stats.total >= 0) {
-            metrics.gauge('dbTotalConnections', stats.total, { applicationName: stats.applicationName });
+            metrics.gauge('dbTotalConnections', stats.total, { db_name: stats.applicationName });
           }
           if (stats.idle >= 0) {
-            metrics.gauge('dbIdleConnections', stats.idle, { applicationName: stats.applicationName });
+            metrics.gauge('dbIdleConnections', stats.idle, { db_name: stats.applicationName });
           }
           if (stats.waiting >= 0) {
-            metrics.gauge('dbWaitingConnections', stats.waiting, { applicationName: stats.applicationName });
+            metrics.gauge('dbWaitingConnections', stats.waiting, { db_name: stats.applicationName });
           }
         }
       } catch (err) {
