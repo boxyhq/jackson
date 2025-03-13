@@ -747,7 +747,10 @@ export class OAuthController implements IOAuthController {
 
       const { privateKey } = await getDefaultCertificate();
 
-      validateOpts = { audience: `${this.opts.samlAudience}`, privateKey };
+      validateOpts = {
+        audience: connection.samlAudienceOverride ? connection.samlAudienceOverride : this.opts.samlAudience!,
+        privateKey,
+      };
 
       if (connection.idpMetadata.publicKey) {
         validateOpts.publicKey = connection.idpMetadata.publicKey;
