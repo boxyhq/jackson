@@ -167,7 +167,7 @@ const gauges = {
       meter: METER,
       name: 'jackson.db.connections.waiting',
       val,
-      gaugeOptions: { description: 'Number of idle db connections' },
+      gaugeOptions: { description: 'Number of waiting db connections' },
       gaugeAttributes,
     }),
 };
