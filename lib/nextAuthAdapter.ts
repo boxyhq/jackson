@@ -72,11 +72,9 @@ export default function DatabaseAdapter(): Adapter {
 
       const { userStore } = await stores;
 
-      // Since we don't have a direct email index, we need to scan
-      // In a production environment, you'd want to use a proper database with indexes
       try {
-        const allUsers = await userStore.list();
-        const user = allUsers.find((u: AdapterUser) => u.email === email);
+        const allUsers = await userStore.getAll();
+        const user = allUsers.data.find((u: AdapterUser) => u.email === email);
         return user || null;
       } catch (error) {
         console.error(error);
@@ -89,7 +87,7 @@ export default function DatabaseAdapter(): Adapter {
 
       try {
         // Find account with matching provider and providerAccountId
-        const allAccounts = await accountStore.list();
+        const allAccounts = (await accountStore.getAll()).data;
         const account = allAccounts.find(
           (a: AdapterAccount) => a.provider === provider && a.providerAccountId === providerAccountId
         );
@@ -124,14 +122,14 @@ export default function DatabaseAdapter(): Adapter {
       const { userStore, accountStore, sessionStore } = await stores;
 
       // Delete associated accounts and sessions
-      const allAccounts = await accountStore.list();
+      const allAccounts = (await accountStore.getAll()).data;
       const userAccounts = allAccounts.filter((a: AdapterAccount) => a.userId === userId);
 
       for (const account of userAccounts) {
         await accountStore.delete(`${account.provider}:${account.providerAccountId}`);
       }
 
-      const allSessions = await sessionStore.list();
+      const allSessions = (await sessionStore.getAll()).data;
       const userSessions = allSessions.filter((s: AdapterSession) => s.userId === userId);
 
       for (const session of userSessions) {
