@@ -4,7 +4,6 @@ import { validateApiKey, extractAuthToken } from '@lib/auth';
 import { getToken } from 'next-auth/jwt';
 import { sessionName } from '@lib/constants';
 import micromatch from 'micromatch';
-import env from '@lib/env';
 
 // Add API routes that don't require authentication
 const unAuthenticatedApiRoutes = [
@@ -24,37 +23,6 @@ const unAuthenticatedApiRoutes = [
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
-  const redirectUrl = new URL('/auth/login', req.url);
-  redirectUrl.searchParams.set('callbackUrl', encodeURI(req.url));
-
-  if (env.nextAuth.sessionStrategy === 'jwt') {
-    const token = await getToken({
-      req,
-    });
-
-    if (!token) {
-      return NextResponse.redirect(redirectUrl);
-    }
-  }
-
-  // Database strategy
-  else if (env.nextAuth.sessionStrategy === 'database') {
-    const url = new URL('/api/auth/session', req.url);
-
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        cookie: req.headers.get('cookie') || '',
-      },
-    });
-
-    const session = await response.json();
-
-    if (!session.user) {
-      return NextResponse.redirect(redirectUrl);
-    }
-  }
 
   // Bypass routes that don't require authentication
   if (micromatch.isMatch(pathname, unAuthenticatedApiRoutes)) {

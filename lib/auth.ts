@@ -1,7 +1,7 @@
 import { apiKeys } from '@lib/env';
 import { compare, hash } from 'bcryptjs';
+import { env } from 'process';
 
-import env from './env';
 import type { AUTH_PROVIDER } from 'types';
 
 export async function hashPassword(password: string) {
