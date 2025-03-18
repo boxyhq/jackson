@@ -33,14 +33,14 @@ test.describe('POST /api/v1/sso', () => {
           ...newConnection,
           tenant: null,
         },
-        expectedError: 'Please provide clientID/clientSecret or tenant/product/clientSecret',
+        expectedError: 'Please provide tenant',
       },
       {
         data: {
           ...newConnection,
           product: null,
         },
-        expectedError: 'Please provide clientID/clientSecret or tenant/product/clientSecret',
+        expectedError: 'Please provide product',
       },
       {
         data: {
