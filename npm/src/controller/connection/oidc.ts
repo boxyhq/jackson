@@ -241,7 +241,7 @@ const oidc = {
     }
 
     await connectionStore.put(
-      clientInfo?.clientID,
+      clientInfo?.clientID || _savedConnection.clientID,
       record,
       {
         // secondary index on tenant + product

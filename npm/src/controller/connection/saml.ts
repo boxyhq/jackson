@@ -338,7 +338,7 @@ const saml = {
     }
 
     await connectionStore.put(
-      clientInfo?.clientID,
+      clientInfo?.clientID || _savedConnection.clientID,
       record,
       {
         // secondary index on entityID
