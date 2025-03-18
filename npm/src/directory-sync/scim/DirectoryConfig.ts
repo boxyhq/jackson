@@ -702,7 +702,7 @@ export class DirectoryConfig {
 
     try {
       if (!index) {
-        throw new JacksonError('Please provider a product or provider.', 400);
+        throw new JacksonError('Please provide a product or provider.', 400);
       }
 
       const { data: directories, pageToken: nextPageToken } = await this.store().getByIndex(

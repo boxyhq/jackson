@@ -381,7 +381,7 @@ tap.test('controller/api', async (t) => {
         });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, 'Please provide clientID');
+        t.equal(err.message, 'Please provide clientID/clientSecret or tenant/product/clientSecret');
         t.equal(err.statusCode, 400);
       }
     });

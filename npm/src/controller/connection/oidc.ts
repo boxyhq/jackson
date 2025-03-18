@@ -150,20 +150,11 @@ const oidc = {
       ...clientInfo
     } = body;
 
-    if (!clientInfo?.clientID) {
-      throw new JacksonError('Please provide clientID', 400);
-    }
-
-    if (!clientInfo?.clientSecret) {
-      throw new JacksonError('Please provide clientSecret', 400);
-    }
-
-    if (!clientInfo?.tenant) {
-      throw new JacksonError('Please provide tenant', 400);
-    }
-
-    if (!clientInfo?.product) {
-      throw new JacksonError('Please provide product', 400);
+    if (
+      !(clientInfo?.clientID && clientInfo?.clientSecret) &&
+      !(clientInfo?.tenant && clientInfo?.product && clientInfo?.clientSecret)
+    ) {
+      throw new JacksonError('Please provide clientID/clientSecret or tenant/product/clientSecret', 400);
     }
 
     if (description && description.length > 100) {
