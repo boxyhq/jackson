@@ -12,6 +12,13 @@ import { hexToOklch } from '@lib/color';
 import { PoweredBy } from '@components/PoweredBy';
 import { getPortalBranding, getProductBranding } from '@ee/branding/utils';
 import { boxyhqHosted } from '@lib/env';
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle<{ primaryColor: string | null }>`
+  :root {
+    --p: ${(props) => props.primaryColor || 'initial'};
+  }
+`;
 
 interface Connection {
   name: string;
@@ -45,7 +52,7 @@ export default function ChooseIdPConnection({
           {branding?.faviconUrl && <link rel='icon' href={branding.faviconUrl} />}
         </Head>
 
-        {primaryColor && <style>{`:root { --p: ${primaryColor}; }`}</style>}
+        <GlobalStyle primaryColor={primaryColor} />
 
         {branding?.logoUrl && (
           <div className='flex justify-center'>

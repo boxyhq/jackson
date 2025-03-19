@@ -143,7 +143,7 @@ const gauges = {
       meter: METER,
       name: 'jackson.db.connections.max',
       val,
-      gaugeOptions: { description: 'Total number of db connections' },
+      gaugeOptions: { description: 'Maximum number of db connections' },
       gaugeAttributes,
     }),
   dbTotalConnections: (val, gaugeAttributes: CounterOperationParams['counterAttributes']) =>
@@ -167,7 +167,7 @@ const gauges = {
       meter: METER,
       name: 'jackson.db.connections.waiting',
       val,
-      gaugeOptions: { description: 'Number of idle db connections' },
+      gaugeOptions: { description: 'Number of waiting db connections' },
       gaugeAttributes,
     }),
 };
