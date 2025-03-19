@@ -217,7 +217,7 @@ export class SSOHandler {
 
       const samlRequest = saml.request({
         ssoUrl,
-        entityID: `${this.opts.samlAudience}`,
+        entityID: connection.samlAudienceOverride ? connection.samlAudienceOverride : this.opts.samlAudience!,
         callbackUrl: connection.acsUrlOverride ? connection.acsUrlOverride : (this.opts.acsUrl as string),
         signingKey: certificate.privateKey,
         publicKey: certificate.publicKey,

@@ -393,7 +393,9 @@ export class OAuthController implements IOAuthController {
 
         samlReq = saml.request({
           ssoUrl,
-          entityID: this.opts.samlAudience!,
+          entityID: connection.samlAudienceOverride
+            ? connection.samlAudienceOverride
+            : this.opts.samlAudience!,
           callbackUrl: connection.acsUrlOverride ? connection.acsUrlOverride : (this.opts.acsUrl as string),
           signingKey: cert.privateKey,
           publicKey: cert.publicKey,
@@ -745,7 +747,10 @@ export class OAuthController implements IOAuthController {
 
       const { privateKey } = await getDefaultCertificate();
 
-      validateOpts = { audience: `${this.opts.samlAudience}`, privateKey };
+      validateOpts = {
+        audience: connection.samlAudienceOverride ? connection.samlAudienceOverride : this.opts.samlAudience!,
+        privateKey,
+      };
 
       if (connection.idpMetadata.publicKey) {
         validateOpts.publicKey = connection.idpMetadata.publicKey;
