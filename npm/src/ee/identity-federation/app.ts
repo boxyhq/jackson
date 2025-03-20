@@ -134,60 +134,6 @@ export class App {
    *                 items:
    *                   type: string
    *                 description: If creating an OIDC app, provide the redirect URL
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             required:
-   *               - acsUrl
-   *               - entityId
-   *               - name
-   *               - product
-   *               - tenant
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               acsUrl:
-   *                 type: string
-   *                 description: ACS URL
-   *               entityId:
-   *                 type: string
-   *                 description: Entity ID
-   *               logoUrl:
-   *                 type: string
-   *                 description: Logo URL
-   *               faviconUrl:
-   *                 type: string
-   *                 description: Favicon URL
-   *               primaryColor:
-   *                 type: string
-   *                 description: Primary color
-   *               tenants:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *               mappings:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of attributes from the IdP to SP
-   *               type:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
-   *               redirectUrl:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: If creating an OIDC app, provide the redirect URL
    *     responses:
    *       200:
    *         description: Success
@@ -496,47 +442,6 @@ export class App {
    *                 items:
    *                   type: string
    *                 description: Mapping of attributes from the IdP to SP
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             required:
-   *               - id
-   *             type: object
-   *             properties:
-   *               id:
-   *                 type: string
-   *                 description: App ID
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               acsUrl:
-   *                 type: string
-   *                 description: ACS URL
-   *               logoUrl:
-   *                 type: string
-   *                 description: Logo URL
-   *               faviconUrl:
-   *                 type: string
-   *                 description: Favicon URL
-   *               primaryColor:
-   *                 type: string
-   *                 description: Primary color
-   *               tenants:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *               mappings:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of attributes from the IdP to SP
-   *       required: true
    *     responses:
    *       200:
    *         description: Success

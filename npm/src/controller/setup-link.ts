@@ -136,39 +136,6 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             required:
-   *               - defaultRedirectUrl
-   *               - product
-   *               - redirectUrl
-   *               - tenant
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 description: Name of connection
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               defaultRedirectUrl:
-   *                 type: string
-   *                 description: The redirect URL to use in the IdP login flow
-   *               redirectUrl:
-   *                 type: string
-   *                 description: JSON encoded array containing a list of allowed redirect URLs
-   *               expiryDays:
-   *                 type: number
-   *                 description: Days in number for the setup link to expire
-   *                 default: 3
-   *               regenerate:
-   *                 type: boolean
-   *                 description: If passed as true, it will remove the existing setup link and create a new one.
-   *                 default: false
-   *       required: true
    *     responses:
    *       200:
    *         description: Success
@@ -216,39 +183,6 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             required:
-   *               - product
-   *               - tenant
-   *               - webhook_secret
-   *               - webhook_url
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 description: Name of connection
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               webhook_url:
-   *                 type: string
-   *                 description: The URL to send the directory sync events to
-   *               webhook_secret:
-   *                 type: string
-   *                 description: The secret to sign the directory sync events
-   *               expiryDays:
-   *                 type: number
-   *                 description: Days in number for the setup link to expire
-   *                 default: 3
-   *               regenerate:
-   *                 type: boolean
-   *                 description: If passed as true, it will remove the existing setup link and create a new one.
-   *                 default: false
-   *       required: true
    *     responses:
    *       200:
    *         description: Success
