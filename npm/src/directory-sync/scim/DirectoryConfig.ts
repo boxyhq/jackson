@@ -161,31 +161,6 @@ export class DirectoryConfig {
    *     summary: Create a directory connection
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             required:
-   *               - product
-   *               - tenant
-   *             type: object
-   *             properties:
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               webhook_url:
-   *                 type: string
-   *                 description: Webhook URL
-   *               webhook_secret:
-   *                 type: string
-   *                 description: Webhook secret
-   *               type:
-   *                 type: string
-   *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
    *         application/json:
    *           schema:
    *             required:
@@ -379,31 +354,6 @@ export class DirectoryConfig {
    *           type: string
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               webhook_url:
-   *                 type: string
-   *                 description: Webhook URL
-   *               webhook_secret:
-   *                 type: string
-   *                 description: Webhook secret
-   *               log_webhook_events:
-   *                 type: string
-   *                 description: If true, webhook requests will be logged
-   *               deactivated:
-   *                 type: string
-   *                 description: If true, the directory connection will be deactivated
-   *               google_access_token:
-   *                 type: string
-   *                 description: Google access token
-   *               google_refresh_token:
-   *                 type: string
-   *                 description: Google refresh token
    *         application/json:
    *           schema:
    *             type: object
@@ -429,6 +379,7 @@ export class DirectoryConfig {
    *               google_refresh_token:
    *                 type: string
    *                 description: Google refresh token
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
