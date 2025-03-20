@@ -40,7 +40,7 @@
         "operationId": "create-sso-connection",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "required": [
                   "defaultRedirectUrl",
@@ -128,7 +128,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "defaultRedirectUrl",
@@ -777,7 +777,7 @@
         "operationId": "create-sso-setup-link",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "required": [
                   "defaultRedirectUrl",
@@ -820,7 +820,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "defaultRedirectUrl",
@@ -986,7 +986,7 @@
         "operationId": "create-dsync-setup-link",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "required": [
                   "product",
@@ -1029,7 +1029,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "product",
@@ -1347,7 +1347,7 @@
         "summary": "Create a directory connection",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "required": [
                   "product",
@@ -1382,7 +1382,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "product",
@@ -1521,7 +1521,7 @@
         ],
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -1556,7 +1556,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -2001,80 +2001,6 @@
         "summary": "Create an Identity Federation app",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "acsUrl",
-                  "entityId",
-                  "name",
-                  "product",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "acsUrl": {
-                    "type": "string",
-                    "description": "ACS URL"
-                  },
-                  "entityId": {
-                    "type": "string",
-                    "description": "Entity ID"
-                  },
-                  "logoUrl": {
-                    "type": "string",
-                    "description": "Logo URL"
-                  },
-                  "faviconUrl": {
-                    "type": "string",
-                    "description": "Favicon URL"
-                  },
-                  "primaryColor": {
-                    "type": "string",
-                    "description": "Primary color"
-                  },
-                  "tenants": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app"
-                  },
-                  "mappings": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of attributes from the IdP to SP"
-                  },
-                  "type": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'"
-                  },
-                  "redirectUrl": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "If creating an OIDC app, provide the redirect URL"
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -2148,9 +2074,82 @@
                   }
                 }
               }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "required": [
+                  "acsUrl",
+                  "entityId",
+                  "name",
+                  "product",
+                  "tenant"
+                ],
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name"
+                  },
+                  "tenant": {
+                    "type": "string",
+                    "description": "Tenant"
+                  },
+                  "product": {
+                    "type": "string",
+                    "description": "Product"
+                  },
+                  "acsUrl": {
+                    "type": "string",
+                    "description": "ACS URL"
+                  },
+                  "entityId": {
+                    "type": "string",
+                    "description": "Entity ID"
+                  },
+                  "logoUrl": {
+                    "type": "string",
+                    "description": "Logo URL"
+                  },
+                  "faviconUrl": {
+                    "type": "string",
+                    "description": "Favicon URL"
+                  },
+                  "primaryColor": {
+                    "type": "string",
+                    "description": "Primary color"
+                  },
+                  "tenants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app"
+                  },
+                  "mappings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Mapping of attributes from the IdP to SP"
+                  },
+                  "type": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'"
+                  },
+                  "redirectUrl": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "If creating an OIDC app, provide the redirect URL"
+                  }
+                }
+              }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -2220,7 +2219,7 @@
         "summary": "Update an Identity Federation app",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
+            "application/json": {
               "schema": {
                 "required": [
                   "id"
@@ -2276,7 +2275,7 @@
                 }
               }
             },
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "id"

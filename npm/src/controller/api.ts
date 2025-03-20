@@ -223,7 +223,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *     operationId: create-sso-connection
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
+   *         application/json:
    *           schema:
    *             required:
    *               - defaultRedirectUrl
@@ -288,7 +288,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
-   *         application/json:
+   *         application/x-www-form-urlencoded:
    *           schema:
    *             required:
    *               - defaultRedirectUrl

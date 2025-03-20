@@ -161,7 +161,7 @@ export class DirectoryConfig {
    *     summary: Create a directory connection
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
+   *         application/json:
    *           schema:
    *             required:
    *               - product
@@ -186,7 +186,7 @@ export class DirectoryConfig {
    *               type:
    *                 type: string
    *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
-   *         application/json:
+   *         application/x-www-form-urlencoded:
    *           schema:
    *             required:
    *               - product
@@ -379,7 +379,7 @@ export class DirectoryConfig {
    *           type: string
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
+   *         application/json:
    *           schema:
    *             type: object
    *             properties:
@@ -404,7 +404,7 @@ export class DirectoryConfig {
    *               google_refresh_token:
    *                 type: string
    *                 description: Google refresh token
-   *         application/json:
+   *         application/x-www-form-urlencoded:
    *           schema:
    *             type: object
    *             properties:

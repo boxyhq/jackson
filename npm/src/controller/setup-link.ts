@@ -104,7 +104,7 @@ export class SetupLinkController {
    *     operationId: create-sso-setup-link
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
+   *         application/json:
    *           schema:
    *             required:
    *               - defaultRedirectUrl
@@ -136,7 +136,7 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
-   *         application/json:
+   *         application/x-www-form-urlencoded:
    *           schema:
    *             required:
    *               - defaultRedirectUrl
@@ -184,7 +184,7 @@ export class SetupLinkController {
    *     operationId: create-dsync-setup-link
    *     requestBody:
    *       content:
-   *         application/x-www-form-urlencoded:
+   *         application/json:
    *           schema:
    *             required:
    *               - product
@@ -216,7 +216,7 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
-   *         application/json:
+   *         application/x-www-form-urlencoded:
    *           schema:
    *             required:
    *               - product
