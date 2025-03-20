@@ -186,6 +186,7 @@ export class DirectoryConfig {
    *               type:
    *                 type: string
    *                 description: Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
@@ -378,6 +379,7 @@ export class DirectoryConfig {
    *               google_refresh_token:
    *                 type: string
    *                 description: Google refresh token
+   *       required: true
    *     responses:
    *       200:
    *         description: Success

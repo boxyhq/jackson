@@ -136,6 +136,7 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
@@ -183,6 +184,7 @@ export class SetupLinkController {
    *                 type: boolean
    *                 description: If passed as true, it will remove the existing setup link and create a new one.
    *                 default: false
+   *       required: true
    *     responses:
    *       200:
    *         description: Success

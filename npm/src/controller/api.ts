@@ -288,6 +288,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
@@ -419,6 +420,7 @@ export class ConnectionAPIController implements IConnectionAPIController {
    *               forceAuthn:
    *                 type: boolean
    *                 description: Require a new authentication instead of reusing an existing session.
+   *       required: true
    *     responses:
    *       "204":
    *         description: Success

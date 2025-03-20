@@ -134,6 +134,7 @@ export class App {
    *                 items:
    *                   type: string
    *                 description: If creating an OIDC app, provide the redirect URL
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
@@ -442,6 +443,7 @@ export class App {
    *                 items:
    *                   type: string
    *                 description: Mapping of attributes from the IdP to SP
+   *       required: true
    *     responses:
    *       200:
    *         description: Success
