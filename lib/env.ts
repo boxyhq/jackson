@@ -30,13 +30,6 @@ const retraced = {
   adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
 };
 
-// Terminus
-const terminus = {
-  hostUrl: process.env.TERMINUS_PROXY_HOST_URL,
-  adminToken: process.env.TERMINUS_ADMIN_ROOT_TOKEN,
-  retracedProjectId: process.env.TERMINUS_RETRACED_PROJECT_ID,
-};
-
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
   ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
   : 3;
@@ -97,7 +90,6 @@ const jacksonOptions: JacksonOption = {
     process.env.DO_NOT_TRACK === 'true' ||
     process.env.BOXYHQ_NO_ANALYTICS === '1' ||
     process.env.BOXYHQ_NO_ANALYTICS === 'true',
-  terminus,
   webhook: { endpoint: process.env.WEBHOOK_URL || '', secret: process.env.WEBHOOK_SECRET || '' },
   dsync: {
     webhookBatchSize: process.env.DSYNC_WEBHOOK_BATCH_SIZE
@@ -136,7 +128,6 @@ const loggerOptions = { file: process.env.LOG_FILE, level: process.env.LOG_LEVEL
 
 export { adminPortalSSODefaults };
 export { retraced as retracedOptions };
-export { terminus as terminusOptions };
 export { apiKeys };
 export { jacksonOptions };
 export { loggerOptions };
