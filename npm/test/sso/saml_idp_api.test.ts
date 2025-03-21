@@ -364,26 +364,21 @@ tap.test('controller/api', async (t) => {
   t.test('Update the connection', async (t) => {
     const body_saml_provider = Object.assign({}, saml_connection);
     t.test('When clientID is missing', async (t) => {
-      const { clientSecret } = await connectionAPIController.createSAMLConnection(
+      const { clientID, clientSecret } = await connectionAPIController.createSAMLConnection(
         body_saml_provider as SAMLSSOConnectionWithEncodedMetadata
       );
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await connectionAPIController.updateSAMLConnection({
-          description: 'A new description',
-          clientID: '',
-          clientSecret,
-          defaultRedirectUrl: saml_connection.defaultRedirectUrl,
-          redirectUrl: saml_connection.redirectUrl,
-          tenant: saml_connection.tenant,
-          product: saml_connection.product,
-        });
-        t.fail('Expecting JacksonError.');
-      } catch (err: any) {
-        t.equal(err.message, 'Please provide clientID');
-        t.equal(err.statusCode, 400);
-      }
+      console.log('clientID:', clientID);
+      await connectionAPIController.updateSAMLConnection({
+        description: 'A new description',
+        clientID: '',
+        clientSecret,
+        defaultRedirectUrl: saml_connection.defaultRedirectUrl,
+        redirectUrl: saml_connection.redirectUrl,
+        tenant: saml_connection.tenant,
+        product: saml_connection.product,
+      });
+      const savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
+      t.equal(savedConnection.description, 'A new description');
     });
 
     t.test('When clientSecret is missing', async (t) => {
@@ -404,7 +399,7 @@ tap.test('controller/api', async (t) => {
         });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, 'Please provide clientSecret');
+        t.equal(err.message, 'Please provide clientID/clientSecret or tenant/product/clientSecret');
         t.equal(err.statusCode, 400);
       }
     });

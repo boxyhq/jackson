@@ -248,26 +248,20 @@ tap.test('controller/api', async (t) => {
     });
 
     t.test('When clientID is missing', async (t) => {
-      const { clientSecret } = await connectionAPIController.createOIDCConnection(
+      const { clientID, clientSecret } = await connectionAPIController.createOIDCConnection(
         body_oidc_provider as OIDCSSOConnectionWithDiscoveryUrl
       );
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await connectionAPIController.updateOIDCConnection({
-          description: 'A new description',
-          clientID: '',
-          clientSecret,
-          defaultRedirectUrl: oidc_connection.defaultRedirectUrl,
-          redirectUrl: oidc_connection.redirectUrl,
-          tenant: oidc_connection.tenant,
-          product: oidc_connection.product,
-        });
-        t.fail('Expecting JacksonError.');
-      } catch (err: any) {
-        t.equal(err.message, 'Please provide clientID');
-        t.equal(err.statusCode, 400);
-      }
+      await connectionAPIController.updateOIDCConnection({
+        description: 'A new description',
+        clientID: '',
+        clientSecret,
+        defaultRedirectUrl: oidc_connection.defaultRedirectUrl,
+        redirectUrl: oidc_connection.redirectUrl,
+        tenant: oidc_connection.tenant,
+        product: oidc_connection.product,
+      });
+      const savedConnection = (await connectionAPIController.getConnections({ clientID }))[0];
+      t.equal(savedConnection.description, 'A new description');
     });
 
     t.test('When clientSecret is missing', async (t) => {
@@ -288,7 +282,7 @@ tap.test('controller/api', async (t) => {
         });
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, 'Please provide clientSecret');
+        t.equal(err.message, 'Please provide clientID/clientSecret or tenant/product/clientSecret');
         t.equal(err.statusCode, 400);
       }
     });
