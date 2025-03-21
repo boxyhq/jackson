@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Enterprise SSO & Directory Sync",
-    "version": "1.42.0",
+    "version": "1.43.0",
     "description": "This is the API documentation for SAML Jackson service.",
     "termsOfService": "https://boxyhq.com/terms.html",
     "contact": {
@@ -40,94 +40,6 @@
         "operationId": "create-sso-connection",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "defaultRedirectUrl",
-                  "product",
-                  "redirectUrl",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of connection"
-                  },
-                  "label": {
-                    "type": "string",
-                    "description": "An internal label to identify the connection"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "A short description for the connection not more than 100 characters"
-                  },
-                  "encodedRawMetadata": {
-                    "type": "string",
-                    "description": "Base64 encoding of the XML metadata"
-                  },
-                  "rawMetadata": {
-                    "type": "string",
-                    "description": "Raw XML metadata"
-                  },
-                  "metadataUrl": {
-                    "type": "string",
-                    "description": "URL containing raw XML metadata"
-                  },
-                  "defaultRedirectUrl": {
-                    "type": "string",
-                    "description": "The redirect URL to use in the IdP login flow"
-                  },
-                  "redirectUrl": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "JSON encoded array containing a list of allowed redirect URLs"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "oidcDiscoveryUrl": {
-                    "type": "string",
-                    "description": "well-known URL where the OpenID Provider configuration is exposed"
-                  },
-                  "oidcMetadata": {
-                    "type": "string",
-                    "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl"
-                  },
-                  "oidcClientId": {
-                    "type": "string",
-                    "description": "clientId of the application set up on the OpenID Provider"
-                  },
-                  "oidcClientSecret": {
-                    "type": "string",
-                    "description": "clientSecret of the application set up on the OpenID Provider"
-                  },
-                  "sortOrder": {
-                    "type": "number",
-                    "description": "Indicate the position of the connection in the IdP selection screen"
-                  },
-                  "acsUrlOverride": {
-                    "type": "string",
-                    "description": "Override the global ACS URL on a per connection basis"
-                  },
-                  "samlAudienceOverride": {
-                    "type": "string",
-                    "description": "Override the global SAML Audience on a per connection basis"
-                  },
-                  "forceAuthn": {
-                    "type": "boolean",
-                    "description": "Require a new authentication instead of reusing an existing session."
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -247,106 +159,6 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "required": [
-                  "clientID",
-                  "clientSecret",
-                  "product",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "clientID": {
-                    "type": "string",
-                    "description": "Client ID for the connection"
-                  },
-                  "clientSecret": {
-                    "type": "string",
-                    "description": "Client Secret for the connection"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name/identifier for the connection"
-                  },
-                  "label": {
-                    "type": "string",
-                    "description": "An internal label to identify the connection"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "A short description for the connection not more than 100 characters"
-                  },
-                  "encodedRawMetadata": {
-                    "type": "string",
-                    "description": "Base64 encoding of the XML metadata"
-                  },
-                  "rawMetadata": {
-                    "type": "string",
-                    "description": "Raw XML metadata"
-                  },
-                  "metadataUrl": {
-                    "type": "string",
-                    "description": "URL containing raw XML metadata"
-                  },
-                  "oidcDiscoveryUrl": {
-                    "type": "string",
-                    "description": "well-known URL where the OpenID Provider configuration is exposed"
-                  },
-                  "oidcMetadata": {
-                    "type": "string",
-                    "description": "metadata (JSON) for the OpenID Provider in the absence of discoveryUrl"
-                  },
-                  "oidcClientId": {
-                    "type": "string",
-                    "description": "clientId of the application set up on the OpenID Provider"
-                  },
-                  "oidcClientSecret": {
-                    "type": "string",
-                    "description": "clientSecret of the application set up on the OpenID Provider"
-                  },
-                  "defaultRedirectUrl": {
-                    "type": "string",
-                    "description": "The redirect URL to use in the IdP login flow"
-                  },
-                  "redirectUrl": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "JSON encoded array containing a list of allowed redirect URLs"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "deactivated": {
-                    "type": "boolean",
-                    "description": "Connection status"
-                  },
-                  "sortOrder": {
-                    "type": "number",
-                    "description": "Indicate the position of the connection in the IdP selection screen"
-                  },
-                  "acsUrlOverride": {
-                    "type": "string",
-                    "description": "Override the global ACS URL on a per connection basis"
-                  },
-                  "samlAudienceOverride": {
-                    "type": "string",
-                    "description": "Override the global SAML Audience on a per connection basis"
-                  },
-                  "forceAuthn": {
-                    "type": "boolean",
-                    "description": "Require a new authentication instead of reusing an existing session."
-                  }
-                }
-              }
-            },
-            "application/x-www-form-urlencoded": {
               "schema": {
                 "required": [
                   "clientID",
@@ -777,49 +589,6 @@
         "operationId": "create-sso-setup-link",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "defaultRedirectUrl",
-                  "product",
-                  "redirectUrl",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of connection"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "defaultRedirectUrl": {
-                    "type": "string",
-                    "description": "The redirect URL to use in the IdP login flow"
-                  },
-                  "redirectUrl": {
-                    "type": "string",
-                    "description": "JSON encoded array containing a list of allowed redirect URLs"
-                  },
-                  "expiryDays": {
-                    "type": "number",
-                    "description": "Days in number for the setup link to expire",
-                    "default": 3
-                  },
-                  "regenerate": {
-                    "type": "boolean",
-                    "description": "If passed as true, it will remove the existing setup link and create a new one.",
-                    "default": false
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -986,49 +755,6 @@
         "operationId": "create-dsync-setup-link",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "product",
-                  "tenant",
-                  "webhook_secret",
-                  "webhook_url"
-                ],
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of connection"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "webhook_url": {
-                    "type": "string",
-                    "description": "The URL to send the directory sync events to"
-                  },
-                  "webhook_secret": {
-                    "type": "string",
-                    "description": "The secret to sign the directory sync events"
-                  },
-                  "expiryDays": {
-                    "type": "number",
-                    "description": "Days in number for the setup link to expire",
-                    "default": 3
-                  },
-                  "regenerate": {
-                    "type": "boolean",
-                    "description": "If passed as true, it will remove the existing setup link and create a new one.",
-                    "default": false
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -1347,41 +1073,6 @@
         "summary": "Create a directory connection",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "product",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name"
-                  },
-                  "webhook_url": {
-                    "type": "string",
-                    "description": "Webhook URL"
-                  },
-                  "webhook_secret": {
-                    "type": "string",
-                    "description": "Webhook secret"
-                  },
-                  "type": {
-                    "type": "string",
-                    "description": "Directory provider. (Supported values are azure-scim-v2, onelogin-scim-v2, okta-scim-v2, jumpcloud-scim-v2, generic-scim-v2, google)"
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -1521,41 +1212,6 @@
         ],
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name"
-                  },
-                  "webhook_url": {
-                    "type": "string",
-                    "description": "Webhook URL"
-                  },
-                  "webhook_secret": {
-                    "type": "string",
-                    "description": "Webhook secret"
-                  },
-                  "log_webhook_events": {
-                    "type": "string",
-                    "description": "If true, webhook requests will be logged"
-                  },
-                  "deactivated": {
-                    "type": "string",
-                    "description": "If true, the directory connection will be deactivated"
-                  },
-                  "google_access_token": {
-                    "type": "string",
-                    "description": "Google access token"
-                  },
-                  "google_refresh_token": {
-                    "type": "string",
-                    "description": "Google refresh token"
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "type": "object",
@@ -1591,7 +1247,8 @@
                 }
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -2001,80 +1658,6 @@
         "summary": "Create an Identity Federation app",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "acsUrl",
-                  "entityId",
-                  "name",
-                  "product",
-                  "tenant"
-                ],
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "acsUrl": {
-                    "type": "string",
-                    "description": "ACS URL"
-                  },
-                  "entityId": {
-                    "type": "string",
-                    "description": "Entity ID"
-                  },
-                  "logoUrl": {
-                    "type": "string",
-                    "description": "Logo URL"
-                  },
-                  "faviconUrl": {
-                    "type": "string",
-                    "description": "Favicon URL"
-                  },
-                  "primaryColor": {
-                    "type": "string",
-                    "description": "Primary color"
-                  },
-                  "tenants": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app"
-                  },
-                  "mappings": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of attributes from the IdP to SP"
-                  },
-                  "type": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'"
-                  },
-                  "redirectUrl": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "If creating an OIDC app, provide the redirect URL"
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [
@@ -2220,62 +1803,6 @@
         "summary": "Update an Identity Federation app",
         "requestBody": {
           "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "required": [
-                  "id"
-                ],
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "App ID"
-                  },
-                  "tenant": {
-                    "type": "string",
-                    "description": "Tenant"
-                  },
-                  "product": {
-                    "type": "string",
-                    "description": "Product"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Name"
-                  },
-                  "acsUrl": {
-                    "type": "string",
-                    "description": "ACS URL"
-                  },
-                  "logoUrl": {
-                    "type": "string",
-                    "description": "Logo URL"
-                  },
-                  "faviconUrl": {
-                    "type": "string",
-                    "description": "Favicon URL"
-                  },
-                  "primaryColor": {
-                    "type": "string",
-                    "description": "Primary color"
-                  },
-                  "tenants": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of tenants whose connections will be grouped under this Identity Federation app"
-                  },
-                  "mappings": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Mapping of attributes from the IdP to SP"
-                  }
-                }
-              }
-            },
             "application/json": {
               "schema": {
                 "required": [

@@ -1,6 +1,6 @@
 {
   "name": "jackson",
-  "version": "1.42.0",
+  "version": "1.43.0",
   "private": true,
   "description": "SAML 2.0 service",
   "keywords": [
@@ -68,9 +68,9 @@
     "@heroicons/react": "2.2.0",
     "@next/bundle-analyzer": "15.2.3",
     "@retracedhq/logs-viewer": "2.8.0",
-    "@retracedhq/retraced": "0.7.21",
+    "@retracedhq/retraced": "0.7.22",
     "@tailwindcss/typography": "0.5.16",
-    "axios": "1.8.3",
+    "axios": "1.8.4",
     "blockly": "11.2.1",
     "chroma-js": "3.1.2",
     "classnames": "2.5.1",
