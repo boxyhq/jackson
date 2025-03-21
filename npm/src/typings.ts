@@ -450,7 +450,6 @@ export interface JacksonOption {
   boxyhqLicenseKey?: string;
   retraced?: { host?: string; adminToken?: string };
   noAnalytics?: boolean;
-  terminus?: { host?: string; adminToken?: string };
   webhook?: Webhook;
   dsync?: {
     webhookBatchSize?: number;

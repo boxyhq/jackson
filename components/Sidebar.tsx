@@ -108,25 +108,6 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       ],
     },
     {
-      href: '/admin/terminus',
-      text: t('privacy_vault'),
-      icon: Vault,
-      current: asPath.includes('terminus'),
-      active: asPath.includes('/admin/terminus'),
-      items: [
-        {
-          href: '/admin/terminus',
-          text: t('policies'),
-          active: asPath.includes('/admin/terminus') && !asPath.includes('/admin/terminus/audit-logs'),
-        },
-        {
-          href: '/admin/terminus/audit-logs',
-          text: t('audit_logs'),
-          active: asPath.includes('/admin/terminus/audit-logs'),
-        },
-      ],
-    },
-    {
       href: '/admin/settings',
       text: t('settings'),
       icon: Cog8ToothIcon,
