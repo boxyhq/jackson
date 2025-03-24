@@ -1,27 +1,36 @@
 import { defaultHandler } from '@lib/api';
-import { getEventProcessor } from '@lib/notifcation-scheduler';
+import { jacksonOptions } from '@lib/env';
+import { logger } from '@lib/logger';
 import { NextApiRequest, NextApiResponse } from 'next';
+import defaultDb from 'npm/src/db/defaultDb';
+import DB from 'npm/src/db/db';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
-    POST: handlePOST,
+    GET: handleGET,
   });
 };
 
-export async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { userId, templateId, scheduledFor } = await req.body;
+    // store the cert info like thumprint, valid until with details like tenant, product, client id
+    const _opts = defaultDb(jacksonOptions);
+    const db = await DB.new({ db: _opts.db, logger });
+    const notifcationEventStore = db.store('cert:info');
 
-    const processor = getEventProcessor();
-    const event = await (
-      await processor
-    ).scheduleEvent('send-daily-notifications', { userId, templateId }, new Date(scheduledFor));
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
 
-    return res.json({ success: true, eventId: event.id });
+    const allCerts = await notifcationEventStore.getAll();
+    const expiringCerts = allCerts.data.filter((cert) => {
+      const validToDate = new Date(cert.validTo);
+      return validToDate <= threeMonthsFromNow && validToDate >= new Date();
+    });
+
+    return res.json({ result: expiringCerts });
   } catch (error) {
-    console.error('Failed to schedule notification:', error);
-    return res.json({ success: false, message: 'Failed to schedule notification' });
+    console.log(error);
   }
-}
+};
 
 export default handler;
