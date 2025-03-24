@@ -24,7 +24,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const _opts = defaultDb(jacksonOptions);
     const db = await DB.new({ db: _opts.db, logger });
     const notifcationEventStore = db.store('cert:info');
-    await notifcationEventStore.deleteMany();
 
     paginatedConnectionList.data.map(async (conn) => {
       const tenant = conn.tenant;
