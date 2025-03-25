@@ -1437,6 +1437,12 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
-    return { ...rsp.claims, requested: rsp.requested };
+    let profile = {};
+    if (this.opts.flattenRawClaims) {
+      profile = { ...rsp.claims.raw };
+      delete rsp.claims.raw;
+    }
+
+    return { ...profile, ...rsp.claims, requested: rsp.requested };
   }
 }
