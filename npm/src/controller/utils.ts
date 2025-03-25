@@ -391,6 +391,17 @@ export const isLocalhost = (url: string) => {
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
 };
 
+export const isHTTPS = (url: string) => {
+  let givenURL: URL;
+  try {
+    givenURL = new URL(url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return false;
+  }
+  return givenURL.protocol === 'https:';
+};
+
 export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
   if ('deactivated' in connection) {
     return connection.deactivated === false;
