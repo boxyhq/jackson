@@ -2,10 +2,24 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
 import { oidcMetadataParse, parsePaginateApiParams, strategyChecker } from '@lib/utils';
-import { adminPortalSSODefaults } from '@lib/env';
+import { adminPortalSSODefaults, jacksonOptions } from '@lib/env';
 import { defaultHandler } from '@lib/api';
 import { ApiError } from '@lib/error';
 import { validateDevelopmentModeLimits } from '@lib/development-mode';
+import defaultDb from 'npm/src/db/defaultDb';
+import { logger } from '@lib/logger';
+import DB from 'npm/src/db/db';
+import { SAMLSSORecord } from 'npm/src';
+
+interface ConnectionData {
+  tenant: string;
+  product: string;
+  clientID: string;
+  idpMetadata?: {
+    thumbprint?: string;
+    validTo?: string;
+  };
+}
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await defaultHandler(req, res, {
@@ -14,6 +28,31 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     PATCH: handlePATCH,
     DELETE: handleDELETE,
   });
+};
+
+const storeCertificateInfo = async (
+  store: any,
+  connection: ConnectionData,
+  idpMetadata?: ConnectionData['idpMetadata']
+) => {
+  if (!idpMetadata?.thumbprint) return;
+
+  const validToArr = idpMetadata.validTo?.split(',');
+
+  await Promise.all(
+    idpMetadata.thumbprint.split(',').map(async (thumbprint, i) => {
+      const dbObj = {
+        thumbprint,
+        tenant: connection.tenant,
+        product: connection.product,
+        clientId: connection.clientID,
+        validTo: validToArr?.[i],
+      };
+
+      const keyId = `${connection.clientID}:${thumbprint}`;
+      await store.put(keyId, dbObj);
+    })
+  );
 };
 
 // Get all connections
@@ -53,6 +92,9 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 // Create a new connection
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
+  const _opts = defaultDb(jacksonOptions);
+  const db = await DB.new({ db: _opts.db, logger });
+  const notificationEventStore = db.store('cert:info');
 
   const { isSAML, isOIDC } = strategyChecker(req);
 
@@ -65,6 +107,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   // Create SAML connection
   if (isSAML) {
     const connection = await connectionAPIController.createSAMLConnection(req.body);
+
+    // Store certificate information for each thumbprint
+    await storeCertificateInfo(notificationEventStore, connection, connection.idpMetadata);
     res.status(201).json({ data: connection });
   }
 
@@ -78,6 +123,9 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 // Update a connection
 const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
+  const _opts = defaultDb(jacksonOptions);
+  const db = await DB.new({ db: _opts.db, logger });
+  const notificationEventStore = db.store('cert:info');
 
   const { isSAML, isOIDC } = strategyChecker(req);
 
@@ -85,9 +133,32 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     throw new ApiError('Missing SSO connection params', 400);
   }
 
+  const { clientID } = req.body as {
+    clientID: string;
+  };
+
+  // Retrieve connection details before deletion to manage certificates
+  const connections = await connectionAPIController.getConnections({
+    clientID,
+  });
+
+  const connection = connections[0];
   // Update SAML connection
   if (isSAML) {
+    // Remove all certificate entries for this connection
+    const thumbprints = (connection as SAMLSSORecord).idpMetadata?.thumbprint?.split(',');
+
+    if (thumbprints) {
+      await Promise.all(
+        thumbprints.map(async (thumbprint) => {
+          const keyId = `${clientID}:${thumbprint}`;
+          await notificationEventStore.delete(keyId);
+        })
+      );
+    }
     await connectionAPIController.updateSAMLConnection(req.body);
+    await storeCertificateInfo(notificationEventStore, req.body, req.body.idpMetadata);
+
     res.status(204).end();
   }
 
@@ -102,12 +173,55 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { connectionAPIController } = await jackson();
 
+  // Initialize database for certificate management
+  const _opts = defaultDb(jacksonOptions);
+  const db = await DB.new({ db: _opts.db, logger });
+  const notificationEventStore = db.store('cert:info');
+
   const { clientID, clientSecret } = req.query as {
     clientID: string;
     clientSecret: string;
   };
 
+  if (!clientID || !clientSecret) {
+    throw new ApiError('Missing client credentials', 400);
+  }
+
+  const connections = await connectionAPIController.getConnections({
+    clientID,
+  });
+
+  const connection = connections[0];
+  const isSAML =
+    'rawMetadata' in connection ||
+    'encodedRawMetadata' in connection ||
+    'metadataUrl' in connection ||
+    'isSAML' in connection;
+
+  // Delete the connection
   await connectionAPIController.deleteConnections({ clientID, clientSecret });
+
+  // Remove associated certificates if SAML connection
+  if (isSAML && (connection as SAMLSSORecord).idpMetadata?.thumbprint) {
+    try {
+      // Remove all certificate entries for this connection
+      const thumbprints = (connection as SAMLSSORecord).idpMetadata?.thumbprint?.split(',');
+
+      if (thumbprints) {
+        await Promise.all(
+          thumbprints.map(async (thumbprint) => {
+            const keyId = `${clientID}:${thumbprint}`;
+            await notificationEventStore.delete(keyId);
+          })
+        );
+
+        logger.info(`Removed ${thumbprints.length} certificates for connection ${clientID}`);
+      }
+    } catch (error) {
+      // Log certificate removal errors but don't block the main deletion
+      logger.error(`Error removing certificates for connection ${clientID}:`, error);
+    }
+  }
 
   res.json({ data: null });
 };
