@@ -21,6 +21,7 @@ import {
   isLocalhost,
   validateSortOrder,
   isHTTPS,
+  validateSSOURL,
 } from '../utils';
 import { JacksonError } from '../error';
 import { OryController } from '../../ee/ory/ory';
@@ -52,10 +53,10 @@ function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
   }
 
   if (metadata.sso.redirectUrl) {
-    validateMetadataURL(metadata.sso.redirectUrl);
+    validateSSOURL(metadata.sso.redirectUrl);
   }
   if (metadata.sso.postUrl) {
-    validateMetadataURL(metadata.sso.postUrl);
+    validateSSOURL(metadata.sso.postUrl);
   }
 }
 
