@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Copy, Trash, RefreshCw, Plus } from 'lucide-react';
 import {
   Dialog,
@@ -38,7 +37,6 @@ interface SetupLink {
 }
 
 export default function OnboardingClient() {
-  const router = useRouter();
   const { t } = useTranslation('common');
   const [setupLinks, setSetupLinks] = useState<SetupLink[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +82,7 @@ export default function OnboardingClient() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to fetch setup links',
+        description: `Failed to fetch setup links: ${error}`,
         variant: 'destructive',
       });
     } finally {
@@ -140,7 +138,7 @@ export default function OnboardingClient() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to create setup link',
+        description: `Failed to create setup links: ${error}`,
         variant: 'destructive',
       });
     }
@@ -166,7 +164,7 @@ export default function OnboardingClient() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to delete setup link',
+        description: `Failed to delete setup links: ${error}`,
         variant: 'destructive',
       });
     }
@@ -246,10 +244,10 @@ export default function OnboardingClient() {
 
       <Tabs defaultValue='all'>
         <TabsList>
-          <TabsTrigger value='all'>All</TabsTrigger>
-          <TabsTrigger value='sso'>Enterprise SSO</TabsTrigger>
-          <TabsTrigger value='dsync'>Directory Sync</TabsTrigger>
-          <TabsTrigger value='integrated'>Integrated</TabsTrigger>
+          <TabsTrigger value='all'>{'All'}</TabsTrigger>
+          <TabsTrigger value='sso'>{'Enterprise SSO'}</TabsTrigger>
+          <TabsTrigger value='dsync'>{'Directory Sync'}</TabsTrigger>
+          <TabsTrigger value='integrated'>{'Integrated'}</TabsTrigger>
         </TabsList>
 
         {isLoading ? (
@@ -276,7 +274,9 @@ export default function OnboardingClient() {
 
             <TabsContent value='sso' className='space-y-4 mt-4'>
               {setupLinks.filter((link) => link.service === 'sso').length === 0 ? (
-                <p className='text-center text-muted-foreground py-8'>No Enterprise SSO setup links found</p>
+                <p className='text-center text-muted-foreground py-8'>
+                  {'No Enterprise SSO setup links found'}
+                </p>
               ) : (
                 setupLinks
                   .filter((link) => link.service === 'sso')
@@ -294,7 +294,9 @@ export default function OnboardingClient() {
 
             <TabsContent value='dsync' className='space-y-4 mt-4'>
               {setupLinks.filter((link) => link.service === 'dsync').length === 0 ? (
-                <p className='text-center text-muted-foreground py-8'>No Directory Sync setup links found</p>
+                <p className='text-center text-muted-foreground py-8'>
+                  {'No Directory Sync setup links found'}
+                </p>
               ) : (
                 setupLinks
                   .filter((link) => link.service === 'dsync')
@@ -312,7 +314,7 @@ export default function OnboardingClient() {
 
             <TabsContent value='integrated' className='space-y-4 mt-4'>
               {setupLinks.filter((link) => link.service === 'integrated').length === 0 ? (
-                <p className='text-center text-muted-foreground py-8'>No Integrated setup links found</p>
+                <p className='text-center text-muted-foreground py-8'>{'No Integrated setup links found'}</p>
               ) : (
                 setupLinks
                   .filter((link) => link.service === 'integrated')
@@ -357,7 +359,7 @@ function SetupLinkCard({ link, onCopy, onDelete, onRegenerate }: SetupLinkCardPr
           <span className='inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 mr-2'>
             {serviceLabel}
           </span>
-          Created on {formatDate(link.createdAt)}
+          {`Created on ${formatDate(link.createdAt)}`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -368,15 +370,15 @@ function SetupLinkCard({ link, onCopy, onDelete, onRegenerate }: SetupLinkCardPr
       <CardFooter className='flex justify-end space-x-2'>
         <Button variant='outline' size='sm' onClick={() => onCopy(link.url)}>
           <Copy className='h-4 w-4 mr-2' />
-          Copy
+          {'Copy'}
         </Button>
         <Button variant='outline' size='sm' onClick={() => onRegenerate(link.id)}>
           <RefreshCw className='h-4 w-4 mr-2' />
-          Regenerate
+          {'Regenerate'}
         </Button>
         <Button variant='outline' size='sm' onClick={() => onDelete(link.id)}>
           <Trash className='h-4 w-4 mr-2' />
-          Delete
+          {'Delete'}
         </Button>
       </CardFooter>
     </Card>
