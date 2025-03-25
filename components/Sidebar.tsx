@@ -1,4 +1,5 @@
 import HomeIcon from '@heroicons/react/24/outline/HomeIcon';
+import HeartIcon from '@heroicons/react/24/outline/HeartIcon';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from 'classnames';
@@ -35,6 +36,12 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       text: t('dashboard'),
       icon: HomeIcon,
       active: asPath.includes('/admin/dashboard'),
+    },
+    {
+      href: '/admin/integrated-onboarding',
+      text: t('integrated_onboarding'),
+      icon: HeartIcon,
+      active: asPath.includes('/admin/integrated-onboarding'),
     },
     {
       href: '/admin/sso-connection',
