@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
-import { validateSSOURL } from '@boxyhq/saml-jackson/src/controller/utils';
+import { validateSSOURL } from './utils';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import type {
   IOAuthController,
