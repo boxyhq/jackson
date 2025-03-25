@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 import saml from '@boxyhq/saml20';
+import { validateSSOURL } from './utils';
 import { SAMLProfile } from '@boxyhq/saml20/dist/typings';
 import type {
   IOAuthController,
@@ -388,6 +389,8 @@ export class OAuthController implements IOAuthController {
             }),
           };
         }
+
+        validateSSOURL(ssoUrl);
 
         const cert = await getDefaultCertificate();
 
@@ -1434,6 +1437,12 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
-    return { ...rsp.claims, requested: rsp.requested };
+    let profile = {};
+    if (this.opts.flattenRawClaims) {
+      profile = { ...rsp.claims.raw };
+      delete rsp.claims.raw;
+    }
+
+    return { ...profile, ...rsp.claims, requested: rsp.requested };
   }
 }

@@ -20,6 +20,8 @@ import {
   validateTenantAndProduct,
   isLocalhost,
   validateSortOrder,
+  isHTTPS,
+  validateSSOURL,
 } from '../utils';
 import { JacksonError } from '../error';
 import { OryController } from '../../ee/ory/ory';
@@ -49,10 +51,17 @@ function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
   if (!metadata.sso.redirectUrl && !metadata.sso.postUrl) {
     throw new JacksonError("Couldn't find SAML bindings for POST/REDIRECT", 400);
   }
+
+  if (metadata.sso.redirectUrl) {
+    validateSSOURL(metadata.sso.redirectUrl);
+  }
+  if (metadata.sso.postUrl) {
+    validateSSOURL(metadata.sso.postUrl);
+  }
 }
 
 function validateMetadataURL(metadataUrl: string) {
-  if (!isLocalhost(metadataUrl) && !metadataUrl.startsWith('https')) {
+  if (!isLocalhost(metadataUrl) && !isHTTPS(metadataUrl)) {
     throw new JacksonError('Metadata URL not valid, allowed ones are localhost/HTTPS URLs', 400);
   }
 }

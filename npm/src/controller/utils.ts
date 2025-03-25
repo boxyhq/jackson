@@ -391,6 +391,23 @@ export const isLocalhost = (url: string) => {
   return givenURL.hostname === 'localhost' || givenURL.hostname === '127.0.0.1';
 };
 
+export const isHTTPS = (url: string, allowHttp = false) => {
+  let givenURL: URL;
+  try {
+    givenURL = new URL(url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return false;
+  }
+  return givenURL.protocol === 'https:' || (allowHttp ? givenURL.protocol === 'http:' : false);
+};
+
+export function validateSSOURL(ssoUrl: string) {
+  if (!isLocalhost(ssoUrl) && !isHTTPS(ssoUrl, true)) {
+    throw new JacksonError('SSO URL not valid, allowed ones are localhost/HTTP/HTTPS URLs', 400);
+  }
+}
+
 export const isConnectionActive = (connection: SAMLSSORecord | OIDCSSORecord | Directory) => {
   if ('deactivated' in connection) {
     return connection.deactivated === false;
