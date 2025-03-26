@@ -1,10 +1,8 @@
 ---
-bases:
+resources:
   - ../../base
   - ../../base/services
   - ../dbs/mongo
-
-resources:
   - ./secrets.yaml
 
 commonLabels:

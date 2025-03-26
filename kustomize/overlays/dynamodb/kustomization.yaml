@@ -1,10 +1,8 @@
 ---
-bases:
+resources:
   - ../../base
   - ../../base/services
   - ../dbs/dynamodb
-
-resources:
   - ./secrets.yaml
 
 commonLabels:

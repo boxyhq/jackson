@@ -1,9 +1,7 @@
 ---
-bases:
+resources:
   - ../../base
   - ../../base/migration
-
-resources:
   - ./secrets.yaml
 
 patches:

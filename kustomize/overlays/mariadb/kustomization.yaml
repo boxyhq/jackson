@@ -1,10 +1,8 @@
 ---
-bases:
+resources:
   - ../../base
   - ../../base/services
   - ../dbs/mariadb
-
-resources:
   - ./secrets.yaml
 
 commonLabels:
