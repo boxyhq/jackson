@@ -1,4 +1,4 @@
 ---
-bases:
+resources:
   - ../../../base/services/internal
   - ./jackson-service.yaml

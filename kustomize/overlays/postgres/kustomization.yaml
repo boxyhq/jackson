@@ -1,11 +1,9 @@
 ---
-bases:
+resources:
   - ../../base
   - ../../base/services
   - ../dbs/postgres
   - ../../base/migration
-
-resources:
   - ./secrets.yaml
 
 commonLabels:
