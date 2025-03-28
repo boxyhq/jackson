@@ -300,6 +300,18 @@ tap.test('controller/api', async (t) => {
       }
     });
 
+    t.test('when the request is with a metadataUrl that is not allowed (private IP 2)', async (t) => {
+      const body = Object.assign({ metadataUrl: 'https://10.0.0.1/abc' }, saml_connection);
+
+      try {
+        await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+        t.fail('Expecting JacksonError.');
+      } catch (err: any) {
+        t.equal(err.message, 'Metadata URL not valid, private IPS are not allowed');
+        t.equal(err.statusCode, 400);
+      }
+    });
+
     t.test('when the request is good with forceAuthn', async (t) => {
       const body = Object.assign({}, saml_connection);
       body.forceAuthn = true;
