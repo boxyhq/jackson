@@ -62,29 +62,34 @@ function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
 }
 
 function isPrivateIP(url: string): boolean {
+  let ip: string;
+  let addr: ipaddr.IPv4 | ipaddr.IPv6;
+
   try {
     const givenURL = new URL(url);
-    const ip = givenURL.host;
+    ip = givenURL.host.split(':')[0];
 
-    const addr = ipaddr.parse(ip);
-    const kind = addr.kind();
-    const range = addr.range();
+    addr = ipaddr.parse(ip);
 
-    if (kind === 'ipv4') {
-      if (range === 'private') {
-        throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
-      }
-    } else if (kind === 'ipv6') {
-      if (range === 'uniqueLocal') {
-        throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
-      }
-    }
-
-    return false;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     return false;
   }
+
+  const kind = addr.kind();
+  const range = addr.range();
+
+  if (kind === 'ipv4') {
+    if (range === 'private') {
+      throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
+    }
+  } else if (kind === 'ipv6') {
+    if (range === 'uniqueLocal') {
+      throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
+    }
+  }
+
+  return false;
 }
 
 function validateMetadataURL(metadataUrl: string) {
