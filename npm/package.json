@@ -54,6 +54,7 @@
     "axios": "1.8.4",
     "encoding": "0.1.13",
     "jose": "6.0.10",
+    "ipaddr.js": "2.2.0",
     "lodash": "4.17.21",
     "mixpanel": "0.18.1",
     "mongodb": "6.15.0",
