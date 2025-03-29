@@ -81,11 +81,11 @@ function isPrivateIP(url: string): boolean {
 
   if (kind === 'ipv4') {
     if (range === 'private') {
-      throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
+      throw new JacksonError('Metadata URL not valid, private IPs are not allowed', 400);
     }
   } else if (kind === 'ipv6') {
     if (range === 'uniqueLocal') {
-      throw new JacksonError('Metadata URL not valid, private IPS are not allowed', 400);
+      throw new JacksonError('Metadata URL not valid, private IPs are not allowed', 400);
     }
   }
 

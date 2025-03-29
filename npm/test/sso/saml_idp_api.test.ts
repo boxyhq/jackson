@@ -295,7 +295,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, 'Metadata URL not valid, private IPS are not allowed');
+        t.equal(err.message, 'Metadata URL not valid, private IPs are not allowed');
         t.equal(err.statusCode, 400);
       }
     });
@@ -307,7 +307,7 @@ tap.test('controller/api', async (t) => {
         await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
         t.fail('Expecting JacksonError.');
       } catch (err: any) {
-        t.equal(err.message, 'Metadata URL not valid, private IPS are not allowed');
+        t.equal(err.message, 'Metadata URL not valid, private IPs are not allowed');
         t.equal(err.statusCode, 400);
       }
     });
