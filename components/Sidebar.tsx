@@ -50,6 +50,13 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
             asPath.includes('/admin/sso-connection') && !asPath.includes('/admin/sso-connection/setup-link'),
         },
         {
+          href: '/admin/notification-center',
+          text: t('notification-center'),
+          active:
+            asPath.includes('/admin/notification-center') &&
+            !asPath.includes('/admin/sso-connection/setup-link'),
+        },
+        {
           href: '/admin/sso-connection/setup-link',
           text: t('setup_links'),
           active: asPath.includes('/admin/sso-connection/setup-link'),

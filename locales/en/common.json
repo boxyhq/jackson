@@ -1,4 +1,7 @@
 {
+  "refresh": "Refresh",
+  "expired-connections": "Connections with Expired Certificates",
+  "notification-center": "Notification Center",
   "apps": "Apps",
   "error_loading_page": "Unable to load this page. Maybe you don't have enough rights.",
   "documentation": "Documentation",
