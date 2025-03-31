@@ -37,7 +37,7 @@
     "prettier": "3.5.3",
     "react-daisyui": "5.0.5",
     "typescript": "5.8.2",
-    "vite": "6.2.3"
+    "vite": "6.2.4"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.37.0"
