@@ -1281,7 +1281,14 @@ export class OAuthController implements IOAuthController {
       // store details against a token
       const token = crypto.randomBytes(20).toString('hex');
 
+      let flattenedProfile = {};
+      if (this.opts.flattenRawClaims) {
+        flattenedProfile = { ...codeVal.profile.claims.raw };
+        delete codeVal.profile.claims.raw;
+      }
+
       const tokenVal = {
+        ...flattenedProfile,
         ...codeVal.profile,
         requested: codeVal.requested,
         clientID: codeVal.clientID,
@@ -1304,23 +1311,14 @@ export class OAuthController implements IOAuthController {
         if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
           throw new JacksonError(GENERIC_ERR_STRING, 500, 'JWT signing keys are not loaded');
         }
-        let flattenedProfile = {};
-        if (this.opts.flattenRawClaims) {
-          flattenedProfile = { ...codeVal.profile.claims.raw };
-          delete codeVal.profile.claims.raw;
-        }
 
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
           ...flattenedProfile,
           ...claims,
           requested: codeVal.profile.requested,
+          ...codeVal.profile.claims,
           id: subject,
-          email: codeVal.profile.claims.email,
-          firstName: codeVal.profile.claims.firstName,
-          lastName: codeVal.profile.claims.lastName,
-          roles: codeVal.profile.claims.roles,
-          groups: codeVal.profile.claims.groups,
         };
         const signingKey = await loadJWSPrivateKey(jwtSigningKeys.private, jwsAlg!);
         const kid = await computeKid(jwtSigningKeys.public, jwsAlg!);
@@ -1445,12 +1443,6 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
-    let flattenedProfile = {};
-    if (this.opts.flattenRawClaims) {
-      flattenedProfile = { ...rsp.claims.raw };
-      delete rsp.claims.raw;
-    }
-
-    return { ...flattenedProfile, ...rsp.claims, requested: rsp.requested };
+    return { ...rsp.claims, requested: rsp.requested };
   }
 }
