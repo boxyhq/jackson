@@ -1304,15 +1304,15 @@ export class OAuthController implements IOAuthController {
         if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
           throw new JacksonError(GENERIC_ERR_STRING, 500, 'JWT signing keys are not loaded');
         }
-        let profile = {};
+        let flattenedProfile = {};
         if (this.opts.flattenRawClaims) {
-          profile = { ...codeVal.profile.claims.raw };
+          flattenedProfile = { ...codeVal.profile.claims.raw };
           delete codeVal.profile.claims.raw;
         }
 
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
-          ...profile,
+          ...flattenedProfile,
           ...claims,
           requested: codeVal.profile.requested,
           id: subject,
@@ -1445,12 +1445,12 @@ export class OAuthController implements IOAuthController {
       throw new JacksonError('Invalid token', 403);
     }
 
-    let profile = {};
+    let flattenedProfile = {};
     if (this.opts.flattenRawClaims) {
-      profile = { ...rsp.claims.raw };
+      flattenedProfile = { ...rsp.claims.raw };
       delete rsp.claims.raw;
     }
 
-    return { ...profile, ...rsp.claims, requested: rsp.requested };
+    return { ...flattenedProfile, ...rsp.claims, requested: rsp.requested };
   }
 }
