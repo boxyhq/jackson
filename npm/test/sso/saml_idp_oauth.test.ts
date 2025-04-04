@@ -567,6 +567,7 @@ tap.test('token()', async (t) => {
           audience: '',
           claims: {
             id: '123',
+            custom_attribute: 'custom_attribute',
           },
           issuer: '',
           sessionIndex: '',
@@ -598,6 +599,7 @@ tap.test('token()', async (t) => {
           profile.requested.product,
           new URLSearchParams(authz_request_normal.client_id).get('product')
         );
+        t.equal(profile.raw.custom_attribute, 'custom_attribute');
 
         stubRandomBytes.restore();
         stubValidate.restore();
@@ -622,7 +624,13 @@ tap.test('token()', async (t) => {
         const stubimportJWTPublicKey = sinon.stub(utils, 'importJWTPublicKey').resolves(keyPair.publicKey);
         const stubValidate = sinon.stub(saml, 'validate').resolves({
           audience: '',
-          claims: { id: 'id', firstName: 'john', lastName: 'doe', email: 'johndoe@example.com' },
+          claims: {
+            id: 'id',
+            firstName: 'john',
+            lastName: 'doe',
+            email: 'johndoe@example.com',
+            custom_attribute: 'custom_attribute',
+          },
           issuer: '',
           sessionIndex: '',
         });
@@ -645,6 +653,7 @@ tap.test('token()', async (t) => {
           t.match(protectedHeader.alg, jacksonOptions.openid?.jwsAlg);
           t.match(claims.aud, authz_request_normal_oidc_flow.client_id);
           t.match(claims.iss, jacksonOptions.externalUrl);
+          t.match((claims as any).raw.custom_attribute, 'custom_attribute');
         }
         t.match(tokenRes.access_token, token);
         t.match(tokenRes.token_type, 'bearer');
