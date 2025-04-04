@@ -1281,14 +1281,12 @@ export class OAuthController implements IOAuthController {
       // store details against a token
       const token = crypto.randomBytes(20).toString('hex');
 
-      let flattenedProfile = {};
       if (this.opts.flattenRawClaims) {
-        flattenedProfile = { ...codeVal.profile.claims.raw };
+        codeVal.profile.claims = { ...codeVal.profile.claims, ...codeVal.profile.claims.raw };
         delete codeVal.profile.claims.raw;
       }
 
       const tokenVal = {
-        ...flattenedProfile,
         ...codeVal.profile,
         requested: codeVal.requested,
         clientID: codeVal.clientID,
@@ -1314,7 +1312,6 @@ export class OAuthController implements IOAuthController {
 
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
-          ...flattenedProfile,
           ...claims,
           requested: codeVal.profile.requested,
           ...codeVal.profile.claims,
