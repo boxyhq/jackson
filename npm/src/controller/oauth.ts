@@ -1304,9 +1304,17 @@ export class OAuthController implements IOAuthController {
         if (!jwtSigningKeys || !isJWSKeyPairLoaded(jwtSigningKeys)) {
           throw new JacksonError(GENERIC_ERR_STRING, 500, 'JWT signing keys are not loaded');
         }
+        let profile = {};
+        if (this.opts.flattenRawClaims) {
+          profile = { ...codeVal.profile.claims.raw };
+          delete codeVal.profile.claims.raw;
+        }
+
         let claims: Record<string, string> = requestHasNonce ? { nonce: codeVal.requested.nonce } : {};
         claims = {
+          ...profile,
           ...claims,
+          requested: codeVal.profile.requested,
           id: subject,
           email: codeVal.profile.claims.email,
           firstName: codeVal.profile.claims.firstName,
