@@ -382,7 +382,7 @@ export class App {
    *       content:
    *         application/json:
    *           schema:
-   *             $ref: "#/components/schemas/IdentityFederationAppCreate"
+   *             $ref: "#/components/schemas/IdentityFederationApp"
    *             required:
    *               - id
    *       required: true
