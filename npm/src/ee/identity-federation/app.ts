@@ -106,12 +106,11 @@ export class App {
    *       content:
    *         application/json:
    *           schema:
+   *             $ref: "#/components/schemas/IdentityFederationAppCreate"
    *             required:
    *               - name
    *               - product
    *               - tenant
-   *             schema:
-   *               $ref: "#/components/schemas/IdentityFederationAppCreate"
    *       required: true
    *     responses:
    *       200:
@@ -383,7 +382,6 @@ export class App {
    *       content:
    *         application/json:
    *           schema:
-   *            schema:
    *             $ref: "#/components/schemas/IdentityFederationAppCreate"
    *             required:
    *               - id

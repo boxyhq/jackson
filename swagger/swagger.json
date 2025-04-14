@@ -1660,14 +1660,12 @@
           "content": {
             "application/json": {
               "schema": {
+                "$ref": "#/components/schemas/IdentityFederationAppCreate",
                 "required": [
                   "name",
                   "product",
                   "tenant"
-                ],
-                "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationAppCreate"
-                }
+                ]
               }
             }
           },
@@ -1743,12 +1741,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationAppCreate",
-                  "required": [
-                    "id"
-                  ]
-                }
+                "$ref": "#/components/schemas/IdentityFederationAppCreate",
+                "required": [
+                  "id"
+                ]
               }
             }
           },
