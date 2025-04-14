@@ -38,36 +38,60 @@ export class App {
    * @openapi
    * components:
    *   schemas:
-   *     IdentityFederationApp:
+   *     IdentityFederationAppCreate:
    *       type: object
    *       properties:
-   *         id:
-   *           type: string
-   *           description: id
-   *         name:
-   *           type: string
-   *           description: name
    *         tenant:
    *           type: string
    *           description: Tenant
    *         product:
    *           type: string
    *           description: Product
+   *         name:
+   *           type: string
+   *           description: Name
    *         acsUrl:
    *           type: string
    *           description: ACS URL
-   *         entityId:
-   *           type: string
-   *           description: Entity ID
    *         logoUrl:
    *           type: string
-   *           description: Logo URL (optional)
+   *           description: Logo URL
    *         faviconUrl:
    *           type: string
-   *           description: Favicon URL (optional)
+   *           description: Favicon URL
    *         primaryColor:
    *           type: string
-   *           description: Primary color (optional)
+   *           description: Primary color
+   *         tenants:
+   *           type: array
+   *           items:
+   *             type: string
+   *           description: Mapping of tenants whose connections will be grouped under this Identity Federation app
+   *         mappings:
+   *           type: array
+   *           items:
+   *             type: string
+   *           description: Mapping of attributes from the IdP to SP
+   *         type:
+   *           type: array
+   *           items:
+   *             type: string
+   *           description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
+   *         redirectUrl:
+   *           type: array
+   *           items:
+   *             type: string
+   *           description: If creating an OIDC app, provide the redirect URL
+   *     IdentityFederationApp:
+   *       allOf:
+   *         - $ref: "#/components/schemas/IdentityFederationAppCreate"
+   *         - type: object
+   *           required:
+   *             - id
+   *           properties:
+   *             id:
+   *               type: string
+   *               description: App ID
    *
    */
 
@@ -83,57 +107,11 @@ export class App {
    *         application/json:
    *           schema:
    *             required:
-   *               - acsUrl
-   *               - entityId
    *               - name
    *               - product
    *               - tenant
-   *             type: object
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               acsUrl:
-   *                 type: string
-   *                 description: ACS URL
-   *               entityId:
-   *                 type: string
-   *                 description: Entity ID
-   *               logoUrl:
-   *                 type: string
-   *                 description: Logo URL
-   *               faviconUrl:
-   *                 type: string
-   *                 description: Favicon URL
-   *               primaryColor:
-   *                 type: string
-   *                 description: Primary color
-   *               tenants:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *               mappings:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of attributes from the IdP to SP
-   *               type:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: If creating an OIDC app, this should be set to 'oidc' otherwise it defaults to 'saml'
-   *               redirectUrl:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: If creating an OIDC app, provide the redirect URL
+   *             schema:
+   *               $ref: "#/components/schemas/IdentityFederationAppCreate"
    *       required: true
    *     responses:
    *       200:
@@ -405,44 +383,10 @@ export class App {
    *       content:
    *         application/json:
    *           schema:
+   *            schema:
+   *             $ref: "#/components/schemas/IdentityFederationAppCreate"
    *             required:
    *               - id
-   *             type: object
-   *             properties:
-   *               id:
-   *                 type: string
-   *                 description: App ID
-   *               tenant:
-   *                 type: string
-   *                 description: Tenant
-   *               product:
-   *                 type: string
-   *                 description: Product
-   *               name:
-   *                 type: string
-   *                 description: Name
-   *               acsUrl:
-   *                 type: string
-   *                 description: ACS URL
-   *               logoUrl:
-   *                 type: string
-   *                 description: Logo URL
-   *               faviconUrl:
-   *                 type: string
-   *                 description: Favicon URL
-   *               primaryColor:
-   *                 type: string
-   *                 description: Primary color
-   *               tenants:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of tenants whose connections will be grouped under this Identity Federation app
-   *               mappings:
-   *                 type: array
-   *                 items:
-   *                   type: string
-   *                 description: Mapping of attributes from the IdP to SP
    *       required: true
    *     responses:
    *       200:
