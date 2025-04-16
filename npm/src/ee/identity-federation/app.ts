@@ -53,6 +53,9 @@ export class App {
    *         acsUrl:
    *           type: string
    *           description: ACS URL
+   *         entityId:
+   *           type: string
+   *           description: Entity ID
    *         logoUrl:
    *           type: string
    *           description: Logo URL
