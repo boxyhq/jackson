@@ -1677,7 +1677,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationApp"
+                  "$ref": "#/components/schemas/IdentityFederationResponse"
                 }
               }
             }
@@ -1722,7 +1722,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationApp"
+                  "$ref": "#/components/schemas/IdentityFederationResponse"
                 }
               }
             }
@@ -1753,7 +1753,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationApp"
+                  "$ref": "#/components/schemas/IdentityFederationResponse"
                 }
               }
             }
@@ -1798,7 +1798,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityFederationApp"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "$ref": "#/components/schemas/IdentityFederationError"
+                    }
+                  }
                 }
               }
             }
@@ -1845,6 +1850,9 @@
                       "items": {
                         "$ref": "#/components/schemas/IdentityFederationApp"
                       }
+                    },
+                    "error": {
+                      "$ref": "#/components/schemas/IdentityFederationError"
                     },
                     "pageToken": {
                       "type": "string",
@@ -2302,6 +2310,25 @@
             }
           }
         ]
+      },
+      "IdentityFederationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/IdentityFederationApp"
+          },
+          "error": {
+            "$ref": "#/components/schemas/IdentityFederationError"
+          }
+        }
+      },
+      "IdentityFederationError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
       }
     },
     "responses": {

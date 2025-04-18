@@ -95,6 +95,18 @@ export class App {
    *             id:
    *               type: string
    *               description: App ID
+   *     IdentityFederationResponse:
+   *       type: object
+   *       properties:
+   *         data:
+   *           $ref: "#/components/schemas/IdentityFederationApp"
+   *         error:
+   *           $ref: "#/components/schemas/IdentityFederationError"
+   *     IdentityFederationError:
+   *       type: object
+   *       properties:
+   *         message:
+   *           type: string
    *
    */
 
@@ -121,7 +133,7 @@ export class App {
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: "#/components/schemas/IdentityFederationApp"
+   *               $ref: "#/components/schemas/IdentityFederationResponse"
    */
   public async create({
     name,
@@ -265,7 +277,7 @@ export class App {
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: "#/components/schemas/IdentityFederationApp"
+   *               $ref: "#/components/schemas/IdentityFederationResponse"
    */
   public async get(params: AppRequestParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -322,6 +334,8 @@ export class App {
    *                     type: array
    *                     items:
    *                       $ref: '#/components/schemas/IdentityFederationApp'
+   *                   error:
+   *                     $ref: '#/components/schemas/IdentityFederationError'
    *                   pageToken:
    *                     type: string
    *                     description: token for pagination
@@ -393,7 +407,7 @@ export class App {
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: "#/components/schemas/IdentityFederationApp"
+   *               $ref: "#/components/schemas/IdentityFederationResponse"
    */
   public async update(params: Partial<IdentityFederationApp>) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
@@ -529,8 +543,12 @@ export class App {
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: "#/components/schemas/IdentityFederationApp"
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   $ref: "#/components/schemas/IdentityFederationError"
    */
+
   public async delete(params: AppRequestParams): Promise<void> {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
