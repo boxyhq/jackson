@@ -57,7 +57,7 @@
     "ipaddr.js": "2.2.0",
     "lodash": "4.17.21",
     "mixpanel": "0.18.1",
-    "mongodb": "6.15.0",
+    "mongodb": "6.16.0",
     "mssql": "11.0.1",
     "mysql2": "3.14.0",
     "node-forge": "1.3.1",
