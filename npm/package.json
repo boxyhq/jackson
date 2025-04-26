@@ -51,7 +51,7 @@
     "@boxyhq/saml20": "1.10.1",
     "@googleapis/admin": "23.4.0",
     "@libsql/sqlite3": "0.3.1",
-    "axios": "1.8.4",
+    "axios": "1.9.0",
     "encoding": "0.1.13",
     "jose": "6.0.10",
     "ipaddr.js": "2.2.0",
