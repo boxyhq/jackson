@@ -13,6 +13,8 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [branding, setBranding] = useState<any>(null);
+  const [hideAuditLogs, setHideAuditLogs] = useState<boolean>(false);
+  const [hideIdentityFederation, setHideIdentityFederation] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBrandingInfo = async () => {
@@ -21,6 +23,8 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         const response = await fetch('/api/branding');
         const data = await response.json();
         setBranding(data.data);
+        setHideAuditLogs(data.hideAuditLogs);
+        setHideIdentityFederation(data.hideIdentityFederation);
       } catch (error) {
         console.error('Error fetching branding info:', error);
       }
@@ -39,7 +43,13 @@ export const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         <title>{(branding ? branding.companyName : 'BoxyHQ') + ' ' + t('admin_portal')}</title>
         <link rel='icon' href={branding ? branding.faviconUrl : '/favicon.ico'} />
       </Head>
-      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} branding={branding} />
+      <Sidebar
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        branding={branding}
+        hideAuditLogs={hideAuditLogs}
+        hideIdentityFederation={hideIdentityFederation}
+      />
       <div className='flex flex-1 flex-col md:pl-64'>
         <div className='sticky top-0 z-10 flex h-16 flex-shrink-0 border-b bg-white'>
           <button
