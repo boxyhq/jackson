@@ -125,9 +125,15 @@ const adminPortalSSODefaults = {
   defaultRedirectUrl: `${externalUrl}/admin/auth/idp-login`,
 };
 
+const adminPortal = {
+  hideAuditLogs: process.env.ADMIN_PORTAL_HIDE_AUDIT_LOGS === 'true',
+  hideIdentityFederation: process.env.ADMIN_PORTAL_HIDE_IDENTITY_FEDERATION === 'true',
+};
+
 const loggerOptions = { file: process.env.LOG_FILE, level: process.env.LOG_LEVEL };
 
 export { adminPortalSSODefaults };
+export { adminPortal };
 export { retraced as retracedOptions };
 export { apiKeys };
 export { jacksonOptions };

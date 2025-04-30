@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { boxyhqHosted } from '@lib/env';
+import { boxyhqHosted, adminPortal } from '@lib/env';
 import { getPortalBranding, getProductBranding } from '../utils';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -29,7 +29,11 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     ? await getProductBranding(productId)
     : await getPortalBranding();
 
-  res.json({ data: productOrPortalBranding });
+  res.json({
+    data: productOrPortalBranding,
+    hideAuditLogs: adminPortal.hideAuditLogs,
+    hideIdentityFederation: adminPortal.hideIdentityFederation,
+  });
 };
 
 export default handler;

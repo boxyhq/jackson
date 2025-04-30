@@ -15,6 +15,8 @@ type SidebarProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   branding: any;
+  hideAuditLogs: boolean;
+  hideIdentityFederation: boolean;
 };
 
 type MenuItem = {
@@ -25,11 +27,17 @@ type MenuItem = {
   items?: MenuItem[];
 };
 
-export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
+export const Sidebar = ({
+  isOpen,
+  setIsOpen,
+  branding,
+  hideAuditLogs,
+  hideIdentityFederation,
+}: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
 
-  const menus = [
+  let menus = [
     {
       href: '/admin/dashboard',
       text: t('dashboard'),
@@ -61,6 +69,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       ],
     },
     {
+      hide: 'identityFederation',
       href: '/admin/identity-federation',
       text: t('identity_federation'),
       icon: SSOLogo,
@@ -93,6 +102,7 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       ],
     },
     {
+      hide: 'identityFederation',
       href: '/admin/retraced',
       text: t('audit_logs'),
       icon: AuditLogsLogo,
@@ -125,6 +135,12 @@ export const Sidebar = ({ isOpen, setIsOpen, branding }: SidebarProps) => {
       ],
     },
   ];
+
+  menus = menus.filter(
+    (menu) =>
+      !(menu.hide === 'auditLogs' && hideAuditLogs) &&
+      !(menu.hide === 'identityFederation' && hideIdentityFederation)
+  );
 
   return (
     <>
