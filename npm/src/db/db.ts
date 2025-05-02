@@ -133,10 +133,11 @@ class DB implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
-    await this.db.close();
-    clearInterval(this.statsIntervalId)
     // Flush stats one last time
     this.publishStats();
+
+    await this.db.close();
+    clearInterval(this.statsIntervalId)
   }
 
   getStats(): Record<string, number> {
