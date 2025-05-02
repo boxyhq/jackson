@@ -394,6 +394,9 @@ class Sql implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+    }
     await this.dataSource.destroy();
   }
 
