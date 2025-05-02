@@ -52,31 +52,15 @@ const decrypt = (res: Encrypted, encryptionKey: EncryptionKey): unknown => {
 class DB implements DatabaseDriver {
   private db: DatabaseDriver;
   private encryptionKey: EncryptionKey;
+  private statsIntervalId: NodeJS.Timeout;
+  private logger: RequiredLogger;
+
   constructor(db: DatabaseDriver, encryptionKey: EncryptionKey, logger: RequiredLogger) {
     this.db = db;
     this.encryptionKey = encryptionKey;
+    this.logger = logger;
 
-    setInterval(async () => {
-      try {
-        const stats = this.getStats();
-        if (stats.applicationName) {
-          if (stats.max >= 0) {
-            metrics.gauge('dbMaxConnections', stats.max, { db_name: stats.applicationName });
-          }
-          if (stats.total >= 0) {
-            metrics.gauge('dbTotalConnections', stats.total, { db_name: stats.applicationName });
-          }
-          if (stats.idle >= 0) {
-            metrics.gauge('dbIdleConnections', stats.idle, { db_name: stats.applicationName });
-          }
-          if (stats.waiting >= 0) {
-            metrics.gauge('dbWaitingConnections', stats.waiting, { db_name: stats.applicationName });
-          }
-        }
-      } catch (err) {
-        logger.error(`error getting db stats: ${err}`);
-      }
-    }, STATS_INTERVAL);
+    this.statsIntervalId = setInterval(async () => this.publishStats(), STATS_INTERVAL);
   }
 
   async get(namespace: string, key: string): Promise<unknown> {
@@ -149,7 +133,11 @@ class DB implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
+    // Flush stats one last time
+    this.publishStats();
+
     await this.db.close();
+    clearInterval(this.statsIntervalId);
   }
 
   getStats(): Record<string, number> {
@@ -158,6 +146,28 @@ class DB implements DatabaseDriver {
 
   store(namespace: string, ttl = 0): Storable {
     return store.new(namespace, this, ttl);
+  }
+
+  private publishStats() {
+    try {
+      const stats = this.getStats();
+      if (stats.applicationName) {
+        if (stats.max >= 0) {
+          metrics.gauge('dbMaxConnections', stats.max, { db_name: stats.applicationName });
+        }
+        if (stats.total >= 0) {
+          metrics.gauge('dbTotalConnections', stats.total, { db_name: stats.applicationName });
+        }
+        if (stats.idle >= 0) {
+          metrics.gauge('dbIdleConnections', stats.idle, { db_name: stats.applicationName });
+        }
+        if (stats.waiting >= 0) {
+          metrics.gauge('dbWaitingConnections', stats.waiting, { db_name: stats.applicationName });
+        }
+      }
+    } catch (err) {
+      this.logger.error(`error getting db stats: ${err}`);
+    }
   }
 }
 
