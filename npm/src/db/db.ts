@@ -137,7 +137,7 @@ class DB implements DatabaseDriver {
     this.publishStats();
 
     await this.db.close();
-    clearInterval(this.statsIntervalId)
+    clearInterval(this.statsIntervalId);
   }
 
   getStats(): Record<string, number> {
@@ -149,25 +149,25 @@ class DB implements DatabaseDriver {
   }
 
   private publishStats() {
-      try {
-        const stats = this.getStats();
-        if (stats.applicationName) {
-          if (stats.max >= 0) {
-            metrics.gauge('dbMaxConnections', stats.max, { db_name: stats.applicationName });
-          }
-          if (stats.total >= 0) {
-            metrics.gauge('dbTotalConnections', stats.total, { db_name: stats.applicationName });
-          }
-          if (stats.idle >= 0) {
-            metrics.gauge('dbIdleConnections', stats.idle, { db_name: stats.applicationName });
-          }
-          if (stats.waiting >= 0) {
-            metrics.gauge('dbWaitingConnections', stats.waiting, { db_name: stats.applicationName });
-          }
+    try {
+      const stats = this.getStats();
+      if (stats.applicationName) {
+        if (stats.max >= 0) {
+          metrics.gauge('dbMaxConnections', stats.max, { db_name: stats.applicationName });
         }
-      } catch (err) {
-        this.logger.error(`error getting db stats: ${err}`);
+        if (stats.total >= 0) {
+          metrics.gauge('dbTotalConnections', stats.total, { db_name: stats.applicationName });
+        }
+        if (stats.idle >= 0) {
+          metrics.gauge('dbIdleConnections', stats.idle, { db_name: stats.applicationName });
+        }
+        if (stats.waiting >= 0) {
+          metrics.gauge('dbWaitingConnections', stats.waiting, { db_name: stats.applicationName });
+        }
       }
+    } catch (err) {
+      this.logger.error(`error getting db stats: ${err}`);
+    }
   }
 }
 
