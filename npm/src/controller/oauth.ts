@@ -1228,7 +1228,7 @@ export class OAuthController implements IOAuthController {
         }
       }
 
-      if (codeVal.session.code_challenge) {
+      if (codeVal.session?.code_challenge) {
         // PKCE flow
         let cv = code_verifier;
         if (!code_verifier) {
