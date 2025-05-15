@@ -61,7 +61,7 @@
     "mssql": "11.0.1",
     "mysql2": "3.14.1",
     "node-forge": "1.3.1",
-    "openid-client": "6.4.2",
+    "openid-client": "6.5.0",
     "pg": "8.15.6",
     "redis": "4.7.0",
     "reflect-metadata": "0.2.2",
