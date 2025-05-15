@@ -95,12 +95,12 @@
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.1",
     "sharp": "0.34.1",
-    "styled-components": "6.1.17",
+    "styled-components": "6.1.18",
     "swr": "2.3.3"
   },
   "devDependencies": {
     "@playwright/test": "1.52.0",
-    "@types/cors": "2.8.17",
+    "@types/cors": "2.8.18",
     "@types/micromatch": "4.0.9",
     "@types/node": "22.14.1",
     "@types/prismjs": "1.26.5",
@@ -114,7 +114,7 @@
     "eslint-config-next": "15.3.2",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-i18next": "6.1.1",
-    "jose": "6.0.10",
+    "jose": "6.0.11",
     "postcss": "8.5.3",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "0.6.11",
