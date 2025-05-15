@@ -100,7 +100,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.52.0",
-    "@types/cors": "2.8.17",
+    "@types/cors": "2.8.18",
     "@types/micromatch": "4.0.9",
     "@types/node": "22.14.1",
     "@types/prismjs": "1.26.5",
