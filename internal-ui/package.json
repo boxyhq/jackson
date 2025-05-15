@@ -27,7 +27,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "12.1.2",
     "@types/node": "22.15.18",
-    "@types/react": "19.1.2",
+    "@types/react": "19.1.4",
     "@typescript-eslint/eslint-plugin": "8.32.1",
     "@typescript-eslint/parser": "8.32.1",
     "@vitejs/plugin-react": "4.4.1",
@@ -37,7 +37,7 @@
     "prettier": "3.5.3",
     "react-daisyui": "5.0.5",
     "typescript": "5.8.3",
-    "vite": "6.3.4"
+    "vite": "6.3.5"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.40.2"
