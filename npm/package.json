@@ -70,7 +70,7 @@
     "typeorm": "0.3.22"
   },
   "devDependencies": {
-    "@faker-js/faker": "9.7.0",
+    "@faker-js/faker": "9.8.0",
     "@types/lodash": "4.17.16",
     "@types/node": "22.15.17",
     "@types/sinon": "17.0.4",
