@@ -94,7 +94,7 @@
     "react-i18next": "15.5.1",
     "react-tagsinput": "3.20.3",
     "remark-gfm": "4.0.1",
-    "sharp": "0.34.1",
+    "sharp": "0.34.2",
     "styled-components": "6.1.18",
     "swr": "2.3.3"
   },
