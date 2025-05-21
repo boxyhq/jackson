@@ -9,14 +9,24 @@ import { dynamicImport, GENERIC_ERR_STRING } from '../utils';
 const createCustomFetch = (ssoTraces: { instance: SSOTracesInstance; context: SSOTrace['context'] }) => {
   return async (url: RequestInfo, options: RequestInit): Promise<Response> => {
     return new Promise((resolve, reject) => {
-      const parsedUrl = new URL(url);
+      let parsedUrl = new URL(url);
+      const headers = new Headers(options.headers);
+
+      // Look for a match to Ory local address, we need to rewrite that to the k8s svc
+      const hostParts = parsedUrl.host.split('.');
+      if (hostParts.length === 3) {
+        if (hostParts[1] === 'projects' && hostParts[2] === 'oryapis:8080') {
+          headers.set('Host', parsedUrl.hostname);
+          parsedUrl = new URL('http://hydra-public/.well-known/openid-configuration');
+        }
+      }
 
       const requestOptions: https.RequestOptions = {
         hostname: parsedUrl.hostname,
         port: parsedUrl.port,
         path: parsedUrl.pathname + parsedUrl.search,
         method: options.method || 'GET',
-        headers: options.headers as http.OutgoingHttpHeaders,
+        headers: Object.fromEntries(headers.entries()),
       };
       const request = parsedUrl.protocol === 'https:' ? https.request : http.request;
 

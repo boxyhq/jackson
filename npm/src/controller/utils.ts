@@ -26,7 +26,6 @@ export const dynamicImport = async <ReturnType>(packageName: string): Promise<Re
 export enum IndexNames {
   EntityID = 'entityID',
   TenantProduct = 'tenantProduct',
-  OIDCProviderClientID = 'OIDCProviderClientID',
   SSOClientID = 'SSOClientID',
   Product = 'product',
 
