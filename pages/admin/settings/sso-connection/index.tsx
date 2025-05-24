@@ -3,7 +3,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ConnectionList from '@components/connection/ConnectionList';
 
 const ConnectionsIndexPageForSettings: NextPage = () => {
-  return <ConnectionList isSettingsView />;
+  return <ConnectionList isSettingsView={true} />;
 };
 
 export default ConnectionsIndexPageForSettings;

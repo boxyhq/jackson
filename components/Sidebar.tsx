@@ -102,7 +102,7 @@ export const Sidebar = ({
       ],
     },
     {
-      hide: 'identityFederation',
+      hide: 'auditLogs',
       href: '/admin/retraced',
       text: t('audit_logs'),
       icon: AuditLogsLogo,
