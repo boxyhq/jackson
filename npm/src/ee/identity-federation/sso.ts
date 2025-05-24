@@ -81,7 +81,7 @@ export class SSO {
       context.providerName = providerName;
 
       // Verify the request if it is signed
-      if (publicKey && !saml.hasValidSignature(decodedRequest, publicKey, null)) {
+      if (publicKey && !saml.validateSignature(decodedRequest, publicKey, null)) {
         throw new JacksonError(GENERIC_ERR_STRING, 400, 'Invalid SAML Request signature.');
       }
 
