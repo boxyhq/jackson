@@ -3,7 +3,13 @@ import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import ArrowTopRightOnSquareIcon from '@heroicons/react/20/solid/ArrowTopRightOnSquareIcon';
 
-export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
+export const WellKnownURLs = ({
+  jacksonUrl,
+  hideIdentityFederation = false,
+}: {
+  jacksonUrl?: string;
+  hideIdentityFederation: boolean;
+}) => {
   const { t } = useTranslation('common');
   const [view, setView] = useState<'idp-config' | 'auth' | 'identity-fed'>('idp-config');
 
@@ -90,13 +96,15 @@ export const WellKnownURLs = ({ jacksonUrl }: { jacksonUrl?: string }) => {
           description={t('bui-wku-desc-auth-integration')}
           label={t('bui-wku-auth-integration-links')}
         />
-        <Tab
-          isActive={view === 'identity-fed'}
-          setIsActive={() => setView('identity-fed')}
-          title={t('bui-wku-identity-federation-links')}
-          description={t('bui-wku-desc-identity-federation')}
-          label={t('bui-wku-identity-federation-links')}
-        />
+        {hideIdentityFederation ? null : (
+          <Tab
+            isActive={view === 'identity-fed'}
+            setIsActive={() => setView('identity-fed')}
+            title={t('bui-wku-identity-federation-links')}
+            description={t('bui-wku-desc-identity-federation')}
+            label={t('bui-wku-identity-federation-links')}
+          />
+        )}
       </div>
       <div className='space-y-3 mt-8'>
         {links
