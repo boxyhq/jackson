@@ -17,7 +17,7 @@ const createCustomFetch = (ssoTraces: { instance: SSOTracesInstance; context: SS
       if (hostParts.length === 3) {
         if (hostParts[1] === 'projects' && hostParts[2] === 'oryapis:8080') {
           headers.set('Host', parsedUrl.hostname);
-          parsedUrl = new URL('http://hydra-public/.well-known/openid-configuration');
+          parsedUrl = new URL(`http://hydra-public${parsedUrl.pathname}`);
         }
       }
 
