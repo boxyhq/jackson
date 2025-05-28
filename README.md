@@ -54,17 +54,18 @@ today!
 
 ## Ory Polis On-premise support
 
-The Ory Enterprise License (OEL) is a self-hosted, premium offering for organizations that run Ory software in a commercial use case and rely on Ory as mission critical. Businesses that require advanced features, enhanced security, and enterprise-grade support for Ory's identity and access management solutions benefit from:
+Are you running Ory Polis in a mission-critical, commercial environment? The Ory Enterprise License (OEL) provides enhanced features, security, and expert support directly from the Ory core maintainers. 
+
+Organizations that require advanced features, enhanced security, and enterprise-grade support for Ory's identity and access management solutions benefit from 
+the Ory Enterprise License (OEL) as a self-hosted, premium offering including:
 
 - Additional features not available in the open-source version.
 - Regular releases that address CVEs and security vulnerabilities, with strict SLAs for patching based on severity.
 - Support for advanced scaling and multi-tenancy features.
-- Premium support options, including SLAs and concierge onboarding.
-- Access to private Docker registry for enterprise builds.
+- Premium support options, including SLAs, direct engineer access, and concierge onboarding.
+- Access to private Docker registry for a faster, more reliable access to vetted enterprise builds.
 
-A valid Ory Enterprise License and access to the Ory Enterprise Docker Registry are required to use these features. OEL is designed for mission-critical, production, and global applications where organizations need maximum control and flexibility over their identity infrastructure. Ory's offering is the only official program for qualified support from the maintainers. For more information see the
-**[website](https://www.ory.sh/support/)** or
-**[book a meeting](https://www.ory.sh/contact/)**!
+A valid Ory Enterprise License and access to the Ory Enterprise Docker Registry are required to use these features. OEL is designed for mission-critical, production, and global applications where organizations need maximum control and flexibility over their identity infrastructure. Ory's offering is the only official program for qualified support from the maintainers. For more information book a meeting with the Ory team to **[discuss your needs](https://www.ory.sh/contact/)**!
 
 
 ## Directory Sync
