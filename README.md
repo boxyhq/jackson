@@ -573,7 +573,7 @@ The HTTP API is documented [here](https://www.ory.sh/docs/polis/reference/api).
 
 New releases might introduce breaking changes. To help you identify and
 incorporate those changes, we document these changes in the
-[CHANGELOG.md](./CHANGELOG.md). For upgrading, please visit the
+[Releases](https://github.com/ory/polis/releases). For upgrading, please visit the
 [upgrade guide](https://ory.sh/docs/polis/upgrade).
 
 ## Develop

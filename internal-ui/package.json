@@ -1,10 +1,10 @@
 {
   "name": "@boxyhq/internal-ui",
   "version": "0.0.0",
-  "description": "Shared React UI components for BoxyHQ SaaS and Admin Portal",
+  "description": "Shared React UI components for Polis Admin Portal",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/boxyhq/jackson.git"
+    "url": "git+https://github.com/ory/polis.git"
   },
   "files": [
     "dist"

@@ -1,5 +1,5 @@
 {
-  "name": "jackson",
+  "name": "polis",
   "version": "1.47.0",
   "private": true,
   "description": "SAML 2.0 service",
@@ -8,7 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/boxyhq/jackson.git"
+    "url": "https://github.com/ory/polis.git"
   },
   "license": "Apache-2.0",
   "scripts": {
