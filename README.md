@@ -4,9 +4,8 @@
     <a href="https://www.ory.sh/chat">Chat</a> |
     <a href="https://github.com/ory/polis/discussions">Discussions</a> |
     <a href="https://www.ory.sh/l/sign-up-newsletter">Newsletter</a><br/><br/>
-    <a href="https://www.ory.sh/docs/polis/">Guide</a> |
+    <a href="https://www.ory.sh/docs/polis">Guide</a> |
     <a href="https://www.ory.sh/docs/polis/reference/api">API Docs</a> |
-    <a href="https://godoc.org/github.com/ory/polis">Code Docs</a><br/><br/>
     <a href="https://console.ory.sh/">Support this project!</a><br/><br/>
     <a href="https://www.ory.sh/jobs/">Work in Open Source, Ory is hiring!</a>
 </h4>
