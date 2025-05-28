@@ -1,148 +1,541 @@
-# SAML Jackson: Open Source Enterprise SSO And Directory Sync
+<h1 align="center"><img src="https://raw.githubusercontent.com/ory/meta/master/static/banners/polis.svg" alt="Ory polis - Open source Enterprise SSO and Directory Sync"></h1>
 
-<a href="https://bestpractices.coreinfrastructure.org/projects/7493"><img src="https://bestpractices.coreinfrastructure.org/projects/7493/badge" alt="OpenSSF Best Practices Badge"></a>
-<a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/npm/dt/@boxyhq/saml-jackson" alt="NPM downloads badge" ></a>
-<a href="https://hub.docker.com/r/boxyhq/jackson"><img src="https://img.shields.io/docker/pulls/boxyhq/jackson" alt="Docker pull statistics badge"></a>
-<a href="https://github.com/boxyhq/jackson/blob/main/LICENSE"><img src="https://img.shields.io/github/license/boxyhq/jackson" alt="Apache 2.0 license badge"></a>
-<a href="https://github.com/boxyhq/jackson/issues"><img src="https://img.shields.io/github/issues/boxyhq/jackson" alt="Open Github issues badge"></a>
-<a href="https://github.com/boxyhq/jackson/stargazers"><img src="https://img.shields.io/github/stars/boxyhq/jackson" alt="Github stargazers"></a>
-<a href="https://www.npmjs.com/package/@boxyhq/saml-jackson"><img src="https://img.shields.io/node/v/@boxyhq/saml-jackson" alt="Nodejs version support badge"></a>
-<a href="https://raw.githubusercontent.com/boxyhq/jackson/main/swagger/swagger.json"><img src="https://img.shields.io/swagger/valid/3.0?specUrl=https%3A%2F%2Fraw.githubusercontent.com%2Fboxyhq%2Fjackson%2Fmain%2Fswagger%2Fswagger.json" alt="Swagger Validator badge"></a>
+<h4 align="center">
+    <a href="https://www.ory.sh/chat">Chat</a> |
+    <a href="https://github.com/ory/polis/discussions">Discussions</a> |
+    <a href="https://www.ory.sh/l/sign-up-newsletter">Newsletter</a><br/><br/>
+    <a href="https://www.ory.sh/polis/docs/">Guide</a> |
+    <a href="https://www.ory.sh/docs/polis/reference/api">API Docs</a> |
+    <a href="https://godoc.org/github.com/ory/polis">Code Docs</a><br/><br/>
+    <a href="https://console.ory.sh/">Support this project!</a><br/><br/>
+    <a href="https://www.ory.sh/jobs/">Work in Open Source, Ory is hiring!</a>
+</h4>
 
-SAML Jackson bridges or proxies a SAML login flow to OAuth 2.0 or OpenID Connect, abstracting away all the complexities of the SAML protocol. It also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning.
+---
 
-> We now also support OpenID Connect providers.
+<p align="left">
+    <a href="https://github.com/ory/polis/actions/workflows/ci.yaml"><img src="https://github.com/ory/polis/actions/workflows/ci.yaml/badge.svg?branch=master&event=push" alt="CI Tasks for Ory polis"></a>
+    <a href="https://codecov.io/gh/ory/polis"><img src="https://codecov.io/gh/ory/polis/branch/master/graph/badge.svg?token=6t0QqOdurR"/></a>
+    <a href="https://bestpractices.coreinfrastructure.org/projects/4979"><img src="https://bestpractices.coreinfrastructure.org/projects/4979/badge" alt="CII Best Practices"></a>
+    <a href="https://github.com/ory/polis/blob/master/CODE_OF_CONDUCT.md" alt="Ory Code of Conduct"><img src="https://img.shields.io/badge/ory-code%20of%20conduct-green" /></a>
+</>
 
-![A quick demo of the admin portal without sound to show an overview of what to expect. It shows features such as SSO, the ability to set up SSO connections, Setup Links, Directory sync, and more](samljackson480.gif)
+Ory Polis - formerly known as BoxyHQ Jackson - bridges or proxies a SAML login flow to OAuth 2.0 or OpenID Connect, abstracting away all the complexities of the SAML protocol. It also supports Directory Sync via the SCIM 2.0 protocol for automatic user and group provisioning/de-provisioning. Ory Polis also supports OpenID Connect providers.
+
+## Ory Polis on the Ory Network
+
+The [Ory Network](https://www.ory.sh/cloud) is the fastest, most secure and
+worry-free way to use Ory's Services. **SAML & SCIM** on Ory Network are powered by Ory Polis, and it's fully API-compatible.
+
+The Ory Network provides the infrastructure for modern end-to-end security:
+
+- **Identity & credential management scaling to billions of users and devices**
+- **Registration, Login and Account management flows for passkey, biometric,
+  social, SSO and multi-factor authentication**
+- **Pre-built login, registration and account management pages and components**
+- OAuth2 and OpenID provider for single sign on, API access and
+  machine-to-machine authorization
+- Low-latency permission checks based on Google's Zanzibar model and with
+  built-in support for the Ory Permission Language
+- SAML, SCIM, and complex Enterprise SSO capabilities
+
+It's fully managed, highly available, developer & compliance-friendly!
+
+- GDPR-friendly secure storage with data locality
+- Cloud-native APIs, compatible with Ory's Open Source servers
+- Comprehensive admin tools with the web-based Ory Console and the Ory Command
+  Line Interface (CLI)
+- Extensive documentation, straightforward examples and easy-to-follow guides
+- Fair, usage-based [pricing](https://www.ory.sh/pricing)
+
+Sign up for a
+[**free developer account**](https://console.ory.sh/registration?utm_source=github&utm_medium=banner&utm_campaign=polis-readme)
+today!
+
+## Ory Polis On-premise support
+
+The Ory Enterprise License (OEL) is a self-hosted, premium offering for organizations that run Ory software in a commercial use case and rely on Ory as mission critical. Businesses that require advanced features, enhanced security, and enterprise-grade support for Ory's identity and access management solutions benefit from:
+
+- Additional features not available in the open-source version.
+- Regular releases that address CVEs and security vulnerabilities, with strict SLAs for patching based on severity.
+- Support for advanced scaling and multi-tenancy features.
+- Premium support options, including SLAs and concierge onboarding.
+- Access to private Docker registry for enterprise builds.
+
+A valid Ory Enterprise License and access to the Ory Enterprise Docker Registry are required to use these features. OEL is designed for mission-critical, production, and global applications where organizations need maximum control and flexibility over their identity infrastructure. Ory's offering is the only official program for qualified support from the maintainers. For more information see the
+**[website](https://www.ory.sh/support/)** or
+**[book a meeting](https://www.ory.sh/contact/)**!
+
 
 ## Directory Sync
 
-SAML Jackson also supports Directory Sync based on the SCIM 2.0 protocol.
+Ory Polis also supports Directory Sync based on the SCIM 2.0 protocol.
 
 Directory sync helps organizations automate the provisioning and de-provisioning of their users. As a result, it streamlines the user lifecycle management process by saving valuable organizational hours, creating a single truth source of the user identity data, and facilitating them to keep the data secure.
 
-For complete documentation, visit [boxyhq.com/docs/directory-sync/overview](https://boxyhq.com/docs/directory-sync/overview)
+For complete documentation, visit the [Ory Polis documentation](https://ory.sh/docs/polis)
 
-## 🌟 Why star this repository?
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-If you find this project helpful, please consider supporting us by starring [the repository](https://github.com/boxyhq/jackson) and sharing it with others. This helps others find the project, grow the community and ensure the long-term health of the project. 🙏
+- [Ory Polis on the Ory Network](#ory-polis-on-the-ory-network)
+- [Ory Polis On-premise support](#ory-polis-on-premise-support)
+- [Directory Sync](#directory-sync)
+- [What is Ory Polis?](#what-is-ory-polis)
+  - [Who is using it?](#who-is-using-it)
+- [Get Started with Ory Polis](#get-started-with-ory-polis)
+  - [Installation](#installation)
+- [Ecosystem](#ecosystem)
+  - [Ory Kratos: Identity and User Infrastructure and Management](#ory-kratos-identity-and-user-infrastructure-and-management)
+  - [Ory Hydra: OAuth2 & OpenID Connect Server](#ory-hydra-oauth2--openid-connect-server)
+  - [Ory Oathkeeper: Identity & Access Proxy](#ory-oathkeeper-identity--access-proxy)
+  - [Ory Keto: Access Control Policies as a Server](#ory-keto-access-control-policies-as-a-server)
+- [End-to-End (E2E) tests](#end-to-end-e2e-tests)
+- [Security](#security)
+  - [Disclosing vulnerabilities](#disclosing-vulnerabilities)
+- [Telemetry](#telemetry)
+- [Documentation](#documentation)
+  - [Guide](#guide)
+  - [HTTP API documentation](#http-api-documentation)
+  - [Upgrading and Changelog](#upgrading-and-changelog)
+- [Develop](#develop)
 
-- [SAML Jackson: Open Source Enterprise SSO And Directory Sync](#saml-jackson-open-source-enterprise-sso-and-directory-sync)
-  - [Directory Sync](#directory-sync)
-  - [🌟 Why star this repository?](#-why-star-this-repository)
-  - [🚀 Getting Started with SAML Jackson](#-getting-started-with-saml-jackson)
-    - [Try A Demo](#try-a-demo)
-    - [Deploying SAML Jackson as a separate service locally](#deploying-saml-jackson-as-a-separate-service-locally)
-      - [Prerequisites](#prerequisites)
-      - [Clone the repository](#clone-the-repository)
-      - [Install dependencies](#install-dependencies)
-      - [Setup environment variables](#setup-environment-variables)
-      - [Database](#database)
-      - [Start the development server](#start-the-development-server)
-    - [Documentation](#documentation)
-    - [Easy Cloud Deployment](#easy-cloud-deployment)
-  - [Videos](#videos)
-  - [End-to-End (E2E) tests](#end-to-end-e2e-tests)
-  - [About BoxyHQ](#about-boxyhq)
-  - [Security And Observability](#security-and-observability)
-    - [Observability](#observability)
-    - [SBOM Reports (Software Bill Of Materials)](#sbom-reports-software-bill-of-materials)
-    - [Container Signing and Verification](#container-signing-and-verification)
-    - [🛡️ Reporting Security Issues](#️-reporting-security-issues)
-  - [Contributing](#contributing)
-  - [💫 Support](#-support)
-  - [📌 License](#-license)
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## 🚀 Getting Started with SAML Jackson
+## What is Ory Polis?
 
-There are two ways to integrate SAML Jackson into an application. Depending on your use case, you can choose either of them. <br>
+Ory Polis - formerly known as BoxyHQ Jackson - is an Enterprise Single Sign-On (SSO) service for SAML and OIDC identity providers.
+It implements SSO as an OAuth 2.0 flow, abstracting away the complexities of the underlying SAML or OIDC protocol.
+Ory Polis offers a range of features to simplify and secure enterprise SSO:
 
-1. [As a separate service](https://boxyhq.com/docs/jackson/deploy/service) ([Next.js](https://nextjs.org/) application) This includes an admin portal out of the box for managing SSO and Directory Sync connections.
-2. [NPM library](https://boxyhq.com/docs/jackson/deploy/npm-library) as an embedded library in your application.
+- SAML/OIDC Enterprise SSO: Implements Single Sign-On for SAML or OIDC Identity Providers, abstracting the underlying protocol
+  complexities and making it easy to connect with various enterprise identity systems.
+- OAuth 2.0 flow abstraction: Presents the SSO process as a standard OAuth 2.0 flow. Ideal for developers already familiar with
+  OAuth 2.0 and OpenID Connect.
+- Data ownership and control: As an open-source solution, Ory Polis allows you to host the service yourself, ensuring you maintain
+  full control over your data and your customers' identity information.
+- Flexible database support (BYOD): Supports a "Bring Your Own Database" model. This includes built-in compatibility for databases
+  such as MySQL, MariaDB, Postgres, MongoDB, Redis, and PlanetScale, and works well with databases from major hosting providers.
+- Modular design: Built with a modular architecture where business logic is separated into distinct controllers, enhancing
+  flexibility, maintainability, and the ability to adopt features incrementally.
 
-### Try A Demo
+We highly recommend reading the
+[Ory Polis introduction docs](https://www.ory.sh/polis/docs/) to learn more
+about Ory Polis's background, feature set, and differentiation from other
+products.
 
-- Try our hosted demo showcasing the SAML service provider (SP) initiated [login flow here](https://saml-demo.boxyhq.com), which uses our [Mock SAML](https://mocksaml.com) IdP service.
-- Try an Identity Provider (IdP) initiated [login flow here](https://mocksaml.com/saml/login).
+### Who is using it?
 
-### Deploying SAML Jackson as a separate service locally
+<!--BEGIN ADOPTERS-->
 
-Let's get you to Hello SAML Jackson in no time.
+The Ory community stands on the shoulders of individuals, companies, and
+maintainers. The Ory team thanks everyone involved - from submitting bug reports
+and feature requests, to contributing patches and documentation. The Ory
+community counts more than 50.000 members and is growing. The Ory stack protects
+7.000.000.000+ API requests every day across thousands of companies. None of
+this would have been possible without each and everyone of you!
 
-#### Prerequisites
+The following list represents companies that have accompanied us along the way
+and that have made outstanding contributions to our ecosystem. _If you think
+that your company deserves a spot here, reach out to
+<a href="mailto:office@ory.sh">office@ory.sh</a> now_!
 
-- [Node.js](https://nodejs.org/en) at version `18.14.2` or higher
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Logo</th>
+            <th>Website</th>
+            <th>Case Study</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>OpenAI</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/openai.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/openai.svg" alt="OpenAI">
+                </picture>
+            </td>
+            <td><a href="https://openai.com/">openai.com</a></td>
+            <td><a href="https://www.ory.sh/case-studies/openai">OpenAI Case Study</a></td>
+        </tr>
+        <tr>
+            <td>Fandom</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/fandom.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/fandom.svg" alt="Fandom">
+                </picture>
+            </td>
+            <td><a href="https://www.fandom.com/">fandom.com</a></td>
+            <td><a href="https://www.ory.sh/case-studies/fandom">Fandom Case Study</a></td>
+        </tr>
+        <tr>
+            <td>Lumin</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/lumin.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/lumin.svg" alt="Lumin">
+                </picture>
+            </td>
+            <td><a href="https://www.luminpdf.com/">luminpdf.com</a></td>
+            <td><a href="https://www.ory.sh/case-studies/lumin">Lumin Case Study</a></td>
+        </tr>
+        <tr>
+            <td>Sencrop</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/sencrop.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/sencrop.svg" alt="Sencrop">
+                </picture>
+            </td>
+            <td><a href="https://sencrop.com/">sencrop.com</a></td>
+            <td><a href="https://www.ory.sh/case-studies/sencrop">Sencrop Case Study</a></td>
+        </tr>
+        <tr>
+            <td>OSINT Industries</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/osint.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/osint.svg" alt="OSINT Industries">
+                </picture>
+            </td>
+            <td><a href="https://www.osint.industries/">osint.industries</a></td>
+            <td><a href="https://www.ory.sh/case-studies/osint">OSINT Industries Case Study</a></td>
+        </tr>
+        <tr>
+            <td>HGV</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/hgv.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/hgv.svg" alt="HGV">
+                </picture>
+            </td>
+            <td><a href="https://www.hgv.it/">hgv.it</a></td>
+            <td><a href="https://www.ory.sh/case-studies/hgv">HGV Case Study</a></td>
+        </tr>
+        <tr>
+            <td>Maxroll</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/maxroll.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/maxroll.svg" alt="Maxroll">
+                </picture>
+            </td>
+            <td><a href="https://maxroll.gg/">maxroll.gg</a></td>
+            <td><a href="https://www.ory.sh/case-studies/maxroll">Maxroll Case Study</a></td>
+        </tr>
+        <tr>
+            <td>Zezam</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/zezam.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/zezam.svg" alt="Zezam">
+                </picture>
+            </td>
+            <td><a href="https://www.zezam.io/">zezam.io</a></td>
+            <td><a href="https://www.ory.sh/case-studies/zezam">Zezam Case Study</a></td>
+        </tr>
+        <tr>
+            <td>T.RowePrice</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/troweprice.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/troweprice.svg" alt="T.RowePrice">
+                </picture>
+            </td>
+            <td><a href="https://www.troweprice.com/">troweprice.com</a></td>
+        </tr>
+        <tr>
+            <td>Mistral</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/mistral.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/mistral.svg" alt="Mistral">
+                </picture>
+            </td>
+            <td><a href="https://www.mistral.ai/">mistral.ai</a></td>
+        </tr>
+        <tr>
+            <td>Axel Springer</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/axelspringer.svg" />
+                    <img height="22px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/axelspringer.svg" alt="Axel Springer">
+                </picture>
+            </td>
+            <td><a href="https://www.axelspringer.com/">axelspringer.com</a></td>
+        </tr>
+        <tr>
+            <td>Hemnet</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/hemnet.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/hemnet.svg" alt="Hemnet">
+                </picture>
+            </td>
+            <td><a href="https://www.hemnet.se/">hemnet.se</a></td>
+        </tr>
+        <tr>
+            <td>Cisco</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/cisco.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/cisco.svg" alt="Cisco">
+                </picture>
+            </td>
+            <td><a href="https://www.cisco.com/">cisco.com</a></td>
+        </tr>
+        <tr>
+            <td>Presidencia de la República Dominicana</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/republica-dominicana.svg" />
+                    <img height="42px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/republica-dominicana.svg" alt="Presidencia de la República Dominicana">
+                </picture>
+            </td>
+            <td><a href="https://www.presidencia.gob.do/">presidencia.gob.do</a></td>
+        </tr>
+        <tr>
+            <td>Moonpig</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/moonpig.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/moonpig.svg" alt="Moonpig">
+                </picture>
+            </td>
+            <td><a href="https://www.moonpig.com/">moonpig.com</a></td>
+        </tr>
+        <tr>
+            <td>Booster</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/booster.svg" />
+                    <img height="18px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/booster.svg" alt="Booster">
+                </picture>
+            </td>
+            <td><a href="https://www.choosebooster.com/">choosebooster.com</a></td>
+        </tr>
+        <tr>
+            <td>Zaptec</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/zaptec.svg" />
+                    <img height="24px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/zaptec.svg" alt="Zaptec">
+                </picture>
+            </td>
+            <td><a href="https://www.zaptec.com/">zaptec.com</a></td>
+        </tr>
+        <tr>
+            <td>Klarna</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/klarna.svg" />
+                    <img height="24px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/klarna.svg" alt="Klarna">
+                </picture>
+            </td>
+            <td><a href="https://www.klarna.com/">klarna.com</a></td>
+        </tr>
+        <tr>
+            <td>Raspberry PI Foundation</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/raspi.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/raspi.svg" alt="Raspberry PI Foundation">
+                </picture>
+            </td>
+            <td><a href="https://www.raspberrypi.org/">raspberrypi.org</a></td>
+        </tr>
+        <tr>
+            <td>Tulip</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/tulip.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/tulip.svg" alt="Tulip Retail">
+                </picture>
+            </td>
+            <td><a href="https://tulip.com/">tulip.com</a></td>
+        </tr>
+        <tr>
+            <td>Hootsuite</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/hootsuite.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/hootsuite.svg" alt="Hootsuite">
+                </picture>
+            </td>
+            <td><a href="https://hootsuite.com/">hootsuite.com</a></td>
+        </tr>
+        <tr>
+            <td>Segment</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/segment.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/segment.svg" alt="Segment">
+                </picture>
+            </td>
+            <td><a href="https://segment.com/">segment.com</a></td>
+        </tr>
+        <tr>
+            <td>Arduino</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/arduino.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/arduino.svg" alt="Arduino">
+                </picture>
+            </td>
+            <td><a href="https://www.arduino.cc/">arduino.cc</a></td>
+        </tr>
+        <tr>
+            <td>Sainsbury's</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/sainsburys.svg" />
+                    <img height="24px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/sainsburys.svg" alt="Sainsbury's">
+                </picture>
+            </td>
+            <td><a href="https://www.sainsburys.co.uk/">sainsburys.co.uk</a></td>
+        </tr>
+        <tr>
+            <td>Contraste</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/contraste.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/contraste.svg" alt="Contraste">
+                </picture>
+            </td>
+            <td><a href="https://www.contraste.com/en">contraste.com</a></td>
+        </tr>
+        <tr>
+            <td>inMusic</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/inmusic.svg" />
+                    <img height="24px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/inmusic.svg" alt="InMusic">
+                </picture>
+            </td>
+            <td><a href="https://inmusicbrands.com/">inmusicbrands.com</a></td>
+        </tr>
+        <tr>
+            <td>Buhta</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/buhta.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/buhta.svg" alt="Buhta">
+                </picture>
+            </td>
+            <td><a href="https://buhta.com/">buhta.com</a></td>
+        </tr>
+        </tr>
+            <tr>
+            <td>Amplitude</td>
+            <td align="center">
+                <picture>
+                    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/amplitude.svg" />
+                    <img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/amplitude.svg" alt="amplitude.com">
+                </picture>
+            </td>
+            <td><a href="https://amplitude.com/">amplitude.com</a></td>
+        </tr>
+    <tr>
+      <td align="center"><a href="https://tier4.jp/en/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/tieriv.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/tieriv.svg" alt="TIER IV"></picture></a></td>
+      <td align="center"><a href="https://kyma-project.io"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/kyma.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/kyma.svg" alt="Kyma Project"></picture></a></td>
+      <td align="center"><a href="https://serlo.org/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/serlo.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/serlo.svg" alt="Serlo"></picture></a></td>
+      <td align="center"><a href="https://padis.io/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/padis.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/padis.svg" alt="Padis"></picture></a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://cloudbear.eu/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/cloudbear.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/cloudbear.svg" alt="Cloudbear"></picture></a></td>
+      <td align="center"><a href="https://securityonionsolutions.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/securityonion.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/securityonion.svg" alt="Security Onion Solutions"></picture></a></td>
+      <td align="center"><a href="https://factlylabs.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/factly.svg" /><img height="24px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/factly.svg" alt="Factly"></picture></a></td>
+      <td align="center"><a href="https://cashdeck.com.au/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/allmyfunds.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/allmyfunds.svg" alt="All My Funds"></picture></a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://nortal.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/nortal.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/nortal.svg" alt="Nortal"></picture></a></td>
+      <td align="center"><a href="https://www.ordermygear.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/ordermygear.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/ordermygear.svg" alt="OrderMyGear"></picture></a></td>
+      <td align="center"><a href="https://r2devops.io/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/r2devops.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/r2devops.svg" alt="R2Devops"></picture></a></td>
+      <td align="center"><a href="https://www.paralus.io/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/paralus.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/paralus.svg" alt="Paralus"></picture></a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://dyrector.io/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/dyrector_io.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/dyrector_io.svg" alt="dyrector.io"></picture></a></td>
+      <td align="center"><a href="https://pinniped.dev/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/pinniped.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/pinniped.svg" alt="pinniped.dev"></picture></a></td>
+      <td align="center"><a href="https://pvotal.tech/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ory/meta/master/static/adopters/light/pvotal.svg" /><img height="32px" src="https://raw.githubusercontent.com/ory/meta/master/static/adopters/dark/pvotal.svg" alt="pvotal.tech"></picture></a></td>
+      <td></td>
+    </tr>
+    </tbody>
+</table>
 
-> It is generally a good idea to install and maintain Node.js versions using a version manager like [nvm](https://github.com/nvm-sh/nvm) or [nvs](https://github.com/jasongin/nvs) on Windows. More [information is available here](https://schalkneethling.com/posts/installing-node-and-managing-versions).
+Many thanks to all individual contributors
 
-#### Clone the repository
+<a href="https://opencollective.com/ory" target="_blank"><img src="https://opencollective.com/ory/contributors.svg?width=890&limit=714&button=false" /></a>
 
-```bash
-git clone https://github.com/boxyhq/jackson.git
-cd jackson
-```
+<!--END ADOPTERS-->
 
-#### Install dependencies
+## Get Started with Ory Polis
 
-```bash
-npm i
-```
+There are two ways to integrate Ory Polis into an application. Depending on your use case, you can choose either of them. <br>
 
-#### Setup environment variables
+1. [As a separate service](https://ory.sh/docs/polis/guides/service) ([Next.js](https://nextjs.org/) application) This includes an admin portal out of the box for managing SSO and Directory Sync connections.
+2. [NPM library](https://ory.sh/docs/polis/guides/npm-library) as an embedded library in your application.
 
-Create a `.env` from the existing `.env.example` file in the root of the project.
+### Installation
 
-```bash
-cp .env.example .env
-```
+Head over to the
+[Ory Developer Documentation](https://ory.sh/docs/polis/install) to learn
+how to install Ory Polis.
 
-> **Environment variable documentation:** Have a look at <https://boxyhq.com/docs/jackson/deploy/env-variables> for all of the available environment variables.
+## Ecosystem
 
-#### Database
+<!--BEGIN ECOSYSTEM-->
 
-For the rest of the setup, we will use a PostgreSQL database. The easiest way to get PostgreSQL up and running on macOS is by using Postgres.app. You can download it from [https://postgresapp.com/](https://postgresapp.com/).
+We build Ory on several guiding principles when it comes to our architecture
+design:
 
-> For other operating systems and alternative options for MacOS, please see the [documentation available on the Prisma website](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database).
+- Minimal dependencies
+- Runs everywhere
+- Scales without effort
+- Minimize room for human and network errors
 
-#### Start the development server
+Ory's architecture is designed to run best on a Container Orchestration system
+such as Kubernetes, CloudFoundry, OpenShift, and similar projects. Binaries are
+small (5-15MB) and available for all popular processor types (ARM, AMD64, i386)
+and operating systems (FreeBSD, Linux, macOS, Windows) without system
+dependencies (Java, Node, Ruby, libxml, ...).
 
-Instead of running it locally you could also run `docker compose up` and run a specific version of Jackson. For running it locally continue to follow the instructions below.
+### Ory Kratos: Identity and User Infrastructure and Management
 
-Now that we have our database running we can start the development server. But before we do, we need a way to log into the admin portal.
+[Ory Kratos](https://github.com/ory/kratos) is an API-first Identity and User
+Management system that is built according to
+[cloud architecture best practices](https://www.ory.sh/docs/next/ecosystem/software-architecture-philosophy).
+It implements core use cases that almost every software application needs to
+deal with: Self-service Login and Registration, Multi-Factor Authentication
+(MFA/2FA), Account Recovery and Verification, Profile, and Account Management.
 
-To log in to the admin portal we either need to [configure magic links](https://boxyhq.com/docs/admin-portal/overview#1-magic-links), or [enable username and password](https://boxyhq.com/docs/admin-portal/overview#2-email-and-password) login. The easiest one, and the one we will use, is to enable username and password login.
+### Ory Hydra: OAuth2 & OpenID Connect Server
 
-In your `.env` find the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable. We need to provide an `email:password` combination that we can then use to log in to the admin portal. For example:
+[Ory Hydra](https://github.com/ory/hydra) is an OpenID Certified™ OAuth2 and
+OpenID Connect Provider which easily connects to any existing identity system by
+writing a tiny "bridge" application. It gives absolute control over the user
+interface and user experience flows.
 
-```bash
-NEXTAUTH_ADMIN_CREDENTIALS=admin@example.com:password
-```
+### Ory Oathkeeper: Identity & Access Proxy
 
-Now we can start the development server:
+[Ory Oathkeeper](https://github.com/ory/oathkeeper) is a BeyondCorp/Zero Trust
+Identity & Access Proxy (IAP) with configurable authentication, authorization,
+and request mutation rules for your web services: Authenticate JWT, Access
+Tokens, API Keys, mTLS; Check if the contained subject is allowed to perform the
+request; Encode resulting content into custom headers (`X-User-ID`), JSON Web
+Tokens and more!
 
-```bash
-npm run dev
-```
+### Ory Keto: Access Control Policies as a Server
 
-Open `http://localhost:5225` in your browser and you should be redirected to the login screen.
+[Ory Keto](https://github.com/ory/keto) is a policy decision point. It uses a
+set of access control policies, similar to AWS IAM Policies, in order to
+determine whether a subject (user, application, service, car, ...) is authorized
+to perform a certain action on a resource.
 
-At the login screen, you can now use the username and password you set in the `NEXTAUTH_ADMIN_CREDENTIALS` environment variable to log in. Click "Sign In" and you should be logged in and see the SSO Connections page with no configured connections. We have reached Hello SAML Jackson!
-
-### Documentation
-
-For the full documentation, visit [boxyhq.com/docs/jackson/overview](https://boxyhq.com/docs/jackson/overview)
-
-### Easy Cloud Deployment
-
-Deploy SAML Jackson to the cloud with a single click using the following providers:
-
-[![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fboxyhq%2Fjackson&env=DB_ENGINE,DB_TYPE,DB_URL,DB_ENCRYPTION_KEY,DB_TTL,DB_CLEANUP_LIMIT,JACKSON_API_KEYS,EXTERNAL_URL,IDP_ENABLED,SAML_AUDIENCE,CLIENT_SECRET_VERIFIER,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,SMTP_FROM,NEXTAUTH_URL,NEXTAUTH_SECRET,NEXTAUTH_ACL&envDescription=DB%20configuration%20and%20keys%20for%20encryption%20and%20authentication.EXTERNAL_URL%20(Usually%20https%3A%2F%2F%3Cproject-name-from-above%3E.vercel.app)%20can%20be%20set%20after%20deployment%20from%20the%20project%20dashboard.Set%20to%20''%20if%20not%20applicable.&envLink=https://boxyhq.com/docs/jackson/deploy/env-variables>)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-## Videos
-
-- SSO/OIDC Tutorial [SAML Jackson Enterprise SSO](https://www.youtube.com/watch?v=nvsD4-GQw4A) (split into chapters to easily find what you are looking for)
-- SAML single sign-on login [demo](https://www.youtube.com/watch?v=VBUznQwoEWU)
+<!--END ECOSYSTEM-->
 
 ## End-to-End (E2E) tests
 
@@ -152,57 +545,39 @@ Create a `.env.test.local` file and populate the values. To execute the tests ru
 npm run test:e2e
 ```
 
-## About BoxyHQ
 
-<a href="https://boxyhq.com/enterprise-sso">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/boxyhq/.github/assets/66887028/df1c9904-df2f-4515-b403-58b14a0e9093">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/boxyhq/.github/assets/66887028/e093a466-72ea-41c6-a292-4c39a150facd">
-  <img alt="BoxyHQ - Security building blocks for developers" src="https://github.com/boxyhq/jackson/assets/66887028/b40520b7-dbce-400b-88d3-400d1c215ea1" height="auto" width="400" />
-</picture>
-</a>
+## Security
 
-BoxyHQ is on a mission to democratize enterprise readiness for developers one building block at a time. We are building a suite of security building blocks that are easy to use and integrate into your applications. Our goal is to make being enterprise-ready accessible to all developers, founders, and those responsible for the security of their internal applications regardless of their security expertise.
+### Disclosing vulnerabilities
 
-<a href="https://twitter.com/BoxyHQ"><img src="https://img.shields.io/twitter/follow/boxyhq?style=social" alt="Follow us on Twitter/X"></a>
-<a href="https://www.linkedin.com/company/boxyhq"><img src="https://img.shields.io/badge/LinkedIn-blue" alt="Connect with us on LinkedIn"></a>
+If you think you found a security vulnerability, please refrain from posting it
+publicly on the forums, the chat, or GitHub. You can find all info for
+responsible disclosure in our
+[security.txt](https://www.ory.sh/.well-known/security.txt).
 
-Community is core to our mission. We are building a community of developers, security enthusiasts, and founders who are passionate about security and building secure applications. We are building in the open and would love for you to join us on this journey.
+## Telemetry
 
-Join the community on Discord today.
+Ory's services collect summarized, anonymized data that can optionally be turned
+off. Click [here](https://www.ory.sh/docs/ecosystem/sqa) to learn more.
 
-<a href="https://discord.gg/uyb7pYt4Pa"><img src="https://img.shields.io/discord/877585485235630130" alt="Join the community on Discord"></a>
+## Documentation
 
-## Security And Observability
+### Guide
 
-### Observability
+The Guide is available [here](https://www.ory.sh/polis/docs).
 
-We support first-class observability on the back of OpenTelemetry, refer [here](https://boxyhq.com/docs/jackson/observability) for more details.
+### HTTP API documentation
 
-### SBOM Reports (Software Bill Of Materials)
+The HTTP API is documented [here](https://www.ory.sh/docs/polis/reference/api).
 
-We support SBOM reports, refer [here](https://boxyhq.com/docs/jackson/sbom) for more details.
+### Upgrading and Changelog
 
-### Container Signing and Verification
+New releases might introduce breaking changes. To help you identify and
+incorporate those changes, we document these changes in the
+[CHANGELOG.md](./CHANGELOG.md). For upgrading, please visit the
+[upgrade guide](https://ory.sh/docs/polis/upgrade).
 
-We support container image verification using cosign, refer [here](https://boxyhq.com/docs/jackson/container-signing) for more details.
+## Develop
 
-### 🛡️ Reporting Security Issues
-
-[Responsible Disclosure](SECURITY.md)
-
-## Contributing
-
-Thank you for your interest in contributing to SAML Jackson! We are excited to welcome contributions from the community. Please refer to our [contributing guidelines](CONTRIBUTING.md) for more information.
-
-## 💫 Support
-
-Reach out to the maintainers at one of the following places:
-
-- [GitHub Discussions](https://github.com/boxyhq/jackson/discussions)
-- [GitHub Issues](https://github.com/boxyhq/jackson/issues)
-- [Discord](https://discord.gg/uyb7pYt4Pa)
-
-## 📌 License
-
-[Apache 2.0 License](https://github.com/boxyhq/jackson/blob/main/LICENSE)
+We encourage all contributions and encourage you to read our
+[contribution guidelines](./CONTRIBUTING.md)
