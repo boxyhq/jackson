@@ -4,7 +4,7 @@
     <a href="https://www.ory.sh/chat">Chat</a> |
     <a href="https://github.com/ory/polis/discussions">Discussions</a> |
     <a href="https://www.ory.sh/l/sign-up-newsletter">Newsletter</a><br/><br/>
-    <a href="https://www.ory.sh/polis/docs/">Guide</a> |
+    <a href="https://www.ory.sh/docs/polis/">Guide</a> |
     <a href="https://www.ory.sh/docs/polis/reference/api">API Docs</a> |
     <a href="https://godoc.org/github.com/ory/polis">Code Docs</a><br/><br/>
     <a href="https://console.ory.sh/">Support this project!</a><br/><br/>
@@ -120,7 +120,7 @@ Ory Polis offers a range of features to simplify and secure enterprise SSO:
   flexibility, maintainability, and the ability to adopt features incrementally.
 
 We highly recommend reading the
-[Ory Polis introduction docs](https://www.ory.sh/polis/docs/) to learn more
+[Ory Polis introduction docs](https://www.ory.sh/docs/polis) to learn more
 about Ory Polis's background, feature set, and differentiation from other
 products.
 
@@ -563,7 +563,7 @@ off. Click [here](https://www.ory.sh/docs/ecosystem/sqa) to learn more.
 
 ### Guide
 
-The Guide is available [here](https://www.ory.sh/polis/docs).
+The Guide is available [here](https://www.ory.sh/docs/polis).
 
 ### HTTP API documentation
 
