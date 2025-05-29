@@ -6,7 +6,7 @@ labels: enhancement
 assignees: ''
 ---
 
-> Please check if your Feature Request has not been already raised in the [Discussions Tab](https://github.com/boxyhq/jackson/discussions), as we would like to reduce duplicates. If it has been already raised, simply upvote it 🔼.
+> Please check if your Feature Request has not been already raised in the [Discussions Tab](https://github.com/ory/polis/discussions), as we would like to reduce duplicates. If it has already been raised, simply upvote it 🔼.
 
 ### Is your proposal related to a problem?
 
