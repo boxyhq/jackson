@@ -34,7 +34,7 @@ services:
       MARIADB_DATABASE: mysql
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
   mssql:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/azure-sql-edge:2.0.0
     platform: linux/amd64
     ports:
       - 1433:1433
@@ -42,12 +42,6 @@ services:
     environment:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: '123ABabc!'
-#      docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<password>" \
-#      --shm-size 1g \
-#      -p 1433:1433 \
-#      --name sql19 \
-#      --hostname sql19 \
-#      -d mcr.microsoft.com/mssql/server:2019-latest
   dynamodb-local:
     command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
     image: 'amazon/dynamodb-local:2.5.2'
