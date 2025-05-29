@@ -34,16 +34,16 @@ Please adhere to the [Node Style Guide](https://github.com/felixge/node-style-gu
 
 ### 1. Fork the Repository
 
-To get started, fork the Jackson repository. This creates a duplicate of the project, allowing you to make and test your changes without affecting the original project.
+To get started, fork the Polis repository. This creates a duplicate of the project, allowing you to make and test your changes without affecting the original project.
 
-[Fork this repository](https://github.com/boxyhq/jackson/fork)
+[Fork this repository](https://github.com/ory/polis/fork)
 
 ### 2. Clone the Repository
 
 Clone your forked repository to your local development environment using this command:
 
 ```shell
-git clone https://github.com/your-username/jackson.git
+git clone https://github.com/your-username/polis.git
 ```
 
 ### 3. Setup
@@ -143,11 +143,11 @@ To begin your contribution journey, explore our list of "good first issue" tasks
 
 ## Code Of Conduct
 
-Please ensure that your contributions align with our [Code of Conduct](https://github.com/boxyhq/jackson/blob/main/CODE_OF_CONDUCT.md). Show respect, inclusivity, and consideration for others.
+Please ensure that your contributions align with our [Code of Conduct](https://github.com/ory/polis/blob/main/CODE_OF_CONDUCT.md). Show respect, inclusivity, and consideration for others.
 
 ## License
 
-Jackson is an open-source project released under the [Apache License 2.0](https://github.com/boxyhq/jackson/blob/main/LICENSE). Your contributions are subject to the terms of this license.
+Jackson is an open-source project released under the [Apache License 2.0](https://github.com/ory/polis/blob/main/LICENSE). Your contributions are subject to the terms of this license.
 
 ## Additional Tips
 
