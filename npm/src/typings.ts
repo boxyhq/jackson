@@ -30,7 +30,6 @@ export interface SSOConnection {
   name?: string;
   label?: string;
   description?: string;
-  ory?: OryConfig;
   sortOrder?: number | null;
   acsUrlOverride?: string;
   samlAudienceOverride?: string;
@@ -129,7 +128,6 @@ export type UpdateConnectionParams = TenantProduct & {
   defaultRedirectUrl?: string;
   redirectUrl?: string[] | string;
   deactivated?: boolean;
-  ory?: OryConfig;
   sortOrder?: number | null;
 };
 
@@ -471,7 +469,6 @@ export interface JacksonOption {
   setupLinkExpiryDays?: number;
   boxyhqHosted?: boolean;
 
-  ory?: { projectId: string | undefined; sdkToken: string | undefined };
   ssoTraces?: SSOTracesOption;
   logger?: {
     info?: (msg: string, err?: any) => void;
@@ -609,7 +606,6 @@ export interface ProductConfig {
   primaryColor: string | null;
   faviconUrl: string | null;
   companyName: string | null;
-  ory: OryConfig | null;
   development?: boolean;
 }
 
