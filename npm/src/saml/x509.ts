@@ -28,7 +28,7 @@ const generateCertificate = () => {
   const attrs = [
     {
       name: 'commonName',
-      value: 'BoxyHQ Jackson',
+      value: 'Ory Polis',
     },
   ];
 

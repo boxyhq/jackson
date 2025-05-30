@@ -1,7 +1,7 @@
 {
   "name": "@boxyhq/saml-jackson",
   "version": "0.0.0",
-  "description": "SAML Jackson library",
+  "description": "Polis library",
   "keywords": [
     "SAML 2.0"
   ],
