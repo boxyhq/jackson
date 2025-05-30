@@ -43,7 +43,7 @@ const _cache = {};
 function generateSAMLFederationAppPayload() {
   return {
     acsUrl: `https://iam.twilio.com/v1/Accounts/ACxxxxxxxxxxxxxx${randomString(8)}`,
-    entityId: `https://boxyhq.com/entity-id/${randomString(5)}`,
+    entityId: `https://ory.sh/entity-id/${randomString(5)}`,
     redirectUrl: `http://localhost:3366`,
     type: 'saml',
     tenant,

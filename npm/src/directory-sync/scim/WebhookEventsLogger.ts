@@ -66,18 +66,18 @@ export class WebhookEventsLogger extends Base {
    *             id: 038e767b-9bc6-4dbd-975e-fbc38a8e7d82
    *             first_name: Deepak
    *             last_name: Prabhakara
-   *             email: deepak@boxyhq.com
+   *             email: deepak@example.com
    *             active: true
    *             raw:
    *               schemas:
    *                 - urn:ietf:params:scim:schemas:core:2.0:User
-   *               userName: deepak@boxyhq.com
+   *               userName: deepak@example.com
    *               name:
    *                 givenName: Deepak
    *                 familyName: Prabhakara
    *               emails:
    *                 - primary: true
-   *                   value: deepak@boxyhq.com
+   *                   value: deepak@example.com
    *                   type: work
    *               title: CEO
    *               displayName: Deepak Prabhakara

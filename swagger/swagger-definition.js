@@ -23,10 +23,6 @@ module.exports = {
   ],
   servers: [
     {
-      url: 'https://api.eu.boxyhq.com',
-      description: 'Cloud',
-    },
-    {
       url: 'http://localhost:5225',
       description: 'Local',
     },

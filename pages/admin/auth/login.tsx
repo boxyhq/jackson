@@ -180,7 +180,7 @@ const Login = ({
                   components={{
                     docLink: (
                       <a
-                        href='https://boxyhq.com/docs/admin-portal/overview'
+                        href='https://www.ory.sh/docs/polis/admin-portal'
                         target='_blank'
                         rel='noopener noreferrer'
                         className='underline underline-offset-2'>

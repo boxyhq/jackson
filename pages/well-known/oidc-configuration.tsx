@@ -24,7 +24,7 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
                 components={{
                   guideLink: (
                     <a
-                      href='https://boxyhq.com/docs/jackson/sso-providers'
+                      href='https://www.ory.sh/docs/polis/sso-providers'
                       target='_blank'
                       rel='noreferrer'
                       className='underline underline-offset-4'>
