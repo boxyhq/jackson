@@ -25,9 +25,6 @@ jackson:
     port: 5225
     targetPort: 5225
   replicas: 1
-  retracedAdminRootToken: dev
-  retracedExternalUrl: http://localhost:3000/auditlog
-  retracedHostUrl: http://jackson-api:3000/auditlog
   type: LoadBalancer
 kubernetesClusterDomain: cluster.local
 migratePg:

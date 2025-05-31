@@ -19,9 +19,6 @@ stringData:
   # NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
   NEXTAUTH_SECRET: {{ .Values.jackson.nextauthSecret | quote }}
   NEXTAUTH_URL: {{ .Values.jackson.nextauthUrl | quote }}
-  RETRACED_ADMIN_ROOT_TOKEN: {{ .Values.jackson.retracedAdminRootToken | quote }}
-  RETRACED_EXTERNAL_URL: {{ .Values.jackson.retracedExternalUrl | quote }}
-  RETRACED_HOST_URL: {{ .Values.jackson.retracedHostUrl | quote }}
   # SAML_AUDIENCE: ""
   # SMTP_FROM: ""
   # SMTP_HOST: ""
