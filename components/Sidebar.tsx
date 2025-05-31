@@ -8,14 +8,12 @@ import Logo from '../public/logo.png';
 import { useTranslation } from 'next-i18next';
 import SSOLogo from '@components/logo/SSO';
 import DSyncLogo from '@components/logo/DSync';
-import AuditLogsLogo from '@components/logo/AuditLogs';
 import Cog8ToothIcon from '@heroicons/react/24/outline/Cog8ToothIcon';
 
 type SidebarProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   branding: any;
-  hideAuditLogs: boolean;
   hideIdentityFederation: boolean;
 };
 
@@ -27,13 +25,7 @@ type MenuItem = {
   items?: MenuItem[];
 };
 
-export const Sidebar = ({
-  isOpen,
-  setIsOpen,
-  branding,
-  hideAuditLogs,
-  hideIdentityFederation,
-}: SidebarProps) => {
+export const Sidebar = ({ isOpen, setIsOpen, branding, hideIdentityFederation }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
 
@@ -102,21 +94,6 @@ export const Sidebar = ({
       ],
     },
     {
-      hide: 'auditLogs',
-      href: '/admin/retraced',
-      text: t('audit_logs'),
-      icon: AuditLogsLogo,
-      current: asPath.includes('retraced'),
-      active: asPath.includes('/admin/retraced'),
-      items: [
-        {
-          href: '/admin/retraced',
-          text: t('projects'),
-          active: asPath.includes('/admin/retraced'),
-        },
-      ],
-    },
-    {
       href: '/admin/settings',
       text: t('settings'),
       icon: Cog8ToothIcon,
@@ -136,11 +113,7 @@ export const Sidebar = ({
     },
   ];
 
-  menus = menus.filter(
-    (menu) =>
-      !(menu.hide === 'auditLogs' && hideAuditLogs) &&
-      !(menu.hide === 'identityFederation' && hideIdentityFederation)
-  );
+  menus = menus.filter((menu) => !(menu.hide === 'identityFederation' && hideIdentityFederation));
 
   return (
     <>

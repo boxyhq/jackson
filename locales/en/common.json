@@ -76,7 +76,6 @@
   "configure_dsync": "Configure Directory Sync",
   "select_an_idp": "Select an Identity Provider to continue",
   "audit_logs": "Audit Logs",
-  "retraced_project_created": "Project created successfully",
   "project_name": "Project name",
   "create_project": "Create Project",
   "invalid_setup_link_alert": "Please contact your administrator to get a new setup link. If you are the administrator, visit the Admin Portal to create a new setup link for the service.",
