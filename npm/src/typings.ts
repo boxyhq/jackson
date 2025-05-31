@@ -448,7 +448,6 @@ export interface JacksonOption {
   };
   certs?: { publicKey: string; privateKey: string };
   boxyhqLicenseKey?: string;
-  retraced?: { host?: string; adminToken?: string };
   noAnalytics?: boolean;
   webhook?: Webhook;
   dsync?: {
