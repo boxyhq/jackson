@@ -1,6 +1,6 @@
 ## Step 2: Configure Application
 
-Copy the **Idp Metadata URL** or **Idp Metadata XML** from the next screen. You'll need this value to configure your SAML connection in SAML Jackson.
+Copy the **Idp Metadata URL** or **Idp Metadata XML** from the next screen. You'll need this value to configure your SAML connection in Polis.
 
 ![img alt](https://cdn.boxyhq.com/docs/sso/providers/rippling/3.png)
 
@@ -21,7 +21,7 @@ You'll need to enter the **ACS URL** and **Service Provider Entity ID**.
 
 From the **Settings** tab of custom app you just created. Go to **Advanced SAML Settings** section and check the box for **Disable InResponseTo field in assertions for IdP initiated SSO**.
 
-This is because Rippling sends dummy values for the **InResponseTo** field and SAML Jackson will try to validate the **InResponseTo** field if it is present.
+This is because Rippling sends dummy values for the **InResponseTo** field and Polis will try to validate the **InResponseTo** field if it is present.
 
 ![img alt](https://cdn.boxyhq.com/docs/sso/providers/rippling/5.png)
 

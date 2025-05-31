@@ -87,7 +87,7 @@
   "created_at": "Created At",
   "previous_step": "Previous Step",
   "next_step": "Next Step",
-  "boxyhq_powered_by": "Powered by BoxyHQ",
+  "boxyhq_powered_by": "Powered by Ory",
   "guides": "Guides",
   "learn_to_enable_auth_methods": "Please visit <docLink>BoxyHQ documentation</docLink> to learn how to enable the Magic Link or Email/Password authentication methods.",
   "advanced_sp_saml_configuration": "Advanced Service Provider (SP) SAML Configuration",

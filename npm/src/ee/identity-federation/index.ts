@@ -42,7 +42,7 @@ export default IdentityFederation;
 export * from './types';
 
 // SAML Federation flow:
-// SP (Eg: Twilio Flex) --> SAML Jackson --> IdP (Eg: Okta) --> SAML Jackson --> SP (Eg: Twilio Flex)
+// SP (Eg: Twilio Flex) --> Polis --> IdP (Eg: Okta) --> Polis --> SP (Eg: Twilio Flex)
 // 1. SP send SAML Request to Jackson's SSO endpoint
 // 2. Jackson process SAML Request and create a new session to store SP request information
 // 3. Jackson create a new SAML Request and send it to chosen IdP
