@@ -583,13 +583,13 @@ export class App {
   }
 
   // Get the metadata for the app
-  public async getMetadata() {
+  public async getMetadata(samlAudienceOverride?: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/identity-federation/sso`;
-    const entityId = `${this.opts.samlAudience}`;
+    const entityId = samlAudienceOverride ? samlAudienceOverride : this.opts.samlAudience!;
 
     const xml = saml.createIdPMetadataXML({
       entityId,
