@@ -128,7 +128,7 @@ async function testGenericSaml(setupLinkPage: Page) {
   );
 
   await expect(setupLinkPage.getByText('This is how the common SAML')).toHaveText(
-    'This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on Identity Provider to understand the exact mapping.'
+    'This is how the common SAML attributes map over for most providers, but some providers have custom mappings. Please refer to the documentation on the Identity Provider to understand the exact mapping.'
   );
 
   await setupLinkPage.getByRole('button', { name: 'Next Step' }).click();
