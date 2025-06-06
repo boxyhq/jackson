@@ -541,7 +541,7 @@ export interface ISPSSOConfig {
     publicKeyString: string;
   }>;
   toMarkdown(): string;
-  toXMLMetadata(boolean?): Promise<string>;
+  toXMLMetadata(boolean?, string?): Promise<string>;
 }
 
 export interface ApiError {

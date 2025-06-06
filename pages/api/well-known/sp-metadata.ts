@@ -6,12 +6,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     throw { message: 'Method not allowed', statusCode: 405 };
   }
 
-  const { encryption = 'false' } = req.query;
+  const { encryption = 'false', entityId } = req.query;
 
   const { spConfig } = await jackson();
 
   res
     .status(200)
     .setHeader('Content-Type', 'text/xml')
-    .send(await spConfig.toXMLMetadata(encryption === 'true'));
+    .send(await spConfig.toXMLMetadata(encryption === 'true', entityId as string));
 }

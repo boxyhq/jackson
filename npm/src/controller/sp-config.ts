@@ -62,10 +62,15 @@ export class SPSSOConfig {
       .replace('{{signatureAlgorithm}}', this.signatureAlgorithm);
   }
 
-  public async toXMLMetadata(encryption = false): Promise<string> {
+  public async toXMLMetadata(encryption = false, entityIdOverride?: string): Promise<string> {
     const { entityId, acsUrl, publicKeyString } = await this.get();
 
-    return saml20.createSPMetadataXML({ entityId, acsUrl, publicKeyString, encryption });
+    return saml20.createSPMetadataXML({
+      entityId: entityIdOverride ? entityIdOverride : entityId,
+      acsUrl,
+      publicKeyString,
+      encryption,
+    });
   }
 }
 
