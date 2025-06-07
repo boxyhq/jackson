@@ -18,7 +18,16 @@ import { throwIfInvalidLicense } from '../common/checkLicense';
 
 type NewAppParams = Pick<
   IdentityFederationApp,
-  'name' | 'tenant' | 'product' | 'acsUrl' | 'entityId' | 'tenants' | 'mappings' | 'type' | 'redirectUrl'
+  | 'name'
+  | 'tenant'
+  | 'product'
+  | 'acsUrl'
+  | 'entityId'
+  | 'tenants'
+  | 'mappings'
+  | 'type'
+  | 'redirectUrl'
+  | 'samlAudienceOverride'
 > & {
   logoUrl?: string;
   faviconUrl?: string;
@@ -85,6 +94,9 @@ export class App {
    *           items:
    *             type: string
    *           description: If creating an OIDC app, provide the redirect URL
+   *         samlAudienceOverride:
+   *           type: string
+   *           description: Override the SAML Audience on a per app basis
    *     IdentityFederationApp:
    *       allOf:
    *         - $ref: "#/components/schemas/IdentityFederationAppCreate"
@@ -148,6 +160,7 @@ export class App {
     primaryColor,
     tenants,
     mappings,
+    samlAudienceOverride,
   }: NewAppParams) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
@@ -221,6 +234,7 @@ export class App {
       primaryColor: primaryColor || null,
       tenants: _tenants,
       mappings: mappings || [],
+      samlAudienceOverride: samlAudienceOverride || null,
     };
 
     if (type === 'oidc') {
@@ -475,6 +489,10 @@ export class App {
       toUpdate['mappings'] = params.mappings;
     }
 
+    if ('samlAudienceOverride' in params) {
+      toUpdate['samlAudienceOverride'] = params.samlAudienceOverride;
+    }
+
     if (Object.keys(toUpdate).length === 0) {
       throw new JacksonError(
         'Please provide at least one of the following parameters: acsUrl, name, logoUrl, faviconUrl, primaryColor',
@@ -565,13 +583,13 @@ export class App {
   }
 
   // Get the metadata for the app
-  public async getMetadata() {
+  public async getMetadata(samlAudienceOverride?: string) {
     await throwIfInvalidLicense(this.opts.boxyhqLicenseKey);
 
     const { publicKey } = await getDefaultCertificate();
 
     const ssoUrl = `${this.opts.externalUrl}/api/identity-federation/sso`;
-    const entityId = `${this.opts.samlAudience}`;
+    const entityId = samlAudienceOverride ? samlAudienceOverride : this.opts.samlAudience!;
 
     const xml = saml.createIdPMetadataXML({
       entityId,

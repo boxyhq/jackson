@@ -134,6 +134,7 @@ export class SSO {
         relayState,
         tenant: app.tenant,
         product: app.product,
+        fedAppSamlAudienceOverride: app.samlAudienceOverride,
       };
 
       return isSAMLConnection(connection)

@@ -23,6 +23,7 @@ export type IdentityFederationApp = {
   primaryColor: string | null;
   tenants?: string[]; // To support multiple tenants for a single app
   mappings?: AttributeMapping[] | null;
+  samlAudienceOverride?: string | null;
 };
 
 export type IdentityFederationAppWithMetadata = IdentityFederationApp & {

@@ -3,10 +3,11 @@ import jackson from '@lib/jackson';
 
 export { default } from '@ee/identity-federation/pages/metadata';
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query }) {
   const { identityFederationController, checkLicense } = await jackson();
+  const { entityId } = query as { entityId?: string };
 
-  const metadata = await identityFederationController.app.getMetadata();
+  const metadata = await identityFederationController.app.getMetadata(entityId);
 
   return {
     props: {

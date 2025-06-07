@@ -17,10 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const { identityFederationController } = await jackson();
 
-  const { download } = req.query as { download: any };
+  const { download, entityId } = req.query as { download: any; entityId?: string };
 
   try {
-    const metadata = await identityFederationController.app.getMetadata();
+    const metadata = await identityFederationController.app.getMetadata(entityId);
 
     res.setHeader('Content-type', 'text/xml');
 

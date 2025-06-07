@@ -102,6 +102,7 @@ export class IdPLogin {
         product: fedApp.product,
         relayState: target_link_uri,
         oidcIdPRequest: body,
+        fedAppSamlAudienceOverride: fedApp.samlAudienceOverride,
       };
 
       return await this.ssoHandler.createOIDCRequest({
