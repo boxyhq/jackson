@@ -97,13 +97,19 @@ const SPConfig: NextPage<InferGetStaticPropsType<typeof getServerSideProps>> = (
   );
 };
 
-export const getServerSideProps = async ({ locale }) => {
+export const getServerSideProps = async ({ locale, query }) => {
   const { spConfig } = await jackson();
+  const { entityId } = query as { entityId?: string };
+
+  const config = await spConfig.get();
+  if (entityId) {
+    config.entityId = entityId;
+  }
 
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
-      config: await spConfig.get(),
+      config,
     },
   };
 };
