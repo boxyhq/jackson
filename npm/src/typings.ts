@@ -540,7 +540,6 @@ export interface ISPSSOConfig {
     publicKey: string;
     publicKeyString: string;
   }>;
-  toMarkdown(): string;
   toXMLMetadata(boolean?, string?): Promise<string>;
 }
 
