@@ -17,6 +17,7 @@ type SidebarProps = {
   branding: any;
   hideAuditLogs: boolean;
   hideIdentityFederation: boolean;
+  hideDirectorySync: boolean;
 };
 
 type MenuItem = {
@@ -33,6 +34,7 @@ export const Sidebar = ({
   branding,
   hideAuditLogs,
   hideIdentityFederation,
+  hideDirectorySync,
 }: SidebarProps) => {
   const { t } = useTranslation('common');
   const { asPath } = useRouter();
@@ -83,6 +85,7 @@ export const Sidebar = ({
       ],
     },
     {
+      hide: 'directorySync',
       href: '/admin/directory-sync',
       text: t('directory_sync'),
       icon: DSyncLogo,
@@ -139,7 +142,8 @@ export const Sidebar = ({
   menus = menus.filter(
     (menu) =>
       !(menu.hide === 'auditLogs' && hideAuditLogs) &&
-      !(menu.hide === 'identityFederation' && hideIdentityFederation)
+      !(menu.hide === 'identityFederation' && hideIdentityFederation) &&
+      !(menu.hide === 'directorySync' && hideDirectorySync)
   );
 
   return (

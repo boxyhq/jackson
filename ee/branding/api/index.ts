@@ -33,6 +33,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     data: productOrPortalBranding,
     hideAuditLogs: adminPortal.hideAuditLogs,
     hideIdentityFederation: adminPortal.hideIdentityFederation,
+    hideDirectorySync: adminPortal.hideDirectorySync,
   });
 };
 
