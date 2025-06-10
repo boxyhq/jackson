@@ -153,6 +153,17 @@ tap.test('Federated SAML App', async () => {
     t.match(response.x509cert, certs.publicKey);
   });
 
+  tap.test('Should be able to get the metadata with entityId override', async (t) => {
+    const response = await identityFederationController.app.getMetadata('entityIdOverride');
+
+    const certs = await getDefaultCertificate();
+
+    t.ok(response);
+    t.match(response.entityId, 'entityIdOverride');
+    t.match(response.ssoUrl, `${jacksonOptions.externalUrl}/api/identity-federation/sso`);
+    t.match(response.x509cert, certs.publicKey);
+  });
+
   tap.test('Delete the app by id', async (t) => {
     await identityFederationController.app.delete({ id: app.id });
 

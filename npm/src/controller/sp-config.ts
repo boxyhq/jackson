@@ -53,44 +53,14 @@ export class SPSSOConfig {
     };
   }
 
-  public toMarkdown(): string {
-    return markdownTemplate
-      .replace('{{acsUrl}}', this.acsUrl)
-      .replace('{{entityId}}', this.entityId)
-      .replace('{{responseSigned}}', this.responseSigned)
-      .replace('{{assertionSignature}}', this.assertionSignature)
-      .replace('{{signatureAlgorithm}}', this.signatureAlgorithm);
-  }
-
-  public async toXMLMetadata(encryption = false): Promise<string> {
+  public async toXMLMetadata(encryption = false, entityIdOverride?: string): Promise<string> {
     const { entityId, acsUrl, publicKeyString } = await this.get();
 
-    return saml20.createSPMetadataXML({ entityId, acsUrl, publicKeyString, encryption });
+    return saml20.createSPMetadataXML({
+      entityId: entityIdOverride ? entityIdOverride : entityId,
+      acsUrl,
+      publicKeyString,
+      encryption,
+    });
   }
 }
-
-const markdownTemplate = `
-## Service Provider (SP) SAML Configuration
-
-Your Identity Provider (IdP) will ask for the following information while configuring the SAML application. Share this information with your IT administrator.
-
-For provider specific instructions, refer to our <a href="https://www.ory.sh/docs/polis/sso-providers" target="_blank">guides</a>
-
-**ACS (Assertion Consumer Service) URL / Single Sign-On URL / Destination URL** <br />
-{{acsUrl}}
-
-**SP Entity ID / Identifier / Audience URI / Audience Restriction** <br />
-{{entityId}}
-
-**Response** <br />
-{{responseSigned}}
-
-**Assertion Signature** <br />
-{{assertionSignature}}
-
-**Signature Algorithm** <br />
-{{signatureAlgorithm}}
-
-**Assertion Encryption** <br />
-If you want to encrypt the assertion, you can download our [public certificate](/.well-known/saml.cer). Otherwise select the 'Unencrypted' option.
-`;
