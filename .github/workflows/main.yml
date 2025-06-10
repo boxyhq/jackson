@@ -406,7 +406,7 @@ jobs:
           tar -xvf "${ORAS_FILENAME}" -C oras_install
 
       - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
-        if: github.ref == 'refs/heads/release'
+        if: github.ref == 'refs/heads/release-disabled'
         run: |
           result=$(./oras_install/oras push ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
