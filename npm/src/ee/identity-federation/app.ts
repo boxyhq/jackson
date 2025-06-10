@@ -82,7 +82,7 @@ export class App {
    *         mappings:
    *           type: array
    *           items:
-   *             type: string
+   *             $ref: "#/components/schemas/AttributeMapping"
    *           description: Mapping of attributes from the IdP to SP
    *         type:
    *           type: array
@@ -107,6 +107,15 @@ export class App {
    *             id:
    *               type: string
    *               description: App ID
+   *     AttributeMapping:
+   *       type: object
+   *       properties:
+   *         key:
+   *           type: string
+   *           description: SP attribute
+   *         value:
+   *           type: string
+   *           description: IdP attribute
    *     IdentityFederationResponse:
    *       type: object
    *       properties:

@@ -2267,7 +2267,7 @@
           "mappings": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/AttributeMapping"
             },
             "description": "Mapping of attributes from the IdP to SP"
           },
@@ -2309,6 +2309,19 @@
             }
           }
         ]
+      },
+      "AttributeMapping": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "SP attribute"
+          },
+          "value": {
+            "type": "string",
+            "description": "IdP attribute"
+          }
+        }
       },
       "IdentityFederationResponse": {
         "type": "object",
