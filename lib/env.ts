@@ -128,6 +128,7 @@ const adminPortalSSODefaults = {
 const adminPortal = {
   hideAuditLogs: process.env.ADMIN_PORTAL_HIDE_AUDIT_LOGS === 'true',
   hideIdentityFederation: process.env.ADMIN_PORTAL_HIDE_IDENTITY_FEDERATION === 'true',
+  hideDirectorySync: process.env.ADMIN_PORTAL_HIDE_DIRECTORY_SYNC === 'true',
 };
 
 const loggerOptions = { file: process.env.LOG_FILE, level: process.env.LOG_LEVEL };
