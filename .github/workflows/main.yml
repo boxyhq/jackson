@@ -31,6 +31,7 @@ jobs:
       PUBLISH_TAG: ${{ steps.version.outputs.PUBLISH_TAG }}
       IMAGE_SUFFIX: ${{ steps.version.outputs.IMAGE_SUFFIX }}
       IMAGE_PATH: ${{ steps.version.outputs.IMAGE_PATH }}
+      BOXYHQ_GITHUB_REPO: ${{ steps.version.outputs.BOXYHQ_GITHUB_REPO }}
     env:
       NEXTAUTH_SECRET: secret
       NEXTAUTH_URL: http://localhost:5225
@@ -183,7 +184,8 @@ jobs:
 
           publishTag="latest"
           imageSuffix=""
-          imagePath="${{ github.repository }}"
+          BOXYHQ_GITHUB_REPO="boxyhq/jackson"
+          imagePath="${BOXYHQ_GITHUB_REPO}"
 
           if [[ "$GITHUB_REF" == *\/release ]]
           then
@@ -192,7 +194,7 @@ jobs:
             echo "Dev branch"
             publishTag="beta"
             imageSuffix="-beta"
-            imagePath="${{ github.repository }}-beta"
+            imagePath="${BOXYHQ_GITHUB_REPO}-beta"
             JACKSON_VERSION="${JACKSON_VERSION}-beta.${GITHUB_RUN_NUMBER}"
           fi
 
@@ -200,6 +202,7 @@ jobs:
           echo "PUBLISH_TAG=${publishTag}" >> $GITHUB_OUTPUT
           echo "IMAGE_SUFFIX=${imageSuffix}" >> $GITHUB_OUTPUT
           echo "IMAGE_PATH=${imagePath}" >> $GITHUB_OUTPUT
+          echo "BOXYHQ_GITHUB_REPO=${BOXYHQ_GITHUB_REPO}" >> $GITHUB_OUTPUT
 
         working-directory: ./npm
         env:
@@ -405,30 +408,30 @@ jobs:
       - name: Push SBOM reports to GitHub Container Registry & Sign the sbom images
         if: github.ref == 'refs/heads/release'
         run: |
-          result=$(./oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          result=$(./oras_install/oras push ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:service-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
           if [ -z "$ORAS_DIGEST" ]; then
             echo "Error: ORAS_DIGEST is empty"
             exit 1
           fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd _docker
-          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          result=$(../oras_install/oras push ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:docker-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
           if [ -z "$ORAS_DIGEST" ]; then
             echo "Error: ORAS_DIGEST is empty"
             exit 1
           fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd ..
           cd npm
-          result=$(../oras_install/oras push ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
+          result=$(../oras_install/oras push ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}:npm-${{ needs.ci.outputs.NPM_VERSION }} ./sbom.*)
           ORAS_DIGEST=$(echo $result | grep -oE 'sha256:[a-f0-9]{64}')
           if [ -z "$ORAS_DIGEST" ]; then
             echo "Error: ORAS_DIGEST is empty"
             exit 1
           fi
-          cosign sign -y --key /tmp/cosign.key ghcr.io/${{github.repository}}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
+          cosign sign -y --key /tmp/cosign.key ghcr.io/${{ needs.ci.outputs.BOXYHQ_GITHUB_REPO }}/sbom${{ needs.ci.outputs.IMAGE_SUFFIX }}@${ORAS_DIGEST}
           cd ..
         env:
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
