@@ -336,7 +336,7 @@ export class SSOHandler {
         audience: session.requested.entityId,
         acsUrl: session.requested.acsUrl,
         requestId: session.requested.id,
-        issuer: session.fedAppSamlAudienceOverride || this.opts.samlAudience!,
+        issuer: session.requested.fedAppSamlAudienceOverride || this.opts.samlAudience!,
         claims: mappedClaims,
         ...certificate,
         flattenArray: true,
