@@ -23,7 +23,6 @@ import { BrandingController } from './ee/branding';
 import SSOTraces from './sso-traces';
 import EventController from './event';
 import { ProductController } from './ee/product';
-import { OryController } from './ee/ory/ory';
 
 const TRACES_TTL_DEFAULT = 7 * 24 * 60 * 60;
 
@@ -115,12 +114,10 @@ export const controllers = async (
     opts: opts as JacksonOptionWithRequiredLogger,
   });
 
-  const oryController = new OryController({ opts, productController });
   const connectionAPIController = new ConnectionAPIController({
     connectionStore,
     opts,
     eventController,
-    oryController,
   });
   const adminController = new AdminController({ connectionStore, ssoTraces });
   const setupLinkController = new SetupLinkController({ setupLinkStore, opts });
