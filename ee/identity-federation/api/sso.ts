@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import jackson from '@lib/jackson';
-import { setErrorCookie } from '@lib/utils';
+import { setErrorCookieAndRedirect } from '@lib/utils';
 import { logger } from '@lib/logger';
 
 type SAMLRequest = {
@@ -31,8 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (err: any) {
     logger.error(err, 'SAML Federation authorize error');
     const { message, statusCode = 500 } = err;
-    setErrorCookie(res, { message, statusCode }, { path: '/error' });
-    res.redirect(302, '/error');
+
+    setErrorCookieAndRedirect(res, { message, statusCode });
   }
 }
 

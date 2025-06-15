@@ -3,6 +3,7 @@ import micromatch from 'micromatch';
 import type { OIDCSSOConnectionWithDiscoveryUrl, OIDCSSOConnectionWithMetadata } from '@boxyhq/saml-jackson';
 import { JacksonError } from 'npm/src/controller/error';
 import type { PaginateApiParams } from 'types';
+import { jacksonOptions } from '@lib/env';
 
 export const validateEmailWithACL = (email: string) => {
   const NEXTAUTH_ACL = process.env.NEXTAUTH_ACL || undefined;
@@ -19,13 +20,19 @@ export const validateEmailWithACL = (email: string) => {
 /**
  * This sets `cookie` using the `res` object
  */
-export const setErrorCookie = (res: NextApiResponse, value: unknown, options: { path?: string } = {}) => {
+export const setErrorCookieAndRedirect = (res: NextApiResponse, value: unknown) => {
   const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
   let cookieContents = 'jackson_error' + '=' + encodeURIComponent(stringValue);
-  if (options.path) {
-    cookieContents += '; Path=' + options.path;
+  let path = '/error';
+
+  if (jacksonOptions.externalUrl) {
+    const url = new URL(jacksonOptions.externalUrl);
+    path = url.pathname.endsWith('/') ? url.pathname + 'error' : url.pathname + path;
   }
+
+  cookieContents += '; Path=' + path;
   res.setHeader('Set-Cookie', cookieContents);
+  res.redirect(302, path);
 };
 
 const IsJsonString = (body: any): boolean => {
