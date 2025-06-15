@@ -31,7 +31,6 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   res.json({
     data: productOrPortalBranding,
-    hideAuditLogs: adminPortal.hideAuditLogs,
     hideIdentityFederation: adminPortal.hideIdentityFederation,
     hideDirectorySync: adminPortal.hideDirectorySync,
   });

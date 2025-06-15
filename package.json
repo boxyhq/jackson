@@ -65,8 +65,6 @@
     "@boxyhq/saml-jackson": "file:npm",
     "@heroicons/react": "2.2.0",
     "@next/bundle-analyzer": "15.3.3",
-    "@retracedhq/logs-viewer": "2.10.1",
-    "@retracedhq/retraced": "0.7.23",
     "@tailwindcss/typography": "0.5.16",
     "axios": "1.9.0",
     "chroma-js": "3.1.2",

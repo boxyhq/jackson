@@ -23,13 +23,6 @@ if (process.env.DB_SSL === 'true') {
   ssl = { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false' };
 }
 
-// Retraced
-const retraced = {
-  hostUrl: process.env.RETRACED_HOST_URL,
-  externalUrl: process.env.RETRACED_EXTERNAL_URL || process.env.RETRACED_HOST_URL,
-  adminToken: process.env.RETRACED_ADMIN_ROOT_TOKEN,
-};
-
 export const setupLinkExpiryDays = process.env.SETUP_LINK_EXPIRY_DAYS
   ? Number(process.env.SETUP_LINK_EXPIRY_DAYS)
   : 3;
@@ -84,7 +77,6 @@ const jacksonOptions: JacksonOption = {
   },
   certs: { publicKey: process.env.PUBLIC_KEY || '', privateKey: process.env.PRIVATE_KEY || '' },
   boxyhqLicenseKey: process.env.BOXYHQ_LICENSE_KEY,
-  retraced,
   noAnalytics:
     process.env.DO_NOT_TRACK === '1' ||
     process.env.DO_NOT_TRACK === 'true' ||
@@ -125,7 +117,6 @@ const adminPortalSSODefaults = {
 };
 
 const adminPortal = {
-  hideAuditLogs: process.env.ADMIN_PORTAL_HIDE_AUDIT_LOGS === 'true',
   hideIdentityFederation: process.env.ADMIN_PORTAL_HIDE_IDENTITY_FEDERATION === 'true',
   hideDirectorySync: process.env.ADMIN_PORTAL_HIDE_DIRECTORY_SYNC === 'true',
 };
@@ -134,7 +125,6 @@ const loggerOptions = { file: process.env.LOG_FILE, level: process.env.LOG_LEVEL
 
 export { adminPortalSSODefaults };
 export { adminPortal };
-export { retraced as retracedOptions };
 export { apiKeys };
 export { jacksonOptions };
 export { loggerOptions };
