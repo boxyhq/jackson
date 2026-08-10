@@ -505,6 +505,7 @@ interface Metadata {
 export interface SAMLConnection {
   idpMetadata: Metadata;
   defaultRedirectUrl: string;
+  samlAudienceOverride?: string;
 }
 
 // See Error Response section in https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
