@@ -51,6 +51,7 @@ export class LogoutController {
 
     const {
       idpMetadata: { slo, provider },
+      samlAudienceOverride,
     } = samlConnection;
 
     const { privateKey, publicKey } = await getDefaultCertificate();
@@ -61,7 +62,7 @@ export class LogoutController {
 
     const { id, xml } = saml.createLogoutRequest({
       nameId,
-      providerName: this.opts.samlAudience!,
+      providerName: samlAudienceOverride ?? this.opts.samlAudience!,
       sloUrl: slo.redirectUrl as string,
     });
     const sessionId = crypto.randomBytes(16).toString('hex');

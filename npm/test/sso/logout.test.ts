@@ -1,12 +1,16 @@
 import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { promisify } from 'util';
+import { inflateRaw } from 'zlib';
 import sinon from 'sinon';
 import tap from 'tap';
 import { IConnectionAPIController, ILogoutController } from '../../src/typings';
 import { relayStatePrefix } from '../../src/controller/utils';
 import { saml_connection } from './fixture';
 import { addSSOConnections, jacksonOptions } from '../utils';
+
+const inflateRawAsync = promisify(inflateRaw);
 
 let connectionAPIController: IConnectionAPIController;
 let logoutController: ILogoutController;
@@ -99,6 +103,59 @@ tap.test('LogoutController -> createRequest', async (t) => {
         params.get('SigAlg'),
         'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         'SigAlg should be RSA-SHA256'
+      );
+    });
+
+    t.test(
+      'Should use samlAudienceOverride as Issuer in LogoutRequest when set on the connection',
+      async (t) => {
+        const overrideEntityId = 'https://saml.boxyhq.com/custom-sp-entity-id';
+
+        const exampleXml = await fs.readFile(path.join(metadataPath, 'example.xml'), 'utf8');
+        await connectionAPIController.createSAMLConnection({
+          defaultRedirectUrl: 'http://localhost:3366/sso/oauth/completed',
+          redirectUrl: '["http://localhost:3366"]',
+          tenant: 'example.com',
+          product: 'crm-audience-override',
+          encodedRawMetadata: Buffer.from(exampleXml).toString('base64'),
+          samlAudienceOverride: overrideEntityId,
+        });
+
+        const result = await logoutController.createRequest({
+          nameId: 'user@example.com',
+          tenant: 'example.com',
+          product: 'crm-audience-override',
+          redirectUrl: 'http://localhost:3366/done',
+        });
+
+        t.ok(result.logoutUrl, 'logoutUrl should be present');
+
+        const params = new URLSearchParams(new URL(result.logoutUrl as string).search);
+        const samlRequest = params.get('SAMLRequest')!;
+        const xml = (await inflateRawAsync(Buffer.from(samlRequest, 'base64'))).toString();
+
+        t.match(
+          xml,
+          `<saml:Issuer>${overrideEntityId}</saml:Issuer>`,
+          'LogoutRequest Issuer should be the samlAudienceOverride value'
+        );
+      }
+    );
+
+    t.test('Should fall back to global samlAudience as Issuer when no override is set', async (t) => {
+      const result = await logoutController.createRequest({
+        ...body,
+        tenant: 'example.com',
+      });
+
+      const params = new URLSearchParams(new URL(result.logoutUrl as string).search);
+      const samlRequest = params.get('SAMLRequest')!;
+      const xml = (await inflateRawAsync(Buffer.from(samlRequest, 'base64'))).toString();
+
+      t.match(
+        xml,
+        `<saml:Issuer>${jacksonOptions.samlAudience}</saml:Issuer>`,
+        'LogoutRequest Issuer should fall back to the global samlAudience'
       );
     });
 
