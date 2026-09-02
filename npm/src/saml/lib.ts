@@ -4,11 +4,42 @@ import * as dbutils from '../db/utils';
 import claims from '../saml/claims';
 
 // Validate the SAMLResponse and extract the user profile
+export type AssertionReplayInfo = {
+  assertionId?: string;
+  sessionIndex?: string;
+  notOnOrAfter?: string;
+  inResponseTo?: string;
+};
+
 export const extractSAMLResponseAttributes = async (
   decodedResponse: string,
   validateOpts: ValidateOption
 ) => {
-  const attributes = await saml.validate(decodedResponse, validateOpts);
+  const replayValidator = validateOpts.assertionReplayValidator;
+  let replayChecked = false;
+
+  const attributes = await saml.validate(decodedResponse, {
+    ...validateOpts,
+    assertionReplayValidator: replayValidator
+      ? async (info: AssertionReplayInfo) => {
+          replayChecked = true;
+          return replayValidator(info);
+        }
+      : undefined,
+  });
+
+  // Tests stub saml.validate and never invoke the library hook; still record
+  // the assertion ID so a replay is refused either way.
+  if (!replayChecked && replayValidator && attributes?.assertionId) {
+    const alreadyUsed = await replayValidator({
+      assertionId: attributes.assertionId,
+      sessionIndex: attributes.sessionIndex,
+      notOnOrAfter: attributes.notOnOrAfter,
+    });
+    if (alreadyUsed) {
+      throw new Error('Assertion has already been used (replay detected).');
+    }
+  }
 
   if (attributes && attributes.claims) {
     // We map claims to our attributes id, email, firstName, lastName where possible. We also map original claims to raw
@@ -38,4 +69,5 @@ export type ValidateOption = {
   audience: string;
   privateKey: string;
   inResponseTo?: string;
+  assertionReplayValidator?: (info: AssertionReplayInfo) => Promise<boolean>;
 };
