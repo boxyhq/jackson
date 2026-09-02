@@ -101,6 +101,7 @@ export const controllers = async (
   const sessionStore = db.store('oauth:session', opts.db.ttl);
   const codeStore = db.store('oauth:code', opts.db.ttl);
   const tokenStore = db.store('oauth:token', opts.db.ttl);
+  const assertionStore = db.store('saml:assertion', opts.db.ttl);
   const setupLinkStore = db.store('setup:link');
   const certificateStore = db.store('x509:certificates');
   const settingsStore = db.store('portal:settings');
@@ -138,6 +139,7 @@ export const controllers = async (
     sessionStore,
     codeStore,
     tokenStore,
+    assertionStore,
     ssoTraces,
     opts,
     idFedApp: identityFederationController.app,

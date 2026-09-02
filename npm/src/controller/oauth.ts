@@ -76,16 +76,27 @@ export class OAuthController implements IOAuthController {
   private sessionStore: Storable;
   private codeStore: Storable;
   private tokenStore: Storable;
+  private assertionStore: Storable;
   private ssoTraces: ssoTraces;
   private opts: JacksonOptionWithRequiredLogger;
   private ssoHandler: SSOHandler;
   private idFedApp: App;
 
-  constructor({ connectionStore, sessionStore, codeStore, tokenStore, ssoTraces, opts, idFedApp }) {
+  constructor({
+    connectionStore,
+    sessionStore,
+    codeStore,
+    tokenStore,
+    assertionStore,
+    ssoTraces,
+    opts,
+    idFedApp,
+  }) {
     this.connectionStore = connectionStore;
     this.sessionStore = sessionStore;
     this.codeStore = codeStore;
     this.tokenStore = tokenStore;
+    this.assertionStore = assertionStore;
     this.ssoTraces = ssoTraces;
     this.opts = opts;
     this.idFedApp = idFedApp;
@@ -827,6 +838,17 @@ export class OAuthController implements IOAuthController {
       validateOpts = {
         audience: connection.samlAudienceOverride ? connection.samlAudienceOverride : this.opts.samlAudience!,
         privateKey,
+        assertionReplayValidator: async ({ assertionId }) => {
+          if (!assertionId) {
+            return false;
+          }
+          const existing = await this.assertionStore.get(assertionId);
+          if (existing) {
+            return true;
+          }
+          await this.assertionStore.put(assertionId, {});
+          return false;
+        },
       };
 
       if (connection.idpMetadata.publicKey) {
@@ -921,7 +943,9 @@ export class OAuthController implements IOAuthController {
         },
       });
 
-      if (isSAMLFederated) {
+      // Assertion replay must fail closed for IdP-initiated SSO (no session to
+      // invalidate). Surface the error to the caller instead of an OAuth redirect.
+      if (isSAMLFederated || /already been used|replay detected/i.test(error_description)) {
         throw err;
       }
 
