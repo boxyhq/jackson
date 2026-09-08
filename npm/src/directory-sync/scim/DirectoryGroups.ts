@@ -334,18 +334,28 @@ export class DirectoryGroups {
     group: Group,
     members: DirectorySyncGroupMember[] | undefined
   ) {
-    if (members === undefined || (members && members.length === 0)) {
+    const userIds = [...new Set((members || []).map((member) => member.value))];
+
+    if (userIds.length === 0) {
       return;
     }
 
-    for (const member of members) {
-      if (!(await this.groups.isUserInGroup(group.id, member.value))) {
-        await this.groups.addUserToGroup(group.id, member.value);
-      }
+    const existing = await this.groups.getUsersInGroup(group.id, userIds);
 
-      const { data: user } = await this.users.get(member.value);
+    await this.groups.addUsersToGroup(
+      group.id,
+      userIds.filter((userId) => !existing.has(userId))
+    );
 
-      await sendEvent('group.user_added', { directory, group, user }, this.callback);
+    const { data: users } = await this.users.getMany(userIds);
+    const usersById = new Map((users || []).map((user) => [user.id, user]));
+
+    for (const userId of userIds) {
+      await sendEvent(
+        'group.user_added',
+        { directory, group, user: usersById.get(userId) ?? null },
+        this.callback
+      );
     }
   }
 
@@ -354,14 +364,19 @@ export class DirectoryGroups {
     group: Group,
     members: DirectorySyncGroupMember[] | undefined
   ) {
-    if (members === undefined || (members && members.length === 0)) {
+    const userIds = [...new Set((members || []).map((member) => member.value))];
+
+    if (userIds.length === 0) {
       return;
     }
 
-    for (const member of members) {
-      await this.groups.removeUserFromGroup(group.id, member.value);
+    await this.groups.removeUsersFromGroup(group.id, userIds);
 
-      const { data: user } = await this.users.get(member.value);
+    const { data: users } = await this.users.getMany(userIds);
+    const usersById = new Map((users || []).map((user) => [user.id, user]));
+
+    for (const userId of userIds) {
+      const user = usersById.get(userId);
 
       // User may not exist in the directory, so we need to check if the user exists
       if (user) {

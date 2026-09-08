@@ -114,6 +114,16 @@ export class Users extends Base {
     }
   }
 
+  public async getMany(ids: string[]): Promise<Response<User[]>> {
+    try {
+      const rows = (await this.store('users').getMany(ids)) as (User | null)[];
+
+      return { data: rows.filter((user): user is User => user !== null), error: null };
+    } catch (err: any) {
+      return apiError(err);
+    }
+  }
+
   // Update the user data
   public async update(id: string, user: User): Promise<Response<User>> {
     const { raw } = user;

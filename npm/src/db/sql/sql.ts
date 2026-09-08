@@ -7,6 +7,7 @@ import {
   DatabaseOption,
   Index,
   Encrypted,
+  PutManyRecord,
   Records,
   SortOrder,
   RequiredLogger,
@@ -15,6 +16,17 @@ import { DataSource, DataSourceOptions, In, IsNull } from 'typeorm';
 import * as dbutils from '../utils';
 import * as mssql from './mssql';
 import { parsePGOptions } from '../utils';
+
+const putManyBatchSize = 100;
+const getManyBatchSize = 500;
+
+const chunk = <T>(items: T[], size: number): T[][] => {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+};
 
 class Sql implements DatabaseDriver {
   private options: DatabaseOption;
@@ -205,6 +217,34 @@ class Sql implements DatabaseDriver {
     return null;
   }
 
+  async getMany(namespace: string, keys: string[]): Promise<(Encrypted | null)[]> {
+    const results: (Encrypted | null)[] = new Array(keys.length).fill(null);
+    const positions = new Map<string, number[]>();
+    keys.forEach((key, i) => {
+      const dbKey = dbutils.key(namespace, key);
+      positions.set(dbKey, [...(positions.get(dbKey) || []), i]);
+    });
+
+    for (const dbKeys of chunk([...positions.keys()], getManyBatchSize)) {
+      const rows = await this.storeRepository.find({
+        where: { key: In(dbKeys) },
+        select: ['key', 'value', 'iv', 'tag'],
+      });
+
+      for (const row of rows || []) {
+        if (!row.value) {
+          continue;
+        }
+
+        for (const i of positions.get(row.key) || []) {
+          results[i] = { value: row.value, iv: row.iv, tag: row.tag };
+        }
+      }
+    }
+
+    return results;
+  }
+
   async getAll(
     namespace: string,
     pageOffset?: number,
@@ -330,6 +370,98 @@ class Sql implements DatabaseDriver {
         }
       }
     });
+  }
+
+  async putMany(namespace: string, records: PutManyRecord<Encrypted>[], ttl = 0): Promise<void> {
+    if (records.length === 0) {
+      return;
+    }
+
+    if (this.options.type === 'mssql') {
+      for (const record of records) {
+        await this.put(namespace, record.key, record.value, ttl, ...(record.indexes || []));
+      }
+      return;
+    }
+
+    for (const batch of chunk(records, putManyBatchSize)) {
+      await this.dataSource.transaction(async (transactionalEntityManager) => {
+        const modifiedAt = new Date().toISOString();
+
+        const storeRows = batch.map((record) => ({
+          key: dbutils.key(namespace, record.key),
+          value: record.value.value,
+          iv: record.value.iv ?? null,
+          tag: record.value.tag ?? null,
+          modifiedAt,
+          namespace,
+        }));
+
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .insert()
+          .into(this.JacksonStore)
+          .values(storeRows)
+          .orUpdate(['value', 'iv', 'tag', 'modifiedAt', 'namespace'], ['key'])
+          .updateEntity(false)
+          .execute();
+
+        if (ttl) {
+          const expiresAt = Date.now() + ttl * 1000;
+
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .insert()
+            .into(this.JacksonTTL)
+            .values(storeRows.map((row) => ({ key: row.key, expiresAt })))
+            .orUpdate(['expiresAt'], ['key'])
+            .updateEntity(false)
+            .execute();
+        }
+
+        const storeKeys = storeRows.map((row) => row.key);
+
+        const existingIndexes = (await transactionalEntityManager.find(
+          this.JacksonIndex as any,
+          {
+            where: { storeKey: In(storeKeys) },
+            select: ['id', 'key', 'storeKey'],
+            loadEagerRelations: false,
+          } as any
+        )) as { key: string; storeKey: string }[];
+
+        const seen = new Set(existingIndexes.map((rec) => `${rec.key}\u0000${rec.storeKey}`));
+        const indexRows: Record<string, any>[] = [];
+
+        batch.forEach((record, i) => {
+          const storeKey = storeKeys[i];
+
+          for (const idx of record.indexes || []) {
+            const key = dbutils.keyForIndex(namespace, idx);
+            const seenKey = `${key}\u0000${storeKey}`;
+
+            if (seen.has(seenKey)) {
+              continue;
+            }
+
+            seen.add(seenKey);
+            indexRows.push(
+              this.options.engine === 'planetscale' ? { key, storeKey } : { key, store: { key: storeKey } }
+            );
+          }
+        });
+
+        if (indexRows.length > 0) {
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .insert()
+            .into(this.JacksonIndex)
+            .values(indexRows)
+            .updateEntity(false)
+            .execute();
+        }
+      });
+    }
   }
 
   async delete(namespace: string, key: string): Promise<any> {

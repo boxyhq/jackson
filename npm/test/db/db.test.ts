@@ -8,6 +8,7 @@ const encryptionKey: EncryptionKey = 'IDv0Q/4meshxZOvDhtZUWsHMRf9VCvBt+PoB8z3bZV
 const dbObjs: { [key: string]: DatabaseDriver } = {};
 const connectionStores: Storable[] = [];
 const ttlStores: Storable[] = [];
+const batchStores: Storable[] = [];
 const ttl = 2;
 
 const record1 = {
@@ -225,6 +226,7 @@ tap.before(async () => {
     const randomSession = Date.now();
     connectionStores.push(db.store('saml:config:' + randomSession + randomBytes(4).toString('hex')));
     ttlStores.push(db.store('oauth:session:' + randomSession + randomBytes(4).toString('hex'), ttl));
+    batchStores.push(db.store('batch:config:' + randomSession + randomBytes(4).toString('hex')));
   }
 });
 
@@ -442,6 +444,54 @@ tap.test('dbs', async () => {
       t.equal(count, records.length);
       const countByIndex = await connectionStore.getCount({ name: 'name', value: record1.name });
       t.equal(countByIndex, 1);
+    });
+
+    tap.test('putMany() / getMany(): ' + dbType, async (t) => {
+      const batchStore = batchStores[idx];
+      const withIndexes = (record: typeof record1) => ({
+        key: record.id,
+        value: record,
+        indexes: [
+          { name: 'city', value: record.city },
+          { name: 'name', value: record.name },
+        ],
+      });
+
+      await batchStore.putMany(records.map(withIndexes));
+
+      const ret = await batchStore.getMany([record1.id, 'missing', record3.id, record1.id]);
+      t.same(ret, [record1, null, record3, record1], 'getMany returns records in request order');
+
+      t.same(await batchStore.getMany([]), [], 'getMany with no keys');
+      t.same(await batchStore.get(record2.id), record2, 'record written by putMany is readable with get');
+
+      const byId = (items: { id: string }[]) => [...items].sort((a, b) => a.id.localeCompare(b.id));
+
+      const byCity = await batchStore.getByIndex({ name: 'city', value: record1.city });
+      t.equal(byCity.data.length, 2, 'secondary index written for every record');
+      t.same(byId(byCity.data), [record1, record2]);
+
+      const byName = await batchStore.getByIndex({ name: 'name', value: record3.name });
+      t.same(byName.data, [record3]);
+
+      const count = await batchStore.getCount();
+      if (count !== undefined) {
+        t.equal(count, records.length);
+      }
+
+      const updated1 = { ...record1, name: 'Deepak Updated' };
+      await batchStore.putMany([withIndexes(updated1), withIndexes(record2)]);
+
+      t.same(await batchStore.get(record1.id), updated1, 'putMany updates an existing record');
+
+      const byCityAgain = await batchStore.getByIndex({ name: 'city', value: record1.city });
+      t.equal(byCityAgain.data.length, 2, 'putMany does not duplicate index entries');
+      t.same(byId(byCityAgain.data), [updated1, record2]);
+
+      await batchStore.deleteMany(records.map((record) => record.id));
+
+      t.same(await batchStore.getMany(records.map((record) => record.id)), [null, null, null]);
+      t.same((await batchStore.getByIndex({ name: 'city', value: record1.city })).data, []);
     });
 
     tap.test('delete(): ' + dbType, async (t) => {

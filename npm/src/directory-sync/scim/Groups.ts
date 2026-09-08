@@ -206,6 +206,20 @@ export class Groups extends Base {
     );
   }
 
+  public async addUsersToGroup(groupId: string, userIds: string[]) {
+    await this.store('members').putMany(
+      userIds.map((userId) => {
+        const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
+
+        return {
+          key: id,
+          value: { id, group_id: groupId, user_id: userId },
+          indexes: [{ name: indexNames.groupId, value: groupId }],
+        };
+      })
+    );
+  }
+
   // Remove a user from a group
   public async removeUserFromGroup(groupId: string, userId: string) {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
@@ -213,11 +227,25 @@ export class Groups extends Base {
     await this.store('members').delete(id);
   }
 
+  public async removeUsersFromGroup(groupId: string, userIds: string[]) {
+    await this.store('members').deleteMany(
+      userIds.map((userId) => dbutils.keyDigest(dbutils.keyFromParts(groupId, userId)))
+    );
+  }
+
   // Check if a user is a member of a group
   public async isUserInGroup(groupId: string, userId: string): Promise<boolean> {
     const id = dbutils.keyDigest(dbutils.keyFromParts(groupId, userId));
 
     return !!(await this.store('members').get(id));
+  }
+
+  public async getUsersInGroup(groupId: string, userIds: string[]): Promise<Set<string>> {
+    const rows = await this.store('members').getMany(
+      userIds.map((userId) => dbutils.keyDigest(dbutils.keyFromParts(groupId, userId)))
+    );
+
+    return new Set(userIds.filter((_, i) => rows[i]));
   }
 
   // Search groups by displayName
