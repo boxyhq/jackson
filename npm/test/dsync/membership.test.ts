@@ -200,6 +200,99 @@ tap.test('Directory groups membership /', async (t) => {
     t.match(await directorySync.groups.isUserInGroup(group.id, user2.id), false);
   });
 
+  t.test('Should add and remove many members in a single PATCH', async (t) => {
+    const bulkUser = (email: string) => ({
+      ...users[0],
+      userName: email,
+      emails: [{ primary: true, value: email, type: 'work' }],
+    });
+
+    const { data: user1 } = await directorySync.requests.handle(
+      usersRequest.create(directory, bulkUser('bulk-1@example.com'))
+    );
+    const { data: user2 } = await directorySync.requests.handle(
+      usersRequest.create(directory, bulkUser('bulk-2@example.com'))
+    );
+
+    await directorySync.groups.addUserToGroup(group.id, user1.id);
+
+    const unknownUserId = 'unknown-user';
+
+    const addEvents: DirectorySyncEvent[] = [];
+
+    await directorySync.requests.handle(
+      createGroupMembershipRequest(directory, group, [
+        {
+          op: 'add',
+          path: 'members',
+          value: [{ value: user1.id }, { value: user2.id }, { value: unknownUserId }, { value: user1.id }],
+        },
+      ]),
+      async (event: DirectorySyncEvent) => {
+        addEvents.push(event);
+      }
+    );
+
+    t.equal(await directorySync.groups.isUserInGroup(group.id, user1.id), true);
+    t.equal(await directorySync.groups.isUserInGroup(group.id, user2.id), true);
+    t.equal(await directorySync.groups.isUserInGroup(group.id, unknownUserId), true);
+
+    const members = await directorySync.groups.getGroupMembers({ groupId: group.id });
+    t.same(
+      (members.data || []).map((member) => member.user_id).sort(),
+      [user1.id, user2.id, unknownUserId].sort(),
+      'each member is stored exactly once'
+    );
+
+    t.equal(addEvents.length, 3, 'one group.user_added event per unique member');
+    t.same(
+      addEvents.map((event) => event.event),
+      ['group.user_added', 'group.user_added', 'group.user_added']
+    );
+    t.same(
+      addEvents.map((event) => event.data?.id),
+      [user1.id, user2.id, undefined],
+      'events keep request order; members without a user record carry no user'
+    );
+
+    const removeEvents: DirectorySyncEvent[] = [];
+
+    await directorySync.requests.handle(
+      createGroupMembershipRequest(directory, group, [
+        {
+          op: 'remove',
+          path: 'members',
+          value: [
+            { value: user1.id },
+            { value: user2.id },
+            { value: unknownUserId },
+            { value: 'never-a-member' },
+          ],
+        },
+      ]),
+      async (event: DirectorySyncEvent) => {
+        removeEvents.push(event);
+      }
+    );
+
+    t.equal(await directorySync.groups.isUserInGroup(group.id, user1.id), false);
+    t.equal(await directorySync.groups.isUserInGroup(group.id, user2.id), false);
+    t.equal(await directorySync.groups.isUserInGroup(group.id, unknownUserId), false);
+    t.same((await directorySync.groups.getGroupMembers({ groupId: group.id })).data, []);
+
+    t.same(
+      removeEvents.map((event) => [event.event, event.data.id]),
+      [
+        ['group.user_removed', user1.id],
+        ['group.user_removed', user2.id],
+      ],
+      'group.user_removed is only sent for members that have a user record'
+    );
+
+    await directorySync.users.delete(user1.id);
+    await directorySync.users.delete(user2.id);
+  });
+
   t.test('Should return an error when a group exceeds the inline member limit', async (t) => {
     const { data: largeGroup } = await directorySync.groups
       .setTenantAndProduct(directory.tenant, directory.product)

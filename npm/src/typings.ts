@@ -359,8 +359,16 @@ export interface DatabaseDriver {
   ): Promise<Records>;
   getCount?(namespace: string, idx?: Index): Promise<number | undefined>;
   deleteMany(namespace: string, keys: string[]): Promise<void>;
+  getMany?(namespace: string, keys: string[]): Promise<(Encrypted | null)[]>;
+  putMany?(namespace: string, records: PutManyRecord<Encrypted>[], ttl: number): Promise<void>;
   close(): Promise<void>;
   getStats(): Record<string, number>;
+}
+
+export interface PutManyRecord<T = any> {
+  key: string;
+  value: T;
+  indexes?: Index[];
 }
 
 export interface Storable {
@@ -382,6 +390,8 @@ export interface Storable {
   ): Promise<Records>;
   getCount(idx?: Index): Promise<number | undefined>;
   deleteMany(keys: string[]): Promise<void>;
+  getMany(keys: string[]): Promise<any[]>;
+  putMany(records: PutManyRecord[]): Promise<void>;
 }
 
 export interface DatabaseStore {

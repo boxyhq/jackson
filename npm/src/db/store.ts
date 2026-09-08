@@ -1,4 +1,4 @@
-import { Index, Records, SortOrder, Storable } from '../typings';
+import { Index, PutManyRecord, Records, SortOrder, Storable } from '../typings';
 import * as dbutils from './utils';
 
 class Store implements Storable {
@@ -14,6 +14,17 @@ class Store implements Storable {
 
   async get(key: string): Promise<any> {
     return await this.db.get(this.namespace, dbutils.keyDigest(key));
+  }
+
+  async getMany(keys: string[]): Promise<any[]> {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    return await this.db.getMany(
+      this.namespace,
+      keys.map((key) => dbutils.keyDigest(key))
+    );
   }
 
   async getAll(
@@ -49,6 +60,20 @@ class Store implements Storable {
     });
 
     return await this.db.put(this.namespace, dbutils.keyDigest(key), val, this.ttl, ...indexes);
+  }
+
+  async putMany(records: PutManyRecord[]): Promise<void> {
+    if (records.length === 0) {
+      return;
+    }
+
+    const digested = records.map((record) => ({
+      key: dbutils.keyDigest(record.key),
+      value: record.value,
+      indexes: (record.indexes || []).map((idx) => ({ name: idx.name, value: dbutils.keyDigest(idx.value) })),
+    }));
+
+    return await this.db.putMany(this.namespace, digested, this.ttl);
   }
 
   async delete(key: string): Promise<any> {

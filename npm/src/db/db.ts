@@ -5,6 +5,7 @@ import {
   Encrypted,
   EncryptionKey,
   Index,
+  PutManyRecord,
   Records,
   RequiredLogger,
   SortOrder,
@@ -73,6 +74,20 @@ class DB implements DatabaseDriver {
     return decrypt(res, this.encryptionKey);
   }
 
+  async getMany(namespace: string, keys: string[]): Promise<any[]> {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    if (typeof this.db.getMany === 'function') {
+      const res = await this.db.getMany(namespace, keys);
+
+      return res.map((r) => (r ? decrypt(r, this.encryptionKey) : null));
+    }
+
+    return await Promise.all(keys.map((key) => this.get(namespace, key)));
+  }
+
   async getAll(
     namespace: string,
     pageOffset?: number,
@@ -122,6 +137,30 @@ class DB implements DatabaseDriver {
       : { value: JSON.stringify(val) };
 
     return await this.db.put(namespace, key, dbVal, ttl, ...indexes);
+  }
+
+  async putMany(namespace: string, records: PutManyRecord[], ttl = 0): Promise<void> {
+    if (records.length === 0) {
+      return;
+    }
+
+    if (typeof this.db.putMany !== 'function') {
+      for (const record of records) {
+        await this.put(namespace, record.key, record.value, ttl, ...(record.indexes || []));
+      }
+
+      return;
+    }
+
+    const encrypted: PutManyRecord<Encrypted>[] = records.map((record) => ({
+      key: record.key,
+      value: this.encryptionKey
+        ? encrypter.encrypt(JSON.stringify(record.value), this.encryptionKey)
+        : { value: JSON.stringify(record.value) },
+      indexes: record.indexes,
+    }));
+
+    await this.db.putMany(namespace, encrypted, ttl);
   }
 
   async delete(namespace: string, key: string): Promise<unknown> {
