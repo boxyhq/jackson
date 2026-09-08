@@ -494,6 +494,28 @@ tap.test('dbs', async () => {
       t.same((await batchStore.getByIndex({ name: 'city', value: record1.city })).data, []);
     });
 
+    tap.test('concurrent putMany(): ' + dbType, async (t) => {
+      if (dbs[idx].type === 'mssql' || dbs[idx].type === 'sqlite' || dbEngine === 'mongo') {
+        return;
+      }
+
+      const batchStore = batchStores[idx];
+      const items = records.map((record) => ({
+        key: record.id,
+        value: record,
+        indexes: [{ name: 'city', value: record.city }],
+      }));
+
+      await Promise.all([1, 2, 3, 4].map(() => batchStore.putMany(items)));
+
+      t.same(await batchStore.getMany(records.map((record) => record.id)), records);
+
+      const byCity = await batchStore.getByIndex({ name: 'city', value: record1.city });
+      t.equal(byCity.data.length, 2, 'concurrent putMany does not duplicate index entries');
+
+      await batchStore.deleteMany(records.map((record) => record.id));
+    });
+
     tap.test('delete(): ' + dbType, async (t) => {
       await connectionStore.delete(record1.id);
 
