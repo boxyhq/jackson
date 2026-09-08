@@ -41,7 +41,6 @@ const countingDriver = async (): Promise<DatabaseDriver> => {
     },
     delete: (...args) => (count('delete'), inner.delete(...args)),
     getByIndex: (...args) => (count('getByIndex'), inner.getByIndex(...args)),
-    getCount: (...args) => (count('getCount'), inner.getCount(...args)),
     deleteMany: (...args) => (count('deleteMany'), inner.deleteMany(...args)),
     getMany: async (namespace: string, keys: string[]) => {
       count('getMany');
