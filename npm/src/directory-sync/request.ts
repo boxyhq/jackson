@@ -24,7 +24,7 @@ export class RequestHandler {
   }
 
   async handle(request: DirectorySyncRequest, callback?: EventCallback): Promise<DirectorySyncResponse> {
-    const resourceType = request.resourceType.toLowerCase();
+    const resourceType = (request.resourceType ?? '').toLowerCase();
 
     if (resourceType === 'users') {
       return await this.directoryUsers.handleRequest(request, callback || this.eventCallback);
