@@ -81,10 +81,13 @@ export default function Adapter() {
     },
     async useVerificationToken({ identifier, token }) {
       const tokenInStore = await (await store).get(identifier);
-      if (tokenInStore.token === token) {
-        await (await store).delete(identifier);
+      // next-auth treats any non null return value as a valid token, so the
+      // comparison has to decide the return value and not only the deletion.
+      if (!tokenInStore || tokenInStore.token !== token) {
+        return null;
       }
-      return tokenInStore ?? null;
+      await (await store).delete(identifier);
+      return tokenInStore;
     },
   };
 }
