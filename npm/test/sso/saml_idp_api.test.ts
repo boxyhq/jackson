@@ -16,6 +16,8 @@ import {
   saml_connection_binding_absent,
   saml_connection_entityID_absent,
   saml_connection_invalid_sso_descriptor,
+  saml_connection_invalid_slo_redirect_url,
+  saml_connection_invalid_slo_post_url,
 } from './fixture';
 import { jacksonOptions } from '../utils';
 import { isConnectionActive } from '../../src/controller/utils';
@@ -224,6 +226,40 @@ tap.test('controller/api', async (t) => {
           t.equal(err.statusCode, 400);
         }
       });
+
+      // One fixture per SLO binding, each with only that endpoint invalid, so
+      // dropping either check fails a test.
+      const invalidSLOBindings = [
+        {
+          binding: 'HTTP-Redirect',
+          directory: 'invalidSLORedirectUrl',
+          connection: saml_connection_invalid_slo_redirect_url,
+        },
+        {
+          binding: 'HTTP-POST',
+          directory: 'invalidSLOPostUrl',
+          connection: saml_connection_invalid_slo_post_url,
+        },
+      ];
+
+      for (const { binding, directory, connection } of invalidSLOBindings) {
+        t.test(`${binding} SLO URL in XML is not an HTTP(S) or localhost URL`, async (t) => {
+          const body: Record<string, any> = Object.assign({}, connection);
+          const metadataPath = path.join(__dirname, '/data/metadata/', directory);
+          const files = await fs.promises.readdir(metadataPath);
+          const rawMetadataFile = files.filter((f) => f.endsWith('.xml'))?.[0];
+          const rawMetadata = await fs.promises.readFile(path.join(metadataPath, rawMetadataFile), 'utf8');
+          body.encodedRawMetadata = Buffer.from(rawMetadata, 'utf8').toString('base64');
+
+          try {
+            await connectionAPIController.createSAMLConnection(body as SAMLSSOConnectionWithEncodedMetadata);
+            t.fail('Expecting JacksonError.');
+          } catch (err: any) {
+            t.equal(err.message, 'SSO URL not valid, allowed ones are localhost/HTTP/HTTPS URLs');
+            t.equal(err.statusCode, 400);
+          }
+        });
+      }
     });
 
     t.test('when the request is good', async (t) => {

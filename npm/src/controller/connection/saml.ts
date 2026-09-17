@@ -58,6 +58,15 @@ function validateParsedMetadata(metadata: SAMLSSORecord['idpMetadata']) {
   if (metadata.sso.postUrl) {
     validateSSOURL(metadata.sso.postUrl);
   }
+
+  // The SLO endpoints are read back in logout.ts and end up in a redirect and
+  // in a form action, so they need the same check as the SSO ones.
+  if (metadata.slo.redirectUrl) {
+    validateSSOURL(metadata.slo.redirectUrl);
+  }
+  if (metadata.slo.postUrl) {
+    validateSSOURL(metadata.slo.postUrl);
+  }
 }
 
 function isPrivateIP(url: string): boolean {
