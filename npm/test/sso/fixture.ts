@@ -11,6 +11,7 @@ import boxyhqNobinding from './data/metadata/nobinding/boxyhq-nobinding';
 import boxyhqNoentityID from './data/metadata/noentityID/boxyhq-noentityID';
 import exampleOidc from './data/metadata/example.oidc';
 import invalidssodescriptor from './data/metadata/invalidSSODescriptor/invalidssodescriptor';
+import boxyhqInvalidSlo from './data/metadata/invalidSLOUrl/boxyhq-invalid-slo';
 
 export const GENERIC_ERR_STRING = 'Something wrong happened. Please contact your administrator.';
 export const code = '1234567890';
@@ -245,4 +246,5 @@ export const oidc_connection = exampleOidc;
 export const saml_connection_entityID_absent = boxyhqNoentityID;
 export const saml_connection_binding_absent = boxyhqNobinding;
 export const saml_connection_invalid_sso_descriptor = invalidssodescriptor;
+export const saml_connection_invalid_slo_url = boxyhqInvalidSlo;
 // END: Fixtures for *_api.test.ts
